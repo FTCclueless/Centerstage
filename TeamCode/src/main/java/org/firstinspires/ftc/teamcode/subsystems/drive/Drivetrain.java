@@ -259,6 +259,14 @@ public class Drivetrain {
                 break;
             case GO_POINT:
                 goToPoint();
+                if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) {
+                    driveState = DriveState.DONE;
+                }
+                break;
+            case DONE:
+                for (int i =0; i < motors.size(); i++) {
+                    motors.get(i).setTargetPower(0);
+                }
         }
     }
 
