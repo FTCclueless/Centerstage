@@ -23,6 +23,8 @@ public class MecanumTuner extends LinearOpMode {
         if (System.currentTimeMillis()  >= start + 1500) {
             drivetrain.setMotorPowers(0,0,0,0);
             TelemetryUtil.packet.put("heading", drivetrain.localizer.heading);
+            TelemetryUtil.packet.put("x", drivetrain.localizer.x);
+            TelemetryUtil.packet.put("y",drivetrain.localizer.y);
         }
     }
 }
