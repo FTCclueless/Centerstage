@@ -17,25 +17,24 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
-import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
+import org.firstinspires.ftc.teamcode.utils.qol.Subsystem;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Config
-public class Drivetrain {
+public class Drivetrain extends Subsystem {
     // Pure pursuit tuning values
-    enum DriveState {
+    enum State {
         FOLLOW_SPLINE,
         GO_POINT,
         DONE
     }
-    public DriveState driveState;
 
     public static double maxRadius = 20;
     public static double headingCorrectionP = 0.8;
@@ -62,9 +61,9 @@ public class Drivetrain {
     private int pathIndex = 0;
 
     public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+        super(State.FOLLOW_SPLINE);
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
-        driveState = DriveState.FOLLOW_SPLINE;
 
         leftFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftFront"),
@@ -109,6 +108,140 @@ public class Drivetrain {
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
         localizer = new TwoWheelLocalizer(hardwareMap);
+
+        addState(State.FOLLOW_SPLINE, () -> {
+            Canvas canvas = TelemetryUtil.packet.fieldOverlay();
+            Pose2d estimate = localizer.getPoseEstimate();
+
+            //Find the closest point on the path to the robot
+            double distanceToClosestPoint = currentPath.poses.get(pathIndex).getDistanceFromPoint(estimate);
+            double distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
+            while (distanceToClosestPoint > distanceToNextPoint && pathIndex < currentPath.poses.size() - 1) {
+                pathIndex++;
+                distanceToClosestPoint = distanceToNextPoint;
+                distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
+            }
+            //Find the target for the robot to go to
+            double pathCurvyness = 0;
+            int targetIndex = pathIndex;
+            double targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
+            double lastRadius = targetRadius;
+            while ((pathCurvyness < maxCurve || targetRadius < minRadius) && targetRadius < maxRadius && targetIndex < currentPath.poses.size() - 1) {
+                pathCurvyness += 1 / Math.max(currentPath.poses.get(targetIndex).radius, 8);
+                targetIndex++;
+                lastRadius = targetRadius;
+                targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
+                if (targetRadius < lastRadius) { //If the radius becomes smaller it means you are missing part of the trajectory and therefore we do this so that it finds the next point again
+                    targetIndex--;
+                    targetRadius = lastRadius;
+                    break;
+                }
+            }
+            //this kinda jank but will leave for now
+
+        /*if (currentPath.poses.get(pathIndex).reversed) {
+            estimate.heading += Math.PI;
+        }*/
+
+            Pose2d lookAhead = currentPath.poses.get(targetIndex);
+
+            TelemetryUtil.packet.put("pathIndex", pathIndex + "/" + currentPath.poses.size());
+
+            // Plot the lookahead point
+            canvas.setFill("#ff0000");
+            canvas.fillCircle(lookAhead.x, lookAhead.y, 1.5);
+
+            Pose2d error = new Pose2d(
+                    lookAhead.x - estimate.x,
+                    lookAhead.y - estimate.y,
+                    AngleUtil.clipAngle(lookAhead.heading - estimate.heading + (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0))
+            );
+
+            double relativeErrorY = error.y * Math.cos(estimate.heading) - error.x * Math.sin(estimate.heading);
+            double relativeErrorX = error.x * Math.cos(estimate.heading) + error.y * Math.sin(estimate.heading); // why calculate it like this??????
+
+
+            TelemetryUtil.packet.put("rel_error", relativeErrorX + " " + relativeErrorY);
+
+            double radius = (error.x * error.x + error.y * error.y) / (2 * relativeErrorY);
+            radius *= Math.signum(relativeErrorX);
+            double theta = Math.atan2(relativeErrorY, relativeErrorX);
+
+            // Plot the circle thing
+            Vector2 perp = new Vector2(-Math.sin(estimate.heading), Math.cos(estimate.heading));
+            if (Math.abs(radius) < 25) { // Don't put radius if it will explode ftc dashboard
+                canvas.setStroke("#0000ff");
+                perp.norm();
+                perp.mul(radius);
+                perp.mul(Math.signum(radius));
+                perp.add(new Vector2(estimate.x, estimate.y));
+                canvas.strokeLine(estimate.x, estimate.y, perp.x, perp.y);
+                canvas.strokeCircle(perp.x, perp.y, Math.abs(radius));
+            }
+
+            TelemetryUtil.packet.put("Reversed", currentPath.poses.get(pathIndex).reversed);
+            double speed = targetRadius > minRadius ?
+                    (targetRadius - minRadius) / (maxRadius - minRadius) * (1.0 - minSpeedFollowPath) + minSpeedFollowPath :
+                    (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
+            double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
+            double targetTurn = speed * (targetRadius > minRadius ?
+                    (TRACK_WIDTH / 2.0) / radius :
+                    error.heading * headingCorrectionP);
+
+            TelemetryUtil.packet.put("error heading", error.heading);
+
+
+            if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
+                setTargetPoint(currentPath.getLastPoint());
+                currentPath = null;
+                state = State.GO_POINT;
+                return;
+            }
+
+            //apply the feedforward
+            double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
+            double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 0.2;
+            turn *= turnMul;
+            double[] motorPowers = {
+                    fwd - turn,
+                    fwd - turn,
+                    fwd + turn,
+                    fwd + turn
+            };
+            TelemetryUtil.packet.put("fwd", fwd);
+            TelemetryUtil.packet.put("turn", turn);
+            TelemetryUtil.packet.put("radius", radius);
+
+            // Post 1 normalization
+            double max = 1;
+            for (double power : motorPowers) {
+                max = Math.max(max, power);
+            }
+
+            for (int i = 0; i < motors.size(); i++) {
+                motorPowers[i] /= max;
+                motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
+                motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
+                TelemetryUtil.packet.put("Max", max);
+                TelemetryUtil.packet.put("Motor power", motorPowers[0] + " " + motorPowers[1] + " " + motorPowers[2] + " " + motorPowers[3]);
+
+                //motors.get(i).setPower(motorPowers[i]);
+                motors.get(i).setTargetPower(motorPowers[i]);
+            }
+        });
+
+        addState(State.GO_POINT, () -> {
+            goToPoint();
+            if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) {
+                state = State.DONE;
+            }
+        });
+
+        addState(State.DONE, () -> {
+            for (int i =0; i < motors.size(); i++) {
+                motors.get(i).setTargetPower(0);
+            }
+        });
     }
 
     public void setCurrentPath(Spline path) {
@@ -123,151 +256,16 @@ public class Drivetrain {
     double maxHeadingError = Math.toRadians(95);
 
     public void update() {
-        if (!DRIVETRAIN_ENABLED) {
-            return;
-        }
-
+        super.update();
         updateLocalizer();
 
         if (currentPath != null) {
-            driveState = DriveState.FOLLOW_SPLINE;
+            state = State.FOLLOW_SPLINE;
         }
 
-
-        Canvas canvas = TelemetryUtil.packet.fieldOverlay();
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y, estimate.heading);
         ROBOT_VELOCITY = localizer.getPoseVelocity();
-
-        switch (driveState) {
-            case FOLLOW_SPLINE:
-                //Find the closest point on the path to the robot
-                double distanceToClosestPoint = currentPath.poses.get(pathIndex).getDistanceFromPoint(estimate);
-                double distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
-                while (distanceToClosestPoint > distanceToNextPoint && pathIndex < currentPath.poses.size() - 1) {
-                    pathIndex++;
-                    distanceToClosestPoint = distanceToNextPoint;
-                    distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
-                }
-                //Find the target for the robot to go to
-                double pathCurvyness = 0;
-                int targetIndex = pathIndex;
-                double targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
-                double lastRadius = targetRadius;
-                while ((pathCurvyness < maxCurve || targetRadius < minRadius) && targetRadius < maxRadius && targetIndex < currentPath.poses.size() - 1) {
-                    pathCurvyness += 1 / Math.max(currentPath.poses.get(targetIndex).radius, 8);
-                    targetIndex++;
-                    lastRadius = targetRadius;
-                    targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
-                    if (targetRadius < lastRadius) { //If the radius becomes smaller it means you are missing part of the trajectory and therefore we do this so that it finds the next point again
-                        targetIndex--;
-                        targetRadius = lastRadius;
-                        break;
-                    }
-                }
-                //this kinda jank but will leave for now
-
-            /*if (currentPath.poses.get(pathIndex).reversed) {
-                estimate.heading += Math.PI;
-            }*/
-
-                Pose2d lookAhead = currentPath.poses.get(targetIndex);
-
-                TelemetryUtil.packet.put("pathIndex", pathIndex + "/" + currentPath.poses.size());
-
-                // Plot the lookahead point
-                canvas.setFill("#ff0000");
-                canvas.fillCircle(lookAhead.x, lookAhead.y, 1.5);
-
-                Pose2d error = new Pose2d(
-                        lookAhead.x - estimate.x,
-                        lookAhead.y - estimate.y,
-                        AngleUtil.clipAngle(lookAhead.heading - estimate.heading + (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0))
-                );
-
-                double relativeErrorY = error.y * Math.cos(estimate.heading) - error.x * Math.sin(estimate.heading);
-                double relativeErrorX = error.x * Math.cos(estimate.heading) + error.y * Math.sin(estimate.heading); // why calculate it like this??????
-
-
-                TelemetryUtil.packet.put("rel_error", relativeErrorX + " " + relativeErrorY);
-
-                double radius = (error.x * error.x + error.y * error.y) / (2 * relativeErrorY);
-                radius *= Math.signum(relativeErrorX);
-                double theta = Math.atan2(relativeErrorY, relativeErrorX);
-
-                // Plot the circle thing
-                Vector2 perp = new Vector2(-Math.sin(estimate.heading), Math.cos(estimate.heading));
-                if (Math.abs(radius) < 25) { // Don't put radius if it will explode ftc dashboard
-                    canvas.setStroke("#0000ff");
-                    perp.norm();
-                    perp.mul(radius);
-                    perp.mul(Math.signum(radius));
-                    perp.add(new Vector2(estimate.x, estimate.y));
-                    canvas.strokeLine(estimate.x, estimate.y, perp.x, perp.y);
-                    canvas.strokeCircle(perp.x, perp.y, Math.abs(radius));
-                }
-
-                TelemetryUtil.packet.put("Reversed", currentPath.poses.get(pathIndex).reversed);
-                double speed = targetRadius > minRadius ?
-                        (targetRadius - minRadius) / (maxRadius - minRadius) * (1.0 - minSpeedFollowPath) + minSpeedFollowPath :
-                        (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
-                double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
-                double targetTurn = speed * (targetRadius > minRadius ?
-                        (TRACK_WIDTH / 2.0) / radius :
-                        error.heading * headingCorrectionP);
-
-                TelemetryUtil.packet.put("error heading", error.heading);
-
-
-                if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
-                    setTargetPoint(currentPath.getLastPoint());
-                    currentPath = null;
-                    driveState = DriveState.GO_POINT;
-                    return;
-                }
-
-                //apply the feedforward
-                double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
-                double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 0.2;
-                turn *= turnMul;
-                double[] motorPowers = {
-                        fwd - turn,
-                        fwd - turn,
-                        fwd + turn,
-                        fwd + turn
-                };
-                TelemetryUtil.packet.put("fwd", fwd);
-                TelemetryUtil.packet.put("turn", turn);
-                TelemetryUtil.packet.put("radius", radius);
-
-                // Post 1 normalization
-                double max = 1;
-                for (double power : motorPowers) {
-                    max = Math.max(max, power);
-                }
-
-                for (int i = 0; i < motors.size(); i++) {
-                    motorPowers[i] /= max;
-                    motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
-                    motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
-                    TelemetryUtil.packet.put("Max", max);
-                    TelemetryUtil.packet.put("Motor power", motorPowers[0] + " " + motorPowers[1] + " " + motorPowers[2] + " " + motorPowers[3]);
-
-                    //motors.get(i).setPower(motorPowers[i]);
-                    motors.get(i).setTargetPower(motorPowers[i]);
-                }
-                break;
-            case GO_POINT:
-                goToPoint();
-                if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) {
-                    driveState = DriveState.DONE;
-                }
-                break;
-            case DONE:
-                for (int i =0; i < motors.size(); i++) {
-                    motors.get(i).setTargetPower(0);
-                }
-        }
     }
 
     public void setTargetPoint(Pose2d point) {
