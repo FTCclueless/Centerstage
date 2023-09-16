@@ -29,10 +29,6 @@ public class Vision {
     private Telemetry telemetry;
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
-    private Pose2d tagPoses[] = {
-        new Pose2d(3,3), // tag 1
-        new Pose2d(3,3) // tag 2
-    };
 
     public Vision (HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -63,15 +59,23 @@ public class Vision {
         gain.setGain(250);
     }
 
+    double robotXFromTag = 0;
+    double robotYFromTag = 0;
+    double robotHeadingFromTag = 0;
+
     public void updateLocalization(ThreeWheelLocalizer localizer) {
         if (tagProcessor.getDetections().size() > 0) {
             tags = tagProcessor.getDetections();
 
             for (AprilTagDetection tag : tags) {
-                Pose2d fieldTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
-                Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.x, tag.ftcPose.y);
+                Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
+                Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.bearing);
 
-
+                // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
+                // TODO: take into account the camera's relative position to robot
+                robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(relativeTagPosition.heading - relativeTagPosition.y*Math.sin(relativeTagPosition.heading)));
+                robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(relativeTagPosition.heading + relativeTagPosition.y*Math.cos(relativeTagPosition.heading)));
+                robotHeadingFromTag = 90 - relativeTagPosition.heading;
             }
         }
     }
