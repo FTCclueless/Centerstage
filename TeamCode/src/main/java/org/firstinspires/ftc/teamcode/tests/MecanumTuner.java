@@ -25,6 +25,7 @@ public class MecanumTuner extends LinearOpMode {
             TelemetryUtil.packet.put("heading", drivetrain.localizer.heading);
             TelemetryUtil.packet.put("x", drivetrain.localizer.x);
             TelemetryUtil.packet.put("y",drivetrain.localizer.y);
+            drivetrain.update();
         }
     }
 }

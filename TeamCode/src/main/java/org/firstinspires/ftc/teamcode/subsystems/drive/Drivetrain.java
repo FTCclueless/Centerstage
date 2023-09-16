@@ -193,7 +193,6 @@ public class Drivetrain extends Subsystem {
 
             if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
                 setTargetPoint(currentPath.getLastPoint());
-                currentPath = null;
                 state = State.GO_POINT;
                 return;
             }
@@ -241,6 +240,7 @@ public class Drivetrain extends Subsystem {
             for (int i =0; i < motors.size(); i++) {
                 motors.get(i).setTargetPower(0);
             }
+            currentPath = null;
         });
     }
 
