@@ -34,18 +34,18 @@ public class Vision {
         this.telemetry = telemetry;
 
         this.tagProcessor = new AprilTagProcessor.Builder()
-                .setDrawAxes(true)
-                .setDrawCubeProjection(true)
-                .setDrawTagID(true)
-                .setDrawTagOutline(true)
-                .build();
+            .setDrawAxes(true)
+            .setDrawCubeProjection(true)
+            .setDrawTagID(true)
+            .setDrawTagOutline(true)
+            .build();
 
         this.visionPortal = new VisionPortal.Builder()
-                .addProcessor(tagProcessor)
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-                .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .build();
+            .addProcessor(tagProcessor)
+            .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+            .setCameraResolution(new Size(640, 480))
+            .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
+            .build();
 
         this.hardwareMap = hardwareMap;
 
