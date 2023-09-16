@@ -38,10 +38,10 @@ public class DemoAprilTagTeleop extends LinearOpMode {
 
         ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
         exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(10, TimeUnit.MILLISECONDS);
+        exposure.setExposure(15, TimeUnit.MILLISECONDS);
 
         GainControl gain = visionPortal.getCameraControl(GainControl.class);
-        gain.setGain(155);
+        gain.setGain(40);
 
         long start = 0;
         long loopTime = 0;
