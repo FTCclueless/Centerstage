@@ -75,7 +75,7 @@ public class Vision {
                 // TODO: take into account the camera's relative position to robot
                 robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(relativeTagPosition.heading - relativeTagPosition.y*Math.sin(relativeTagPosition.heading)));
                 robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(relativeTagPosition.heading + relativeTagPosition.y*Math.cos(relativeTagPosition.heading)));
-                robotHeadingFromTag = 90 - relativeTagPosition.heading;
+                robotHeadingFromTag = tag.ftcPose.yaw;
             }
         }
     }
