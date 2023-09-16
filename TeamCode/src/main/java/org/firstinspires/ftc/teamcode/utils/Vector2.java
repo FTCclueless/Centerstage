@@ -55,4 +55,29 @@ public class Vector2 {
     public String toString() {
         return String.format("(%f, %f)", x, y);
     }
+
+    public void rotate(double angle) {
+        x = x*Math.cos(angle) + y*Math.sin(angle);
+        y = x*-Math.sin(angle) + y*Math.cos(angle);
+    }
+    public static Vector2 rotate(Vector2 vector, double angle) {
+        double x = vector.x;
+        double y = vector.y;
+        x = x*Math.cos(angle) + y*Math.sin(angle);
+        y = x*-Math.sin(angle) + y*Math.cos(angle);
+        return new Vector2(x, y);
+    }
+    public void rotateAround(double angle, double x, double y) {
+        this.x -= x;
+        this.y -= y;
+        rotate(angle); //idk if is scuffed or not lmao -Kyle
+        this.x +=x;
+        this.y +=y;
+    }
+    public static Vector2 rotateAround(Vector2 vector, double angle, double x, double y) {
+        double vx = vector.x-x;
+        double vy = vector.y-y;
+        Vector2 temp = Vector2.rotate(new Vector2(vx,vy), angle);
+        return new Vector2(temp.x+x, temp.y+y);
+    }
 }

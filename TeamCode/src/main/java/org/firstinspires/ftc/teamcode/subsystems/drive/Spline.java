@@ -120,4 +120,14 @@ public class Spline {
         this.reversed = reversed;
         return this;
     }
+
+    public static Spline reflect(Spline spline) {
+        Spline temp = new Spline(new Pose2d(0,0,0), spline.inchesPerNewPointGenerated);
+        temp.poses = new ArrayList<>();
+        for (SplinePose2d point : spline.poses) {
+            temp.poses.add(new SplinePose2d(point.x,-point.y,point.heading,point.reversed,point.radius));
+        }
+        return temp;
+    }
+
 }
