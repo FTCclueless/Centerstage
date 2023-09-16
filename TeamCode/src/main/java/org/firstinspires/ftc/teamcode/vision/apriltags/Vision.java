@@ -71,7 +71,7 @@ public class Vision {
                 Pose2d fieldTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
                 Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.x, tag.ftcPose.y);
 
-                
+
             }
         }
     }
