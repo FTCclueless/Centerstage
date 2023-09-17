@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.vision.apriltags;
 
 import android.util.Size;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -10,12 +11,16 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.Exposur
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.ThreeWheelLocalizer;
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class Vision {
@@ -29,6 +34,7 @@ public class Vision {
     private Telemetry telemetry;
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
+    private ArrayList<Integer> largeTags = new ArrayList<Integer>(Arrays.asList(7,10));
 
     public Vision (HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
@@ -61,23 +67,43 @@ public class Vision {
 
     double robotXFromTag = 0;
     double robotYFromTag = 0;
-    double robotHeadingFromTag = 0;
+
+    private Pose2d robotPoseFromTag = new Pose2d(0, 0);
+
+    double k = 0.05;
 
     public void updateLocalization(ThreeWheelLocalizer localizer) {
         if (tagProcessor.getDetections().size() > 0) {
             tags = tagProcessor.getDetections();
 
             for (AprilTagDetection tag : tags) {
-                Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
-                Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.x, tag.ftcPose.y, tag.ftcPose.bearing);
+                if (largeTags.contains(tag.id)) {
+                    Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
 
-                // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
-                // TODO: take into account the camera's relative position to robot
-                robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(relativeTagPosition.heading) - relativeTagPosition.y*Math.sin(relativeTagPosition.heading));
-                robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(relativeTagPosition.heading) + relativeTagPosition.y*Math.cos(relativeTagPosition.heading));
-                robotHeadingFromTag = tag.ftcPose.yaw;
+                    double xMultiplier = Math.signum(globalTagPosition.getX());
+                    double yMultiplier = Math.signum(globalTagPosition.getY());
+                    double headingOffset = xMultiplier < 0 ? Math.toRadians(180) : Math.toRadians(0);
+
+                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x*yMultiplier, AngleUtil.toRadians(tag.ftcPose.yaw) + headingOffset); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
+
+                    // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
+                    // TODO: take into account the camera's relative position to robot
+                    robotXFromTag = globalTagPosition.getX() - relativeTagPosition.x;
+                    robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.y*Math.cos(relativeTagPosition.heading)-relativeTagPosition.x*Math.sin(relativeTagPosition.heading));
+
+                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
+
+                    TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
+                    TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
+
+                    TelemetryUtil.packet.put("tag.ftcPose.x", relativeTagPosition.getX());
+                    TelemetryUtil.packet.put("tag.ftcPose.y", relativeTagPosition.getY());
+                    TelemetryUtil.packet.put("tag.ftcPose.yaw", AngleUtil.toDegrees(relativeTagPosition.getHeading()));
+                }
+                TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
             }
         }
+        TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
     }
 
     public void updateTelemetry() {
@@ -88,6 +114,16 @@ public class Vision {
         telemetry.addData("min gain", gain.getMinGain());
 
         telemetry.update();
+    }
+
+    public void updateField() {
+        Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
+
+        TelemetryUtil.packet.put("x", robotPoseFromTag.getX());
+        TelemetryUtil.packet.put("y", robotPoseFromTag.getY());
+        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(robotPoseFromTag.getHeading()));
+
+        DashboardUtil.drawRobot(fieldOverlay, robotPoseFromTag);
     }
 
     public void start () {
