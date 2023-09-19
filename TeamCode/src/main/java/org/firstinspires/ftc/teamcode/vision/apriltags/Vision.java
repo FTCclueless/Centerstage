@@ -88,8 +88,8 @@ public class Vision {
                     // TODO: take into account the camera's relative position to robot
                     double robotHeadingFromTag = -relativeTagPosition.heading + headingOffset;
 
-                    robotXFromTag = globalTagPosition.getX() + relativeTagPosition.y*Math.sin(robotHeadingFromTag) - relativeTagPosition.x*Math.cos(robotHeadingFromTag);
-                    robotYFromTag = globalTagPosition.getY() - relativeTagPosition.x*Math.sin(robotHeadingFromTag) - relativeTagPosition.y*Math.cos(robotHeadingFromTag);
+                    robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(robotHeadingFromTag) - relativeTagPosition.y*Math.sin(robotHeadingFromTag));
+                    robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(robotHeadingFromTag) + relativeTagPosition.y*Math.cos(robotHeadingFromTag));
 
                     robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, robotHeadingFromTag);
 
