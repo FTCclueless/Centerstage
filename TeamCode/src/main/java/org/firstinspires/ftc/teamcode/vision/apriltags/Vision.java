@@ -86,8 +86,9 @@ public class Vision {
 
                     // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
                     // TODO: take into account the camera's relative position to robot
-                    double robotHeadingFromTag = -relativeTagPosition.heading + headingOffset;
+                    double robotHeadingFromTag = -relativeTagPosition.heading + headingOffset; // negative in front of the yaw since yaw is positive clockwise but we want the angles to be defined such that counterclockwise is positive
 
+                    // applying a rotation matrix
                     robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(robotHeadingFromTag) - relativeTagPosition.y*Math.sin(robotHeadingFromTag));
                     robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(robotHeadingFromTag) + relativeTagPosition.y*Math.cos(robotHeadingFromTag));
 
