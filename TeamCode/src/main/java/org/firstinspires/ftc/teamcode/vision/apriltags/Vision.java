@@ -70,8 +70,6 @@ public class Vision {
 
     private Pose2d robotPoseFromTag = new Pose2d(0, 0);
 
-    double k = 0.05;
-
     public void updateLocalization(ThreeWheelLocalizer localizer) {
         if (tagProcessor.getDetections().size() > 0) {
             tags = tagProcessor.getDetections();
@@ -84,14 +82,16 @@ public class Vision {
                     double yMultiplier = Math.signum(globalTagPosition.getY());
                     double headingOffset = xMultiplier < 0 ? Math.toRadians(180) : Math.toRadians(0);
 
-                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x*yMultiplier, AngleUtil.toRadians(tag.ftcPose.yaw) + headingOffset); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
+                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x*yMultiplier, Math.toRadians(tag.ftcPose.yaw)); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
 
                     // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
                     // TODO: take into account the camera's relative position to robot
-                    robotXFromTag = globalTagPosition.getX() - relativeTagPosition.x;
-                    robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.y*Math.cos(relativeTagPosition.heading)-relativeTagPosition.x*Math.sin(relativeTagPosition.heading));
+                    double robotHeadingFromTag = -relativeTagPosition.heading + headingOffset;
 
-                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
+                    robotXFromTag = globalTagPosition.getX() + relativeTagPosition.y*Math.sin(robotHeadingFromTag) - relativeTagPosition.x*Math.cos(robotHeadingFromTag);
+                    robotYFromTag = globalTagPosition.getY() - relativeTagPosition.x*Math.sin(robotHeadingFromTag) - relativeTagPosition.y*Math.cos(robotHeadingFromTag);
+
+                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, robotHeadingFromTag);
 
                     TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
                     TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
