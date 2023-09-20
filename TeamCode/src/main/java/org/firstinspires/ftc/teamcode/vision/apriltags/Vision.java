@@ -78,11 +78,10 @@ public class Vision {
                 if (largeTags.contains(tag.id)) {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
 
-                    double xMultiplier = Math.signum(globalTagPosition.getX());
-                    double yMultiplier = Math.signum(globalTagPosition.getY());
+                    double xMultiplier = -Math.signum(globalTagPosition.getX());
                     double headingOffset = xMultiplier < 0 ? Math.toRadians(180) : Math.toRadians(0);
 
-                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x*yMultiplier, Math.toRadians(tag.ftcPose.yaw)); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
+                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x, Math.toRadians(tag.ftcPose.yaw)); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
 
                     // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
                     // TODO: take into account the camera's relative position to robot
