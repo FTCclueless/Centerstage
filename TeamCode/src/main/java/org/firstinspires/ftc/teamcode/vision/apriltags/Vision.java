@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.ThreeWheelLocalizer;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
+import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -69,6 +70,9 @@ public class Vision {
     double robotYFromTag = 0;
 
     private Pose2d robotPoseFromTag = new Pose2d(0, 0);
+    private Pose2d movingAveragedPoseFromTag = new Pose2d(0, 0);
+
+    MovingAverage movingAverage = new MovingAverage(1000);
 
     public void updateLocalization(ThreeWheelLocalizer localizer) {
         if (tagProcessor.getDetections().size() > 0) {
@@ -77,33 +81,33 @@ public class Vision {
             for (AprilTagDetection tag : tags) {
                 if (largeTags.contains(tag.id)) {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
+                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, Math.toRadians(tag.ftcPose.yaw+(globalTagPosition.getX() > 0 ? 0: 180))); //transform from april tag to relative robot transform
 
-                    double xMultiplier = -Math.signum(globalTagPosition.getX());
-                    double headingOffset = xMultiplier < 0 ? Math.toRadians(180) : Math.toRadians(0);
+                    // applying a rotation matrix for converting from relative robot to robot
+                    robotXFromTag = globalTagPosition.getX() - (Math.sin(relativeTagPosition.heading)*relativeTagPosition.y + Math.cos(relativeTagPosition.heading)*relativeTagPosition.x);
+                    robotYFromTag = globalTagPosition.getY() - (Math.cos(relativeTagPosition.heading)*relativeTagPosition.y - Math.sin(relativeTagPosition.heading)*relativeTagPosition.x);
 
-                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y*xMultiplier, tag.ftcPose.x, Math.toRadians(tag.ftcPose.yaw)); // tag.ftcPose.y and tag.ftcPose.x are switched because the SDK has depth as the y axis and horizontal motion as the x axis. In localization coordinates the opposite is true.
+                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
 
-                    // take the global position of the tag and the relative position of the tag to the camera to find the global position of the robot
-                    // TODO: take into account the camera's relative position to robot
-                    double robotHeadingFromTag = -relativeTagPosition.heading + headingOffset; // negative in front of the yaw since yaw is positive clockwise but we want the angles to be defined such that counterclockwise is positive
-
-                    // applying a rotation matrix
-                    robotXFromTag = globalTagPosition.getX() - (relativeTagPosition.x*Math.cos(robotHeadingFromTag) - relativeTagPosition.y*Math.sin(robotHeadingFromTag));
-                    robotYFromTag = globalTagPosition.getY() - (relativeTagPosition.x*Math.sin(robotHeadingFromTag) + relativeTagPosition.y*Math.cos(robotHeadingFromTag));
-
-                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, robotHeadingFromTag);
+                    movingAverage.addPose2d(robotPoseFromTag);
+                    movingAveragedPoseFromTag = movingAverage.getMovingAverageForPose2d();
 
                     TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
                     TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
 
-                    TelemetryUtil.packet.put("tag.ftcPose.x", relativeTagPosition.getX());
-                    TelemetryUtil.packet.put("tag.ftcPose.y", relativeTagPosition.getY());
-                    TelemetryUtil.packet.put("tag.ftcPose.yaw", AngleUtil.toDegrees(relativeTagPosition.getHeading()));
+                    TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
+                    TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
+                    TelemetryUtil.packet.put("relativeTagPosition.getHeading()", AngleUtil.toDegrees(relativeTagPosition.getHeading()));
                 }
+
                 TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
             }
         }
         TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
+    }
+
+    public double applySmoothingFactor (double oldValue, double newValue, double smoothingFactor) {
+        return (oldValue * (1.0-smoothingFactor)) + (newValue * smoothingFactor);
     }
 
     public void updateTelemetry() {
@@ -119,11 +123,11 @@ public class Vision {
     public void updateField() {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
 
-        TelemetryUtil.packet.put("x", robotPoseFromTag.getX());
-        TelemetryUtil.packet.put("y", robotPoseFromTag.getY());
-        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(robotPoseFromTag.getHeading()));
+        TelemetryUtil.packet.put("x", movingAveragedPoseFromTag.getX());
+        TelemetryUtil.packet.put("y", movingAveragedPoseFromTag.getY());
+        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(movingAveragedPoseFromTag.getHeading()));
 
-        DashboardUtil.drawRobot(fieldOverlay, robotPoseFromTag);
+        DashboardUtil.drawRobot(fieldOverlay, movingAveragedPoseFromTag);
     }
 
     public void start () {
