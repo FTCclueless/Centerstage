@@ -133,15 +133,15 @@ public class Localizer {
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 weight = Math.abs(Math.min(1/maxVel, aprilTagWeight));
 
-                x = kalmanFilter(odoX, aprilTagPose.x, weight);
-                y = kalmanFilter(odoY, aprilTagPose.y, weight);
-                heading = kalmanFilter(odoHeading, aprilTagPose.heading, weight);
+                odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
+                odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
+                odoHeading = kalmanFilter(odoHeading, aprilTagPose.heading, weight);
             }
-        } else {
-            x = odoX;
-            y = odoY;
-            heading = odoHeading;
         }
+
+        x = odoX;
+        y = odoY;
+        heading = odoHeading;
 
         currentPose = new Pose2d(x, y, heading);
 
