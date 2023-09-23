@@ -231,7 +231,7 @@ public class Drivetrain extends Subsystem {
 
         addState(State.GO_POINT, () -> {
             goToPoint();
-            if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) {
+            if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) { //todo tune
                 state = State.DONE;
             }
         });
@@ -259,13 +259,15 @@ public class Drivetrain extends Subsystem {
         super.update();
         updateLocalizer();
 
+        Pose2d estimate = localizer.getPoseEstimate();
+        ROBOT_POSITION = new Pose2d(estimate.x, estimate.y, estimate.heading);
+        ROBOT_VELOCITY = localizer.getPoseVelocity();
+
         if (currentPath != null) {
             state = State.FOLLOW_SPLINE;
         }
 
-        Pose2d estimate = localizer.getPoseEstimate();
-        ROBOT_POSITION = new Pose2d(estimate.x, estimate.y, estimate.heading);
-        ROBOT_VELOCITY = localizer.getPoseVelocity();
+
     }
 
     public void setTargetPoint(Pose2d point) {

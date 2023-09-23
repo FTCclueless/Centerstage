@@ -29,6 +29,7 @@ public class Vector2 {
     public void mul(double a) {
         x *= a;
         y *= a;
+        magcache *= a;
     }
 
 
@@ -45,11 +46,13 @@ public class Vector2 {
 
         x /= mag;
         y /= mag;
+        magcache = 1;
     }
 
     public void add(Vector2 a) {
         x += a.x;
         y += a.y;
+        magcache = 0;
     }
 
     public String toString() {
