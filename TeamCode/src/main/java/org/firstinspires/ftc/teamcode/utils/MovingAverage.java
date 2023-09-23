@@ -51,7 +51,9 @@ public class MovingAverage {
     }
 
     // function to calculate mean
-    public double getMovingAverageForNum() { return sum / period; }
+    public double getMovingAverageForNum() {
+        return sum / Dataset.size();
+    }
 
     public Pose2d getMovingAverageForPose2d() {
         return new Pose2d(

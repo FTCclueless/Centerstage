@@ -70,7 +70,7 @@ public class Vision {
     double robotYFromTag = 0;
 
     private Pose2d robotPoseFromTag = new Pose2d(0, 0);
-    private Pose2d movingAveragedPoseFromTag = new Pose2d(0, 0);
+    private double averagedHeading = 0;
 
     MovingAverage movingAverage = new MovingAverage(1000);
 
@@ -81,23 +81,28 @@ public class Vision {
             for (AprilTagDetection tag : tags) {
                 if (largeTags.contains(tag.id)) {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
-                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, Math.toRadians(tag.ftcPose.yaw+(globalTagPosition.getX() > 0 ? 0: 180))); //transform from april tag to relative robot transform
+                    Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, -Math.toRadians(tag.ftcPose.yaw+(globalTagPosition.getX() > 0 ? 0: 180))); //transform from april tag to relative robot transform
+
+                    // averaging heading out
+                    movingAverage.addData(relativeTagPosition.heading);
+                    averagedHeading = movingAverage.getMovingAverageForNum();
 
                     // applying a rotation matrix for converting from relative robot to robot
-                    robotXFromTag = globalTagPosition.getX() - (Math.sin(relativeTagPosition.heading)*relativeTagPosition.y + Math.cos(relativeTagPosition.heading)*relativeTagPosition.x);
-                    robotYFromTag = globalTagPosition.getY() - (Math.cos(relativeTagPosition.heading)*relativeTagPosition.y - Math.sin(relativeTagPosition.heading)*relativeTagPosition.x);
+                    robotXFromTag = globalTagPosition.getX() - (Math.cos(averagedHeading)*relativeTagPosition.x - Math.sin(averagedHeading)*relativeTagPosition.y);
+                    robotYFromTag = globalTagPosition.getY() - (Math.sin(averagedHeading)*relativeTagPosition.x + Math.cos(averagedHeading)*relativeTagPosition.y);
 
-                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
-
-                    movingAverage.addPose2d(robotPoseFromTag);
-                    movingAveragedPoseFromTag = movingAverage.getMovingAverageForPose2d();
+                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, averagedHeading);
 
                     TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
                     TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
 
+                    TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
                     TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
                     TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
-                    TelemetryUtil.packet.put("relativeTagPosition.getHeading()", AngleUtil.toDegrees(relativeTagPosition.getHeading()));
+                    TelemetryUtil.packet.put("relativeTagPosition.getHeading()", Math.toDegrees(relativeTagPosition.getHeading()));
+                    TelemetryUtil.packet.put("averagedHeading", Math.toDegrees(averagedHeading));
+
+                    updateField();
                 }
 
                 TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
@@ -106,8 +111,8 @@ public class Vision {
         TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
     }
 
-    public double applySmoothingFactor (double oldValue, double newValue, double smoothingFactor) {
-        return (oldValue * (1.0-smoothingFactor)) + (newValue * smoothingFactor);
+    public double kalmanFilter (double oldValue, double newValue, double weight) {
+        return (oldValue * (1.0-weight)) + (newValue * weight);
     }
 
     public void updateTelemetry() {
@@ -123,11 +128,7 @@ public class Vision {
     public void updateField() {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
 
-        TelemetryUtil.packet.put("x", movingAveragedPoseFromTag.getX());
-        TelemetryUtil.packet.put("y", movingAveragedPoseFromTag.getY());
-        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(movingAveragedPoseFromTag.getHeading()));
-
-        DashboardUtil.drawRobot(fieldOverlay, movingAveragedPoseFromTag);
+        DashboardUtil.drawRobot(fieldOverlay, robotPoseFromTag);
     }
 
     public void start () {
@@ -140,6 +141,10 @@ public class Vision {
 
     public void close () {
         visionPortal.close();
+    }
+
+    public boolean detectedTag () {
+       return tagProcessor.getDetections().size() > 0;
     }
 
     public static Pose2d convertVectorFToPose2d(VectorF vectorF) {

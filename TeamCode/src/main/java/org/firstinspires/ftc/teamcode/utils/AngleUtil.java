@@ -7,12 +7,4 @@ public class AngleUtil {
         }
         return angle;
     }
-
-    public static double toRadians(double angle) {
-        return angle * (Math.PI/180);
-    }
-
-    public static double toDegrees(double angle) {
-        return angle * (180/Math.PI);
-    }
 }

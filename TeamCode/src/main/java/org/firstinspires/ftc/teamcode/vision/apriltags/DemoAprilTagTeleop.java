@@ -29,7 +29,6 @@ public class DemoAprilTagTeleop extends LinearOpMode {
 
         while (!isStopRequested() && opModeIsActive()) {
             vision.updateLocalization(localizer);
-            vision.updateField();
             TelemetryUtil.sendTelemetry();
         }
     }
