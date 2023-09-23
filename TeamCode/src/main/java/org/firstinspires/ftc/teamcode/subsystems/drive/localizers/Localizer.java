@@ -66,7 +66,7 @@ public class Localizer {
         }
     }
 
-    public void setPose(double x, double y, double h){
+    public void setPose(double x, double y, double h) {
         this.odoX = x;
         this.odoY = y;
         this.odoHeading += h - this.odoHeading;

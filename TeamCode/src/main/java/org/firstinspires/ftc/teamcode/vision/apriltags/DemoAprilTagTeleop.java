@@ -11,14 +11,13 @@ public class DemoAprilTagTeleop extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Localizer localizer = new Localizer(hardwareMap, true);
         AprilTagLocalizer vision = new AprilTagLocalizer(hardwareMap);
         TelemetryUtil.setup();
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
-            vision.update(localizer);
+            vision.update();
             TelemetryUtil.sendTelemetry();
         }
     }
