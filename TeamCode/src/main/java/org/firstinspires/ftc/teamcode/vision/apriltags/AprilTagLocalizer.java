@@ -10,8 +10,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.ThreeWheelLocalizer;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -24,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class Vision {
+public class AprilTagLocalizer {
     HardwareMap hardwareMap;
 
     private AprilTagProcessor tagProcessor;
@@ -32,14 +31,10 @@ public class Vision {
     private ExposureControl exposure;
     private GainControl gain;
 
-    private Telemetry telemetry;
-
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
     private ArrayList<Integer> largeTags = new ArrayList<Integer>(Arrays.asList(7,10));
 
-    public Vision (HardwareMap hardwareMap, Telemetry telemetry) {
-        this.telemetry = telemetry;
-
+    public AprilTagLocalizer(HardwareMap hardwareMap) {
         this.tagProcessor = new AprilTagProcessor.Builder()
             .setDrawAxes(true)
             .setDrawCubeProjection(true)
@@ -74,7 +69,7 @@ public class Vision {
 
     MovingAverage movingAverage = new MovingAverage(1000);
 
-    public void updateLocalization(ThreeWheelLocalizer localizer) {
+    public void update() {
         if (tagProcessor.getDetections().size() > 0) {
             tags = tagProcessor.getDetections();
 
@@ -111,11 +106,7 @@ public class Vision {
         TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
     }
 
-    public double kalmanFilter (double oldValue, double newValue, double weight) {
-        return (oldValue * (1.0-weight)) + (newValue * weight);
-    }
-
-    public void updateTelemetry() {
+    public void updateTelemetry(Telemetry telemetry) {
         telemetry.addLine("X: " + String.format("%.2f", tags.get(0).ftcPose.x) + " Y: " + String.format("%.2f", tags.get(0).ftcPose.y) + " Z: " + String.format("%.2f", tags.get(0).ftcPose.z));
         telemetry.addLine("Roll: " + String.format("%.2f", tags.get(0).ftcPose.roll) + " Pitch: " + String.format("%.2f", tags.get(0).ftcPose.pitch) + " Yaw: " + String.format("%.2f", tags.get(0).ftcPose.yaw));
 
@@ -149,5 +140,9 @@ public class Vision {
 
     public static Pose2d convertVectorFToPose2d(VectorF vectorF) {
         return new Pose2d(vectorF.get(0), vectorF.get(1));
+    }
+
+    public Pose2d getPoseEstimate() {
+        return robotPoseFromTag;
     }
 }

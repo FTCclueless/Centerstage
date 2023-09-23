@@ -6,17 +6,23 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 
 import java.util.ArrayList;
 
 @Config
-public class ThreeWheelLocalizer {
+public class Localizer {
 
     public Encoder[] encoders;
     long lastTime = System.nanoTime();
+
     public double x = 0;
     public double y = 0;
     public double heading = 0;
+
+    public double odoX = 0;
+    public double odoY = 0;
+    public double odoHeading = 0;
 
     Pose2d currentPose = new Pose2d(0,0,0);
     Pose2d currentVel = new Pose2d(0,0,0);
@@ -29,13 +35,25 @@ public class ThreeWheelLocalizer {
 
     BNO055IMU imu;
 
-    public ThreeWheelLocalizer(HardwareMap hardwareMap) {
+    public boolean useAprilTag;
+
+    AprilTagLocalizer aprilTagLocalizer;
+    Pose2d aprilTagPose = new Pose2d(0,0,0);
+    double aprilTagWeight = 0.2;
+    double maxVel = 0.0;
+
+    public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
         encoders[0] = new Encoder(new Pose2d(0,7.233659277778),  -1); // left (y = 7.6861797267140135)
         encoders[1] = new Encoder(new Pose2d(0,-6.10600173333),1); // right (y = -5.664117306820334)
         encoders[2] = new Encoder(new Pose2d(-3, 0),  -1); // back (x = -2.16505140605)
-//        encoders[2] = new MyEncoder(new MyPose2d(-1.9304662534597792, 0),  -1); // back
+
+        this.useAprilTag = useAprilTag;
+
+        if (useAprilTag) {
+            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
+        }
     }
 
     public void getIMU(BNO055IMU imu){
@@ -49,9 +67,9 @@ public class ThreeWheelLocalizer {
     }
 
     public void setPose(double x, double y, double h){
-        this.x = x;
-        this.y = y;
-        this.heading += h - this.heading;
+        this.odoX = x;
+        this.odoY = y;
+        this.odoHeading += h - this.odoHeading;
 //        imuTimeStamp = System.currentTimeMillis();
 //        lastPose = new MyPose2d(x,y,h);
 //        lastImuHeading = imu.getAngularOrientation().firstAngle;
@@ -70,6 +88,8 @@ public class ThreeWheelLocalizer {
     public Pose2d getPoseVelocity() {
         return new Pose2d(currentVel.x, currentVel.y, currentVel.heading);
     }
+
+    double weight;
 
     public void update() {
         long currentTime = System.nanoTime();
@@ -99,16 +119,84 @@ public class ThreeWheelLocalizer {
             relDeltaX = Math.sin(deltaHeading) * r1 - (1.0 - Math.cos(deltaHeading)) * r2;
             relDeltaY = (1.0 - Math.cos(deltaHeading)) * r1 + Math.sin(deltaHeading) * r2;
         }
-        x += relDeltaX * Math.cos(heading) - relDeltaY * Math.sin(heading);
-        y += relDeltaY * Math.cos(heading) + relDeltaX * Math.sin(heading);
+        odoX += relDeltaX * Math.cos(odoHeading) - relDeltaY * Math.sin(odoHeading);
+        odoY += relDeltaY * Math.cos(odoHeading) + relDeltaX * Math.sin(odoHeading);
 
-        heading += deltaHeading;
+        odoHeading += deltaHeading;
+
+        if (useAprilTag) {
+            aprilTagLocalizer.update(); // update april tags\
+
+            if (aprilTagLocalizer.detectedTag()) {
+                aprilTagPose = aprilTagLocalizer.getPoseEstimate();
+
+                maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
+                weight = Math.abs(Math.min(1/maxVel, aprilTagWeight));
+
+                x = kalmanFilter(odoX, aprilTagPose.x, weight);
+                y = kalmanFilter(odoY, aprilTagPose.y, weight);
+                heading = kalmanFilter(odoHeading, aprilTagPose.heading, weight);
+            }
+        } else {
+            x = odoX;
+            y = odoY;
+            heading = odoHeading;
+        }
 
         currentPose = new Pose2d(x, y, heading);
 
         loopTimes.add(0,loopTime);
         poseHistory.add(0,currentPose);
         updateVelocity();
+    }
+
+    public void updatePowerVector(double[] p){
+        for (int i = 0; i < p.length; i ++){
+            p[i] = Math.max(Math.min(p[i],1),-1);
+        }
+        double forward = (p[0] + p[1] + p[2] + p[3]) / 4;
+        double left = (-p[0] + p[1] - p[2] + p[3]) / 4; //left power is less than 1 of forward power
+        double turn = (-p[0] - p[1] + p[2] + p[3]) / 4;
+        currentPowerVector.x = forward * Math.cos(odoHeading) - left * Math.sin(odoHeading);
+        currentPowerVector.y = left * Math.cos(odoHeading) + forward * Math.sin(odoHeading);
+        currentPowerVector.heading = turn;
+    }
+
+    public void updateVelocity() {
+        double targetVelTimeEstimate = 0.2;
+        double actualVelTime = 0;
+        double relDeltaXTotal = 0;
+        double relDeltaYTotal = 0;
+        double totalTime = 0;
+        int lastIndex = 0;
+        for (int i = 0; i < loopTimes.size(); i++){
+            totalTime += loopTimes.get(i);
+            if (totalTime <= targetVelTimeEstimate){
+                actualVelTime += loopTimes.get(i);
+                relDeltaXTotal += relHistory.get(i).getX();
+                relDeltaYTotal += relHistory.get(i).getY();
+                lastIndex = i;
+            }
+        }
+        currentVel = new Pose2d(
+                (poseHistory.get(0).getX() - poseHistory.get(lastIndex).getX()) / actualVelTime,
+                (poseHistory.get(0).getY() - poseHistory.get(lastIndex).getY()) / actualVelTime,
+                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
+        );
+        relCurrentVel = new Pose2d(
+                (relDeltaXTotal) / actualVelTime,
+                (relDeltaYTotal) / actualVelTime,
+                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
+        );
+        while (lastIndex + 1 < loopTimes.size()){
+            loopTimes.remove(loopTimes.size() - 1);
+            relHistory.remove(relHistory.size() - 1);
+            poseHistory.remove(poseHistory.size() - 1);
+        }
+    }
+
+    public double kalmanFilter (double value1, double value2, double value2Weight) {
+        return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
     }
 
 //    MyPose2d lastPose = new MyPose2d(0,0,0);
@@ -155,49 +243,4 @@ public class ThreeWheelLocalizer {
 //            lastImuHeading = imuHeading;
 //        }
 //    }
-
-    public void updatePowerVector(double[] p){
-        for (int i = 0; i < p.length; i ++){
-            p[i] = Math.max(Math.min(p[i],1),-1);
-        }
-        double forward = (p[0] + p[1] + p[2] + p[3]) / 4;
-        double left = (-p[0] + p[1] - p[2] + p[3]) / 4; //left power is less than 1 of forward power
-        double turn = (-p[0] - p[1] + p[2] + p[3]) / 4;
-        currentPowerVector.x = forward * Math.cos(heading) - left * Math.sin(heading);
-        currentPowerVector.y = left * Math.cos(heading) + forward * Math.sin(heading);
-        currentPowerVector.heading = turn;
-    }
-
-    public void updateVelocity() {
-        double targetVelTimeEstimate = 0.2;
-        double actualVelTime = 0;
-        double relDeltaXTotal = 0;
-        double relDeltaYTotal = 0;
-        double totalTime = 0;
-        int lastIndex = 0;
-        for (int i = 0; i < loopTimes.size(); i++){
-            totalTime += loopTimes.get(i);
-            if (totalTime <= targetVelTimeEstimate){
-                actualVelTime += loopTimes.get(i);
-                relDeltaXTotal += relHistory.get(i).getX();
-                relDeltaYTotal += relHistory.get(i).getY();
-                lastIndex = i;
-            }
-        }
-        currentVel = new Pose2d(
-                (poseHistory.get(0).getX() - poseHistory.get(lastIndex).getX()) / actualVelTime,
-                (poseHistory.get(0).getY() - poseHistory.get(lastIndex).getY()) / actualVelTime,
-                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
-        );
-        relCurrentVel = new Pose2d(
-                (relDeltaXTotal) / actualVelTime,
-                (relDeltaYTotal) / actualVelTime,
-                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
-        );
-        while (lastIndex + 1 < loopTimes.size()){
-            loopTimes.remove(loopTimes.size() - 1);
-            relHistory.remove(relHistory.size() - 1);
-            poseHistory.remove(poseHistory.size() - 1);
-        }
-    }
 }
