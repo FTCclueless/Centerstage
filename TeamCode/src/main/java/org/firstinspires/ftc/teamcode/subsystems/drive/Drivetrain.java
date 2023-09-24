@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
-import static org.firstinspires.ftc.teamcode.utils.Globals.DRIVETRAIN_ENABLED;
 import static org.firstinspires.ftc.teamcode.utils.Globals.MIN_MOTOR_POWER_TO_OVERCOME_FRICTION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
@@ -31,8 +30,9 @@ import java.util.List;
 public class Drivetrain extends Subsystem {
     // Pure pursuit tuning values
     enum State {
+        IDLE,
         FOLLOW_SPLINE,
-        GO_POINT,
+        GO_TO_POINT,
         DONE
     }
 
@@ -61,7 +61,7 @@ public class Drivetrain extends Subsystem {
     private int pathIndex = 0;
 
     public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
-        super(State.FOLLOW_SPLINE);
+        super(State.IDLE);
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
 
@@ -109,6 +109,10 @@ public class Drivetrain extends Subsystem {
 
         localizer = new TwoWheelLocalizer(hardwareMap);
 
+        addState(State.IDLE, () -> {
+
+        });
+
         addState(State.FOLLOW_SPLINE, () -> {
             Canvas canvas = TelemetryUtil.packet.fieldOverlay();
             Pose2d estimate = localizer.getPoseEstimate();
@@ -139,9 +143,9 @@ public class Drivetrain extends Subsystem {
             }
             //this kinda jank but will leave for now
 
-        /*if (currentPath.poses.get(pathIndex).reversed) {
-            estimate.heading += Math.PI;
-        }*/
+            /*if (currentPath.poses.get(pathIndex).reversed) {
+                estimate.heading += Math.PI;
+            }*/
 
             Pose2d lookAhead = currentPath.poses.get(targetIndex);
 
@@ -193,7 +197,7 @@ public class Drivetrain extends Subsystem {
 
             if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
                 setTargetPoint(currentPath.getLastPoint());
-                state = State.GO_POINT;
+                state = State.GO_TO_POINT;
                 return;
             }
 
@@ -229,7 +233,7 @@ public class Drivetrain extends Subsystem {
             }
         });
 
-        addState(State.GO_POINT, () -> {
+        addState(State.GO_TO_POINT, () -> {
             goToPoint();
             if (Math.sqrt(Math.pow((localizer.getPoseEstimate().x - targetPoint.x),2) + Math.pow(localizer.getPoseEstimate().y,2)) < 1 && Math.abs(targetPoint.heading-localizer.heading) < 0.5 ) { //todo tune
                 state = State.DONE;
@@ -266,8 +270,6 @@ public class Drivetrain extends Subsystem {
         if (currentPath != null) {
             state = State.FOLLOW_SPLINE;
         }
-
-
     }
 
     public void setTargetPoint(Pose2d point) {

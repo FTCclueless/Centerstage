@@ -4,10 +4,12 @@ import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -24,6 +26,8 @@ public class Robot {
 
     public Robot(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
+
+        sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
     }
 
@@ -53,6 +57,13 @@ public class Robot {
 
         DashboardUtil.drawRobot(fieldOverlay, poseEstimate);
         DashboardUtil.drawSampledPath(fieldOverlay, drivetrain.getCurrentPath());
+    }
+
+    public void followSpline(Spline spline, LinearOpMode opMode) {
+        drivetrain.setCurrentPath(spline);
+        while(drivetrain.isBusy() && opMode.opModeIsActive()) {
+            update();
+        }
     }
 
 }
