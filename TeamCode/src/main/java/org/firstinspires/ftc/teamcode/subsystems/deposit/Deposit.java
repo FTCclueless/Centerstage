@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.deposit;
+package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
