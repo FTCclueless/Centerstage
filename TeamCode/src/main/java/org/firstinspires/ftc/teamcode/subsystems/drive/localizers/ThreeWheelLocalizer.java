@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 import java.util.ArrayList;
 
 @Config
-public class Localizer {
+public class ThreeWheelLocalizer {
 
     public Encoder[] encoders;
     long lastTime = System.nanoTime();
@@ -24,10 +24,10 @@ public class Localizer {
     public double odoY = 0;
     public double odoHeading = 0;
 
-    Pose2d currentPose = new Pose2d(0,0,0);
-    Pose2d currentVel = new Pose2d(0,0,0);
-    Pose2d relCurrentVel = new Pose2d(0,0,0);
-    Pose2d currentPowerVector = new Pose2d(0,0,0);
+    public Pose2d currentPose = new Pose2d(0,0,0);
+    public Pose2d currentVel = new Pose2d(0,0,0);
+    public Pose2d relCurrentVel = new Pose2d(0,0,0);
+    public Pose2d currentPowerVector = new Pose2d(0,0,0);
 
     ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
@@ -42,7 +42,7 @@ public class Localizer {
     double aprilTagWeight = 0.2;
     double maxVel = 0.0;
 
-    public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
+    public ThreeWheelLocalizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
         encoders[0] = new Encoder(new Pose2d(0,7.233659277778),  -1); // left (y = 7.6861797267140135)
