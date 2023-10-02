@@ -29,17 +29,20 @@ public class Robot {
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
+
+        TelemetryUtil.setup();
     }
 
     public void update() {
         START_LOOP();
         updateSubsystems();
-
+        updateTelemetry();
     }
 
     public void updateSubsystems() {
         drivetrain.update();
 
+        sensors.update();
         hardwareQueue.update();
     }
 

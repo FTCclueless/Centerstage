@@ -20,10 +20,10 @@ public class PurePursuitTest extends LinearOpMode {
         Pose2d midPoint = new Pose2d(52 + garbageValue,30,Math.toRadians(90));
         Spline spline1 = new Spline(drivetrain.getPoseEstimate(), 2)
             .addPoint(new Pose2d(midPoint.x/2 - 8, 0, 0))
-            .addPoint(new Pose2d(midPoint.x/2, 20, midPoint.heading))
-            .setReversed(true)
+            .addPoint(new Pose2d(midPoint.x/2, 20, midPoint.heading));
+            /*.setReversed(true)
             .addPoint(new Pose2d(midPoint.x/2 + 8,0,0))
-            .addPoint(new Pose2d(midPoint.x ,0,0));
+            .addPoint(new Pose2d(midPoint.x ,0,0));*/
 
         waitForStart();
         robot.followSpline(spline1, this);
