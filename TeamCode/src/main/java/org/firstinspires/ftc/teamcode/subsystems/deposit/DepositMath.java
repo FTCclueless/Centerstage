@@ -24,7 +24,7 @@ public class DepositMath {
         double relY = -xError*Math.sin(heading) + (yError+yOffset)*Math.cos(heading);
 
         Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, height - slidePos.z);
-        Vector3 slideProject = Vector3.project(depositPos,new Vector3(1,0,Math.tan(slideAngle)));
+        Vector3 slideProject = Vector3.project(depositPos,new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle)));
         Vector3 remainder = Vector3.subtract(depositPos, slideProject);
 
         if (Math.abs(remainder.getMag()) > v4BarLength) {
