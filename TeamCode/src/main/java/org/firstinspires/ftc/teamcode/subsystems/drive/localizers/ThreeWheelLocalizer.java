@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 
 import java.util.ArrayList;
@@ -96,6 +97,7 @@ public class ThreeWheelLocalizer {
         double loopTime = (currentTime-lastTime)/1000000000.0;
         lastTime = currentTime;
 
+
         double deltaLeft = encoders[0].getDelta();
         double deltaRight = encoders[1].getDelta();
         double deltaBack = encoders[2].getDelta();
@@ -103,6 +105,8 @@ public class ThreeWheelLocalizer {
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
+        TelemetryUtil.packet.put("deltaBack", deltaBack);
+        TelemetryUtil.packet.put("odo raw back", encoders[2].getDelta());
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading

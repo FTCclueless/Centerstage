@@ -134,7 +134,7 @@ public class Drivetrain {
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
         TelemetryUtil.packet.put("robot pos", ROBOT_POSITION.x);
-        TelemetryUtil.packet.put("odo raw", sensors.getOdometry()[2]);
+        TelemetryUtil.packet.put("odo raw", rightRear.motor[0].getCurrentPosition());
         ROBOT_VELOCITY = localizer.getPoseVelocity();
 
 

@@ -23,6 +23,12 @@ public class Vector3 {
         z += a.z;
         magcache = 0;
     }
+    public void subtract(Vector3 a) {
+        x -= a.x;
+        y -= a.y;
+        z -= a.z;
+        magcache = 0;
+    }
     public double getMag() {
         if (magcache == 0 && ( x != 0 || y != 0 || z != 0)) {
             magcache = Math.sqrt(Math.pow(x,2) + Math.pow(y,2) + Math.pow(z,2));
@@ -49,10 +55,14 @@ public class Vector3 {
     public static Vector3 add(Vector3 a, Vector3 b) {
         return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
     }
+    public static Vector3 subtract(Vector3 a, Vector3 b) {
+        return new Vector3(a.x-b.x,a.y-b.y,a.z-b.z);
+    }
+
     public static double dot(Vector3 a, Vector3 b) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
-    public static Vector3 project(Vector3 v, Vector3 u) {
+    public static Vector3 project(Vector3 v, Vector3 u) { // projects v onto u
         double component = Vector3.dot(v,u)/u.getMag();
         u.norm();
         u.mul(component);
