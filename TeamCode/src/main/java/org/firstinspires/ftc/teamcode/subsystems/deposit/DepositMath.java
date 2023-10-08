@@ -37,11 +37,11 @@ public class DepositMath {
         }
         else {
             double extra = Math.sqrt(Math.pow(v4BarLength,2) - Math.pow(remainder.getMag(),2));
-            if (Math.abs(slideProject.getMag() + extra) > slideMax) {
-                slideExtension = slideProject.getMag() - extra;
+            if (slideProject.getMag() -extra < slideMax) {
+                slideExtension = slideProject.getMag() + extra;
             }
             else {
-                slideExtension = slideProject.getMag() + extra;
+                slideExtension = slideProject.getMag() - extra;
             }
             remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
         }
