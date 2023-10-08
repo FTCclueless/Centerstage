@@ -22,9 +22,10 @@ public class DepositMath {
     public void calculate(double xError, double yError, double heading, double height, double yOffset) {
         double relX = xError*Math.cos(heading) + (yError+yOffset)*Math.sin(heading);
         double relY = -xError*Math.sin(heading) + (yError+yOffset)*Math.cos(heading);
+        Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));
 
         Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, height - slidePos.z);
-        Vector3 slideProject = Vector3.project(depositPos,new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle)));
+        Vector3 slideProject = Vector3.project(depositPos, slideUnit);
         Vector3 remainder = Vector3.subtract(depositPos, slideProject);
 
         if (Math.abs(remainder.getMag()) > v4BarLength) {
@@ -36,9 +37,13 @@ public class DepositMath {
         }
         else {
             double extra = Math.sqrt(Math.pow(v4BarLength,2) - Math.pow(remainder.getMag(),2));
-            if (slideProject.getMag() + extra > slideMax) {
+            if (Math.abs(slideProject.getMag() + extra) > slideMax) {
                 slideExtension = slideProject.getMag() - extra;
             }
+            else {
+                slideExtension = slideProject.getMag() + extra;
+            }
+            remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
         }
         if (slideExtension > slideMax || slideExtension < 0) {
             Log.e("slide out of range", slideExtension + "");
