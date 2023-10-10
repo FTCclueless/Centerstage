@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
@@ -18,8 +19,9 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 public class Robot {
     HardwareMap hardwareMap;
 
-    public Sensors sensors;
-    public Drivetrain drivetrain;
+    public final Sensors sensors;
+    public final Drivetrain drivetrain;
+    public final Deposit deposit;
 
     public HardwareQueue hardwareQueue = new HardwareQueue();
 
@@ -29,6 +31,7 @@ public class Robot {
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
+        deposit = new Deposit(hardwareMap, hardwareQueue, sensors);
 
         TelemetryUtil.setup();
     }
