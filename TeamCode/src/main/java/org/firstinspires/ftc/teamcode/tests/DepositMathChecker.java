@@ -26,8 +26,8 @@ public class DepositMathChecker extends LinearOpMode {
         while (!isStopRequested()) {
             depositMath.calculate(xError,yError,headingError,height,yOffset);
             Vector3 calcPos = new Vector3(0,0,0);
-            double relX = depositMath.slideExtension * Math.cos(depositMath.slideAngle) + depositMath.v4BarLength * Math.cos(depositMath.v4BarYaw);
-            double relY = depositMath.v4BarLength * Math.sin(depositMath.v4BarYaw);
+            double relX = depositMath.slideExtension * Math.cos(depositMath.slideAngle) + depositMath.v4BarLength * Math.cos(depositMath.v4BarYaw)*Math.cos(depositMath.v4BarPitch);
+            double relY = depositMath.v4BarLength * Math.sin(depositMath.v4BarYaw)*Math.cos(depositMath.v4BarPitch);
             double relZ = depositMath.slideExtension * Math.sin(depositMath.slideAngle) + depositMath.v4BarLength * Math.sin(depositMath.v4BarPitch);
 
             calcPos.x = relX * Math.cos(headingError) - relY * Math.sin(headingError);
@@ -36,6 +36,10 @@ public class DepositMathChecker extends LinearOpMode {
             TelemetryUtil.packet.put("posx", calcPos.x);
             TelemetryUtil.packet.put("posy", calcPos.y);
             TelemetryUtil.packet.put("posz", calcPos.z);
+            TelemetryUtil.packet.put("slide", depositMath.slideExtension);
+            TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
+            TelemetryUtil.packet.put("v4Pitch", depositMath.v4BarPitch);
+            robot.update();
         }
     }
 }

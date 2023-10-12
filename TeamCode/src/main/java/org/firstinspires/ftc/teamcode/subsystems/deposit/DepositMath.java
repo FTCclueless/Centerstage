@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 public class DepositMath {
     public final double v4BarLength = 40;
-    private final Vector3 slidePos = new Vector3(5,0,10);
+    private final Vector3 slidePos = new Vector3(0,0,0);
     public final double slideAngle = Math.toRadians(60);
     private final double slideMax = 100;
 
@@ -37,14 +37,14 @@ public class DepositMath {
             slideExtension = slideProject.getMag();
         }
         else {
+            remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
             double extra = Math.sqrt(Math.pow(v4BarLength,2) - Math.pow(remainder.getMag(),2));
-            if (slideProject.getMag() -extra < slideMax) {
+            if (slideProject.getMag() + extra < slideMax) {
                 slideExtension = slideProject.getMag() + extra;
             }
             else {
                 slideExtension = slideProject.getMag() - extra;
             }
-            remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
         }
         if (slideExtension > slideMax || slideExtension < 0) {
             Log.e("slide out of range", slideExtension + "");

@@ -21,7 +21,7 @@ public class Robot {
 
     public final Sensors sensors;
     public final Drivetrain drivetrain;
-    public final Deposit deposit;
+    //public final Deposit deposit;
 
     public HardwareQueue hardwareQueue = new HardwareQueue();
 
@@ -31,7 +31,7 @@ public class Robot {
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
-        deposit = new Deposit(hardwareMap, hardwareQueue, sensors);
+        //deposit = new Deposit(hardwareMap, hardwareQueue, sensors);
 
         TelemetryUtil.setup();
     }
