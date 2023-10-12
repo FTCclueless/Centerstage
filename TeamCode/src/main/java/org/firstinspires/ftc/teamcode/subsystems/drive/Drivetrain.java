@@ -31,13 +31,13 @@ import java.util.List;
 @Config
 public class Drivetrain {
     // Pure pursuit tuning values
-    enum DriveState {
+    public enum State {
         DRIVE,
         FOLLOW_SPLINE,
         GO_POINT,
-        DONE
+        BRAKE,
     }
-    DriveState state = DriveState.DONE;
+    public State state = State.BRAKE;
 
     public static double maxRadius = 20;
     public static double headingCorrectionP = 0.8;
@@ -112,7 +112,7 @@ public class Drivetrain {
     }
 
     public void setCurrentPath(Spline path) {
-        state = DriveState.FOLLOW_SPLINE;
+        state = State.FOLLOW_SPLINE;
         currentPath = path;
         pathIndex = 0;
     }
@@ -223,7 +223,7 @@ public class Drivetrain {
 
 
                     if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
-                        state = DriveState.GO_POINT;
+                        state = State.GO_POINT;
                         return;
                     }
 
@@ -266,10 +266,10 @@ public class Drivetrain {
                 goToPoint(target);
                 //TODO tune the threshold
                 if (Math.abs(target.x-ROBOT_POSITION.x) < 2 && Math.abs(target.y-ROBOT_POSITION.y) < 2 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(2)) {
-                    state = DriveState.DONE;
+                    state = State.BRAKE;
                 }
                 break;
-            case DONE:
+            case BRAKE:
                 for (PriorityMotor motor : motors) {
                     motor.setTargetPower(0);
                 }
@@ -339,7 +339,7 @@ public class Drivetrain {
     }
 
     public void drive(Gamepad gamepad) {
-        state = DriveState.DRIVE;
+        state = State.DRIVE;
 
         double forward = 0.45 * Math.tan(((gamepad.left_stick_y * -1) / 0.85));
         TelemetryUtil.packet.put("forward", forward);

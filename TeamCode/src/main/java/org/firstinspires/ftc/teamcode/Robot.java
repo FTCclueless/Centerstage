@@ -36,6 +36,11 @@ public class Robot {
         TelemetryUtil.setup();
     }
 
+    public void autoIntake(Spline spline) {
+        drivetrain.setCurrentPath(spline);
+        // turn on intake monko
+    }
+
     public void update() {
         START_LOOP();
         updateSubsystems();
@@ -71,5 +76,4 @@ public class Robot {
             update();
         }
     }
-
 }
