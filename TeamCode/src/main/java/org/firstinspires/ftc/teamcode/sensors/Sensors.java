@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 public class Sensors {
     private LynxModule controlHub, expansionHub;
     private final HardwareQueue hardwareQueue;
-    private final DigitalChannel magnetSensor;
+    //private final DigitalChannel magnetSensor; --Kyle :)
 
     //private IMU imu;
     private int[] odometry = new int[3];
@@ -21,7 +21,7 @@ public class Sensors {
 
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
-        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
+        //magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor"); --temporary comment --Kyle
 
         initHubs(hardwareMap);
     }
@@ -51,7 +51,7 @@ public class Sensors {
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
-            slidesDown = magnetSensor.getState();
+            //slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
