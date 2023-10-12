@@ -3,20 +3,25 @@ package org.firstinspires.ftc.teamcode.sensors;
 import android.util.Log;
 
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 public class Sensors {
-    LynxModule controlHub, expansionHub;
-    private HardwareQueue hardwareQueue;
+    private LynxModule controlHub, expansionHub;
+    private final HardwareQueue hardwareQueue;
+    private final DigitalChannel magnetSensor;
 
     //private IMU imu;
     private int[] odometry = new int[3];
+    private int slidesEncoder = 0;
+    boolean slidesDown = true;
 
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
+        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
 
         initHubs(hardwareMap);
     }
@@ -43,8 +48,10 @@ public class Sensors {
     private void updateControlHub() {
         try {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition();
-            odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
-            odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
+            odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
+            odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
+            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
+            slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -67,6 +74,14 @@ public class Sensors {
 
     public int[] getOdometry() {
         return odometry;
+    }
+
+    public int getSlides() {
+        return slidesEncoder;
+    }
+
+    public boolean slidesDown() {
+        return slidesDown;
     }
 }
 

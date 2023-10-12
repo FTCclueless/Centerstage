@@ -1,8 +1,8 @@
 package org.firstinspires.ftc.teamcode.vision.pipelines;
 
 import android.graphics.Canvas;
-
-import androidx.annotation.VisibleForTesting;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
@@ -10,17 +10,19 @@ import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
 public class TeamPropDetectionPipeline implements VisionProcessor {
 
+    int width = 640;
+    int height = 480;
+
     static final int YCRCB_CHANNEL_IDX = 2;
 
-    Rect leftRegion = new Rect(0,50,50,50);
-    Rect centerRegion = new Rect(50,50,50,50);
-    Rect rightRegion = new Rect(100,50,50,50);
+    Rect leftRegion = new Rect(50,height/2,150,50);
+    Rect centerRegion = new Rect(250,height/2,150,50);
+    Rect rightRegion = new Rect(450,height/2,150,50);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();
@@ -35,7 +37,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     public TEAM_PROP_LOCATION team_prop_location = TEAM_PROP_LOCATION.NONE; // default is center
 
-    double leftAvg, centerAvg, rightAvg;
+    public double leftAvg, centerAvg, rightAvg;
 
     Telemetry telemetry;
 
@@ -75,16 +77,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
             team_prop_location = TEAM_PROP_LOCATION.RIGHT;
         }
 
-        // drawing rectangles
-        Imgproc.rectangle(input, leftRegion, new Scalar(0, 255, 0), 4);
-        Imgproc.rectangle(input, centerRegion, new Scalar(0, 255, 0), 4);
-        Imgproc.rectangle(input, rightRegion, new Scalar(0, 255, 0), 4);
-
-        // sending telemetry
-        telemetry.addData("team_prop_location", team_prop_location);
-        telemetry.update();
-
-        return null;
+        return cbMat;
     }
 
     public TEAM_PROP_LOCATION getTeamPropLocation() {
@@ -104,5 +97,45 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     }
 
     @Override
-    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {}
+    public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
+        Paint selectedPaint = new Paint();
+        selectedPaint.setColor(Color.GREEN);
+        selectedPaint.setStyle(Paint.Style.STROKE);
+        selectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
+
+        Paint nonSelectedPaint = new Paint(selectedPaint);
+        nonSelectedPaint.setColor(Color.RED);
+
+        switch (team_prop_location) {
+            case LEFT:
+                canvas.drawRect(makeGraphicsRect(leftRegion, scaleBmpPxToCanvasPx), selectedPaint);
+                canvas.drawRect(makeGraphicsRect(centerRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(rightRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                break;
+            case CENTER:
+                canvas.drawRect(makeGraphicsRect(leftRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(centerRegion, scaleBmpPxToCanvasPx), selectedPaint);
+                canvas.drawRect(makeGraphicsRect(rightRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                break;
+            case RIGHT:
+                canvas.drawRect(makeGraphicsRect(leftRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(centerRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(rightRegion, scaleBmpPxToCanvasPx), selectedPaint);
+                break;
+            case NONE:
+                canvas.drawRect(makeGraphicsRect(leftRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(centerRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                canvas.drawRect(makeGraphicsRect(rightRegion, scaleBmpPxToCanvasPx), nonSelectedPaint);
+                break;
+        }
+    }
+
+    private android.graphics.Rect makeGraphicsRect(Rect rect, float scaleBmpPxToCanvasPx) {
+        int left = Math.round(rect.x * scaleBmpPxToCanvasPx);
+        int top = Math.round(rect.y * scaleBmpPxToCanvasPx);
+        int right = left + Math.round(rect.width * scaleBmpPxToCanvasPx);
+        int bottom = top + Math.round(rect.height * scaleBmpPxToCanvasPx);
+
+        return new android.graphics.Rect(left, top, right, bottom);
+    }
 }
