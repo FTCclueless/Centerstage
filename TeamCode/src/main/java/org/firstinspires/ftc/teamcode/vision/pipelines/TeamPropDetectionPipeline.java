@@ -18,11 +18,11 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     int width = 640;
     int height = 480;
 
-    static final int YCRCB_CHANNEL_IDX = 2;
+    static final int YCRCB_CHANNEL_IDX = 1;
 
-    Rect leftRegion = new Rect(50,height/2,150,50);
-    Rect centerRegion = new Rect(250,height/2,150,50);
-    Rect rightRegion = new Rect(450,height/2,150,50);
+    Rect leftRegion = new Rect(150,height/2,90,50);
+    Rect centerRegion = new Rect(260,height/2,120,50);
+    Rect rightRegion = new Rect(400,height/2,90,50);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();
@@ -40,9 +40,11 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     public double leftAvg, centerAvg, rightAvg;
 
     Telemetry telemetry;
+    boolean isRed = true;
 
     public TeamPropDetectionPipeline (Telemetry telemetry) {
         this.telemetry = telemetry;
+//        this.isRed = isRed;
     }
 
     @Override
@@ -103,8 +105,10 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
         selectedPaint.setStyle(Paint.Style.STROKE);
         selectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
 
-        Paint nonSelectedPaint = new Paint(selectedPaint);
+        Paint nonSelectedPaint = new Paint();
         nonSelectedPaint.setColor(Color.RED);
+        nonSelectedPaint.setStyle(Paint.Style.STROKE);
+        nonSelectedPaint.setStrokeWidth(scaleCanvasDensity * 4);
 
         switch (team_prop_location) {
             case LEFT:
