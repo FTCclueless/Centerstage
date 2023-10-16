@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 @TeleOp
 @Config
 public class DepositMathChecker extends LinearOpMode {
-    public static double xError = 10;
+    public static double xError = 2;
     public static double yError = 0;
     public static double headingError = 0;
     public static double height = 10;
@@ -26,6 +26,8 @@ public class DepositMathChecker extends LinearOpMode {
         while (!isStopRequested()) {
             depositMath.calculate(xError,yError,headingError,height,yOffset);
             Vector3 calcPos = new Vector3(0,0,0);
+
+
             double relX = depositMath.slideExtension * Math.cos(depositMath.slideAngle) + depositMath.v4BarLength * Math.cos(depositMath.v4BarYaw)*Math.cos(depositMath.v4BarPitch);
             double relY = depositMath.v4BarLength * Math.sin(depositMath.v4BarYaw)*Math.cos(depositMath.v4BarPitch);
             double relZ = depositMath.slideExtension * Math.sin(depositMath.slideAngle) + depositMath.v4BarLength * Math.sin(depositMath.v4BarPitch);

@@ -72,7 +72,9 @@ public class Vector3 {
         return u;
     }
 
-
+    public String toString() {
+        return String.format("(%f, %f, %f)", x, y, z);
+    }
 
 
 }
