@@ -18,11 +18,11 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     int width = 640;
     int height = 480;
 
-    static final int YCRCB_CHANNEL_IDX = 1;
+    static int YCRCB_CHANNEL_IDX = 1;
 
-    Rect leftRegion = new Rect(150,height/2,90,50);
-    Rect centerRegion = new Rect(260,height/2,120,50);
-    Rect rightRegion = new Rect(400,height/2,90,50);
+    Rect leftRegion = new Rect(150,210,60,50);
+    Rect centerRegion = new Rect(270,210,60,50);
+    Rect rightRegion = new Rect(380,210,60,50);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();
@@ -42,9 +42,15 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     Telemetry telemetry;
     boolean isRed = true;
 
-    public TeamPropDetectionPipeline (Telemetry telemetry) {
+    public TeamPropDetectionPipeline (Telemetry telemetry, boolean isRed) {
         this.telemetry = telemetry;
-//        this.isRed = isRed;
+        this.isRed = isRed;
+
+        if (isRed) {
+            YCRCB_CHANNEL_IDX = 1;
+        } else {
+            YCRCB_CHANNEL_IDX = 2;
+        }
     }
 
     @Override
