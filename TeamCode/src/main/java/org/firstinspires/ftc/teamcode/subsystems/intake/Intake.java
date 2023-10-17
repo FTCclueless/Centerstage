@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.intake;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+@Config
 public class Intake {
     enum State {
         ON,
@@ -17,7 +19,7 @@ public class Intake {
     private final PriorityMotor intake;
     public State state = State.ON;
     private final Sensors sensors;
-    private final double intakePower = 0.5;
+    public static double intakePower = 0.5; // CHANGE: Made this editable in FTC dashboard
 
     private boolean alreadyTriggered = false;
     private int numberOfTimesIntakeBeamBreakTriggered = 0;
@@ -38,7 +40,7 @@ public class Intake {
                 numberOfTimesIntakeBeamBreakTriggered--;
             }
         }
-        if (!sensors.isDepositTriggered()) {
+        if (!sensors.isIntakeTriggered()) {
             alreadyTriggered = false;
         }
 
@@ -46,9 +48,13 @@ public class Intake {
             reverse();
         }
 
+        // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
+                if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
+                    off();
+                }
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
