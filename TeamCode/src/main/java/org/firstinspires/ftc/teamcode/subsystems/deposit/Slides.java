@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.slides;
+package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
