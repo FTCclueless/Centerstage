@@ -26,7 +26,7 @@ public class DepositMath {
         double relX = xError*Math.cos(headingError) + yError*Math.sin(headingError);
         double relY = -xError*Math.sin(headingError) + yError*Math.cos(headingError);
 
-        Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight - slidePos.z);
+        Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight*Math.sin(slideAngle) - slidePos.z);
         Vector3 slideProject = Vector3.project(depositPos, slideUnit);
         Vector3 remainder = Vector3.subtract(depositPos, slideProject);
 

@@ -14,13 +14,13 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import java.util.concurrent.TimeUnit;
 
 @TeleOp
-public class TeamPropTester extends LinearOpMode {
+public class TeamPropTesterRed extends LinearOpMode {
     private VisionPortal visionPortal;
     private TeamPropDetectionPipeline teamPropDetectionPipeline;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry);
+        teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default

@@ -67,9 +67,10 @@ public class Vector3 {
     }
     public static Vector3 project(Vector3 v, Vector3 u) { // projects v onto u
         double component = Vector3.dot(v,u)/u.getMag();
-        u.norm();
-        u.mul(component);
-        return u;
+        Vector3 temp = new Vector3(u.x,u.y,u.z);
+        temp.norm();
+        temp.mul(component);
+        return temp;
     }
 
     public String toString() {
