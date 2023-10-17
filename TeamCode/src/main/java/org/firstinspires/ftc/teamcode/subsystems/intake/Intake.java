@@ -19,6 +19,9 @@ public class Intake {
     private final Sensors sensors;
     private final double intakePower = 0.5;
 
+    private boolean alreadyTriggered = false;
+    private int numberOfTimesIntakeBeamBreakTriggered = 0;
+
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
@@ -27,6 +30,22 @@ public class Intake {
     }
 
     public void update() {
+        if (sensors.isIntakeTriggered() && !alreadyTriggered) {
+            alreadyTriggered = true;
+            if (state == State.ON) {
+                numberOfTimesIntakeBeamBreakTriggered++;
+            } else {
+                numberOfTimesIntakeBeamBreakTriggered--;
+            }
+        }
+        if (!sensors.isDepositTriggered()) {
+            alreadyTriggered = false;
+        }
+
+        if (numberOfTimesIntakeBeamBreakTriggered > 2) {
+            reverse();
+        }
+
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
@@ -35,18 +54,23 @@ public class Intake {
                 intake.setTargetPower(0.0);
             case REVERSED:
                 intake.setTargetPower(-intakePower);
+                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
+                    off();
+                }
         }
     }
 
     public void on() {
+        numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.ON;
     }
 
     public void off() {
+        numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.OFF;
     }
 
-    public void reversed() {
+    public void reverse() {
         state = State.REVERSED;
     }
 }
