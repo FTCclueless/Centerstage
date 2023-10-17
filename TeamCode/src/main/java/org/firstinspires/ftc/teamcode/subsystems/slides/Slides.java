@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
-import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
@@ -16,7 +15,7 @@ public class Slides {
         BUSY
     };
 
-    private final PriorityMotor motor;
+    private final PriorityMotor slidesMotors;
     public State state = State.READY;
     public double length;
     private final Sensors sensors;
@@ -37,8 +36,8 @@ public class Slides {
         DcMotorEx m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
 
-        motor = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5);
-        hardwareQueue.addDevice(motor);
+        slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5);
+        hardwareQueue.addDevice(slidesMotors);
     }
 
     public double feedforward() {
@@ -53,12 +52,11 @@ public class Slides {
             case READY:
                 break;
             case BUSY:
-                motor.setTargetPower(feedforward());
+                slidesMotors.setTargetPower(feedforward());
 
                 // 2nd check for redundancy
-                if (Math.abs(targetLength - length) <= slidesThreshold || (sensors.slidesDown() && targetLength <= slidesThreshold))
+                if (Math.abs(targetLength - length) <= slidesThreshold || (sensors.isSlidesDown() && targetLength <= slidesThreshold))
                     state = State.READY;
-
                 break;
         }
     }

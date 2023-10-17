@@ -12,16 +12,24 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 public class Sensors {
     private LynxModule controlHub, expansionHub;
     private final HardwareQueue hardwareQueue;
-    //private final DigitalChannel magnetSensor; --Kyle :)
 
     //private IMU imu;
     private int[] odometry = new int[3];
+    private final DigitalChannel magnetSensor;
+    private final DigitalChannel intakeLimitSwitch;
+    private final DigitalChannel depositLimitSwitch;
+
     private int slidesEncoder = 0;
-    boolean slidesDown = true;
+    private boolean slidesDown = false;
+    private boolean intakeTriggered = false;
+    private boolean depositTriggered = false;
 
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
-        //magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor"); --temporary comment --Kyle
+
+        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
+        intakeLimitSwitch = hardwareMap.get(DigitalChannel.class, "intakeLimitSwitch");
+        depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
 
         initHubs(hardwareMap);
     }
@@ -62,6 +70,9 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
+            slidesDown = magnetSensor.getState();
+            intakeTriggered = intakeLimitSwitch.getState();
+            depositTriggered = depositLimitSwitch.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -80,8 +91,16 @@ public class Sensors {
         return slidesEncoder;
     }
 
-    public boolean slidesDown() {
+    public boolean isSlidesDown() {
         return slidesDown;
+    }
+
+    public boolean isIntakeTriggered() {
+        return intakeTriggered;
+    }
+
+    public boolean isDepositTriggered() {
+        return depositTriggered;
     }
 }
 
