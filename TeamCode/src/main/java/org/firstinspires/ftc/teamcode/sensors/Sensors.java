@@ -50,7 +50,7 @@ public class Sensors {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition();
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
-            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
+            //slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
             //slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {

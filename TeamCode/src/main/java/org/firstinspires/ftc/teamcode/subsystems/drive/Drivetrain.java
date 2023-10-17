@@ -66,7 +66,7 @@ public class Drivetrain {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
 
-        leftFront = new PriorityMotor(
+        /*leftFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftFront"),
             "leftFront",
             3, 5
@@ -88,7 +88,7 @@ public class Drivetrain {
         );
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-
+*/
         for (PriorityMotor motor : motors) {
             //motors.get(i).getMotorType().setAchieveableMaxRPMFraction(1.0);
 

@@ -26,7 +26,7 @@ public class Auto extends LinearOpMode {
     private Drivetrain.State heldDrivetrainState = null;
     private boolean up = false; // Is on top side of field
     private boolean directDepositPath = false;
-    private boolean canChangePaths = true;
+    private boolean changingPaths = true;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,8 +40,8 @@ public class Auto extends LinearOpMode {
             robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(-90)));
         }
 
-        Spline toIntakeStart = new Spline(up ? new Pose2d(-36, 36, Math.toRadians(-90)) : new Pose2d(12, 36, Math.toRadians(-90)), 4)
-            .addPoint(new Pose2d(-60, 36, Math.toRadians(-90))); // dont wokr brbr
+        Spline toIntakeStart = new Spline(new Pose2d(-36, 36, Math.toRadians(-90)), 4)
+            .addPoint(new Pose2d(-60, 36, Math.toRadians(-90)));
 
         Spline toIntakeCycle = new Spline(new Pose2d(48, 36, Math.toRadians(90)), 4)
             .setReversed(true)
@@ -67,6 +67,7 @@ public class Auto extends LinearOpMode {
         while (opModeIsActive()) {
             switch (state) {
                 case START_INTAKE_START:
+                    // Don't run this if WE UP
                     robot.drivetrain.setCurrentPath(toIntakeStart);
                     state = State.INTAKE;
                     break;
@@ -100,15 +101,15 @@ public class Auto extends LinearOpMode {
                 case GO_DEPOSIT:
                     Pose2d pose = robot.drivetrain.localizer.getPoseEstimate();
                     // Switch auto paths if robot detected and we are outside of special zone
-                    if (pose.x > 4 || pose.x < -30) {
-                        if (/* robot detected */ false && canChangePaths) {
-                            directDepositPath = !directDepositPath;
-                            canChangePaths = false; //todo strafe and then go to spline
+                    if ((pose.x > 4 && pose.x < 44) || pose.x < -30) {
+                        if (/* robot detected */ false && !changingPaths) {
+                            directDepositPath = !directDepositPath; // Set the new path we are changing to
+                            changingPaths = false; // We boutta strafe now ong
+                        } else { // No robot detected and we are changing paths means that we need to stop changing paths and move to the correct path
                             robot.drivetrain.setCurrentPath(directDepositPath ? blockedToDeposit : toDeposit);
-                        } else {
-                            canChangePaths = true;
+                            changingPaths = true;
                         }
-                    } else if (/* robot detected */ false) {
+                    } else if (/* robot detected */ false) { // We are in the dead zone
                         heldDrivetrainState = robot.drivetrain.state;
                         robot.drivetrain.state = Drivetrain.State.BRAKE;
                     } else if (heldDrivetrainState != null) {
@@ -117,12 +118,17 @@ public class Auto extends LinearOpMode {
                         heldDrivetrainState = null;
                     }
 
+                    if (changingPaths) {
+                        robot.drivetrain.goToPoint(new Pose2d(pose.x, directDepositPath ? 12 : 36, 0));
+                    }
+
                     if (!robot.drivetrain.isBusy())
                         state = State.DUNK_EM;
 
                     break;
 
                 case DUNK_EM:
+                    // This is a placeholder state for robot FSM usage (tee hee)
                     // Dunk em
                     state = State.START_INTAKE_CYCLE;
                     break;
