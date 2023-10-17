@@ -16,8 +16,8 @@ public class Sensors {
     //private IMU imu;
     private int[] odometry = new int[3];
     private final DigitalChannel magnetSensor;
-    private final DigitalChannel intakeLimitSwitch;
-    private final DigitalChannel depositLimitSwitch;
+    private final DigitalChannel intakeBeamBreak;
+    private final DigitalChannel depositBeamBreak;
 
     private int slidesEncoder = 0;
     private boolean slidesDown = false;
@@ -28,8 +28,8 @@ public class Sensors {
         this.hardwareQueue = hardwareQueue;
 
         magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
-        intakeLimitSwitch = hardwareMap.get(DigitalChannel.class, "intakeLimitSwitch");
-        depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
+        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
+        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
 
         initHubs(hardwareMap);
     }
@@ -71,8 +71,8 @@ public class Sensors {
     private void updateExpansionHub() {
         try {
             slidesDown = magnetSensor.getState();
-            intakeTriggered = intakeLimitSwitch.getState();
-            depositTriggered = depositLimitSwitch.getState();
+            intakeTriggered = intakeBeamBreak.getState();
+            depositTriggered = depositBeamBreak.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
