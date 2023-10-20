@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,11 +15,12 @@ public class Slides {
     enum State {
         READY,
         BUSY
-    };
+    }
 
     private final PriorityMotor slidesMotors;
     public State state = State.READY;
     public double length;
+    public double vel;
     private final Sensors sensors;
     public static double angle = Math.toRadians(30);
     public static double ticksToRadians = 0; // TODO
@@ -37,6 +39,10 @@ public class Slides {
         DcMotorEx m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
+        m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5);
         hardwareQueue.addDevice(slidesMotors);
@@ -48,7 +54,8 @@ public class Slides {
     }
 
     public void update() {
-        length = sensors.getSlides() * ticksToRadians * radiansToInches;
+        length = sensors.getSlidesPos() * ticksToRadians * radiansToInches;
+        vel = sensors.getSlidesVelocity() * ticksToRadians * radiansToInches;
 
         switch (state) {
             case READY:

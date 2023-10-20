@@ -14,10 +14,11 @@ public class Deposit {
     enum DepositState {
         DOWN,
         EXTEND,
+        HOLD,
         DEPOSIT,
         RETRACT
     }
-    DepositState state;
+    public DepositState state;
 
     public Slides slides;
     HardwareQueue hardwareQueue;
@@ -27,7 +28,8 @@ public class Deposit {
     double targetY;
     double targetH;
 
-    boolean launch;
+    boolean extend;
+    boolean deposit;
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
@@ -47,46 +49,66 @@ public class Deposit {
         targetH = boardHeight;
     }
 
-    public void launch() {
-        launch = true;
+    public void extend() {
+        extend = true;
+    }
+    public void deposit() {
+        deposit = true;
     }
 
     public void update() {
         switch (state) {
             case DOWN:
-                if (launch) {
 
+                if (extend) {
+                    //set v4bar to correct position
                     state = DepositState.EXTEND;
-                    launch = false;
+                    extend = false;
                 }
                 break;
             case EXTEND:
+                if (/* bucket not in position */ false) {
+                    break;
+                }
+
                 depositMath.calculate(targetBoard.x-ROBOT_POSITION.x,
                         targetBoard.y-ROBOT_POSITION.y,
                         targetBoard.heading-ROBOT_POSITION.heading,
                         targetH, targetY );
-                /* extend slides */
-                if (/*slides extended*/ true) {
-                    state = DepositState.DEPOSIT;
+                slides.setLength(depositMath.slideExtension);
+                if (Math.abs(depositMath.slideExtension - slides.length) < 1) {
+                    state = DepositState.HOLD;
                 }
                 break;
+            case HOLD:
+                /* set v4 + bucket position */
+                if (/* v4 and bucket ready */ true) {
+                    state = DepositState.DEPOSIT;
+                }
             case DEPOSIT:
                 depositMath.calculate(targetBoard.x-ROBOT_POSITION.x,
                         targetBoard.y-ROBOT_POSITION.y,
                         targetBoard.heading-ROBOT_POSITION.heading,
                         targetH, targetY );
-                /*set deposit position + continue extending slides*/
+                /*deposit */
                 if (/*done depositing*/ true) {
                     //v4bar resting pos
                     state = DepositState.RETRACT;
                 }
                 break;
             case RETRACT:
+                if (/*v4bar not ready*/ false) {
+                    break;
+                }
                 /* retract slides */
                 if (/* slides done */ false) {
                     state = DepositState.DOWN;
                 }
                 break;
         }
+    }
+
+    public void teleOp() {
+
     }
 }
