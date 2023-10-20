@@ -1,12 +1,10 @@
 package org.firstinspires.ftc.teamcode.vision.apriltags;
 
-import android.util.Size;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -14,19 +12,18 @@ import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
-import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 public class AprilTagLocalizer {
     HardwareMap hardwareMap;
 
     private AprilTagProcessor tagProcessor;
-    private VisionPortal visionPortal;
+    private Vision vision;
     private ExposureControl exposure;
     private GainControl gain;
 
@@ -39,25 +36,10 @@ public class AprilTagLocalizer {
             .setDrawCubeProjection(true)
             .setDrawTagID(true)
             .setDrawTagOutline(true)
+            .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
             .build();
 
-        this.visionPortal = new VisionPortal.Builder()
-            .addProcessor(tagProcessor)
-            .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-            .setCameraResolution(new Size(640, 480))
-            .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-            .build();
-
-        this.hardwareMap = hardwareMap;
-
-        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {} // waiting for camera to start streaming
-
-        this.exposure = visionPortal.getCameraControl(ExposureControl.class);
-        exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(6, TimeUnit.MILLISECONDS);
-
-        this.gain = visionPortal.getCameraControl(GainControl.class);
-        gain.setGain(250);
+       vision.initCamera(hardwareMap, tagProcessor);
     }
 
     double robotXFromTag = 0;
@@ -122,15 +104,15 @@ public class AprilTagLocalizer {
     }
 
     public void start () {
-        visionPortal.resumeStreaming();
+        vision.start();
     }
 
     public void stop () {
-        visionPortal.stopStreaming();
+        vision.stop();
     }
 
     public void close () {
-        visionPortal.close();
+        vision.close();
     }
 
     public boolean detectedTag () {

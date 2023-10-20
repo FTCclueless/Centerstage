@@ -31,7 +31,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.vision.tests;
 
 import android.util.Size;
 
@@ -45,8 +45,8 @@ import org.firstinspires.ftc.vision.VisionPortal;
 
 import java.util.Locale;
 
-/**
- * This Utility OpMode helps calibrate a webcam or RC phone camera, useful for AprilTag pose estimation
+/*
+ * This OpMode helps calibrate a webcam or RC phone camera, useful for AprilTag pose estimation
  * with the FTC VisionPortal.   It captures a camera frame (image) and stores it on the Robot Controller
  * (Control Hub or RC phone), with each press of the gamepad button X (or Square).
  * Full calibration instructions are here:
@@ -54,19 +54,18 @@ import java.util.Locale;
  *  https://ftc-docs.firstinspires.org/camera-calibration
  *
  * In Android Studio, copy this class into your "teamcode" folder with a new name.
- * Remove or comment out the @Disabled line to add this file to the Driver Station OpMode list.
+ * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  *
- * In OnBot Java, use "Add File" to add this file from the list of Samples.
+ * In OnBot Java, use "Add File" to add this OpMode from the list of Samples.
  */
 
-@TeleOp(name = "CameraCalibration", group = "Utility")
-@Disabled
-public class CameraCalibration extends LinearOpMode
+@TeleOp(name = "Utility: Camera Frame Capture", group = "Utility")
+public class UtilityCameraFrameCapture extends LinearOpMode
 {
     /*
      * EDIT THESE PARAMETERS AS NEEDED
      */
-    final boolean USING_WEBCAM = false;
+    final boolean USING_WEBCAM = true;
     final BuiltinCameraDirection INTERNAL_CAM_DIR = BuiltinCameraDirection.BACK;
     final int RESOLUTION_WIDTH = 640;
     final int RESOLUTION_HEIGHT = 480;
