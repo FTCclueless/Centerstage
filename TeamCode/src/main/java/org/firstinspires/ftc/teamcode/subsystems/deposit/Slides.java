@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
@@ -35,6 +36,7 @@ public class Slides {
 
         DcMotorEx m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
+        m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5);
         hardwareQueue.addDevice(slidesMotors);
@@ -42,7 +44,7 @@ public class Slides {
 
     public double feedforward() {
         double error = targetLength - length;
-        return (error * (maxVel / kA)) * kP + (kStatic * Math.signum(error));
+        return (error * (maxVel / kA)) * kP + kStatic; // todo fix
     }
 
     public void update() {
