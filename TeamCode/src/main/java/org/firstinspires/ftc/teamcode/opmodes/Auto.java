@@ -16,7 +16,8 @@ public class Auto extends LinearOpMode {
         START_INTAKE_START,
         START_INTAKE_CYCLE,
         INTAKE,
-        START_GO_DEPOSIT,
+        START_GO_DEPOSIT_START,
+        START_GO_DEPOSIT_CYCLE,
         GO_DEPOSIT,
         DUNK_EM,
         READY
@@ -55,6 +56,9 @@ public class Auto extends LinearOpMode {
             .addPoint(new Pose2d(-60, 36, Math.toRadians(120))); //todo figure the turns out
 
         // An alliance is blocking us from going to the board
+        Spline toDepositStart = new Spline(new Pose2d(12, 36, 0), 4)
+            .addPoint(new Pose2d(48, 36, Math.toRadians(180)));
+
         // TODO: unsure path
         Spline blockedToDeposit = new Spline(toIntakeStart.getLastPoint(), 4)
             .setReversed(true)
@@ -81,38 +85,55 @@ public class Auto extends LinearOpMode {
                 case INTAKE:
                     if (/* robot detected */ false) {
                         // Store state so we can restore it after
-                        heldDrivetrainState = robot.drivetrain.state;
-                        robot.drivetrain.state = Drivetrain.State.BRAKE;
+                        if (heldDrivetrainState != null) {
+                            heldDrivetrainState = robot.drivetrain.state;
+                            robot.drivetrain.state = Drivetrain.State.BRAKE;
+                        }
                     } else if (heldDrivetrainState != null) {
                         robot.drivetrain.state = heldDrivetrainState;
                         heldDrivetrainState = null;
                     }
 
                     if (/* test for pixels intaken */ true) {
-                        state = State.START_GO_DEPOSIT;
+                        state = State.START_GO_DEPOSIT_CYCLE;
                     }
                     break;
 
-                case START_GO_DEPOSIT:
+                case START_GO_DEPOSIT_START:
+                    robot.drivetrain.setCurrentPath(toDepositStart);
+                    state = State.GO_DEPOSIT;
+                    break;
+
+                case START_GO_DEPOSIT_CYCLE:
                     robot.drivetrain.setCurrentPath(/* robot detected */ false ? blockedToDeposit : toDeposit);
                     blockedDepositPath = false;
                     state = State.GO_DEPOSIT;
                     break;
 
+                // This state is ancient shadow magic - Eric
                 case GO_DEPOSIT:
                     Pose2d pose = robot.drivetrain.localizer.getPoseEstimate();
                     // Switch auto paths if robot detected and we are outside of special zone
                     if ((pose.x > 4 && pose.x < 44) || pose.x < -30) {
                         if (/* robot detected */ false && !changingPaths) {
+                            if (heldDrivetrainState == null) {
+                                heldDrivetrainState = robot.drivetrain.state;
+                                // In order to do moveToPoint we have to make robot.update() set no motor powers. Kyle is a bastard - Eric
+                                robot.drivetrain.state = Drivetrain.State.DRIVE; // This state makes it do nothing. We like writing jank code here - Eric :)
+                            }
                             blockedDepositPath = !blockedDepositPath; // Set the new path we are changing to
                             changingPaths = false; // We boutta strafe now ong
                         } else { // No robot detected and we are changing paths means that we need to stop changing paths and move to the correct path
+                            robot.drivetrain.state = heldDrivetrainState;
+                            heldDrivetrainState = null;
                             robot.drivetrain.setCurrentPath(blockedDepositPath ? blockedToDeposit : toDeposit);
                             changingPaths = true;
                         }
                     } else if (/* robot detected */ false) { // We are in the dead zone
-                        heldDrivetrainState = robot.drivetrain.state;
-                        robot.drivetrain.state = Drivetrain.State.BRAKE;
+                        if (heldDrivetrainState == null) {
+                            heldDrivetrainState = robot.drivetrain.state;
+                            robot.drivetrain.state = Drivetrain.State.BRAKE;
+                        }
                     } else if (heldDrivetrainState != null) {
                         // Restore state
                         robot.drivetrain.state = heldDrivetrainState;
@@ -120,7 +141,6 @@ public class Auto extends LinearOpMode {
                     }
 
                     if (changingPaths) {
-                        // GOD DAMNIT STATE SCREWS YOU OVER
                         robot.drivetrain.goToPoint(new Pose2d(pose.x, blockedDepositPath ? 12 : 36, 0));
                     }
 
