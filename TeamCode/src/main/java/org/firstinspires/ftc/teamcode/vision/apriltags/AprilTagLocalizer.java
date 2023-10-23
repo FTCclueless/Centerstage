@@ -5,8 +5,6 @@ import com.acmerobotics.dashboard.canvas.Canvas;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
@@ -20,12 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AprilTagLocalizer {
-    HardwareMap hardwareMap;
-
     private AprilTagProcessor tagProcessor;
-    private Vision vision;
-    private ExposureControl exposure;
-    private GainControl gain;
+    private Vision vision = new Vision();
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
     private ArrayList<Integer> largeTags = new ArrayList<Integer>(Arrays.asList(7,10));
@@ -90,10 +84,6 @@ public class AprilTagLocalizer {
     public void updateTelemetry(Telemetry telemetry) {
         telemetry.addLine("X: " + String.format("%.2f", tags.get(0).ftcPose.x) + " Y: " + String.format("%.2f", tags.get(0).ftcPose.y) + " Z: " + String.format("%.2f", tags.get(0).ftcPose.z));
         telemetry.addLine("Roll: " + String.format("%.2f", tags.get(0).ftcPose.roll) + " Pitch: " + String.format("%.2f", tags.get(0).ftcPose.pitch) + " Yaw: " + String.format("%.2f", tags.get(0).ftcPose.yaw));
-
-        telemetry.addData("max gain", gain.getMaxGain());
-        telemetry.addData("min gain", gain.getMinGain());
-
         telemetry.update();
     }
 

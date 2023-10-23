@@ -11,13 +11,13 @@ public class AprilTagTester extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        AprilTagLocalizer vision = new AprilTagLocalizer(hardwareMap);
+        AprilTagLocalizer aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
         TelemetryUtil.setup();
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
-            vision.update();
+            aprilTagLocalizer.update();
             TelemetryUtil.sendTelemetry();
         }
     }

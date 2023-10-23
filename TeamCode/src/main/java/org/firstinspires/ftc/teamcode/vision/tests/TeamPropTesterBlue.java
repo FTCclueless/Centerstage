@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 @TeleOp
 public class TeamPropTesterBlue extends LinearOpMode {
-    private Vision vision;
+    private Vision vision = new Vision();
     private TeamPropDetectionPipeline teamPropDetectionPipeline;
 
     @Override
