@@ -20,6 +20,7 @@ public class Sensors {
     private final DigitalChannel depositBeamBreak;
 
     private int slidesEncoder = 0;
+    private double slidesVelocity = 0;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
@@ -59,6 +60,7 @@ public class Sensors {
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
             //slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
+            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getVelocity();
             //slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
@@ -87,8 +89,11 @@ public class Sensors {
         return odometry;
     }
 
-    public int getSlides() {
+    public int getSlidesPos() {
         return slidesEncoder;
+    }
+    public double getSlidesVelocity() {
+        return slidesVelocity;
     }
 
     public boolean isSlidesDown() {
