@@ -3,10 +3,13 @@ package org.firstinspires.ftc.teamcode.subsystems.intake;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
 public class Intake {
@@ -17,9 +20,12 @@ public class Intake {
     }
 
     private final PriorityMotor intake;
-    public State state = State.ON;
+    private final PriorityServo actuation;
+    private State state = State.ON;
     private final Sensors sensors;
-    public static double intakePower = 0.5; // CHANGE: Made this editable in FTC dashboard
+
+    private double intakePower = 0.5; // CHANGE: Made this editable in FTC dashboard
+    private double actuationHeight = 1.0;
 
     private boolean alreadyTriggered = false;
     private int numberOfTimesIntakeBeamBreakTriggered = 0;
@@ -27,11 +33,14 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
+        actuation = new PriorityServo(hardwareMap.get(Servo.class, "actuation"), "actuation", PriorityServo.ServoType.AXON_MINI, 1.0, 0.0,1.0,0.0, false, 1.0,1.0);
 
         hardwareQueue.addDevice(intake);
     }
 
     public void update() {
+        actuation.setTargetAngle(Math.asin(actuationHeight), 1.0);
+
         if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
             if (state == State.ON) {
@@ -78,5 +87,13 @@ public class Intake {
 
     public void reverse() {
         state = State.REVERSED;
+    }
+
+    private void setActuationHeight (double height) {
+        actuationHeight = Utils.minMaxClip(height, 0.5, 2.5);;
+    }
+
+    public void setActuationPixelHeight (int numPixels) {
+        setActuationHeight(numPixels * 0.5);
     }
 }

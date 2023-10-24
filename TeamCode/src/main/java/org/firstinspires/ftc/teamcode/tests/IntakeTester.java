@@ -1,28 +1,29 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
+import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 
-@TeleOp
-@Config
-public class SlideTester extends LinearOpMode {
-    public static double distance = 10;
+public class IntakeTester extends LinearOpMode {
+    public static int numPixelsHigh = 1;
+    public static boolean reverse = false;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        Slides slides = new Slides(hardwareMap, robot.hardwareQueue, robot.sensors);
+        Intake intake = new Intake(hardwareMap, robot.hardwareQueue, robot.sensors);
         waitForStart();
 
         while (!isStopRequested()) {
-            slides.setLength(distance);
+            intake.setActuationPixelHeight(numPixelsHigh);
+            if (reverse) {
+                intake.reverse();
+            }
 
-            slides.update();
             robot.update();
+            intake.update();
         }
     }
 }
