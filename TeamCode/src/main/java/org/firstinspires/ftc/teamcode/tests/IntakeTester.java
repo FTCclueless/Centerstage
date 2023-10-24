@@ -3,12 +3,11 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 
 public class IntakeTester extends LinearOpMode {
     public static int numPixelsHigh = 1;
-    public static boolean reverse = false;
+    public static boolean reverseIntake = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -18,7 +17,7 @@ public class IntakeTester extends LinearOpMode {
 
         while (!isStopRequested()) {
             intake.setActuationPixelHeight(numPixelsHigh);
-            if (reverse) {
+            if (reverseIntake) {
                 intake.reverse();
             }
 
