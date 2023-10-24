@@ -51,8 +51,6 @@ public class PriorityServo extends PriorityDevice{
         callLengthMillis = 1.0;
     }
 
-
-
     public double convertPosToAngle(double pos){
         pos -= basePos;
         pos /= type.positionPerRadian;
@@ -78,7 +76,7 @@ public class PriorityServo extends PriorityDevice{
         TelemetryUtil.packet.put("target", targetAngle);
     }
 
-    public void updateServoValues(){
+    public void updateServoValues() {
         //updates the current angle the servo thinks it is at
         long currentTime = System.nanoTime();
         double loopTime = ((double) currentTime - lastLoopTime)/1.0E9;

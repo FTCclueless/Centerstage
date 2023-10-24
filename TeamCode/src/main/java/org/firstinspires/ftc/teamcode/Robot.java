@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
+import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -21,9 +22,9 @@ public class Robot {
     public final Sensors sensors;
     public final Drivetrain drivetrain;
     //public final Deposit deposit;
+    //public final Intake intake;
 
     public HardwareQueue hardwareQueue = new HardwareQueue();
-
 
     public Robot(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -31,6 +32,7 @@ public class Robot {
         sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
         //deposit = new Deposit(hardwareMap, hardwareQueue, sensors);
+        //intake = new Intake(hardwareMap, hardwareQueue, sensors);
 
         TelemetryUtil.setup();
     }
@@ -46,15 +48,16 @@ public class Robot {
         updateTelemetry();
     }
 
-    public void updateSubsystems() {
+    private void updateSubsystems() {
         drivetrain.update();
         //depsit.update();
+        //intake.update();
 
         sensors.update();
         hardwareQueue.update();
     }
 
-    public void updateTelemetry() {
+    private void updateTelemetry() {
         TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
 
         updateDashboard();
@@ -62,7 +65,7 @@ public class Robot {
         TelemetryUtil.sendTelemetry();
     }
 
-    public void updateDashboard() {
+    private void updateDashboard() {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         Pose2d poseEstimate = drivetrain.getPoseEstimate();
 

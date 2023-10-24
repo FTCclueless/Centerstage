@@ -16,10 +16,13 @@ public class SlideTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Slides slides = new Slides(hardwareMap, robot.hardwareQueue, robot.sensors);
-        //Deposit deposit = robot.deposit;
-        //Slides slides = deposit.slides;
         waitForStart();
 
-        slides.setLength(distance);
+        while (!isStopRequested()) {
+            slides.setLength(distance);
+
+            slides.update();
+            robot.update();
+        }
     }
 }
