@@ -7,16 +7,20 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
-public class V4Bar {
-    private final PriorityServo servo;
+public class EndAffector {
+    private final PriorityServo v4Servo;
     private final Sensors sensors;
+    private final double intakeYaw = Math.PI;
+    private final double intakePitch = Math.toRadians(135); //todo
+    public double targetYaw;
+    public double targetPitch;
 
-    public V4Bar(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+    public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         // TODO: Value yoink
-        servo = new PriorityServo(
+        v4Servo = new PriorityServo(
             hardwareMap.get(Servo.class, "V4BarServo"),
             "V4BarServo",
-            PriorityServo.ServoType.AMAZON,
+            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
@@ -25,6 +29,14 @@ public class V4Bar {
             1, 2
         );
         this.sensors = sensors;
-        hardwareQueue.addDevice(servo);
+        hardwareQueue.addDevice(v4Servo);
     }
+
+    public void setYaw(double yaw) {
+        targetYaw = yaw;
+    }
+    public void setPitch(double pitch) {
+        targetPitch = pitch;
+    }
+
 }

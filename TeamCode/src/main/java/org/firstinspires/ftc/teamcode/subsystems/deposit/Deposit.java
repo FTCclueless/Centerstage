@@ -120,54 +120,7 @@ public class Deposit {
 
             case DOWN: // We are boring :(
                 break;
-
-//            case DOWN:
-//
-//                if (extend) {
-//                    //set v4bar to correct position
-//                    state = State.EXTEND;
-//                    extend = false;
-//                }
-//                break;
-//            case EXTEND:
-//                if (/* bucket not in position */ false) {
-//                    break;
-//                }
-//
-//                depositMath.calculate(targetBoard.x-ROBOT_POSITION.x,
-//                        targetBoard.y-ROBOT_POSITION.y,
-//                        targetBoard.heading-ROBOT_POSITION.heading,
-//                        targetH, targetY );
-//                slides.setLength(depositMath.slideExtension);
-//                if (Math.abs(depositMath.slideExtension - slides.length) < 1) {
-//                    state = State.HOLD;
-//                }
-//                break;
-//            case HOLD:
-//                /* set v4 + bucket position */
-//                if (/* v4 and bucket ready */ true) {
-//                    state = State.DEPOSIT;
-//                }
-//            case DEPOSIT:
-//                depositMath.calculate(targetBoard.x-ROBOT_POSITION.x,
-//                        targetBoard.y-ROBOT_POSITION.y,
-//                        targetBoard.heading-ROBOT_POSITION.heading,
-//                        targetH, targetY );
-//                /*deposit */
-//                if (/*done depositing*/ true) {
-//                    //v4bar resting pos
-//                    state = State.RETRACT;
-//                }
-//                break;
-//            case RETRACT:
-//                if (/*v4bar not ready*/ false) {
-//                    break;
-//                }
-//                /* retract slides */
-//                if (/* slides done */ false) {
-//                    state = State.DOWN;
-//                }
-//                break;
         }
+        slides.update();
     }
 }
