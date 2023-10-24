@@ -96,4 +96,9 @@ public class Intake {
     public void setActuationPixelHeight (int numPixels) {
         setActuationHeight(numPixels * 0.5);
     }
+
+    double actuationLength = 5.0;
+    public double getIntakeActuationOffset (int numPixels) {
+        return Math.cos(actuation.getCurrentAngle()) * actuationLength;
+    }
 }
