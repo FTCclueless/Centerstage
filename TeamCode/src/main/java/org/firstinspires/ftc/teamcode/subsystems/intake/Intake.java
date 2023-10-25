@@ -30,6 +30,8 @@ public class Intake {
     private boolean alreadyTriggered = false;
     private int numberOfTimesIntakeBeamBreakTriggered = 0;
 
+    double actuationLength = 5.0;
+
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
@@ -39,7 +41,7 @@ public class Intake {
     }
 
     public void update() {
-        actuation.setTargetAngle(Math.asin(actuationHeight), 1.0);
+        actuation.setTargetAngle(Math.asin(actuationHeight/actuationLength), 1.0);
 
         if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
@@ -97,7 +99,6 @@ public class Intake {
         setActuationHeight(numPixels * 0.5);
     }
 
-    double actuationLength = 5.0;
     public double getIntakeActuationOffset (int numPixels) {
         return Math.cos(actuation.getCurrentAngle()) * actuationLength;
     }
