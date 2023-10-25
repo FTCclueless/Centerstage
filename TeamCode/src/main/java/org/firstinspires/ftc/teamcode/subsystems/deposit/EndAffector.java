@@ -9,11 +9,14 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 public class EndAffector {
     private final PriorityServo v4Servo;
+    private final PriorityServo botTurret;
+    private final PriorityServo topTurret;
     private final Sensors sensors;
     private final double intakeYaw = Math.PI;
     private final double intakePitch = Math.toRadians(135); //todo
-    public double targetYaw;
+    public double bottomAngle;
     public double targetPitch;
+    public double topAngle;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         // TODO: Value yoink
@@ -28,15 +31,43 @@ public class EndAffector {
             false,
             1, 2
         );
+        botTurret = new PriorityServo(
+                hardwareMap.get(Servo.class, "bottomTurret"),
+                "bottomTurret",
+                PriorityServo.ServoType.AXON_MINI,
+                1,
+                0,
+                1,
+                0,
+                false,
+                1, 2
+        );
+        topTurret = new PriorityServo(
+                hardwareMap.get(Servo.class, "topTurret"),
+                        "topTurret",
+                        PriorityServo.ServoType.AXON_MINI,
+                        1,
+                        0,
+                        1,
+                        0,
+                        false,
+                        1,2
+        );
         this.sensors = sensors;
         hardwareQueue.addDevice(v4Servo);
     }
 
-    public void setYaw(double yaw) {
-        targetYaw = yaw;
+    public void setBotTurret(double ang) {
+        bottomAngle = ang;
+        botTurret.setTargetAngle(ang, 0.75);
     }
-    public void setPitch(double pitch) {
+    public void setTopTurret(double ang) {
+        topAngle = ang;
+        topTurret.setTargetAngle(ang, 0.75);
+    }
+    public void setV4Bar(double pitch) {
         targetPitch = pitch;
+        v4Servo.setTargetAngle(pitch, 0.75);
     }
 
 }
