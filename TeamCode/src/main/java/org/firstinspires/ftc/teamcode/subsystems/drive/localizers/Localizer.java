@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.utils.Encoder;
+import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
@@ -53,7 +54,7 @@ public class Localizer {
         this.useAprilTag = useAprilTag;
 
         if (useAprilTag) {
-            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, this);
+            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
         }
     }
 
@@ -140,7 +141,7 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-                odoHeading = kalmanFilter(odoHeading, aprilTagPose.heading, weight);
+                odoHeading += combineRobotAndAprilTagHeading(odoHeading, aprilTagLocalizer.getPoseEstimate().heading);
             }
         }
 
@@ -202,6 +203,16 @@ public class Localizer {
 
     public double kalmanFilter (double value1, double value2, double value2Weight) {
         return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
+    }
+
+    double headingError = 0.0;
+    MovingAverage movingAverage = new MovingAverage(100);
+
+    public double combineRobotAndAprilTagHeading (double robotHeading, double aprilTagHeading) {
+        headingError = robotHeading-aprilTagHeading;
+
+        movingAverage.addData(headingError);
+        return movingAverage.getMovingAverageForNum();
     }
 
 //    MyPose2d lastPose = new MyPose2d(0,0,0);

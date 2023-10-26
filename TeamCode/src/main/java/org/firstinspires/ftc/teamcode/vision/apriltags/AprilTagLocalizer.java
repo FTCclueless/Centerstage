@@ -27,9 +27,7 @@ public class AprilTagLocalizer {
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
     private ArrayList<Integer> largeTags = new ArrayList<Integer>(Arrays.asList(7,10));
 
-    Localizer localizer;
-
-    public AprilTagLocalizer(HardwareMap hardwareMap, Localizer localizer) {
+    public AprilTagLocalizer(HardwareMap hardwareMap) {
         this.tagProcessor = new AprilTagProcessor.Builder()
             .setDrawAxes(true)
             .setDrawCubeProjection(true)
@@ -37,14 +35,12 @@ public class AprilTagLocalizer {
             .setDrawTagOutline(true)
             .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
             .build();
-        this.localizer = localizer;
 
        vision.initCamera(hardwareMap, tagProcessor);
     }
 
     double robotXFromTag = 0;
     double robotYFromTag = 0;
-    double averagedHeading = 0;
 
     private Pose2d robotPoseFromTag = new Pose2d(0, 0);
 
@@ -58,13 +54,11 @@ public class AprilTagLocalizer {
                         Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
                         Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, -Math.toRadians(tag.ftcPose.yaw + (globalTagPosition.getX() > 0 ? 0 : 180))); //transform from april tag to relative robot transform
 
-                        averagedHeading = relativeTagPosition.heading + combineRobotAndAprilTagHeading(localizer.heading, relativeTagPosition.heading);
-
                         // applying a rotation matrix for converting from relative robot to robot
-                        robotXFromTag = globalTagPosition.getX() - (Math.cos(averagedHeading) * relativeTagPosition.x - Math.sin(averagedHeading) * relativeTagPosition.y);
-                        robotYFromTag = globalTagPosition.getY() - (Math.sin(averagedHeading) * relativeTagPosition.x + Math.cos(averagedHeading) * relativeTagPosition.y);
+                        robotXFromTag = globalTagPosition.getX() - (Math.cos(relativeTagPosition.heading) * relativeTagPosition.x - Math.sin(relativeTagPosition.heading) * relativeTagPosition.y);
+                        robotYFromTag = globalTagPosition.getY() - (Math.sin(relativeTagPosition.heading) * relativeTagPosition.x + Math.cos(relativeTagPosition.heading) * relativeTagPosition.y);
 
-                        robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, averagedHeading);
+                        robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
 
                         TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
                         TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
@@ -73,9 +67,6 @@ public class AprilTagLocalizer {
                         TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
                         TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
                         TelemetryUtil.packet.put("relativeTagPosition.getHeading()", Math.toDegrees(relativeTagPosition.getHeading()));
-                        TelemetryUtil.packet.put("averagedHeading", Math.toDegrees(averagedHeading));
-
-                        updateField();
                     }
 
                     TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
@@ -85,19 +76,6 @@ public class AprilTagLocalizer {
         } catch (Error error) {
             Log.e("CRASHED", error.toString());
         }
-    }
-
-    double headingError = 0.0;
-    double average = 0.0;
-    MovingAverage movingAverage = new MovingAverage(100);
-
-    public double combineRobotAndAprilTagHeading (double robotHeading, double aprilTagHeading) {
-        headingError = robotHeading-aprilTagHeading;
-
-        movingAverage.addData(headingError);
-        average = movingAverage.getMovingAverageForNum();
-
-        return average;
     }
 
     public void updateTelemetry(Telemetry telemetry) {
