@@ -14,9 +14,9 @@ public class EndAffector {
     private final Sensors sensors;
     private final double intakeYaw = Math.PI;
     private final double intakePitch = Math.toRadians(135); //todo
-    public double bottomAngle;
-    public double targetPitch;
-    public double topAngle;
+    private double bottomAngle;
+    private double targetPitch;
+    private double topAngle;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         // TODO: Value yoink
@@ -55,6 +55,8 @@ public class EndAffector {
         );
         this.sensors = sensors;
         hardwareQueue.addDevice(v4Servo);
+        hardwareQueue.addDevice(botTurret);
+        hardwareQueue.addDevice(topTurret);
     }
 
     public void setBotTurret(double ang) {
@@ -68,6 +70,26 @@ public class EndAffector {
     public void setV4Bar(double pitch) {
         targetPitch = pitch;
         v4Servo.setTargetAngle(pitch, 0.75);
+    }
+
+    public double getBottomAngle() {
+        return bottomAngle;
+    }
+    public double getTopAngle() {
+        return topAngle;
+    }
+    public double getTargetPitch() {
+        return targetPitch;
+    }
+
+    public boolean checkBottom() {
+        return (botTurret.getCurrentAngle() == bottomAngle);
+    }
+    public boolean checkV4() {
+        return (v4Servo.getCurrentAngle() == targetPitch);
+    }
+    public boolean checkTop() {
+        return (topTurret.getCurrentAngle() == topAngle);
     }
 
 }

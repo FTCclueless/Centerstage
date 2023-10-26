@@ -22,6 +22,7 @@ public class Deposit {
     public State state;
 
     public Slides slides;
+    public EndAffector endAffector;
     HardwareQueue hardwareQueue;
     Sensors sensors;
 
@@ -37,6 +38,7 @@ public class Deposit {
         state = State.DOWN;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
+        endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         //finish init other classes
     }
 
@@ -55,6 +57,9 @@ public class Deposit {
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
+        if (state == State.UP)
+            state = State.START_DEPOSIT;
+
     }
 
     public void dunk(int numPixels) {
@@ -64,39 +69,31 @@ public class Deposit {
 
     public void update() {
         switch (state) {
-            case START_DEPOSIT:
+            case START_DEPOSIT: // any adjustments initialize here --Kyle
                 depositMath.calculate(targetBoard.x - ROBOT_POSITION.x,
                     targetBoard.y - ROBOT_POSITION.y,
                     targetBoard.heading - ROBOT_POSITION.heading,
                     targetH, targetY
                 );
 
-                slides.setLength(depositMath.slideExtension);
-                // set V4Bar length to depositMath.v4BarLength
+                slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
 
-                if (/* v4Bar length is long enough to not die */ true)
+                if (slides.length>= Slides.minDepositHeight)
                     state = State.FINISH_DEPOSIT;
 
                 break;
 
-            case FINISH_DEPOSIT:
-                // mini turret to depositMath.v4BarYaw
+            case FINISH_DEPOSIT: // completion of everything
+                endAffector.setV4Bar(depositMath.v4BarPitch);
+                endAffector.setBotTurret(depositMath.v4BarYaw);
+                endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
 
-                if (/* mini turret at angle && v4bar is at full length */ true)
+                if (/* mini turret at angle && v4bar is at right angle */ true)
                     state = State.UP;
 
                 break;
 
-            case UP: // We are static but are available to adjust at any time :)
-                depositMath.calculate(targetBoard.x - ROBOT_POSITION.x,
-                    targetBoard.y - ROBOT_POSITION.y,
-                    targetBoard.heading - ROBOT_POSITION.heading,
-                    targetH, targetY
-                );
-
-                slides.setLength(depositMath.slideExtension);
-                // set V4Bar length to depositMath.v4BarLength
-                // mini turret to depositMath.v4BarYaw
+            case UP: // We are doing nothing --kyle
 
                 break;
 
