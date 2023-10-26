@@ -11,13 +11,12 @@ import android.util.Log;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
-import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.ThreeWheelLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -25,7 +24,6 @@ import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -57,7 +55,7 @@ public class Drivetrain {
     private HardwareQueue hardwareQueue;
     private Sensors sensors;
 
-    public ThreeWheelLocalizer localizer;
+    public Localizer localizer;
 
     private Spline currentPath = null;
     private int pathIndex = 0;
@@ -108,7 +106,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new ThreeWheelLocalizer(hardwareMap, false);
+        localizer = new Localizer(hardwareMap, false);
     }
 
     public void setCurrentPath(Spline path) {
