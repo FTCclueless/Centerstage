@@ -10,7 +10,6 @@ public class DepositMath {
     private final Vector3 slidePos = new Vector3(0,0,0);
     public final double slideAngle = Math.toRadians(60);
     private final Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));
-    private final double slideMax = 100;
 
     public double slideExtension;
     public double v4BarYaw;
@@ -39,9 +38,9 @@ public class DepositMath {
             slideExtension -= extra;
             remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
         }
-        if (slideExtension > slideMax || slideExtension < 0) {
+        if (slideExtension > Slides.maxSlidesHeight || slideExtension < 0) {
             Log.e("slide out of range", slideExtension + "");
-            slideExtension = Math.min(Math.max(slideExtension,0),slideMax);
+            slideExtension = Math.min(Math.max(slideExtension,0),Slides.maxSlidesHeight);
         }
         v4BarYaw = Math.atan2(remainder.y,remainder.x);
         v4BarPitch = Math.atan2(remainder.z, Math.sqrt(Math.pow(remainder.x,2) + Math.pow(remainder.y,2)));

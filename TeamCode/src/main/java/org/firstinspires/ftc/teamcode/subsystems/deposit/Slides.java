@@ -26,6 +26,7 @@ public class Slides {
     public static double ticksToRadians = 0; // TODO
     public static double radiansToInches = 0; // TODO
     public static double maxSlidesHeight = 0; // TODO
+    public static double minDepositHeight = 0; // TODO
     public static double slidesThreshold = 0.5;
     private double targetLength = 0;
     public static double maxVel = 0; // TODO
