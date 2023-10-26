@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 import java.util.ArrayList;
 
 @Config
-public class ThreeWheelLocalizer {
+public class Localizer {
 
     public Encoder[] encoders;
     long lastTime = System.nanoTime();
@@ -43,7 +43,7 @@ public class ThreeWheelLocalizer {
     double aprilTagWeight = 0.2;
     double maxVel = 0.0;
 
-    public ThreeWheelLocalizer(HardwareMap hardwareMap, boolean useAprilTag) {
+    public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
         encoders[0] = new Encoder(new Pose2d(0,7.233659277778),  -1); // left (y = 7.6861797267140135)
@@ -53,7 +53,7 @@ public class ThreeWheelLocalizer {
         this.useAprilTag = useAprilTag;
 
         if (useAprilTag) {
-            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
+            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, this);
         }
     }
 
