@@ -27,9 +27,7 @@ public class AprilTagLocalizer {
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
     private ArrayList<Integer> largeTags = new ArrayList<Integer>(Arrays.asList(7,10));
 
-    Localizer localizer;
-
-    public AprilTagLocalizer(HardwareMap hardwareMap, Localizer localizer) {
+    public AprilTagLocalizer(HardwareMap hardwareMap) {
         this.tagProcessor = new AprilTagProcessor.Builder()
             .setDrawAxes(true)
             .setDrawCubeProjection(true)
@@ -37,7 +35,6 @@ public class AprilTagLocalizer {
             .setDrawTagOutline(true)
             .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
             .build();
-        this.localizer = localizer;
 
        vision.initCamera(hardwareMap, tagProcessor);
     }
@@ -70,8 +67,6 @@ public class AprilTagLocalizer {
                         TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
                         TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
                         TelemetryUtil.packet.put("relativeTagPosition.getHeading()", Math.toDegrees(relativeTagPosition.getHeading()));
-
-                        updateField();
                     }
 
                     TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));

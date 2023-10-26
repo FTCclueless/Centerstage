@@ -54,7 +54,7 @@ public class Localizer {
         this.useAprilTag = useAprilTag;
 
         if (useAprilTag) {
-            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap, this);
+            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
         }
     }
 
@@ -92,7 +92,6 @@ public class Localizer {
     }
 
     double weight;
-    double averagedHeading = 0;
 
     public void update() {
         long currentTime = System.nanoTime();
@@ -142,8 +141,7 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-
-                averagedHeading = odoHeading + combineRobotAndAprilTagHeading(odoHeading, aprilTagLocalizer.getPoseEstimate().heading);
+                odoHeading += combineRobotAndAprilTagHeading(odoHeading, aprilTagLocalizer.getPoseEstimate().heading);
             }
         }
 
