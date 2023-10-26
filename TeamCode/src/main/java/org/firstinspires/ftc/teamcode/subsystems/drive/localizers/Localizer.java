@@ -42,7 +42,6 @@ public class Localizer {
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
-    Pose2d aprilTagPose = new Pose2d(0,0,0);
     double aprilTagWeight = 0.2;
     double maxVel = 0.0;
 
@@ -131,18 +130,17 @@ public class Localizer {
         odoHeading += deltaHeading;
 
         if (useAprilTag) {
-            aprilTagLocalizer.update(); // update april tags\
+            Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags\
 
-            if (aprilTagLocalizer.detectedTag()) {
-                aprilTagPose = aprilTagLocalizer.getPoseEstimate();
+            if (aprilTagPose != null) {
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
-                weight = Math.abs(Math.min(1/maxVel, aprilTagWeight));
+                weight = Math.min(1/Math.max(maxVel,10), aprilTagWeight);
 
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-                odoHeading += combineRobotAndAprilTagHeading(odoHeading, aprilTagLocalizer.getPoseEstimate().heading);
+                odoHeading += combineRobotAndAprilTagHeading(aprilTagPose.heading-odoHeading);
             }
         }
 
@@ -211,10 +209,10 @@ public class Localizer {
     double headingError = 0.0;
     MovingAverage movingAverage = new MovingAverage(100);
 
-    public double combineRobotAndAprilTagHeading (double robotHeading, double aprilTagHeading) {
-        headingError = robotHeading-aprilTagHeading;
-
+    public double combineRobotAndAprilTagHeading (double headingError) {
         movingAverage.addData(headingError);
+        double averageError = movingAverage.getMovingAverageForNum();
+        movingAverage.updateVals(averageError);
         return movingAverage.getMovingAverageForNum();
     }
 

@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public class MovingAverage {
     // queue used to store list so that we get the average
-    private final Queue<Double> Dataset = new LinkedList<Double>();
+    private final ArrayList<Double> Dataset = new ArrayList<Double>();
     private final int period;
     private double sum;
 
@@ -39,7 +40,14 @@ public class MovingAverage {
         // of data set should be equal
         // to period as a normal mean has
         if (Dataset.size() > period) {
-            sum -= Dataset.remove();
+            sum -= Dataset.remove(0);
+        }
+    }
+
+    public void updateVals(double val){
+        sum -= val*Dataset.size();
+        for (int i = 0; i < Dataset.size(); i ++){
+            Dataset.set(i,Dataset.get(i) - val);
         }
     }
 

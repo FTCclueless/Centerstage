@@ -42,22 +42,19 @@ public class AprilTagLocalizer {
     double robotXFromTag = 0;
     double robotYFromTag = 0;
 
-    private Pose2d robotPoseFromTag = new Pose2d(0, 0);
-
-    public void update() {
+    public Pose2d update(double odoHeading) {
         if (tagProcessor.getDetections().size() > 0) {
+            TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
             tags = tagProcessor.getDetections();
-
             for (AprilTagDetection tag : tags) {
+                TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
                 if (largeTags.contains(tag.id)) {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
                     Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, -Math.toRadians(tag.ftcPose.yaw + (globalTagPosition.getX() > 0 ? 0 : 180))); //transform from april tag to relative robot transform
 
                     // applying a rotation matrix for converting from relative robot to robot
-                    robotXFromTag = globalTagPosition.getX() - (Math.cos(relativeTagPosition.heading) * relativeTagPosition.x - Math.sin(relativeTagPosition.heading) * relativeTagPosition.y);
-                    robotYFromTag = globalTagPosition.getY() - (Math.sin(relativeTagPosition.heading) * relativeTagPosition.x + Math.cos(relativeTagPosition.heading) * relativeTagPosition.y);
-
-                    robotPoseFromTag = new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
+                    robotXFromTag = globalTagPosition.getX() - (Math.cos(odoHeading) * relativeTagPosition.x - Math.sin(odoHeading) * relativeTagPosition.y);
+                    robotYFromTag = globalTagPosition.getY() - (Math.sin(odoHeading) * relativeTagPosition.x + Math.cos(odoHeading) * relativeTagPosition.y);
 
                     TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
                     TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
@@ -66,12 +63,12 @@ public class AprilTagLocalizer {
                     TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
                     TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
                     TelemetryUtil.packet.put("relativeTagPosition.getHeading()", Math.toDegrees(relativeTagPosition.getHeading()));
-                }
 
-                TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
+                    return new Pose2d(robotXFromTag, robotYFromTag, relativeTagPosition.heading);
+                }
             }
         }
-        TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
+        return null;
     }
 
     public void updateTelemetry(Telemetry telemetry) {
@@ -98,9 +95,5 @@ public class AprilTagLocalizer {
 
     public static Pose2d convertVectorFToPose2d(VectorF vectorF) {
         return new Pose2d(vectorF.get(0), vectorF.get(1));
-    }
-
-    public Pose2d getPoseEstimate() {
-        return robotPoseFromTag;
     }
 }
