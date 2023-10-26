@@ -11,6 +11,7 @@ import android.util.Log;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
@@ -18,12 +19,14 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Config
@@ -64,7 +67,7 @@ public class Drivetrain {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
 
-        /*leftFront = new PriorityMotor(
+        leftFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftFront"),
             "leftFront",
             3, 5
@@ -86,11 +89,8 @@ public class Drivetrain {
         );
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-*/
+
         for (PriorityMotor motor : motors) {
-            //motors.get(i).getMotorType().setAchieveableMaxRPMFraction(1.0);
-
-
             // Boopy coding brr
             MotorConfigurationType motorConfigurationType = motor.motor[0].getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
@@ -106,7 +106,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, false);
+        localizer = new Localizer(hardwareMap, true);
     }
 
     public void setCurrentPath(Spline path) {
@@ -127,6 +127,7 @@ public class Drivetrain {
         }
 
         updateLocalizer();
+        updateDashboard();
 
         Canvas canvas = TelemetryUtil.packet.fieldOverlay();
         Pose2d estimate = localizer.getPoseEstimate();
@@ -278,10 +279,15 @@ public class Drivetrain {
 
     }
 
-
     public void updateLocalizer() {
         localizer.updateEncoders(sensors.getOdometry());
         localizer.update();
+    }
+
+    private void updateDashboard() {
+        Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
+
+        DashboardUtil.drawSampledPath(fieldOverlay, getCurrentPath());
     }
 
     public static double kx = 0.05; //todo tune these

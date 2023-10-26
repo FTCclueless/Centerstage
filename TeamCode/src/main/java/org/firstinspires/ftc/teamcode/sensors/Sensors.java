@@ -14,10 +14,10 @@ public class Sensors {
     private final HardwareQueue hardwareQueue;
 
     //private IMU imu;
-    private int[] odometry = new int[3];
-    private final DigitalChannel magnetSensor;
-    private final DigitalChannel intakeBeamBreak;
-    private final DigitalChannel depositBeamBreak;
+    private int[] odometry = new int[] {0,0,0};
+//    private final DigitalChannel magnetSensor;
+//    private final DigitalChannel intakeBeamBreak;
+//    private final DigitalChannel depositBeamBreak;
 
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
@@ -28,9 +28,9 @@ public class Sensors {
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
 
-        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
-        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
-        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
+//        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
+//        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
+//        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
 
         initHubs(hardwareMap);
     }
@@ -59,8 +59,9 @@ public class Sensors {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition();
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition();
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition();
+
             //slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
-            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getVelocity();
+            //slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getVelocity();
             //slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
@@ -72,9 +73,9 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-            slidesDown = magnetSensor.getState();
-            intakeTriggered = intakeBeamBreak.getState();
-            depositTriggered = depositBeamBreak.getState();
+//            slidesDown = magnetSensor.getState();
+//            intakeTriggered = intakeBeamBreak.getState();
+//            depositTriggered = depositBeamBreak.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());

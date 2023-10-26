@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -98,7 +100,6 @@ public class Localizer {
         double loopTime = (currentTime-lastTime)/1000000000.0;
         lastTime = currentTime;
 
-
         double deltaLeft = encoders[0].getDelta();
         double deltaRight = encoders[1].getDelta();
         double deltaBack = encoders[2].getDelta();
@@ -153,7 +154,9 @@ public class Localizer {
 
         loopTimes.add(0,loopTime);
         poseHistory.add(0,currentPose);
+
         updateVelocity();
+        updateField();
     }
 
     public void updatePowerVector(double[] p){
@@ -213,6 +216,12 @@ public class Localizer {
 
         movingAverage.addData(headingError);
         return movingAverage.getMovingAverageForNum();
+    }
+
+    public void updateField() {
+        Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
+
+        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
     }
 
 //    MyPose2d lastPose = new MyPose2d(0,0,0);

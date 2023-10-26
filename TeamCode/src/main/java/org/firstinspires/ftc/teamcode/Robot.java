@@ -17,17 +17,19 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Robot {
-    HardwareMap hardwareMap;
+    private HardwareMap hardwareMap;
+
+    public HardwareQueue hardwareQueue;
 
     public final Sensors sensors;
     public final Drivetrain drivetrain;
     //public final Deposit deposit;
     //public final Intake intake;
 
-    public HardwareQueue hardwareQueue = new HardwareQueue();
-
     public Robot(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
+
+        hardwareQueue = new HardwareQueue();
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
         drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
@@ -49,28 +51,17 @@ public class Robot {
     }
 
     private void updateSubsystems() {
+        hardwareQueue.update();
+        sensors.update();
+
         drivetrain.update();
         //depsit.update();
         //intake.update();
-
-        sensors.update();
-        hardwareQueue.update();
     }
 
     private void updateTelemetry() {
         TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
-
-        updateDashboard();
-
         TelemetryUtil.sendTelemetry();
-    }
-
-    private void updateDashboard() {
-        Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-        Pose2d poseEstimate = drivetrain.getPoseEstimate();
-
-        DashboardUtil.drawRobot(fieldOverlay, poseEstimate);
-        DashboardUtil.drawSampledPath(fieldOverlay, drivetrain.getCurrentPath());
     }
 
     public void followSpline(Spline spline, LinearOpMode opMode) {
