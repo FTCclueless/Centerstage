@@ -10,25 +10,11 @@ public class MovingAverage {
     private final int period;
     private double sum;
 
-    MovingAverage movingAverage_X;
-    MovingAverage movingAverage_Y;
-    MovingAverage movingAverage_Heading;
-
     // constructor to initialize period
     public MovingAverage(int period) {
         this.period = period;
     }
-
-    public MovingAverage(int period, boolean isPose2d) {
-        this.period = period;
-
-        if (isPose2d) {
-            this.movingAverage_X = new MovingAverage(period);
-            this.movingAverage_Y = new MovingAverage(period);
-            this.movingAverage_Heading = new MovingAverage(period);
-        }
-    }
-
+    
     // function to add new data in the
     // list and update the sum so that
     // we get the new mean
@@ -52,24 +38,8 @@ public class MovingAverage {
         }
     }
 
-    public void addPose2d(Pose2d pose)
-    {
-        movingAverage_X.addData(pose.getX());
-        movingAverage_Y.addData(pose.getY());
-        movingAverage_Heading.addData(pose.getHeading());
-    }
-
     // function to calculate mean
     public double getMovingAverageForNum() {
         return sum / Dataset.size();
     }
-
-    public Pose2d getMovingAverageForPose2d() {
-        return new Pose2d(
-                movingAverage_X.getMovingAverageForNum(),
-                movingAverage_Y.getMovingAverageForNum(),
-                movingAverage_Heading.getMovingAverageForNum()
-        );
-    }
-
 }
