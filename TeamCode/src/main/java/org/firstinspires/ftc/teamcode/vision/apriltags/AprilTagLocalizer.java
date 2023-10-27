@@ -52,7 +52,7 @@ public class AprilTagLocalizer {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
                     Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, -Math.toRadians(tag.ftcPose.yaw + (globalTagPosition.getX() > 0 ? 0 : 180))); //transform from april tag to relative robot transform
 
-                    // applying a rotation matrix for converting from relative robot to robot
+                    // applying a rotation matrix for converting from relative robot to global using the odo heading
                     robotXFromTag = globalTagPosition.getX() - (Math.cos(odoHeading) * relativeTagPosition.x - Math.sin(odoHeading) * relativeTagPosition.y);
                     robotYFromTag = globalTagPosition.getY() - (Math.sin(odoHeading) * relativeTagPosition.x + Math.cos(odoHeading) * relativeTagPosition.y);
 

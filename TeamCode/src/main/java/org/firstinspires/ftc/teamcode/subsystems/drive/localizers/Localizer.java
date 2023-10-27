@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class Localizer {
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
-    double aprilTagWeight = 0.2;
+    double minAprilTagWeight = 1/40;
     double maxVel = 0.0;
 
     public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
@@ -130,12 +131,12 @@ public class Localizer {
         odoHeading += deltaHeading;
 
         if (useAprilTag) {
-            Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags\
+            Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
 
             if (aprilTagPose != null) {
-
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
-                weight = Math.min(1/Math.max(maxVel,10), aprilTagWeight);
+                // TODO: Tune weights
+                weight = Math.max(1/Math.max(maxVel,10), minAprilTagWeight); // as speed increases we should decrease weight of april tags
 
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
@@ -212,7 +213,7 @@ public class Localizer {
     public double combineRobotAndAprilTagHeading (double headingError) {
         movingAverage.addData(headingError);
         double averageError = movingAverage.getMovingAverageForNum();
-        movingAverage.updateVals(averageError);
+        movingAverage.updateValsRetroactively(averageError);
         return movingAverage.getMovingAverageForNum();
     }
 

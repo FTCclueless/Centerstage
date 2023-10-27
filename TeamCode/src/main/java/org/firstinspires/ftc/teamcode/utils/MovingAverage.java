@@ -44,7 +44,7 @@ public class MovingAverage {
         }
     }
 
-    public void updateVals(double val){
+    public void updateValsRetroactively(double val){
         sum -= val*Dataset.size();
         for (int i = 0; i < Dataset.size(); i ++){
             Dataset.set(i,Dataset.get(i) - val);
