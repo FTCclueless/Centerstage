@@ -207,7 +207,6 @@ public class Localizer {
         return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
     }
 
-    double headingError = 0.0;
     MovingAverage movingAverage = new MovingAverage(100);
 
     public double combineRobotAndAprilTagHeading (double headingError) {
@@ -219,7 +218,6 @@ public class Localizer {
 
     public void updateField() {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
     }
 

@@ -14,7 +14,7 @@ public class MovingAverage {
     public MovingAverage(int period) {
         this.period = period;
     }
-    
+
     // function to add new data in the
     // list and update the sum so that
     // we get the new mean
