@@ -15,17 +15,18 @@ public class MovingAverage {
     MovingAverage movingAverage_Heading;
 
     // constructor to initialize period
-    public MovingAverage(int period, boolean isSecondInit) {
+    public MovingAverage(int period) {
         this.period = period;
     }
 
-    public MovingAverage(int period) {
+    public MovingAverage(int period, boolean isPose2d) {
         this.period = period;
 
-        // need to have the secondInit or else will cause infinite creation of class
-        this.movingAverage_X = new MovingAverage(period, true);
-        this.movingAverage_Y = new MovingAverage(period, true);
-        this.movingAverage_Heading = new MovingAverage(period, true);
+        if (isPose2d) {
+            this.movingAverage_X = new MovingAverage(period);
+            this.movingAverage_Y = new MovingAverage(period);
+            this.movingAverage_Heading = new MovingAverage(period);
+        }
     }
 
     // function to add new data in the
