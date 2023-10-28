@@ -2,10 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 
+import android.widget.Button;
+
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
@@ -86,44 +89,20 @@ public class Deposit {
         state = State.START_RETRACT;
     }
 
-    boolean upPressed = false;
-    boolean downPressed =false;
-    boolean leftPressed = false;
-    boolean rightPressed = false;
+    ButtonToggle up = new ButtonToggle();
+    ButtonToggle down = new ButtonToggle();
+    ButtonToggle left = new ButtonToggle();
+    ButtonToggle right = new ButtonToggle();
+
     public void teleOp(Gamepad gamepad2) {
         xError += gamepad2.right_stick_y*0.1;
         yError += gamepad2.right_stick_x*0.1;
         targetH += gamepad2.right_stick_y * 0.5;
 
-
-        if (!upPressed && gamepad2.dpad_up){
-            targetH += 3;
-            upPressed = true;
-        } else {
-            upPressed = false;
-        }
-
-        if (!downPressed && gamepad2.dpad_down){
-            targetH -= 3;
-            downPressed = true;
-        } else {
-            downPressed = false;
-        }
-
-        if (!leftPressed && gamepad2.dpad_left){
-            yError -= 3;
-            leftPressed = true;
-        } else {
-            leftPressed = false;
-        }
-
-        if (!rightPressed && gamepad2.dpad_right){
-            yError += 3;
-            rightPressed = true;
-        } else {
-            rightPressed = false;
-        }
-
+        targetH += (up.isClicked(gamepad2.dpad_up) ? 3 : 0);
+        targetH -= (down.isClicked(gamepad2.dpad_down) ? 3 : 0);
+        yError -= (left.isClicked(gamepad2.dpad_left) ? 3 : 0);
+        yError += (right.isClicked(gamepad2.dpad_right) ? 3 : 0);
 
         update();
     }
