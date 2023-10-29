@@ -49,9 +49,9 @@ public class Localizer {
     public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,7.233659277778),  -1); // left (y = 7.6861797267140135)
-        encoders[1] = new Encoder(new Pose2d(0,-6.10600173333),1); // right (y = -5.664117306820334)
-        encoders[2] = new Encoder(new Pose2d(-3, 0),  -1); // back (x = -2.16505140605)
+        encoders[0] = new Encoder(new Pose2d(0,-6.65),  1); // left
+        encoders[1] = new Encoder(new Pose2d(0,6.75),-1); // right
+        encoders[2] = new Encoder(new Pose2d(-3, 0),  -1); // back
 
         this.useAprilTag = useAprilTag;
 
@@ -107,8 +107,10 @@ public class Localizer {
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
+        TelemetryUtil.packet.put("deltaLeft", deltaLeft);
+        TelemetryUtil.packet.put("deltaRight", deltaRight);
         TelemetryUtil.packet.put("deltaBack", deltaBack);
-        TelemetryUtil.packet.put("odo raw back", encoders[2].getDelta());
+
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading

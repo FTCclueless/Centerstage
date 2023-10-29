@@ -6,6 +6,7 @@ public class PriorityMotor extends PriorityDevice{
     double lastPower = 0;
     public double power = 0;
     public DcMotorEx[] motor; // if the subsystem has multiple motors (i.e. slides)
+    public String name;
 
     public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale) {
         this(new DcMotorEx[] {motor}, name, basePriority, priorityScale);
@@ -14,6 +15,7 @@ public class PriorityMotor extends PriorityDevice{
     public PriorityMotor(DcMotorEx[] motor, String name, double basePriority, double priorityScale) {
         super(basePriority, priorityScale, name);
         this.motor = motor;
+        this.name = name;
 
         callLengthMillis = 1.6;
     }
