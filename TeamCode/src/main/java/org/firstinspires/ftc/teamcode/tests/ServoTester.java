@@ -56,12 +56,13 @@ public class ServoTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
+            robot.update();
+
             if (toggleRightBumper.isClicked(gamepad1.right_bumper)) {
                 controllerMode = !controllerMode;
             }
 
             if (controllerMode) {
-                robot.update();
                 numLoops ++;
 
                 if (gamepad1.a) {

@@ -44,10 +44,8 @@ public class AprilTagLocalizer {
 
     public Pose2d update(double odoHeading) {
         if (tagProcessor.getDetections().size() > 0) {
-            TelemetryUtil.packet.put("number of tags detected", tagProcessor.getDetections().size());
             tags = tagProcessor.getDetections();
             for (AprilTagDetection tag : tags) {
-                TelemetryUtil.packet.put("largeTags.contains(tag.id)", largeTags.contains(tag.id));
                 if (largeTags.contains(tag.id)) {
                     Pose2d globalTagPosition = convertVectorFToPose2d(tag.metadata.fieldPosition);
                     Pose2d relativeTagPosition = new Pose2d(tag.ftcPose.y, tag.ftcPose.x * -1, -Math.toRadians(tag.ftcPose.yaw + (globalTagPosition.getX() > 0 ? 0 : 180))); //transform from april tag to relative robot transform
@@ -56,10 +54,6 @@ public class AprilTagLocalizer {
                     robotXFromTag = globalTagPosition.getX() - (Math.cos(odoHeading) * relativeTagPosition.x - Math.sin(odoHeading) * relativeTagPosition.y);
                     robotYFromTag = globalTagPosition.getY() - (Math.sin(odoHeading) * relativeTagPosition.x + Math.cos(odoHeading) * relativeTagPosition.y);
 
-                    TelemetryUtil.packet.put("globalTagPosition_X", globalTagPosition.getX());
-                    TelemetryUtil.packet.put("globalTagPosition_Y", globalTagPosition.getY());
-
-                    TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
                     TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
                     TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
                     TelemetryUtil.packet.put("relativeTagPosition.getHeading()", Math.toDegrees(relativeTagPosition.getHeading()));
