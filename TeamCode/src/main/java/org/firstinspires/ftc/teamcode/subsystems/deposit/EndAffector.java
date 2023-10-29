@@ -8,10 +8,10 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 public class EndAffector {
-    private final PriorityServo v4Servo;
-    private final PriorityServo botTurret;
-    private final PriorityServo topTurret;
-    private final Sensors sensors;
+    public final PriorityServo v4Servo;
+    public final PriorityServo botTurret;
+    public final PriorityServo topTurret;
+    public final Sensors sensors;
     private final double intakeYaw = 0;
     public static double maxYaw = Math.toRadians(45); //todo
     public static double intakePitch = Math.toRadians(135); //todo

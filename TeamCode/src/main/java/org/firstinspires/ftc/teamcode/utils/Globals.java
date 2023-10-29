@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+;
+
 public class Globals {
     // general
     public static long LOOP_START = System.nanoTime();
     public static double LOOP_TIME = 0.0;
+    public static RunMode RUNMODE = RunMode.TESTER;
 
 
 

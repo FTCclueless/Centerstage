@@ -20,7 +20,6 @@ public class Deposit {
         FINISH_DEPOSIT,
         START_RETRACT,
         FINISH_RETRACT,
-        UP,
         DOWN,
     };
     public State state;
@@ -38,13 +37,12 @@ public class Deposit {
     double xError = 5;
     double yError = 5;
     double headingError = 0;
+    private Pose2d offset = new Pose2d(0, 0, 0); // Holy jank deposit offset for imperfections (pls delete later) -- Eric
+    private double v4barClipThreshold = Math.PI / 4;
 
-    public boolean isAuto;
-
-    public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, boolean isAuto) {
+    public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
-        this.isAuto = isAuto;
         depositMath = new DepositMath();
 
         state = State.DOWN;
@@ -70,9 +68,15 @@ public class Deposit {
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
-        if (state == State.UP)
-            state = State.START_DEPOSIT;
+    }
 
+    public void depositAt(double targetH, double targetY, Pose2d offset) {
+        this.depositAt(targetH, targetY);
+        this.offset = offset;
+    }
+
+    public void resetOffset() {
+        offset = new Pose2d(0, 0, 0);
     }
 
     public void dunk(int numPixels) {
@@ -90,35 +94,17 @@ public class Deposit {
         state = State.START_RETRACT;
     }
 
-    ButtonToggle up = new ButtonToggle();
-    ButtonToggle down = new ButtonToggle();
-    ButtonToggle left = new ButtonToggle();
-    ButtonToggle right = new ButtonToggle();
-
-    public void teleOp(Gamepad gamepad2) {
-        xError += gamepad2.right_stick_y*0.1;
-        yError += gamepad2.right_stick_x*0.1;
-        targetH += gamepad2.right_stick_y * 0.5;
-
-        targetH += (up.isClicked(gamepad2.dpad_up) ? 3 : 0);
-        targetH -= (down.isClicked(gamepad2.dpad_down) ? 3 : 0);
-        yError -= (left.isClicked(gamepad2.dpad_left) ? 3 : 0);
-        yError += (right.isClicked(gamepad2.dpad_right) ? 3 : 0);
-
-        update();
-    }
-
     public void update() {
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
-                if (isAuto){
-                     xError = targetBoard.x - ROBOT_POSITION.x;
-                     yError =  targetBoard.y - ROBOT_POSITION.y;
-                     headingError = targetBoard.heading - ROBOT_POSITION.heading;
-                }
-                depositMath.calculate(xError,
-                    yError,
-                    headingError,
+                xError = targetBoard.x - ROBOT_POSITION.x;
+                yError =  targetBoard.y - ROBOT_POSITION.y;
+                headingError = targetBoard.heading - ROBOT_POSITION.heading;
+
+                depositMath.calculate(
+                    xError + offset.x,
+                    yError + offset.y,
+                    headingError + offset.heading,
                     targetH, targetY
                 );
 
@@ -126,19 +112,22 @@ public class Deposit {
 
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
-                if (endAffector.checkV4())
+                if (endAffector.v4Servo.getCurrentAngle() <= v4barClipThreshold)
                     state = State.FINISH_DEPOSIT;
                 break;
-            case FINISH_DEPOSIT:
+
+            case FINISH_DEPOSIT: // Also our update state -- Eric
+                depositMath.calculate(
+                    xError + offset.x,
+                    yError + offset.y,
+                    headingError + offset.heading,
+                    targetH, targetY
+                );
+
                 slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
                 endAffector.setBotTurret(depositMath.v4BarYaw);
                 endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
-
-                if (endAffector.checkReady()&& slides.length == depositMath.slideExtension)
-                    state = State.UP;
-                break;
-
-            case UP: // We are doing nothing --kyle
+                endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 break;
 

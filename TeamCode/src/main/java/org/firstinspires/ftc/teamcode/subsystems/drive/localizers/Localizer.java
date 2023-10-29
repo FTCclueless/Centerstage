@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 import java.util.ArrayList;
 
 @Config
+// TODO: Get to cookin in teleop -- Eric
 public class Localizer {
 
     public Encoder[] encoders;
@@ -96,6 +97,7 @@ public class Localizer {
     double weight;
 
     public void update() {
+        // TODO: Remove calculation for TeleOp -- Eric
         long currentTime = System.nanoTime();
         double loopTime = (currentTime-lastTime)/1000000000.0;
         lastTime = currentTime;
