@@ -12,8 +12,9 @@ public class EndAffector {
     private final PriorityServo botTurret;
     private final PriorityServo topTurret;
     private final Sensors sensors;
-    private final double intakeYaw = Math.PI;
-    private final double intakePitch = Math.toRadians(135); //todo
+    private final double intakeYaw = 0;
+    public static double maxYaw = Math.toRadians(45); //todo
+    public static double intakePitch = Math.toRadians(135); //todo
     private double bottomAngle;
     private double targetPitch;
     private double topAngle;
@@ -61,7 +62,7 @@ public class EndAffector {
 
     public void setBotTurret(double ang) {
         bottomAngle = ang;
-        botTurret.setTargetAngle(ang, 0.75);
+        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), 0.75);
     }
     public void setTopTurret(double ang) {
         topAngle = ang;
@@ -90,6 +91,9 @@ public class EndAffector {
     }
     public boolean checkTop() {
         return (topTurret.getCurrentAngle() == topAngle);
+    }
+    public boolean checkReady() {
+        return checkBottom() && checkTop() && checkV4();
     }
 
 }
