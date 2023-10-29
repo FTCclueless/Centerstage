@@ -17,6 +17,7 @@ public class Deposit {
     DepositMath depositMath;
     enum State {
         START_DEPOSIT,
+        FINISH_DEPOSIT,
         START_RETRACT,
         FINISH_RETRACT,
         UP,
@@ -124,10 +125,16 @@ public class Deposit {
                 slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
 
                 endAffector.setV4Bar(depositMath.v4BarPitch);
+
+                if (endAffector.checkV4())
+                    state = State.FINISH_DEPOSIT;
+                break;
+            case FINISH_DEPOSIT:
+                slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
                 endAffector.setBotTurret(depositMath.v4BarYaw);
                 endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
 
-                if (slides.length == depositMath.slideExtension && endAffector.checkReady())
+                if (endAffector.checkReady()&& slides.length == depositMath.slideExtension)
                     state = State.UP;
                 break;
 
