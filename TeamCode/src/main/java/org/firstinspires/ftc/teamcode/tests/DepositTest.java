@@ -24,7 +24,7 @@ public class DepositTest extends LinearOpMode{
 
         while (!isStopRequested()) {
             deposit.depositAt(targetH, targetY);
-            deposit.update();
+            robot.update();
         }
     }
 }
