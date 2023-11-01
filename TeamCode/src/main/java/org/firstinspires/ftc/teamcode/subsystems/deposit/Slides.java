@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+// TODO: Account for counterspringing in feedforward
 @Config
 public class Slides {
     enum State {
@@ -26,7 +27,6 @@ public class Slides {
     public static double ticksToRadians = 0; // TODO
     public static double radiansToInches = 0; // TODO
     public static double maxSlidesHeight = 0; // TODO
-    public static double minDepositHeight = 0; // TODO
     public static double slidesThreshold = 0.5;
     private double targetLength = 0;
     public static double maxVel = 0; // TODO
@@ -39,7 +39,9 @@ public class Slides {
 
         DcMotorEx m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
+
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
+
         m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

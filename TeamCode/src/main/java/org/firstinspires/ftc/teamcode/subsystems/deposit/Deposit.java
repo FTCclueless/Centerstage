@@ -9,11 +9,12 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Deposit {
-
     DepositMath depositMath;
     enum State {
         START_DEPOSIT,
@@ -37,8 +38,9 @@ public class Deposit {
     double xError = 5;
     double yError = 5;
     double headingError = 0;
-    private Pose2d offset = new Pose2d(0, 0, 0); // Holy jank deposit offset for imperfections (pls delete later) -- Eric
-    private double v4barClipThreshold = Math.PI / 4;
+    double xOffset = 2;
+    private double v4barClipThreshold = Math.toRadians(55);
+    private static double intakePitch = Math.toRadians(135); //todo
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.hardwareQueue = hardwareQueue;
@@ -56,10 +58,6 @@ public class Deposit {
     public void setTargetBoard(Pose2d targetBoard) {
         this.targetBoard = targetBoard;
     }
-    public void setTargetPlace(double yOffset, double boardHeight) {
-        targetY = yOffset;
-        targetH = boardHeight;
-    }
 
     // Call this whenever you want! It can be an updating function!
     public void depositAt(double targetH, double targetY) {
@@ -70,13 +68,13 @@ public class Deposit {
             state = State.START_DEPOSIT;
     }
 
-    public void depositAt(double targetH, double targetY, Pose2d offset) {
+    public void depositAt(double targetH, double targetY, double xOffset) {
         this.depositAt(targetH, targetY);
-        this.offset = offset;
+        this.xOffset = xOffset;
     }
 
-    public void resetOffset() {
-        offset = new Pose2d(0, 0, 0);
+    public void resetXOffset() {
+        xOffset = 2;
     }
 
     public void dunk(int numPixels) {
@@ -97,19 +95,27 @@ public class Deposit {
     public void update() {
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
-                xError = targetBoard.x - ROBOT_POSITION.x;
-                yError =  targetBoard.y - ROBOT_POSITION.y;
-                headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                if (Globals.RUNMODE == RunMode.TELEOP) {
+                    depositMath.calculate(
+                        xOffset,
+                        0,
+                        0,
+                        targetH, targetY
+                    );
+                } else {
+                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    yError =  targetBoard.y - ROBOT_POSITION.y;
+                    headingError = targetBoard.heading - ROBOT_POSITION.heading;
 
-                depositMath.calculate(
-                    xError + offset.x,
-                    yError + offset.y,
-                    headingError + offset.heading,
-                    targetH, targetY
-                );
+                    depositMath.calculate(
+                        xError,
+                        yError,
+                        headingError,
+                        targetH, targetY
+                    );
+                }
 
-                slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
-
+                slides.setLength(depositMath.slideExtension);
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 if (endAffector.v4Servo.getCurrentAngle() <= v4barClipThreshold)
@@ -117,16 +123,35 @@ public class Deposit {
                 break;
 
             case FINISH_DEPOSIT: // Also our update state -- Eric
-                depositMath.calculate(
-                    xError + offset.x,
-                    yError + offset.y,
-                    headingError + offset.heading,
-                    targetH, targetY
-                );
+                if (Globals.RUNMODE == RunMode.TELEOP) {
+                    depositMath.calculate(
+                            xOffset,
+                            0,
+                            0,
+                            targetH, targetY
+                    );
+                } else {
+                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    yError =  targetBoard.y - ROBOT_POSITION.y;
+                    headingError = targetBoard.heading - ROBOT_POSITION.heading;
 
-                slides.setLength(Math.max(depositMath.slideExtension, Slides.minDepositHeight+1));
+                    depositMath.calculate(
+                            xError,
+                            yError,
+                            headingError,
+                            targetH, targetY
+                    );
+                }
+
+                slides.setLength(depositMath.slideExtension);
                 endAffector.setBotTurret(depositMath.v4BarYaw);
-                endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
+
+                if (Globals.RUNMODE == RunMode.TELEOP) {
+                    endAffector.setTopTurret(-depositMath.v4BarYaw);
+                } else {
+                    endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
+                }
+
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 break;
@@ -136,7 +161,7 @@ public class Deposit {
                 endAffector.setTopTurret(Math.PI);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.checkReady())
+                if (endAffector.checkTop() && endAffector.checkBottom())
                     state = State.FINISH_RETRACT;
 
                 break;
@@ -144,7 +169,7 @@ public class Deposit {
             case FINISH_RETRACT:
                 slides.setLength(0);
 
-                endAffector.setV4Bar(EndAffector.intakePitch);
+                endAffector.setV4Bar(intakePitch);
                 /* set v4bar to retract angle */
 
                 if (slides.state == Slides.State.READY && endAffector.checkReady())

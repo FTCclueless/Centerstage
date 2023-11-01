@@ -9,8 +9,8 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 public class Dunker {
     public PriorityServo dunker;
-    public static double dunkPos =0; //TODO
-    public static double holdPos =0;
+    public static double dunkPos = 0; //TODO
+    public static double holdPos = 0;
     enum DunkState {
         STARTDUNK,
         WAIT,
@@ -19,13 +19,14 @@ public class Dunker {
     }
     DunkState dunkState = DunkState.CLOSE;
 
-    double startTime = 0;
+    private double startTime = 0;
+    private boolean oneDunk = true;
+
     public static double oneTime = 0.5;
     public static double twoTime = 1;
-    boolean oneDunk = true;
 
     public Dunker(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
-        dunker = new PriorityServo(hardwareMap.get(Servo.class, "deposit"), "dunker",
+        dunker = new PriorityServo(hardwareMap.get(Servo.class, "dunker"), "dunker",
                 PriorityServo.ServoType.AXON_MINI,
                 1,
                 0,
@@ -34,7 +35,6 @@ public class Dunker {
                 false,
                 1, 2);
         hardwareQueue.addDevice(dunker);
-
     }
 
     public void dunk1() {

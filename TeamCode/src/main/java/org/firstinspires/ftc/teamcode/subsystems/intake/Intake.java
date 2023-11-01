@@ -24,7 +24,7 @@ public class Intake {
     private State state = State.ON;
     private final Sensors sensors;
 
-    private double intakePower = 0.5; // CHANGE: Made this editable in FTC dashboard
+    public static double intakePower = 0.5; // TODO: Made this editable in FTC dashboard
     private double actuationHeight = 1.0;
 
     private boolean alreadyTriggered = false;
@@ -32,10 +32,25 @@ public class Intake {
 
     double actuationLength = 5.0;
 
+    private double delayToTurnOffIntake = 50; // ms
+    private long startTime = 50; // ms
+    private boolean isAlreadyTriggered = false;
+
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
-        actuation = new PriorityServo(hardwareMap.get(Servo.class, "actuation"), "actuation", PriorityServo.ServoType.AXON_MINI, 1.0, 0.0,1.0,0.0, false, 1.0,1.0);
+        actuation = new PriorityServo(
+            hardwareMap.get(Servo.class,"actuation"),
+            "actuation",
+            PriorityServo.ServoType.AXON_MINI,
+            1.0,
+            0.0,
+            1.0,
+            0.0,
+            false,
+            1.0,
+            1.0
+        );
 
         hardwareQueue.addDevice(intake);
     }
@@ -64,7 +79,13 @@ public class Intake {
             case ON:
                 intake.setTargetPower(intakePower);
                 if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
-                    off();
+                    if (!isAlreadyTriggered) {
+                        isAlreadyTriggered = true;
+                        startTime = System.currentTimeMillis();
+                    }
+                    if (System.currentTimeMillis() - startTime >= delayToTurnOffIntake) {
+                        off();
+                    }
                 }
                 break;
             case OFF:
@@ -83,6 +104,7 @@ public class Intake {
     }
 
     public void off() {
+        isAlreadyTriggered = false;
         numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.OFF;
     }
