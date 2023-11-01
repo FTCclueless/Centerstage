@@ -28,7 +28,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     Mat cbMat = new Mat();
     Mat deNoiseMat = new Mat();
 
-    enum TEAM_PROP_LOCATION {
+    public enum TEAM_PROP_LOCATION {
         LEFT,
         CENTER,
         RIGHT,

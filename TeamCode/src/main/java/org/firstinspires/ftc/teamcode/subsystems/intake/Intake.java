@@ -33,7 +33,7 @@ public class Intake {
     double actuationLength = 5.0;
 
     private double delayToTurnOffIntake = 50; // ms
-    private long startTime = 50; // ms
+    private long startTime = 0; // ms
     private boolean isAlreadyTriggered = false;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
