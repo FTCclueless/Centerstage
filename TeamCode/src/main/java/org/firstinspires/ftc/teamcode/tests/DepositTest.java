@@ -6,17 +6,24 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode{
+    public static double targetH = 10;
+    public static double targetY = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        Deposit deposit = new Deposit(hardwareMap, robot.hardwareQueue, robot.sensors, true);
+        Deposit deposit = new Deposit(hardwareMap, robot.hardwareQueue, robot.sensors);
         waitForStart();
 
+        deposit.setTargetBoard(new Pose2d(10,0,0));
+
         while (!isStopRequested()) {
+            deposit.depositAt(targetH, targetY);
             deposit.update();
         }
     }
