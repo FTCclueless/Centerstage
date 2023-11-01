@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 public class DepositTest extends LinearOpMode{
     public static double targetH = 10;
     public static double targetY = 0;
+    public static double xOffset = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -23,7 +24,7 @@ public class DepositTest extends LinearOpMode{
         deposit.setTargetBoard(new Pose2d(10,0,0));
 
         while (!isStopRequested()) {
-            deposit.depositAt(targetH, targetY);
+            deposit.depositAt(targetH, targetY, xOffset);
             robot.update();
         }
     }

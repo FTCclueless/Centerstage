@@ -6,6 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Dunker;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
 @TeleOp
@@ -14,7 +17,13 @@ public class V4Tuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        Servo servo = hardwareMap.get(Servo.class, "V4BarServo");
-        servo.setPosition(pos); //do this for v4 bar and 2 turrets to find base position, then
+        Deposit deposit = robot.deposit;
+        Dunker servo = robot.deposit.dunker;
+
+        waitForStart();
+        while (!isStopRequested()) {
+            servo.dunker.setTargetPose(pos, 1); //do this for v4 bar and 2 turrets to find base position, then
+            robot.update();
+        }
     }
 }
