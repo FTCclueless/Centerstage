@@ -22,7 +22,7 @@ public class V4Tuner extends LinearOpMode {
 
         waitForStart();
         while (!isStopRequested()) {
-            servo.dunker.setTargetPose(pos, 1); //do this for v4 bar and 2 turrets to find base position, then
+            servo.dunker.setTargetPose(pos, 1); //do this for v4 bar and 2 turrets to find base position, then find their required positions
             robot.update();
         }
     }
