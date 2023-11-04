@@ -101,11 +101,13 @@ public class PreloadAuto extends LinearOpMode {
             break;
         }
         //wait(3000);
-
+        robot.intake.off();
 
         robot.followSpline(leaveSpline, this);
         robot.followSpline(toPark, this);
-
+        while (opModeIsActive()) {
+            robot.drivetrain.goToPoint(toPark.getLastPoint());
+        }
 
     }
 }
