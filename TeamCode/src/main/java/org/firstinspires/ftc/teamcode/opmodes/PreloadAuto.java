@@ -18,13 +18,6 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Autonomous(group = "opmodes", name = "Auto (Good luck!)")
 public class PreloadAuto extends LinearOpMode {
     enum State {
-        START_INTAKE_START,
-        START_INTAKE_CYCLE,
-        INTAKE,
-        START_GO_DEPOSIT_START,
-        START_GO_DEPOSIT_CYCLE,
-        GO_DEPOSIT,
-        DUNK_EM,
         READY
     }
 
@@ -99,11 +92,20 @@ public class PreloadAuto extends LinearOpMode {
 
         waitForStart();
 
-        state = up ? State.START_GO_DEPOSIT_START : State.START_INTAKE_START;
 
-        while (opModeIsActive()) {
+        robot.followSpline(initSpline, this);
 
-            robot.update();
+        robot.intake.reverse();
+        long time = System.currentTimeMillis()/1000;
+        while (System.currentTimeMillis()/1000 - System.currentTimeMillis()/1000 < 3) {
+            break;
         }
+        //wait(3000);
+
+
+        robot.followSpline(leaveSpline, this);
+        robot.followSpline(toPark, this);
+
+
     }
 }

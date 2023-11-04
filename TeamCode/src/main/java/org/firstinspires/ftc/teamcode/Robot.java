@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
+import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
+import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
@@ -67,6 +69,13 @@ public class Robot {
     public void followSpline(Spline spline, LinearOpMode opMode) {
         drivetrain.setCurrentPath(spline);
         while(drivetrain.isBusy() && opMode.opModeIsActive()) {
+            update();
+        }
+    }
+
+    public void goToPoint(Pose2d pose, LinearOpMode opMode) {
+        drivetrain.goToPoint(pose);
+        while(Math.abs(pose.x-ROBOT_POSITION.x) < 2 && Math.abs(pose.y-ROBOT_POSITION.y) < 2 && Math.abs(pose.heading - ROBOT_POSITION.heading) < Math.toRadians(2) && opMode.opModeIsActive()) {
             update();
         }
     }
