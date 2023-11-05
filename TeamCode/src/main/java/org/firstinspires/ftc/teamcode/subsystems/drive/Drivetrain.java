@@ -212,11 +212,12 @@ public class Drivetrain {
                     double speed = targetRadius > minRadius ?
                             (targetRadius - minRadius) / (maxRadius - minRadius) * (1.0 - minSpeedFollowPath) + minSpeedFollowPath :
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
-                    double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
+                    /*double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
                             (TRACK_WIDTH / 2.0) / radius :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
+                    */
 
                     TelemetryUtil.packet.put("error heading", error.heading);
 
@@ -226,7 +227,10 @@ public class Drivetrain {
                         return;
                     }
 
+                    goToPoint(currentPath.poses.get(pathIndex));
+
                     //apply the feedforward
+                    /*
                     double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
                     double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 0.2;
                     turn *= turnMul;
@@ -257,6 +261,7 @@ public class Drivetrain {
                         //motors.get(i).setPower(motorPowers[i]);
                         motors.get(i).setTargetPower(motorPowers[i]);
                     }
+                    */
                 break;
             case GO_POINT:
                 Log.e("gopoint!", "e");

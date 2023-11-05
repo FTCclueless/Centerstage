@@ -187,7 +187,7 @@ public class Auto extends LinearOpMode {
                         if (/* robot detected */ false && !changingPaths) {
                             if (heldDrivetrainState == null) {
                                 heldDrivetrainState = robot.drivetrain.state;
-                                // In order to do moveToPoint we have to make robot.update() set no motor powers. Kyle is a bastard - Eric
+                                // In order to do  moveToPoint we have to make robot.update() set no motor powers. Kyle is a bastard - Eric
                                 robot.drivetrain.state = Drivetrain.State.DRIVE; // This state makes it do nothing. We like writing jank code here - Eric :)
                             }
                             blockedDepositPath = !blockedDepositPath; // Set the new path we are changing to

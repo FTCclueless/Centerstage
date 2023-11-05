@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @TeleOp
 @Config
@@ -19,7 +20,9 @@ public class SlideTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            slides.setLength(distance);
+            ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[0].setPower(0.2);
+
+            //slides.setLength(distance);
 
             slides.update();
             robot.update();

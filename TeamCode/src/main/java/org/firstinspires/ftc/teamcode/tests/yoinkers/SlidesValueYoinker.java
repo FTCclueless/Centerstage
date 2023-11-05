@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @Config
 @TeleOp(group = "tests")
-public class SlidesValueYoinker extends LinearOpMode {
+public class SlidesValueYoinker extends LinearOpMode { //this is probably useless --Kyle
     @Override
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);

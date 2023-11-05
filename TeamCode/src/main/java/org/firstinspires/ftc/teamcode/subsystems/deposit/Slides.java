@@ -33,6 +33,7 @@ public class Slides {
     public static double kP = 0; // TODO
     public static double kA = 0; // TODO
     public static double kStatic = 0; // TODO
+    public static double springC = 0.02; //TODO: should be force of power per inch
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -51,7 +52,7 @@ public class Slides {
         hardwareQueue.addDevice(slidesMotors);
     }
 
-    public double feedforward() {
+    private double feedforward() {
         double error = targetLength - length;
         return (error * (maxVel / kA)) * kP + kStatic; // todo fix
     }
@@ -64,7 +65,7 @@ public class Slides {
             case READY:
                 break;
             case BUSY:
-                slidesMotors.setTargetPower(feedforward());
+                slidesMotors.setTargetPower(feedforward() - springC * (maxSlidesHeight-length)); //dunno how this springC will work --Kyle
 
                 // 2nd check for redundancy
                 if (Math.abs(targetLength - length) <= slidesThreshold || (sensors.isSlidesDown() && targetLength <= slidesThreshold))
