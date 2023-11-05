@@ -15,6 +15,4 @@ public abstract class PriorityDevice {
     protected abstract double getPriority(double timeRemaining);
 
     protected abstract void update();
-
-    public abstract void setTargetAngle(double servoPos);
 }

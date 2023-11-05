@@ -33,10 +33,10 @@ public class Airplane {
     public void update() {
         switch (state) {
             case HOLD:
-                airplane.setTargetAngle(Math.toRadians(holdAngle));
+                airplane.setTargetAngle(Math.toRadians(holdAngle), 1.0);
                 break;
             case RELEASE:
-                airplane.setTargetAngle(Math.toRadians(releaseAngle));
+                airplane.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
                 break;
         }
     }
