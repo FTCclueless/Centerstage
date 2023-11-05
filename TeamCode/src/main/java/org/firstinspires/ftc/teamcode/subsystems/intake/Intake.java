@@ -36,20 +36,22 @@ public class Intake {
     private long startTime = 0; // ms
     private boolean isAlreadyTriggered = false;
 
+    public boolean isReady = false;
+
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
         actuation = new PriorityServo(
-            hardwareMap.get(Servo.class,"actuation"),
-            "actuation",
-            PriorityServo.ServoType.AXON_MINI,
-            1.0,
-            0.0,
-            1.0,
-            0.0,
-            false,
-            1.0,
-            1.0
+                hardwareMap.get(Servo.class,"actuation"),
+                "actuation",
+                PriorityServo.ServoType.AXON_MINI,
+                1.0,
+                0.0,
+                1.0,
+                0.0,
+                false,
+                1.0,
+                1.0
         );
 
         hardwareQueue.addDevice(intake);
@@ -85,6 +87,7 @@ public class Intake {
                     }
                     if (System.currentTimeMillis() - startTime >= delayToTurnOffIntake) {
                         off();
+                        isReady = true;
                     }
                 }
                 break;
@@ -100,10 +103,12 @@ public class Intake {
 
     public void on() {
         numberOfTimesIntakeBeamBreakTriggered = 0;
+        isReady = false;
         state = State.ON;
     }
 
     public void off() {
+        isReady = true;
         isAlreadyTriggered = false;
         numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.OFF;

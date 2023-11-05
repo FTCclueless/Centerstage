@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
@@ -18,6 +19,8 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Autonomous(group = "opmodes", name = "Auto (Good luck!)")
 public class Auto extends LinearOpMode {
     enum State {
+        PRELOAD_START,
+        PRELOAD,
         START_INTAKE_START,
         START_INTAKE_CYCLE,
         INTAKE,
@@ -34,6 +37,8 @@ public class Auto extends LinearOpMode {
     private boolean blockedDepositPath = false;
     private boolean changingPaths = true;
 
+    private long start;
+
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
     @Override
@@ -44,7 +49,7 @@ public class Auto extends LinearOpMode {
         Vision vision = new Vision();
         TeamPropDetectionPipeline teamPropDetectionPipeline;
 
-        // TODO: add initalization sequence
+        // TODO: change isRed parameter
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
 
@@ -58,14 +63,13 @@ public class Auto extends LinearOpMode {
             telemetry.update();
         }
 
-        Spline initSpline = null;
+        Spline initSpline = new Spline(new Pose2d(0,0),4);
         if (up) {
             robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
         } else {
             robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
         }
 
-        // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();
         switch (team_prop_location) {
             case LEFT:
@@ -86,7 +90,7 @@ public class Auto extends LinearOpMode {
                 break;
         }
 
-        Spline toIntakeStart = new Spline(new Pose2d(-36, 36, Math.toRadians(90)), 4) // doesn't have up variant
+        Spline toIntakeStart = new Spline(initSpline.getLastPoint(), 4) // doesn't have up variant
             .addPoint(new Pose2d(-60, 36, Math.toRadians(180)));
 
         Spline toIntakeCycle = new Spline(new Pose2d(48, 36, Math.toRadians(180)), 4)
@@ -100,7 +104,7 @@ public class Auto extends LinearOpMode {
             .addPoint(new Pose2d(-60, 36, Math.toRadians(120))); //todo figure the turns out
 
         // An alliance is blocking us from going to the board
-        Spline toDepositStart = new Spline(new Pose2d(12, 36, 0), 4)
+        Spline toDepositStart = new Spline(initSpline.getLastPoint(), 4)
             .addPoint(new Pose2d(48, 36, Math.toRadians(180)));
 
         // TODO: unsure path
@@ -119,13 +123,29 @@ public class Auto extends LinearOpMode {
 
         while (opModeIsActive()) {
             switch (state) {
+                case PRELOAD_START:
+                    robot.followSpline(initSpline, this);
+                    start = System.currentTimeMillis();
+                    state = State.PRELOAD;
+                    break;
+
+                case PRELOAD:
+                    ((PriorityMotor) robot.hardwareQueue.getDevice("intake")).setTargetPower(-0.1);
+                    if (System.currentTimeMillis() - start >= 500) { // waiting 500 ms for preload to come out
+                        ((PriorityMotor) robot.hardwareQueue.getDevice("intake")).setTargetPower(0.0);
+                        state=(up ? State.START_GO_DEPOSIT_START : State.START_INTAKE_START);
+                    }
+                    break;
+
                 case START_INTAKE_START:
                     // Don't run this if WE UP
+                    robot.intake.on();
                     robot.drivetrain.setCurrentPath(toIntakeStart);
                     state = State.INTAKE;
                     break;
 
                 case START_INTAKE_CYCLE:
+                    robot.intake.on();
                     robot.drivetrain.setCurrentPath(/* robot detected */ false ? toIntakeCycleBlocked : toIntakeCycle);
                     state = State.INTAKE;
                     break;
@@ -133,7 +153,7 @@ public class Auto extends LinearOpMode {
                 case INTAKE:
                     if (/* robot detected */ false) {
                         // Store state so we can restore it after
-                        if (heldDrivetrainState != null) {
+                        if (heldDrivetrainState == null) {
                             heldDrivetrainState = robot.drivetrain.state;
                             robot.drivetrain.state = Drivetrain.State.BRAKE;
                         }
@@ -142,7 +162,8 @@ public class Auto extends LinearOpMode {
                         heldDrivetrainState = null;
                     }
 
-                    if (/* test for pixels intaken */ true) {
+                    if (robot.intake.isReady) {
+                        robot.intake.off();
                         state = State.START_GO_DEPOSIT_CYCLE;
                     }
                     break;
@@ -161,8 +182,8 @@ public class Auto extends LinearOpMode {
                 // This state is ancient shadow magic - Eric
                 case GO_DEPOSIT:
                     pose = robot.drivetrain.localizer.getPoseEstimate();
-                    // Switch auto paths if robot detected and we are outside of special zone
-                    if ((pose.x > 4 && pose.x < 44) || pose.x < -30) {
+                    // Switch auto paths if robot detected and we are outside of truss area
+                    if ((pose.x > 4 && pose.x < 48) || pose.x < -30) {
                         if (/* robot detected */ false && !changingPaths) {
                             if (heldDrivetrainState == null) {
                                 heldDrivetrainState = robot.drivetrain.state;
@@ -170,7 +191,7 @@ public class Auto extends LinearOpMode {
                                 robot.drivetrain.state = Drivetrain.State.DRIVE; // This state makes it do nothing. We like writing jank code here - Eric :)
                             }
                             blockedDepositPath = !blockedDepositPath; // Set the new path we are changing to
-                            changingPaths = false; // We boutta strafe now ong
+                            changingPaths = true; // We boutta strafe now ong
                         } else { // No robot detected and we are changing paths means that we need to stop changing paths and move to the correct path
                             robot.drivetrain.state = heldDrivetrainState;
                             heldDrivetrainState = null;
