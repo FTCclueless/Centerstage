@@ -1,52 +1,50 @@
 package org.firstinspires.ftc.teamcode.subsystems.hang;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 public class Hang {
-    private final PriorityServo hangServo1;
-    private final PriorityServo hangServo2;
-
-    // TODO: Figure out right angle
-    private double holdAngle = 0.0;
-    private double releaseAngle = 90.0;
-
-    private State state = State.HOLD;
+    private final PriorityMotor hang;
+    private State state = State.OFF;
 
     enum State {
-        HOLD,
-        RELEASE
+        ON,
+        REVERSE,
+        OFF
     }
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
-        hangServo1 = new PriorityServo(hardwareMap.get(Servo.class, "hangServo1"), "hangServo1", PriorityServo.ServoType.AXON_MINI, 1.0, 0.0,1.0,0.0, false, 1.0,1.0);
-        hangServo2 = new PriorityServo(hardwareMap.get(Servo.class, "hangServo2"), "hangServo2", PriorityServo.ServoType.AXON_MINI, 1.0, 0.0,1.0,0.0, true, 1.0,1.0);
+        hang = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "hang"), "hang", 1, 2);
 
-        hardwareQueue.addDevice(hangServo1);
-        hardwareQueue.addDevice(hangServo2);
+        hardwareQueue.addDevice(hang);
     }
 
     public void update() {
         switch (state) {
-            case HOLD:
-                hangServo1.setTargetAngle(Math.toRadians(holdAngle), 1.0);
-                hangServo2.setTargetAngle(Math.toRadians(holdAngle), 1.0);
+            case ON:
+                hang.setTargetPower(1.0);
                 break;
-            case RELEASE:
-                hangServo1.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
-                hangServo2.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
+            case REVERSE:
+                hang.setTargetPower(-1.0);
+                break;
+            case OFF:
+                hang.setTargetPower(0.0);
                 break;
         }
     }
 
-    public void release() {
-        state = State.RELEASE;
+    public void on() {
+        state = State.ON;
     }
 
-    public void hold() {
-        state = State.HOLD;
+    public void reverse() {
+        state = State.REVERSE;
+    }
+
+    public void off() {
+        state = State.OFF;
     }
 }
