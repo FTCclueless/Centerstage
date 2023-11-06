@@ -109,12 +109,36 @@ public class DoublePreloadAuto extends LinearOpMode {
                 .addPoint(new Pose2d(60,12,0));
 
 
+        robot.deposit.setTargetBoard(new Pose2d(64, 36, 0));
+
         waitForStart();
 
        robot.followSpline(initSpline, this);
+
+       robot.intake.reverse();
+       long time = System.currentTimeMillis();
+       while (System.currentTimeMillis() - time < 3000) {
+           break;
+       }
+       robot.intake.off();
+
        robot.followSpline(leaveSpline, this);
        robot.followSpline(toSide, this);
+
+        double y;
+       if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT) {
+           y = 4.5;
+       }
+       else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT) {
+           y = -4.5;
+       }
+       else {
+           y = 0;
+       }
+       robot.deposit.depositAt(10, y, 3, 0, 0);
        robot.followSpline(toDeposit, this);
+       robot.deposit.inPlace();
+       robot.deposit.dunk(1);
        robot.followSpline(toPark, this);
 
 

@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 // TODO: Account for counterspringing in feedforward
 @Config
 public class Slides {
-    enum State {
+    public enum State {
         READY,
         BUSY
     }

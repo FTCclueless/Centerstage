@@ -65,7 +65,7 @@ public class Dunker {
                     hasTime = true;
                 }
                 else if (System.nanoTime()/1.0e9 - startTime >= (oneDunk ? oneTime : twoTime)) {
-                    dunkState = DunkState.CHILL;
+                    dunkState = DunkState.CLOSE;
                     hasTime = false;
                 }
                 break;

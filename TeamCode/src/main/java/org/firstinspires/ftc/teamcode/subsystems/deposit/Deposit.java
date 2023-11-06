@@ -16,9 +16,10 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Deposit {
     DepositMath depositMath;
-    enum State {
+    public enum State {
         START_DEPOSIT,
         FINISH_DEPOSIT,
+        WAIT_DUNK,
         START_RETRACT,
         FINISH_RETRACT,
         DOWN,
@@ -42,6 +43,8 @@ public class Deposit {
     private double v4barClipThreshold = Math.toRadians(55);
     private static double intakePitch = Math.toRadians(135); //todo
 
+    boolean inPlace = false;
+
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
@@ -60,16 +63,19 @@ public class Deposit {
     }
 
     // Call this whenever you want! It can be an updating function!
-    public void depositAt(double targetH, double targetY) {
+    public void depositAt(double targetH, double targetY, double xError, double yError, double headingError) {
         this.targetH = targetH;
         this.targetY = targetY;
+        this.xError = xError;
+        this.yError = yError;
+        this.headingError = headingError;
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
     }
 
     public void depositAt(double targetH, double targetY, double xOffset) {
-        this.depositAt(targetH, targetY);
+        this.depositAt(targetH, targetY, 2, 0, 0);
         this.xOffset = xOffset;
     }
 
@@ -85,7 +91,16 @@ public class Deposit {
         else {
             dunker.dunk1();
         }
+        state = State.WAIT_DUNK;
         /* Deposit this number of pixels and because its one servo we don't need none of that state yucky yucky (I THINK??) */
+    }
+
+    public void inPlace() {
+        inPlace = true;
+    }
+
+    public void unInPlace() {
+        inPlace = false;
     }
 
     public void retract() {
@@ -103,9 +118,11 @@ public class Deposit {
                         targetH, targetY
                     );
                 } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x;
-                    yError =  targetBoard.y - ROBOT_POSITION.y;
-                    headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                    if (inPlace) {
+                        xError = targetBoard.x - ROBOT_POSITION.x;
+                        yError = targetBoard.y - ROBOT_POSITION.y;
+                        headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                    }
 
                     depositMath.calculate(
                         xError,
@@ -131,9 +148,11 @@ public class Deposit {
                             targetH, targetY
                     );
                 } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x;
-                    yError =  targetBoard.y - ROBOT_POSITION.y;
-                    headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                    if (inPlace) {
+                        xError = targetBoard.x - ROBOT_POSITION.x;
+                        yError = targetBoard.y - ROBOT_POSITION.y;
+                        headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                    }
 
                     depositMath.calculate(
                             xError,
@@ -154,6 +173,10 @@ public class Deposit {
 
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
+                break;
+            case WAIT_DUNK:
+                if (dunker.dunkState == Dunker.DunkState.CHILL)
+                    state = State.START_RETRACT;
                 break;
 
             case START_RETRACT:

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.airplane.Airplane;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
@@ -79,4 +80,16 @@ public class Robot {
             update();
         }
     }
+
+    public void dunk(int numpix) {
+        deposit.inPlace();
+        while (!deposit.endAffector.checkReady() && !(deposit.slides.state == Slides.State.READY)) {
+            update();
+        }
+        deposit.dunk(numpix);
+        while (deposit.state == Deposit.State.WAIT_DUNK) {
+            update();
+        }
+    }
+
 }
