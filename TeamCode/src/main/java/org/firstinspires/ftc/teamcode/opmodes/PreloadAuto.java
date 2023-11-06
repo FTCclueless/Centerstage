@@ -66,8 +66,7 @@ public class PreloadAuto extends LinearOpMode {
                 initSpline = new Spline(pose, 4)
                     .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-36, -90))
-                        .addPoint(new Pose2d(pose.x, pose.y-48, 0));
+                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
 
                 break;
             case CENTER:

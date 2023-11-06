@@ -64,7 +64,10 @@ public class DoublePreloadAuto extends LinearOpMode {
                 initSpline = new Spline(pose, 4)
                         .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-48, 0));
+                        .setReversed(true)
+                        .addPoint(new Pose2d(pose.x - 12, pose.y - 24, 0))
+                        .setReversed(false)
+                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
                 break;
             case CENTER:
                 initSpline = new Spline(pose, 4)
@@ -93,9 +96,28 @@ public class DoublePreloadAuto extends LinearOpMode {
                 break;
         }
 
-        Spline toPark = new Spline(leaveSpline.getLastPoint(), 4)
-                .addPoint(new Pose2d(60, 12, 0));
+        Spline toSide = new Spline(leaveSpline.getLastPoint(), 4)
+                .addPoint(new Pose2d(36, 12, 0));
+
+        Spline toDeposit = new Spline(toSide.getLastPoint(), 4)
+                .addPoint(new Pose2d(40, 36, 0));
+
+        Spline toPark = new Spline(toDeposit.getLastPoint(), 4)
+                .setReversed(true)
+                .addPoint(new Pose2d(36, 12, 0))
+                .setReversed(false)
+                .addPoint(new Pose2d(60,12,0));
+
 
         waitForStart();
+
+       robot.followSpline(initSpline, this);
+       robot.followSpline(leaveSpline, this);
+       robot.followSpline(toSide, this);
+       robot.followSpline(toDeposit, this);
+       robot.followSpline(toPark, this);
+
+
+
     }
 }
