@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 // The following auto does NOT do the init
 
-@Autonomous(group = "opmodes", name = "Auto (Good luck!)")
+@Autonomous(group = "opmodes", name = "Preload Auto")
 public class PreloadAuto extends LinearOpMode {
     enum State {
         READY
@@ -102,11 +102,10 @@ public class PreloadAuto extends LinearOpMode {
         robot.followSpline(initSpline, this);
 
         robot.intake.reverse();
-        long time = System.currentTimeMillis()/1000;
-        while (System.currentTimeMillis()/1000 - System.currentTimeMillis()/1000 < 3) {
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < 3000) {
             break;
         }
-        //wait(3000);
         robot.intake.off();
 
         robot.followSpline(leaveSpline, this);

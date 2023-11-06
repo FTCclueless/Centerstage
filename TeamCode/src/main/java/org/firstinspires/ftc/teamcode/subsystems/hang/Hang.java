@@ -32,12 +32,12 @@ public class Hang {
     public void update() {
         switch (state) {
             case HOLD:
-                hangServo1.setTargetAngle(Math.toRadians(holdAngle));
-                hangServo2.setTargetAngle(Math.toRadians(holdAngle));
+                hangServo1.setTargetAngle(Math.toRadians(holdAngle), 1.0);
+                hangServo2.setTargetAngle(Math.toRadians(holdAngle), 1.0);
                 break;
             case RELEASE:
-                hangServo1.setTargetAngle(Math.toRadians(releaseAngle));
-                hangServo2.setTargetAngle(Math.toRadians(releaseAngle));
+                hangServo1.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
+                hangServo2.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
                 break;
         }
     }

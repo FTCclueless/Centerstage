@@ -55,16 +55,16 @@ public class Teleop extends LinearOpMode {
 
                 case INTAKE:
                     if (btnB.isToggled(gamepad1.b)) {
-                        // intake on
+                        robot.intake.on();
                     } else {
-                        // intake off
+                        robot.intake.off();
                     }
 
-                    if (gamepad1.a) {
-                        // Intake thing up
+                    if (gamepad1.a) { // TODO: Make a ButtonToggle
+                        robot.intake.setActuationPixelHeight(5);
                     }
                     if (gamepad1.y) {
-                        // Intake thing down
+                        robot.intake.setActuationPixelHeight(1);
                     }
                     break;
 
