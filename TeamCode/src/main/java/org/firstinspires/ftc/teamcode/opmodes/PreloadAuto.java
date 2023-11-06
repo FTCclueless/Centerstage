@@ -102,11 +102,10 @@ public class PreloadAuto extends LinearOpMode {
         robot.followSpline(initSpline, this);
 
         robot.intake.reverse();
-        long time = System.currentTimeMillis()/1000;
-        while (System.currentTimeMillis()/1000 - System.currentTimeMillis()/1000 < 3) {
+        long time = System.currentTimeMillis();
+        while (System.currentTimeMillis() - time < 3000) {
             break;
         }
-        //wait(3000);
         robot.intake.off();
 
         robot.followSpline(leaveSpline, this);
