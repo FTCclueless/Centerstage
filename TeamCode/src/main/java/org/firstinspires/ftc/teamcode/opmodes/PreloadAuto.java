@@ -64,16 +64,18 @@ public class PreloadAuto extends LinearOpMode {
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
-                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(90)));
+                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-48, 0));
+                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
+
                 break;
             case CENTER:
                 initSpline = new Spline(pose, 4)
-                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
+                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
                 if (!up) {
                     leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                            .addPoint(new Pose2d(pose.x - 24, pose.y - 24, Math.toRadians(90)))
+                            .addPoint(new Pose2d(pose.x, pose.y - 12, Math.toRadians(-90)))
+                            .addPoint(new Pose2d(pose.x - 24, pose.y - 24, Math.toRadians(-90)))
                             .addPoint(new Pose2d(pose.x - 24, pose.y - 48, Math.toRadians(0)));
                 }
                 else {
@@ -83,8 +85,8 @@ public class PreloadAuto extends LinearOpMode {
                 break;
             case RIGHT:
                 initSpline = new Spline(pose, 4)
-                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
-                leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-180)));
+                leaveSpline = new Spline(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)), 4)
                         .addPoint(new Pose2d(pose.x, pose.y-48, 0));
                 break;
             default:
@@ -108,6 +110,9 @@ public class PreloadAuto extends LinearOpMode {
         }
         robot.intake.off();
 
+        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT) {
+            robot.goToPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)), this);
+        }
         robot.followSpline(leaveSpline, this);
         robot.followSpline(toPark, this);
         while (opModeIsActive()) {

@@ -114,6 +114,14 @@ public class Intake {
         state = State.OFF;
     }
 
+    public void toggle() {
+        if (state == State.ON) {
+            off();
+        } else if (state == State.OFF) {
+            on();
+        }
+    }
+
     public void reverse() {
         state = State.REVERSED;
     }
@@ -126,7 +134,7 @@ public class Intake {
         setActuationHeight(numPixels * 0.5);
     }
 
-    public double getIntakeActuationOffset (int numPixels) {
+    public double getIntakeActuationOffset() {
         return Math.cos(actuation.getCurrentAngle()) * actuationLength;
     }
 }
