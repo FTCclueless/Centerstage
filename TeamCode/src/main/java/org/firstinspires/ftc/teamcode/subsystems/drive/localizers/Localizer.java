@@ -145,7 +145,7 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-                odoHeading += combineRobotAndAprilTagHeading(aprilTagPose.heading-odoHeading);
+                odoHeading += combineRobotAndAprilTagHeading(Utils.headingClip(aprilTagPose.heading-odoHeading));
             }
         }
 

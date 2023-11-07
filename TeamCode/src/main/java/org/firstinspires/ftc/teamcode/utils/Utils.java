@@ -6,4 +6,14 @@ public class Utils {
     public static double minMaxClip(double value, double min, double max) {
         return Math.min(Math.max(min, value), max);
     }
+
+    public static double headingClip(double value) {
+        while(value >= 2*Math.PI) {
+            value -= 2*Math.PI;
+        }
+        while(value <= -2*Math.PI) {
+            value += 2*Math.PI;
+        }
+        return value;
+    }
 }
