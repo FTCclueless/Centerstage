@@ -17,9 +17,9 @@ public class SensorTester extends LinearOpMode {
         while (!isStopRequested()) {
             robot.update();
 
-            telemetry.addData("deltaLeft", sensors.getOdometry()[0]);
-            telemetry.addData("deltaRight", sensors.getOdometry()[1]);
-            telemetry.addData("deltaBack", sensors.getOdometry()[2]);
+            telemetry.addData("leftOdo", sensors.getOdometry()[0]);
+            telemetry.addData("rightOdo", sensors.getOdometry()[1]);
+            telemetry.addData("backOdo", sensors.getOdometry()[2]);
 
             telemetry.update();
         }

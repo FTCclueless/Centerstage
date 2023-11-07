@@ -51,7 +51,6 @@ public class Sensors {
 
     public void update() {
         updateControlHub();
-        // TODO: if loop times are actually trash limit this
         updateExpansionHub();
         updateTelemetry();
     }

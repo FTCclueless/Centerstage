@@ -350,7 +350,7 @@ public class Drivetrain {
     public void drive(Gamepad gamepad) {
         state = State.DRIVE;
 
-        double forward = 0.45 * Math.tan(((gamepad.left_stick_y * -1) / 0.85));
+        double forward =gamepad.left_stick_y * -1;
         TelemetryUtil.packet.put("forward", forward);
         double strafe = gamepad.left_stick_x * -1;
         double turn = gamepad.right_stick_x;
@@ -358,8 +358,8 @@ public class Drivetrain {
 
         double p1 = forward + turn + strafe;
         double p2 = forward + turn - strafe;
-        double p3 = forward - turn - strafe;
-        double p4 = forward - turn + strafe;
+        double p3 = forward - turn + strafe;
+        double p4 = forward - turn - strafe;
         setMotorPowers(p1, p2, p3, p4);
     }
 
