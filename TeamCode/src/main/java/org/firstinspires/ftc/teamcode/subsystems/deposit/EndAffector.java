@@ -1,45 +1,48 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoMINIP;
 
 public class EndAffector {
-    public final PriorityServo v4Servo;
-    public final PriorityServo botTurret;
+    public final PriorityServoMINIP v4Servo;
+    public final PriorityServoMINIP botTurret;
     public final PriorityServo topTurret;
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
     private double bottomAngle;
     private double targetPitch;
     private double topAngle;
+    private double power = 1;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         // TODO: Value yoink
-        v4Servo = new PriorityServo(
+        v4Servo = new PriorityServoMINIP(
             hardwareMap.get(Servo.class, "V4BarServo"),
             "V4BarServo",
-            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
             0,
             false,
-            1, 2
+            1, 2,
+            hardwareMap.get(AnalogInput.class, "V4BarServoEncoder")
         );
-        botTurret = new PriorityServo(
+        botTurret = new PriorityServoMINIP(
             hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
-            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
             0,
             false,
-            1, 2
+            1, 2,
+            hardwareMap.get(AnalogInput.class, "bottomTurretEncoder")
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),
@@ -58,17 +61,25 @@ public class EndAffector {
         hardwareQueue.addDevice(topTurret);
     }
 
+    public double getPower() {
+        return power;
+    }
+
+    public void setPower(double power) {
+        this.power = power;
+    }
+
     public void setBotTurret(double ang) {
         bottomAngle = ang;
-        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), 1.0);
+        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), power);
     }
     public void setTopTurret(double ang) {
         topAngle = ang;
-        topTurret.setTargetAngle(ang, 1.0);
+        topTurret.setTargetAngle(ang, power);
     }
     public void setV4Bar(double pitch) {
         targetPitch = pitch;
-        v4Servo.setTargetAngle(pitch, 1.0);
+        v4Servo.setTargetAngle(pitch, power);
     }
 
     public double getBottomAngle() {

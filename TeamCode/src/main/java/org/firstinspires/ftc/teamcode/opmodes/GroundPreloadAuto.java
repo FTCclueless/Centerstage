@@ -24,6 +24,7 @@ public class GroundPreloadAuto extends LinearOpMode {
     private State state = State.READY;
     private Drivetrain.State heldDrivetrainState = null;
     private boolean up = false; // Is on top side of field
+    private boolean red = false;
     private boolean blockedDepositPath = false;
     private boolean changingPaths = true;
 
@@ -94,9 +95,17 @@ public class GroundPreloadAuto extends LinearOpMode {
                 RobotLog.e("BAD BAD! CRASH! SOMETHING TERRIBLE HAPPENED! GET HUDSON!");
                 break;
         }
+        assert initSpline != null;
 
         Spline toPark = new Spline(leaveSpline.getLastPoint(), 4)
                 .addPoint(new Pose2d(60, 12, 0));
+
+        // Reflection :)
+        if (red) {
+            initSpline = Spline.reflect(initSpline);
+            leaveSpline = Spline.reflect(leaveSpline);
+            toPark = Spline.reflect(toPark);
+        }
 
         waitForStart();
 
