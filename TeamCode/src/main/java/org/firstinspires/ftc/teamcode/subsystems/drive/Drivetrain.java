@@ -352,7 +352,7 @@ public class Drivetrain {
 
         double forward =gamepad.left_stick_y * -1;
         TelemetryUtil.packet.put("forward", forward);
-        double strafe = gamepad.left_stick_x * -1;
+        double strafe = gamepad.left_stick_x;
         double turn = gamepad.right_stick_x;
         TelemetryUtil.packet.put("turn", turn);
 

@@ -50,9 +50,9 @@ public class Localizer {
     public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,-6.65),  1); // left
-        encoders[1] = new Encoder(new Pose2d(0,6.75),-1); // right
-        encoders[2] = new Encoder(new Pose2d(-3, 0),  -1); // back
+        encoders[0] = new Encoder(new Pose2d(0,4.5975),  1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-5.1725),-1); // right
+        encoders[2] = new Encoder(new Pose2d(-8.0, 0),  -1); // back
 
         this.useAprilTag = useAprilTag;
 

@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 // The following auto does NOT do the init
 
-@Autonomous(group = "opmodes", name = "Preload Auto")
-public class PreloadAuto extends LinearOpMode {
+@Autonomous(group = "opmodes", name = "Ground Preload Auto")
+public class GroundPreloadAuto extends LinearOpMode {
     enum State {
         READY
     }

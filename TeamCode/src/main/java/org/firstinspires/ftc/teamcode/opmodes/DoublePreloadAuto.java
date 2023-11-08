@@ -140,8 +140,5 @@ public class DoublePreloadAuto extends LinearOpMode {
        robot.deposit.inPlace();
        robot.deposit.dunk(1);
        robot.followSpline(toPark, this);
-
-
-
     }
 }
