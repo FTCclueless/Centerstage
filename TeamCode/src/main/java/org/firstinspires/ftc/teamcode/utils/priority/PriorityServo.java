@@ -26,9 +26,9 @@ public class PriorityServo extends PriorityDevice{
     public final Servo servo;
     public ServoType type;
     private final double minPos, minAng, maxPos, maxAng, basePos;
-    private double currentAngle = 0, targetAngle = 0, power = 0;
-    private boolean reachedIntermediate = false;
-    private double currentIntermediateTargetAngle = 0;
+    protected double currentAngle = 0, targetAngle = 0, power = 0;
+    protected boolean reachedIntermediate = false;
+    protected double currentIntermediateTargetAngle = 0;
     private long lastLoopTime = System.nanoTime();
 
     public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
