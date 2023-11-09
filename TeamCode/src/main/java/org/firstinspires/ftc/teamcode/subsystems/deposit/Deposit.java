@@ -2,16 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 
-import android.widget.Button;
-
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
-import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Deposit {
@@ -19,6 +16,7 @@ public class Deposit {
     public enum State {
         START_DEPOSIT,
         FINISH_DEPOSIT,
+        ROTATE_BOTTOM_TURRET_180,
         WAIT_DUNK,
         START_RETRACT,
         FINISH_RETRACT,
@@ -40,7 +38,7 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    private double v4barClipThreshold = Math.toRadians(55);
+    private double v4barClipThreshold = Math.toRadians(90);
     private static double intakePitch = Math.toRadians(135); //todo
 
     boolean inPlace = false;
@@ -136,9 +134,14 @@ public class Deposit {
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 if (endAffector.v4Servo.getCurrentAngle() <= v4barClipThreshold)
-                    state = State.FINISH_DEPOSIT;
+                    state = State.ROTATE_BOTTOM_TURRET_180;
                 break;
-
+            case ROTATE_BOTTOM_TURRET_180:
+                endAffector.setBotTurret(Math.toRadians(180));
+                if (endAffector.botTurret.getCurrentAngle() > Math.toRadians(175)) {
+                    state = State.FINISH_DEPOSIT;
+                }
+                break;
             case FINISH_DEPOSIT: // Also our update state -- Eric
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(

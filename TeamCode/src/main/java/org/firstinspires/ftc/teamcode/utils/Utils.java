@@ -16,4 +16,8 @@ public class Utils {
         }
         return value;
     }
+
+    public static boolean withinThreshold(double value, double minThreshold, double maxThreshold) {
+        return value > minThreshold && value < maxThreshold;
+    }
 }
