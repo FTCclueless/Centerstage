@@ -39,7 +39,7 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
         for (int i = 0; i < 3; i++) {
             localizer.setPoseEstimate(new Pose2d(0,0,0));
 
-            for (int j = 0; j < 1; j += 0.001) {
+            for (int j = 0; j < 1; j += 0.00001) {
                 motors.get(i).setTargetPower(j);
 
                 robotPose = robot.drivetrain.localizer.getPoseEstimate();
