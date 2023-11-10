@@ -8,7 +8,6 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
-import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Deposit {
@@ -16,9 +15,10 @@ public class Deposit {
     public enum State {
         START_DEPOSIT,
         FINISH_DEPOSIT,
-        ROTATE_BOTTOM_TURRET_180,
+        EXTEND_ROTATE180,
         WAIT_DUNK,
         START_RETRACT,
+        RETRACT_ROTATE180,
         FINISH_RETRACT,
         DOWN,
     };
@@ -53,6 +53,9 @@ public class Deposit {
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
+
+        endAffector.setV4Bar(intakePitch);
+        endAffector.setBotTurret(Math.PI);
         //finish init other classes
     }
 
@@ -131,14 +134,14 @@ public class Deposit {
                 }
 
                 slides.setLength(depositMath.slideExtension);
-                endAffector.setV4Bar(depositMath.v4BarPitch);
+                endAffector.setV4Bar(Math.toRadians(90));
 
                 if (endAffector.v4Servo.getCurrentAngle() <= v4barClipThreshold)
-                    state = State.ROTATE_BOTTOM_TURRET_180;
+                    state = State.EXTEND_ROTATE180;
                 break;
-            case ROTATE_BOTTOM_TURRET_180:
-                endAffector.setBotTurret(Math.toRadians(180));
-                if (endAffector.botTurret.getCurrentAngle() > Math.toRadians(175)) {
+            case EXTEND_ROTATE180:
+                endAffector.setBotTurret(Math.toRadians(0));
+                if (endAffector.botTurret.getCurrentAngle() < Math.toRadians(5)) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
@@ -167,6 +170,7 @@ public class Deposit {
 
                 slides.setLength(depositMath.slideExtension);
                 endAffector.setBotTurret(depositMath.v4BarYaw);
+                endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     endAffector.setTopTurret(-depositMath.v4BarYaw);
@@ -184,13 +188,19 @@ public class Deposit {
 
             case START_RETRACT:
                 endAffector.setBotTurret(0);
-                endAffector.setTopTurret(Math.PI);
+                endAffector.setTopTurret(0);
+                endAffector.setV4Bar(Math.PI/2);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.checkTop() && endAffector.checkBottom())
-                    state = State.FINISH_RETRACT;
+                if (endAffector.v4Servo.getCurrentAngle() == Math.PI/2)
+                    state = State.RETRACT_ROTATE180;
 
                 break;
+            case RETRACT_ROTATE180:
+                endAffector.setBotTurret(Math.PI);
+                if (endAffector.botTurret.getCurrentAngle() >= Math.toRadians(175) ) {
+                    state = State.FINISH_RETRACT;
+                }
 
             case FINISH_RETRACT:
                 slides.setLength(0);
