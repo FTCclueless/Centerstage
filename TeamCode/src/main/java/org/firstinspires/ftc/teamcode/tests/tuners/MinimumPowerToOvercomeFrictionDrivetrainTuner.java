@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests.tuners;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -36,10 +38,12 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
 
         waitForStart();
 
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             localizer.setPoseEstimate(new Pose2d(0,0,0));
 
-            for (int j = 0; j < 1; j += 0.00001) {
+            for (double j = 0; j < 1; j += 0.0001) {
+                robot.update();
+
                 motors.get(i).setTargetPower(j);
 
                 robotPose = robot.drivetrain.localizer.getPoseEstimate();
@@ -47,10 +51,14 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
                     minPowersToOvercomeFriction[i] = j;
                     break;
                 }
-                robot.update();
+
+                telemetry.addData(motors.get(i).name + " current power: ", j);
+                telemetry.update();
             }
 
             motors.get(i).setTargetPower(0.0);
+
+            Log.e(motors.get(i).name + " min power", minPowersToOvercomeFriction[i] + "");
 
             telemetry.addData(motors.get(i).name + " min power: ", minPowersToOvercomeFriction[i]);
             telemetry.update();

@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 
 @TeleOp
 public class SensorTester extends LinearOpMode {
@@ -12,6 +14,9 @@ public class SensorTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Sensors sensors = robot.sensors;
+
+        Globals.RUNMODE = RunMode.TESTER;
+
         waitForStart();
 
         while (!isStopRequested()) {

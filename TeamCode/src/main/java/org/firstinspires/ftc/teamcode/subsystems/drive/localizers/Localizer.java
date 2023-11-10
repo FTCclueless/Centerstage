@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
@@ -50,19 +52,17 @@ public class Localizer {
     public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,4.5975),  1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-5.1725),-1); // right
-        encoders[2] = new Encoder(new Pose2d(-8.0, 0),  -1); // back
+        encoders[0] = new Encoder(new Pose2d(0,4.7430916033),  1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968),-1); // right
+        encoders[2] = new Encoder(new Pose2d(-8.22447915751465, 0),  1); // back
 
         this.useAprilTag = useAprilTag;
+
+
 
         if (useAprilTag) {
             aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
         }
-    }
-
-    public void getIMU(BNO055IMU imu){
-        this.imu = imu;
     }
 
     public void updateEncoders(int[] encoders) {
@@ -109,10 +109,6 @@ public class Localizer {
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
-        TelemetryUtil.packet.put("deltaLeft", deltaLeft);
-        TelemetryUtil.packet.put("deltaRight", deltaRight);
-        TelemetryUtil.packet.put("deltaBack", deltaBack);
-
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
@@ -145,7 +141,7 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-                odoHeading += combineRobotAndAprilTagHeading(Utils.headingClip(aprilTagPose.heading-odoHeading));
+                odoHeading += combineHeadings(Utils.headingClip(aprilTagPose.heading-odoHeading));
             }
         }
 
@@ -213,7 +209,7 @@ public class Localizer {
 
     MovingAverage movingAverage = new MovingAverage(100);
 
-    public double combineRobotAndAprilTagHeading (double headingError) {
+    public double combineHeadings(double headingError) {
         movingAverage.addData(headingError);
         double averageError = movingAverage.getMovingAverageForNum();
         movingAverage.updateValsRetroactively(averageError);
@@ -221,6 +217,10 @@ public class Localizer {
     }
 
     public void updateField() {
+        TelemetryUtil.packet.put("x", x);
+        TelemetryUtil.packet.put("y", y);
+        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
+
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
     }

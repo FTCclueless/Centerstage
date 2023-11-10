@@ -17,6 +17,8 @@ public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);
+        robot.drivetrain.setMinPowersToOvercomeFriction();
+
         Globals.RUNMODE = RunMode.TELEOP;
         ButtonToggle btDpadUp =       new ButtonToggle();
         ButtonToggle btDpadDown =     new ButtonToggle();

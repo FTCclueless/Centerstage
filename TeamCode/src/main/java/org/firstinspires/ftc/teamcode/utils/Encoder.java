@@ -27,4 +27,7 @@ public class Encoder {
     public double getDelta() {
         return (double)(currentVal-lastVal)*ticksToInches*scaleFactor;
     }
+    public double getCurrentDist(){
+        return (double)(currentVal)*ticksToInches*scaleFactor;
+    }
 }

@@ -72,6 +72,7 @@ public class Drivetrain {
             "leftFront",
             3, 5
         );
+
         leftRear = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftRear"),
             "leftRear",
@@ -106,7 +107,14 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, true);
+        localizer = new Localizer(hardwareMap, false);
+    }
+
+    public void setMinPowersToOvercomeFriction() {
+        leftFront.setMinimumPowerToOvercomeFriction(0.23969999999998992);
+        leftRear.setMinimumPowerToOvercomeFriction(0.3144999999999817);
+        rightRear.setMinimumPowerToOvercomeFriction(0.32859999999998013);
+        rightFront.setMinimumPowerToOvercomeFriction(0.3997999999999723);
     }
 
     public void setCurrentPath(Spline path) {
