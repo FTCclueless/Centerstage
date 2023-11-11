@@ -8,21 +8,27 @@ public class PriorityMotor extends PriorityDevice{
     double lastPower = 0;
     public double power = 0;
     public DcMotorEx[] motor; // if the subsystem has multiple motors (i.e. slides)
+    private double[] multipier;
     public String name;
 
     private double minPowerToOvercomeFriction = 0.0;
 
-    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale) {
-        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale);
+    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale, double multiplier) {
+        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{multiplier});
     }
 
-    public PriorityMotor(DcMotorEx[] motor, String name, double basePriority, double priorityScale) {
+    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale) {
+        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{1});
+    }
+
+    public PriorityMotor(DcMotorEx[] motor, String name, double basePriority, double priorityScale, double[] multiplier) {
         super(basePriority, priorityScale, name);
         this.motor = motor;
         this.name = name;
 
         minPowerToOvercomeFriction = 0.0;
         callLengthMillis = 1.6;
+        this.multipier = multiplier;
     }
 
     public void setMinimumPowerToOvercomeFriction (double value) {
@@ -58,7 +64,7 @@ public class PriorityMotor extends PriorityDevice{
     @Override
     protected void update() {
         for (int i = 0; i < motor.length; i ++) {
-            motor[i].setPower(power);
+            motor[i].setPower(power * multipier[i]);
         }
         lastUpdateTime = System.nanoTime();
         lastPower = power;

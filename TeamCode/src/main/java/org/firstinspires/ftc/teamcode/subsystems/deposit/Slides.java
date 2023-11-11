@@ -32,7 +32,7 @@ public class Slides {
     public static double maxVel = 0; // TODO
     public static double kP = 0; // TODO
     public static double kA = 0; // TODO
-    public static double kStatic = 0; // TODO
+    public static double kStatic = 0.28; // TODO
     public static double springC = 0.02; //TODO: should be force of power per inch
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
@@ -48,7 +48,7 @@ public class Slides {
         m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5);
+        slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5, new double[] {-1, -1});
         hardwareQueue.addDevice(slidesMotors);
     }
 

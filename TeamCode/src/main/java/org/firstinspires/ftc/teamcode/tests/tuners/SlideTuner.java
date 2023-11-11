@@ -18,7 +18,8 @@ public class SlideTuner extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-
+            robot.deposit.slides.setLength(targetPos);
+            robot.update();
         }
     }
 }

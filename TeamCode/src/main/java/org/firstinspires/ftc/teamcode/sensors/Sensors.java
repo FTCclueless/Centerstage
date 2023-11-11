@@ -91,9 +91,8 @@ public class Sensors {
                 imuLastUpdateTime = System.currentTimeMillis();
             }
 
-            //slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
-            //slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getVelocity();
-            //slidesDown = magnetSensor.getState();
+
+//            slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -107,6 +106,8 @@ public class Sensors {
 //            slidesDown = magnetSensor.getState();
 //            intakeTriggered = intakeBeamBreak.getState();
 //            depositTriggered = depositBeamBreak.getState();
+            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getCurrentPosition();
+            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getVelocity();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
