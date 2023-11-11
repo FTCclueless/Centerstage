@@ -2,12 +2,21 @@ package org.firstinspires.ftc.teamcode.sensors;
 
 import android.util.Log;
 
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.BNO055Util;
 import com.qualcomm.hardware.lynx.LynxModule;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
@@ -27,6 +36,10 @@ public class Sensors {
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
 
+    private BHI260IMU imu;
+    private long imuLastUpdateTime = System.currentTimeMillis();
+    private double imuHeading = 0.0;
+
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
 
@@ -44,6 +57,14 @@ public class Sensors {
 
             expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
             expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+
+            imu = hardwareMap.get(BHI260IMU.class, "imu");
+            BHI260IMU.Parameters params = new IMU.Parameters(new RevHubOrientationOnRobot(
+                    RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.DOWN
+            ));
+            imu.initialize(params);
+            imu.resetYaw();
         } catch (RuntimeException e) {
             throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
         }
@@ -61,6 +82,13 @@ public class Sensors {
                 odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition(); // left (0)
                 odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // right (3)
                 odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // back (1)
+            }
+
+            if (System.currentTimeMillis() - imuLastUpdateTime >= 350) {
+                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
+                addToCumulativeHeading(imuHeading);
+                imuLastUpdateTime = System.currentTimeMillis();
             }
 
             //slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor0")).motor[0].getCurrentPosition();
@@ -87,7 +115,9 @@ public class Sensors {
         }
     }
 
-    public void updateTelemetry() {}
+    public void updateTelemetry() {
+        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(imuHeading));
+    }
 
     public int[] getOdometry() {
         return odometry;
@@ -110,6 +140,19 @@ public class Sensors {
 
     public boolean isDepositTriggered() {
         return depositTriggered;
+    }
+
+    public double getImuHeading() {
+        return imuHeading + numRotations*(2*Math.PI);
+    }
+
+    private double previousAngle = 0.0;
+    private int numRotations = 0;
+    private void addToCumulativeHeading(double angle) {
+        if (Math.abs(angle-previousAngle) >= Math.toRadians(180)) {
+            numRotations += Math.signum(previousAngle);
+        }
+        previousAngle = angle;
     }
 }
 

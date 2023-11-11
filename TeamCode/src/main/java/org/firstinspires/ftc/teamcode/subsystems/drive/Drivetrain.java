@@ -107,7 +107,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, false);
+        localizer = new Localizer(hardwareMap, sensors,false);
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -197,7 +197,6 @@ public class Drivetrain {
                     double relativeErrorY = error.y * Math.cos(estimate.heading) - error.x * Math.sin(estimate.heading);
                     double relativeErrorX = error.x * Math.cos(estimate.heading) + error.y * Math.sin(estimate.heading); // why calculate it like this??????
 
-
                     TelemetryUtil.packet.put("rel_error", relativeErrorX + " " + relativeErrorY);
 
                     double radius = (error.x * error.x + error.y * error.y) / (2 * relativeErrorY);
@@ -235,7 +234,7 @@ public class Drivetrain {
                         return;
                     }
 
-                    goToPoint(currentPath.poses.get(pathIndex));
+                    goToPoint(lookAhead);
 
                     //apply the feedforward
                     /*
@@ -277,7 +276,7 @@ public class Drivetrain {
                 Log.e("lastpoint", target +"");
                 goToPoint(target);
                 //TODO tune the threshold
-                if (Math.abs(target.x-ROBOT_POSITION.x) < 2 && Math.abs(target.y-ROBOT_POSITION.y) < 2 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(2)) {
+                if (Math.abs(target.x-ROBOT_POSITION.x) < 0.5 && Math.abs(target.y-ROBOT_POSITION.y) < 0.5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(2)) {
                     state = State.BRAKE;
                 }
                 break;
@@ -303,9 +302,9 @@ public class Drivetrain {
         DashboardUtil.drawSampledPath(fieldOverlay, getCurrentPath());
     }
 
-    public static double kx = 0.05; //todo tune these
+    public static double kx = 0.087; //todo tune these
     public static double ky = 0.05;
-    public static double kang = 0.03;
+    public static double kang = 0.64;
     public void goToPoint(Pose2d targetPoint) {
         double x = (targetPoint.x - localizer.x);
         double y = (targetPoint.y-localizer.y);
@@ -342,17 +341,36 @@ public class Drivetrain {
         rightFront.setTargetPower(rf);
     }
 
-    public void setMoveVector(Vector2 moveVector, double turn) {
-        double p1 = moveVector.x + turn + moveVector.y;
-        double p2 = moveVector.x + turn - moveVector.y;
-        double p3 = moveVector.x - turn - moveVector.y;
-        double p4 = moveVector.x - turn + moveVector.y;
-        TelemetryUtil.packet.put("leftFront", p1);
-        TelemetryUtil.packet.put("leftRear", p2);
-        TelemetryUtil.packet.put("rightRear", p3);
-        TelemetryUtil.packet.put("rightFront", p4);
+    private void normalizeArray(double[] arr) {
+        double largest = arr[0];
+        boolean greaterThan1 = false;
+        for (int i = 1; i < arr.length; i++) {
+            largest = Math.max(largest, arr[i]);
+            if (arr[i] > 1) {
+                greaterThan1 = true;
+                TelemetryUtil.packet.put("normalized", greaterThan1);
+            }
+        }
+        for (int i = 0; i < arr.length && greaterThan1; i++) {
+            arr[i] /= largest;
+        }
+    }
 
-        setMotorPowers(p1,p2,p3,p4);
+    public void setMoveVector(Vector2 moveVector, double turn) {
+        double[] powers = {
+            moveVector.x - turn - moveVector.y,
+            moveVector.x - turn + moveVector.y,
+            moveVector.x + turn - moveVector.y,
+            moveVector.x + turn + moveVector.y
+        };
+        normalizeArray(powers);
+
+        TelemetryUtil.packet.put("leftFront", powers[0]);
+        TelemetryUtil.packet.put("leftRear", powers[1]);
+        TelemetryUtil.packet.put("rightRear", powers[2]);
+        TelemetryUtil.packet.put("rightFront", powers[3]);
+
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
     }
 
     public void drive(Gamepad gamepad) {
@@ -364,11 +382,14 @@ public class Drivetrain {
         double turn = gamepad.right_stick_x;
         TelemetryUtil.packet.put("turn", turn);
 
-        double p1 = forward + turn + strafe;
-        double p2 = forward + turn - strafe;
-        double p3 = forward - turn + strafe;
-        double p4 = forward - turn - strafe;
-        setMotorPowers(p1, p2, p3, p4);
+        double[] powers = {
+            forward + turn + strafe,
+            forward + turn - strafe,
+            forward - turn + strafe,
+            forward - turn - strafe
+        };
+        normalizeArray(powers);
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
     }
 
     boolean breakFollowing = false;

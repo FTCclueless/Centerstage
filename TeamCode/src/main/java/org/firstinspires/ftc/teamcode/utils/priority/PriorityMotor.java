@@ -37,6 +37,10 @@ public class PriorityMotor extends PriorityDevice{
         return power;
     }
 
+    public double getVelocity() {
+        return motor[0].getVelocity();
+    }
+
     @Override
     protected double getPriority(double timeRemaining) {
         if (power-lastPower == 0) {

@@ -6,6 +6,7 @@ import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 @Config
 // TODO: Get to cookin in teleop -- Eric
 public class Localizer {
+    Sensors sensors;
 
     public Encoder[] encoders;
     long lastTime = System.nanoTime();
@@ -41,15 +43,15 @@ public class Localizer {
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
     ArrayList<Double> loopTimes = new ArrayList<Double>();
 
-    BNO055IMU imu;
-
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
     double minAprilTagWeight = 1/40;
     double maxVel = 0.0;
 
-    public Localizer(HardwareMap hardwareMap, boolean useAprilTag) {
+    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag) {
+        this.sensors = sensors;
+
         encoders = new Encoder[3];
 
         encoders[0] = new Encoder(new Pose2d(0,4.7430916033),  1); // left
@@ -57,8 +59,6 @@ public class Localizer {
         encoders[2] = new Encoder(new Pose2d(-8.22447915751465, 0),  1); // back
 
         this.useAprilTag = useAprilTag;
-
-
 
         if (useAprilTag) {
             aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
