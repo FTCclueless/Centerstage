@@ -423,7 +423,7 @@ public class Drivetrain {
     }
 
     public boolean isBusy() {
-        return currentPath == null;
+        return currentPath != null;
     }
 
     public Vector2 lineCircleIntersection(Pose2d start, Pose2d end, Pose2d robot, double radius) {

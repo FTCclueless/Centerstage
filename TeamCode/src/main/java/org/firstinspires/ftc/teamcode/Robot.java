@@ -15,6 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
+import org.firstinspires.ftc.teamcode.tests.AutoPathTester;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -70,6 +71,7 @@ public class Robot {
     public void followSpline(Spline spline, LinearOpMode opMode) {
         drivetrain.setCurrentPath(spline);
         while(drivetrain.isBusy() && opMode.opModeIsActive()) {
+            System.out.println("huddy kim bricked the code 4");
             update();
         }
     }

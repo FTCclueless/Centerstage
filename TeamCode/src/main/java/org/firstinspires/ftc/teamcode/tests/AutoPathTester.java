@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,13 +18,14 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Config
 @TeleOp
 public class AutoPathTester extends LinearOpMode {
-
+    public Spline initSpline = null;
     boolean up = true;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
     @Override
     public void runOpMode() throws InterruptedException {
+
         Robot robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.AUTO;
 
@@ -30,8 +33,13 @@ public class AutoPathTester extends LinearOpMode {
         TeamPropDetectionPipeline teamPropDetectionPipeline;
 
         // TODO: add initalization sequence
+        System.out.println("huddy kim bricked the code");
+
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
+
+        System.out.println("huddy kim bricked the code2");
+
 
         while (opModeInInit()) {
             team_prop_location = teamPropDetectionPipeline.getTeamPropLocation();
@@ -43,7 +51,7 @@ public class AutoPathTester extends LinearOpMode {
             telemetry.update();
         }
 
-        Spline initSpline = null;
+
         Spline leaveSpline = null;
         if (up) {
             robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
@@ -51,8 +59,15 @@ public class AutoPathTester extends LinearOpMode {
             robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
         }
 
+        robot.update();
+
         // Wubba lubba dub dub
-        Pose2d pose = robot.drivetrain.getPoseEstimate();
+        Pose2d pose = robot.drivetrain.localizer.getPoseEstimate();
+        Log.e("pose: " , pose.x + "");
+        Log.e(pose.y + "", "" + pose.heading);
+        if (team_prop_location == null || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.NONE) {
+            team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        }
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
@@ -104,6 +119,21 @@ public class AutoPathTester extends LinearOpMode {
 
         waitForStart();
 
+        System.out.println("huddy kim bricked the code3");
+
+        Log.e("initSpline", initSpline + "");
+        System.out.println("initspline: "  + initSpline);
+        System.out.println(initSpline == null);
+        System.out.println("hsdfasdasfj");
+
         robot.followSpline(initSpline, this);
+        while (!gamepad1.a) {}
+        robot.followSpline(leaveSpline, this);
+        while (!gamepad1.a) {}
+        robot.followSpline(toSide, this);
+        while (!gamepad1.a) {}
+        robot.followSpline(toDeposit, this);
+        while (!gamepad1.a) {}
+        robot.followSpline(toPark, this);
     }
 }
