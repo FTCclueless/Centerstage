@@ -65,7 +65,7 @@ public class Slides {
             case READY:
                 break;
             case BUSY:
-                slidesMotors.setTargetPower(feedforward() - springC * (maxSlidesHeight-length)); //dunno how this springC will work --Kyle
+                //slidesMotors.setTargetPower(feedforward()); //dunno how this springC will work --Kyle
 
                 // 2nd check for redundancy
                 if (Math.abs(targetLength - length) <= slidesThreshold || (sensors.isSlidesDown() && targetLength <= slidesThreshold))

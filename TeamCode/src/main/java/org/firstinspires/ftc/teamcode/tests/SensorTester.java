@@ -7,6 +7,8 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @TeleOp
 public class SensorTester extends LinearOpMode {
@@ -25,6 +27,8 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("leftOdo", sensors.getOdometry()[0]);
             telemetry.addData("rightOdo", sensors.getOdometry()[1]);
             telemetry.addData("backOdo", sensors.getOdometry()[2]);
+
+            TelemetryUtil.packet.put("slidesPower", ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[0].getPower());
 
             telemetry.update();
         }
