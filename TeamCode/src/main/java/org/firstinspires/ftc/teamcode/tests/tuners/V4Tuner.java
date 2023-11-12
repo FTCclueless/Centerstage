@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Dunker;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
@@ -23,6 +24,7 @@ public class V4Tuner extends LinearOpMode {
         waitForStart();
         while (!isStopRequested()) {
             servo.dunker.setTargetPose(pos, 1); //do this for v4 bar and 2 turrets to find base position, then find their required positions
+            TelemetryUtil.packet.put("currentAngle", servo.dunker.getCurrentAngle());
             robot.update();
         }
     }
