@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 public class SlidesValueYoinker extends LinearOpMode { //this is probably useless --Kyle
     @Override
     public void runOpMode() {
-        Robot robot = new Robot(hardwareMap);
+        /*Robot robot = new Robot(hardwareMap);
         Slides slides = new Slides(hardwareMap, robot.hardwareQueue, robot.sensors);
 
         waitForStart();
@@ -46,6 +46,6 @@ public class SlidesValueYoinker extends LinearOpMode { //this is probably useles
                 }
             }
 
-        }
+        }*/
     }
 }

@@ -139,7 +139,7 @@ public class Deposit {
                 }
                 slides.setLength(depositMath.slideExtension);
 
-                if (slides.length > slidesV4Thresh)
+                if (slides.getLength() > slidesV4Thresh)
                     state = State.MOVE_V4UP;
 
                 break;

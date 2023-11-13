@@ -22,7 +22,7 @@ public class SlideKStaticYoinker extends LinearOpMode {
         waitForStart();
 
         double power = 0;
-        while (robot.sensors.getSlidesVelocity() < 50 && opModeIsActive()) {
+        while (robot.sensors.getSlidesVelocity() < 40 && opModeIsActive()) {
             power += 0.001;
             ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[0].setPower(-power);
             ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[1].setPower(-power);

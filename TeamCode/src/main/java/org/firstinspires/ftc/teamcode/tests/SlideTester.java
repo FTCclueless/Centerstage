@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
+import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @TeleOp
@@ -16,16 +18,17 @@ public class SlideTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        Slides slides = new Slides(hardwareMap, robot.hardwareQueue, robot.sensors);
+        Slides slides = robot.deposit.slides;
         waitForStart();
 
         while (!isStopRequested()) {
-            ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[0].setPower(0.2);
+            slides.setLength(distance);
 
-            //slides.setLength(distance);
-
-            slides.update();
-            robot.update();
+            Globals.START_LOOP();
+            robot.sensors.update();
+            robot.deposit.slides.update();
+            TelemetryUtil.sendTelemetry();
+            robot.hardwareQueue.update();
         }
     }
 }

@@ -1,16 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
-// TODO: Account for counterspringing in feedforward
 @Config
 public class Slides {
     public enum State {
@@ -20,20 +21,16 @@ public class Slides {
 
     private final PriorityMotor slidesMotors;
     public State state = State.READY;
-    public double length;
+    private double length;
     public double vel;
     private final Sensors sensors;
-    public static double angle = Math.toRadians(30);
-    public static double ticksToRadians = 0; // TODO
-    public static double radiansToInches = 0; // TODO
-    public static double maxSlidesHeight = 0; // TODO
-    public static double slidesThreshold = 0.5;
+    public static double ticksToInches = 0.04132142857142857;
+    public static double maxSlidesHeight = 28.3465;
     private double targetLength = 0;
-    public static double maxVel = 0; // TODO
-    public static double kP = 0; // TODO
-    public static double kA = 0; // TODO
-    public static double kStatic = 0.28; // TODO
-    public static double springC = 0.02; //TODO: should be force of power per inch
+    public static double maxVel = 1.6528571428571428;
+    public static double kP = 0.07;
+    public static double kA = 0.5;
+    public static double kStatic = 0.18700000000000014;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -54,28 +51,22 @@ public class Slides {
 
     private double feedforward() {
         double error = targetLength - length;
-        return (error * (maxVel / kA)) * kP + kStatic; // todo fix
+        TelemetryUtil.packet.put("Error", error);
+        return (error * (maxVel / kA)) * kP + kStatic;
     }
 
     public void update() {
-        length = sensors.getSlidesPos() * ticksToRadians * radiansToInches;
-        vel = sensors.getSlidesVelocity() * ticksToRadians * radiansToInches;
-
-        switch (state) {
-            case READY:
-                break;
-            case BUSY:
-                //slidesMotors.setTargetPower(feedforward()); //dunno how this springC will work --Kyle
-
-                // 2nd check for redundancy
-                if (Math.abs(targetLength - length) <= slidesThreshold || (sensors.isSlidesDown() && targetLength <= slidesThreshold))
-                    state = State.READY;
-                break;
-        }
+        length = sensors.getSlidesPos() * ticksToInches;
+        vel = sensors.getSlidesVelocity() * ticksToInches;
+        slidesMotors.setTargetPower(feedforward());
     }
 
     public void setLength(double length) {
         targetLength = Math.min(length, maxSlidesHeight);
         state = State.BUSY;
+    }
+
+    public double getLength() {
+        return length;
     }
 }
