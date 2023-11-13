@@ -230,7 +230,7 @@ public class Deposit {
                 endAffector.setV4Bar(intakePitch);
                 /* set v4bar to retract angle */
 
-                if (slides.state == Slides.State.READY && endAffector.checkReady())
+                if (!slides.isBusy() && endAffector.checkReady())
                     state = State.DOWN;
 
                 break;

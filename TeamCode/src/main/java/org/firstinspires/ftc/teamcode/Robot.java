@@ -85,7 +85,7 @@ public class Robot {
 
     public void dunk(int numpix) {
         deposit.inPlace();
-        while (!deposit.endAffector.checkReady() && !(deposit.slides.state == Slides.State.READY)) {
+        while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric
             update();
         }
         deposit.dunk(numpix);

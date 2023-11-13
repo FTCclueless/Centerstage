@@ -14,13 +14,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @Config
 public class Slides {
-    public enum State {
-        READY,
-        BUSY
-    }
-
     private final PriorityMotor slidesMotors;
-    public State state = State.READY;
     private double length;
     public double vel;
     private final Sensors sensors;
@@ -31,6 +25,7 @@ public class Slides {
     public static double kP = 0.07;
     public static double kA = 0.5;
     public static double kStatic = 0.18700000000000014;
+    public static double threshold = 0.5;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -63,7 +58,10 @@ public class Slides {
 
     public void setLength(double length) {
         targetLength = Math.min(length, maxSlidesHeight);
-        state = State.BUSY;
+    }
+
+    public boolean isBusy() {
+        return Math.abs(targetLength - length) <= threshold;
     }
 
     public double getLength() {
