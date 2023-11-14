@@ -21,7 +21,7 @@ public class Intake {
 
     private final PriorityMotor intake;
     private final PriorityServo actuation;
-    private State state = State.ON;
+    private State state = State.OFF;
     private final Sensors sensors;
 
     public static double intakePower = 0.5; // TODO: Made this editable in FTC dashboard
