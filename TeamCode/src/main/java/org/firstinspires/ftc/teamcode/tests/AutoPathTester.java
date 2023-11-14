@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @TeleOp
 public class AutoPathTester extends LinearOpMode {
     public Spline initSpline = null;
-    boolean up = true;
+    boolean up = false;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
@@ -71,6 +71,7 @@ public class AutoPathTester extends LinearOpMode {
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
+                        .setReversed(true)
                         .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
                         .setReversed(true)
@@ -80,6 +81,7 @@ public class AutoPathTester extends LinearOpMode {
                 break;
             case CENTER:
                 initSpline = new Spline(pose, 4)
+                        .setReversed(true)
                         .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
                 if (!up) {
                     leaveSpline = new Spline(initSpline.getLastPoint(), 4)
@@ -95,6 +97,7 @@ public class AutoPathTester extends LinearOpMode {
                 break;
             case RIGHT:
                 initSpline = new Spline(pose, 4)
+                        .setReversed(true)
                         .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-180)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
                         .addPoint(new Pose2d(pose.x, pose.y-48, 0));
