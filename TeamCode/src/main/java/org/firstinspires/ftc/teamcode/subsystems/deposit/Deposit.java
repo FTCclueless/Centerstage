@@ -139,7 +139,7 @@ public class Deposit {
                 }
                 slides.setLength(depositMath.slideExtension);
 
-                if (slides.length > slidesV4Thresh)
+                if (slides.getLength() > slidesV4Thresh)
                     state = State.MOVE_V4UP;
 
                 break;
@@ -230,7 +230,7 @@ public class Deposit {
                 endAffector.setV4Bar(intakePitch);
                 /* set v4bar to retract angle */
 
-                if (slides.state == Slides.State.READY && endAffector.checkReady())
+                if (!slides.isBusy() && endAffector.checkReady())
                     state = State.DOWN;
 
                 break;
