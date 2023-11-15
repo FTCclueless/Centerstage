@@ -54,9 +54,9 @@ public class AutoPathTester extends LinearOpMode {
 
         Spline leaveSpline = null;
         if (up) {
-            robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
+            robot.drivetrain.setPoseEstimate(new Pose2d(12, 65, Math.toRadians(90)));
         } else {
-            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
+            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 65, Math.toRadians(90))); // up and down are mixed together
         }
 
         robot.update();
@@ -73,7 +73,7 @@ public class AutoPathTester extends LinearOpMode {
             case LEFT:
                 initSpline = new Spline(pose, 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x+4, pose.y - 24, Math.toRadians(180)));
+                        .addPoint(new Pose2d(pose.x+4, pose.y - 24, Math.toRadians(180))); // going to deposit preload ground pixel
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
                         .setReversed(true)
                         .addPoint(new Pose2d(pose.x + 12, pose.y - 24, Math.toRadians(0)))
