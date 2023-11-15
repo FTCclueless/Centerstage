@@ -110,6 +110,15 @@ public class Spline {
         return null;
     }
 
+    public void setPoint(int index, Pose2d point, boolean reversed, double radius) {
+        poses.set(index, new SplinePose2d(point, reversed, radius));
+    }
+
+    public void setPoint(int index, SplinePose2d point, double heading) {
+        poses.set(index, new SplinePose2d(point.x, point.y, heading, point.reversed, point.radius));
+    }
+
+
     /**
      * Ideally the path should be behind it otherwise it would break
      * So if you do it wrong its your fault!

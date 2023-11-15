@@ -57,7 +57,7 @@ public class GroundPreloadAuto extends LinearOpMode {
         if (up) {
             robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
         } else {
-            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
+            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); //  up and down are mixed together
         }
 
         // Wubba lubba dub dub
@@ -65,16 +65,18 @@ public class GroundPreloadAuto extends LinearOpMode {
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
-                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
-                leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
+                    .setReversed(true)
+                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(180)));
+                leaveSpline = new Spline(new Pose2d(initSpline.getLastPoint().x, initSpline.getLastPoint().y, -initSpline.getLastPoint().heading), 4)
+                        .addPoint(new Pose2d(pose.x, pose.y-36,  Math.toRadians(0)));
 
                 break;
             case CENTER:
                 initSpline = new Spline(pose, 4)
+                    .setReversed(true)
                     .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
                 if (!up) {
-                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                    leaveSpline = new Spline(new Pose2d(initSpline.getLastPoint().x, initSpline.getLastPoint().y, -initSpline.getLastPoint().heading), 4)
                             .addPoint(new Pose2d(pose.x, pose.y - 12, Math.toRadians(-90)))
                             .addPoint(new Pose2d(pose.x - 24, pose.y - 24, Math.toRadians(-90)))
                             .addPoint(new Pose2d(pose.x - 24, pose.y - 48, Math.toRadians(0)));

@@ -68,39 +68,59 @@ public class AutoPathTester extends LinearOpMode {
         if (team_prop_location == null || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.NONE) {
             team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
         }
+        team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT; //temp testing code --kyle
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
+                        .addPoint(new Pose2d(pose.x+4, pose.y - 24, Math.toRadians(0)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x - 12, pose.y - 24, 0))
+                        .addPoint(new Pose2d(pose.x + 12, pose.y - 24, Math.toRadians(0)))
                         .setReversed(false)
-                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
+                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)))
+                        .addPoint(new Pose2d(pose.x + 8, pose.y-48, Math.toRadians(0)));
                 break;
             case CENTER:
                 initSpline = new Spline(pose, 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
+                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90))); // i don't know if this spline is createable, might need to be a gotopoint? --kyle
+                initSpline = null; //this is broken i hate everything im just going to use a gotopoint --kyle
                 if (!up) {
-                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                    leaveSpline = new Spline(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)), 4)
                             .setReversed(true)
-                            .addPoint(new Pose2d(pose.x, pose.y - 12, Math.toRadians(-90)))
-                            .addPoint(new Pose2d(pose.x - 24, pose.y - 24, Math.toRadians(-90)))
-                            .addPoint(new Pose2d(pose.x - 24, pose.y - 48, Math.toRadians(0)));
+                            .addPoint(new Pose2d(pose.x, pose.y - 6, Math.toRadians(90)))
+                            .setReversed(false)
+                            .addPoint(new Pose2d(pose.x - 12, pose.y - 24, Math.toRadians(180)))
+                            .addPoint(new Pose2d(pose.x - 24, pose.y - 40, Math.toRadians(-90)));
                 }
                 else {
-                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                            .addPoint(new Pose2d(pose.x + 12, pose.y - 24, 0));
+                    leaveSpline = new Spline(new Pose2d(pose.x, pose.y-24, Math.toRadians(-90)), 4)
+                            .setReversed(true)
+                            .addPoint(new Pose2d(pose.x, pose.y - 8, Math.toRadians(90)))
+                            .setReversed(false)
+                            .addPoint(new Pose2d(pose.x+24, pose.y-24, 0));
                 }
                 break;
             case RIGHT:
                 initSpline = new Spline(pose, 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-180)));
-                leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-48, 0));
+                        .addPoint(new Pose2d(pose.x-4, pose.y - 24, Math.toRadians(180)));
+
+                if (!up) {
+                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                            .setReversed(true)
+                            .addPoint(new Pose2d(pose.x, pose.y - 36, Math.toRadians(90)))
+                            .setReversed(false)
+                            .addPoint(new Pose2d(pose.x + 4, pose.y - 48, 0));
+                }
+                else {
+                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                            .setReversed(true)
+                            .addPoint(new Pose2d(pose.x, pose.y - 36, Math.toRadians(90)))
+                            .setReversed(false)
+                            .addPoint(new Pose2d(pose.x + 24, pose.y - 24, 0));
+                }
                 break;
             default:
                 // CRASH CRASH BAD BAD!
@@ -133,7 +153,9 @@ public class AutoPathTester extends LinearOpMode {
         while (!gamepad1.a) {}
         robot.followSpline(leaveSpline, this);
         while (!gamepad1.a) {}
-        robot.followSpline(toSide, this);
+        if (up && team_prop_location != TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT) { // maybe overcomplicating it?? --kyle
+            robot.followSpline(toSide, this);
+        }
         while (!gamepad1.a) {}
         robot.followSpline(toDeposit, this);
         while (!gamepad1.a) {}
