@@ -60,7 +60,7 @@ public class Deposit {
         dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
 
         endAffector.setV4Bar(intakePitch);
-        endAffector.setBotTurret(Math.PI);
+        endAffector.setBotTurret(0);
         //finish init other classes
     }
 
@@ -179,7 +179,7 @@ public class Deposit {
                 }
 
                 slides.setLength(depositMath.slideExtension);
-                endAffector.setBotTurret(depositMath.v4BarYaw);
+                //endAffector.setBotTurret(depositMath.v4BarYaw);  no adjustments in auto
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 if (depositMath.v4BarPitch < 0) {
@@ -187,11 +187,11 @@ public class Deposit {
                     Log.e("v4bar too low", "E");
                 }
 
-                if (Globals.RUNMODE == RunMode.TELEOP) {
+                /*if (Globals.RUNMODE == RunMode.TELEOP) {
                     endAffector.setTopTurret(-depositMath.v4BarYaw);
                 } else {
                     endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
-                }
+                } still not being used since unnecessary */
 
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
