@@ -111,10 +111,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.23969999999998992);
-        leftRear.setMinimumPowerToOvercomeFriction(0.3144999999999817);
-        rightRear.setMinimumPowerToOvercomeFriction(0.32859999999998013);
-        rightFront.setMinimumPowerToOvercomeFriction(0.3997999999999723);
+//        leftFront.setMinimumPowerToOvercomeFriction(0.34759999999997804);
+//        leftRear.setMinimumPowerToOvercomeFriction(0.5678999999999538);
+//        rightRear.setMinimumPowerToOvercomeFriction(0.38109999999997435);
+//        rightFront.setMinimumPowerToOvercomeFriction(0.3940999999999729);
     }
 
     public void setCurrentPath(Spline path) {
@@ -276,7 +276,8 @@ public class Drivetrain {
                 Log.e("lastpoint", target +"");
                 goToPoint(target);
                 //TODO tune the threshold
-                if (Math.abs(target.x-ROBOT_POSITION.x) < 0.5 && Math.abs(target.y-ROBOT_POSITION.y) < 0.5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(2)) {
+                if (Math.abs(target.x-ROBOT_POSITION.x) < 0.5 && Math.abs(target.y-ROBOT_POSITION.y) < 0.5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
+                    currentPath = null;
                     state = State.BRAKE;
                 }
                 break;
@@ -304,7 +305,7 @@ public class Drivetrain {
 
     public static double kx = 0.087; //todo tune these
     public static double ky = 0.05;
-    public static double kang = 0.64;
+    public static double kang = 0.78;
     public void goToPoint(Pose2d targetPoint) {
         double x = (targetPoint.x - localizer.x);
         double y = (targetPoint.y-localizer.y);

@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -71,7 +73,7 @@ public class Robot {
     public void followSpline(Spline spline, LinearOpMode opMode) {
         drivetrain.setCurrentPath(spline);
         while(drivetrain.isBusy() && opMode.opModeIsActive()) {
-            System.out.println("huddy kim bricked the code 4");
+            Log.e("isbusy: ", drivetrain.isBusy() + "");
             update();
         }
     }

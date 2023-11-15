@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @TeleOp
 public class AutoPathTester extends LinearOpMode {
     public Spline initSpline = null;
-    boolean up = false;
+    boolean up = true;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
@@ -155,7 +155,10 @@ public class AutoPathTester extends LinearOpMode {
         else {
             robot.goToPoint(new Pose2d( pose.x, pose.y-8, -90), this);
         }
-        while (!gamepad1.a) {}
+        Log.e("gampead1.a", gamepad1.a + "");
+        while (!gamepad1.a) {
+            Log.e("loop gampead1.a", gamepad1.a + "");
+        }
         robot.followSpline(leaveSpline, this);
         while (!gamepad1.a) {}
         if (up && team_prop_location != TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT) { // maybe overcomplicating it?? --kyle
