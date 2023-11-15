@@ -140,7 +140,7 @@ public class Deposit {
                 slides.setLength(depositMath.slideExtension);
 
                 if (slides.getLength() > slidesV4Thresh)
-                    state = State.MOVE_V4UP;
+                    state = State.FINISH_DEPOSIT; // skipping two cases because no need anymore --kyle
 
                 break;
             case MOVE_V4UP:
@@ -203,12 +203,12 @@ public class Deposit {
 
             case START_RETRACT:
                 endAffector.setBotTurret(0);
-                endAffector.setTopTurret(0);
+                endAffector.setTopTurret(Math.toRadians(180));
                 endAffector.setV4Bar(Math.PI/2);
                 /* move v4bar servo to minimum value before bricking */
 
                 if (endAffector.v4Servo.getCurrentAngle() == Math.PI/2)
-                    state = State.RETRACT_ROTATE180;
+                    state = State.FINISH_RETRACT; //skipping for same reason --kyle
 
                 break;
             case RETRACT_ROTATE180:
