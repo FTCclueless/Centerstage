@@ -73,7 +73,7 @@ public class AutoPathTester extends LinearOpMode {
             case LEFT:
                 initSpline = new Spline(pose, 4)
                         .setReversed(true)
-                        .addPoint(new Pose2d(pose.x+4, pose.y - 24, Math.toRadians(0)));
+                        .addPoint(new Pose2d(pose.x+4, pose.y - 24, Math.toRadians(180)));
                 leaveSpline = new Spline(initSpline.getLastPoint(), 4)
                         .setReversed(true)
                         .addPoint(new Pose2d(pose.x + 12, pose.y - 24, Math.toRadians(0)))
