@@ -149,7 +149,12 @@ public class AutoPathTester extends LinearOpMode {
         System.out.println(initSpline == null);
         System.out.println("hsdfasdasfj");
 
-        robot.followSpline(initSpline, this);
+        if (initSpline != null) {
+            robot.followSpline(initSpline, this);
+        }
+        else {
+            robot.goToPoint(new Pose2d( pose.x, pose.y-8, -90), this);
+        }
         while (!gamepad1.a) {}
         robot.followSpline(leaveSpline, this);
         while (!gamepad1.a) {}
