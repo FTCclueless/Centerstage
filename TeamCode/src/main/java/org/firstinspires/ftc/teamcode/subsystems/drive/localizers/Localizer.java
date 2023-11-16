@@ -75,6 +75,7 @@ public class Localizer {
         this.odoX = x;
         this.odoY = y;
         this.odoHeading += h - this.odoHeading;
+        currentPose = new Pose2d(x, y, h);
 //        imuTimeStamp = System.currentTimeMillis();
 //        lastPose = new MyPose2d(x,y,h);
 //        lastImuHeading = imu.getAngularOrientation().firstAngle;

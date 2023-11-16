@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -40,7 +41,7 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
-        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
+        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2, -1);
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
@@ -54,13 +55,14 @@ public class Intake {
                 1.0
         );
 
+        this.state = State.OFF;
         hardwareQueue.addDevice(intake);
     }
 
     public void update() {
-        actuation.setTargetAngle(Math.asin(actuationHeight/actuationLength), 1.0);
+        //actuation.setTargetAngle(Math.asin(actuationHeight/actuationLength), 1.0);
 
-        if (sensors.isIntakeTriggered() && !alreadyTriggered) {
+        /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
             if (state == State.ON) {
                 numberOfTimesIntakeBeamBreakTriggered++;
@@ -74,13 +76,13 @@ public class Intake {
 
         if (numberOfTimesIntakeBeamBreakTriggered > 2) {
             reverse();
-        }
+        }*/
 
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
-                if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
+                /*if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
                     if (!isAlreadyTriggered) {
                         isAlreadyTriggered = true;
                         startTime = System.currentTimeMillis();
@@ -89,16 +91,19 @@ public class Intake {
                         off();
                         isReady = true;
                     }
-                }
+                }*/
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
+                break;
             case REVERSED:
-                intake.setTargetPower(-intakePower);
-                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
-                    off();
-                }
+                intake.setTargetPower(-0.1);
+//                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
+//                    off();
+//                }
+                break;
         }
+       TelemetryUtil.packet.put("Intake State", state + "");
     }
 
     public void on() {

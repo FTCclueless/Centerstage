@@ -17,16 +17,8 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 @Autonomous(group = "opmodes", name = "Ground Preload Auto")
 public class GroundPreloadAuto extends LinearOpMode {
-    enum State {
-        READY
-    }
-
-    private State state = State.READY;
-    private Drivetrain.State heldDrivetrainState = null;
     private boolean up = false; // Is on top side of field
-    private boolean red = false;
-    private boolean blockedDepositPath = false;
-    private boolean changingPaths = true;
+    private boolean red = true;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
@@ -60,10 +52,15 @@ public class GroundPreloadAuto extends LinearOpMode {
             robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); //  up and down are mixed together
         }
 
+        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.NONE || team_prop_location == null) {
+            team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        }
+
         // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();
         switch (team_prop_location) {
             case LEFT:
+                System.out.println("LEFT");
                 initSpline = new Spline(pose, 4)
                     .setReversed(true)
                     .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(180)));
@@ -72,9 +69,10 @@ public class GroundPreloadAuto extends LinearOpMode {
 
                 break;
             case CENTER:
+                System.out.println("CENTER");
                 initSpline = new Spline(pose, 4)
                     .setReversed(true)
-                    .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
+                    .addPoint(new Pose2d(pose.x, pose.y - 28, Math.toRadians(-90)));
                 if (!up) {
                     leaveSpline = new Spline(new Pose2d(initSpline.getLastPoint().x, initSpline.getLastPoint().y, -initSpline.getLastPoint().heading), 4)
                             .addPoint(new Pose2d(pose.x, pose.y - 12, Math.toRadians(-90)))
@@ -83,10 +81,12 @@ public class GroundPreloadAuto extends LinearOpMode {
                 }
                 else {
                     leaveSpline = new Spline(initSpline.getLastPoint(), 4)
+                            .setReversed(true)
                             .addPoint(new Pose2d(pose.x + 12, pose.y - 24, 0));
                 }
                 break;
             case RIGHT:
+                System.out.println("RIGHT");
                 initSpline = new Spline(pose, 4)
                     .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-180)));
                 leaveSpline = new Spline(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)), 4)
@@ -107,6 +107,7 @@ public class GroundPreloadAuto extends LinearOpMode {
             initSpline = Spline.reflect(initSpline);
             leaveSpline = Spline.reflect(leaveSpline);
             toPark = Spline.reflect(toPark);
+            robot.drivetrain.setPoseEstimate(new Pose2d(pose.x, -pose.y, -pose.heading));
         }
 
         waitForStart();
@@ -114,10 +115,10 @@ public class GroundPreloadAuto extends LinearOpMode {
 
         robot.followSpline(initSpline, this);
 
-        robot.intake.reverse();
+        /*robot.intake.reverse();
         long time = System.currentTimeMillis();
         while (System.currentTimeMillis() - time < 3000) {
-            break;
+            robot.update();
         }
         robot.intake.off();
 
@@ -125,10 +126,6 @@ public class GroundPreloadAuto extends LinearOpMode {
             robot.goToPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)), this);
         }
         robot.followSpline(leaveSpline, this);
-        robot.followSpline(toPark, this);
-        while (opModeIsActive()) {
-            robot.drivetrain.goToPoint(toPark.getLastPoint());
-        }
-
+        robot.followSpline(toPark, this);*/
     }
 }

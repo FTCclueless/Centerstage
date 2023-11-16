@@ -53,7 +53,9 @@ public class Slides {
     public void update() {
         length = sensors.getSlidesPos() * ticksToInches;
         vel = sensors.getSlidesVelocity() * ticksToInches;
-        slidesMotors.setTargetPower(feedforward());
+        if (targetLength > 0.5) {
+            slidesMotors.setTargetPower(feedforward());
+        }
     }
 
     public void setLength(double length) {
