@@ -6,10 +6,12 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityDevice;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
+import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
 import java.util.ArrayList;
 
@@ -18,7 +20,6 @@ import java.util.ArrayList;
 public class ServoTester extends LinearOpMode {
 
     boolean controllerMode = true;
-
 
     public static double servoAngle = 0.0;
     public static int servoNumber = 0;
@@ -31,8 +32,8 @@ public class ServoTester extends LinearOpMode {
         ArrayList<PriorityServo> servos = new ArrayList<>();
 
         ButtonToggle toggleRightBumper = new ButtonToggle();
-        ButtonToggle buttonX = new ButtonToggle();
         ButtonToggle buttonY = new ButtonToggle();
+        ButtonToggle buttonA = new ButtonToggle();
 
         int servoSize = 0;
 
@@ -53,6 +54,8 @@ public class ServoTester extends LinearOpMode {
         double numLoops = 0;
         double totalTime = 0;
 
+        TelemetryUtil.setup();
+
         waitForStart();
 
         while (!isStopRequested()) {
@@ -65,7 +68,7 @@ public class ServoTester extends LinearOpMode {
             if (controllerMode) {
                 numLoops ++;
 
-                if (gamepad1.a) {
+                if (gamepad1.x) {
                     servoPos[servoIndex] += 0.001;
                 }
                 if (gamepad1.b){
@@ -80,24 +83,27 @@ public class ServoTester extends LinearOpMode {
                 totalTime += elapsedTime;
 
                 // incrementing / decrementing servoIndex
-                if (buttonX.isToggled(gamepad1.x)) {
-                    servoIndex -= 1;
+                if (buttonY.isClicked(gamepad1.y)) {
+                    servoIndex += 1;
                 }
 
-                if (buttonY.isToggled(gamepad1.y)) {
-                    servoIndex += 1;
+                if (buttonA.isClicked(gamepad1.a)) {
+                    servoIndex -= 1;
                 }
 
                 // if the servoIndex exceeds servoSize wrap around
                 servoIndex = Math.abs(servoIndex) % servoSize;
 
-                telemetry.addData("servoNum", servoIndex);
+                telemetry.addData("servoName", servos.get(servoIndex).name);
+                telemetry.addData("servoIndex", servoIndex);
                 telemetry.addData("servoPos", servoPos[servoIndex]);
                 telemetry.addData("averageServoTime", totalTime/numLoops);
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
-                telemetry.addData("servoAngle", servoAngle);
-                telemetry.addData("servoNumber", servoNumber);
+
+                TelemetryUtil.packet.put("servoAngle", servoAngle);
+                TelemetryUtil.packet.put("servoNumber", servoNumber);
+                TelemetryUtil.sendTelemetry();
             }
             telemetry.update();
         }

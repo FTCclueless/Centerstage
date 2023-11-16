@@ -277,6 +277,7 @@ public class Drivetrain {
                 for (PriorityMotor motor : motors) {
                     motor.setTargetPower(0);
                 }
+                state = State.DRIVE;
                 break;
             case DRIVE:
                 return;
@@ -312,7 +313,6 @@ public class Drivetrain {
         TelemetryUtil.packet.put("fwd", fwd);
         TelemetryUtil.packet.put("strafe", strafe);
         TelemetryUtil.packet.put("turn", turn);
-
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);

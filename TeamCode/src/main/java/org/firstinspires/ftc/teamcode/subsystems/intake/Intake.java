@@ -21,7 +21,7 @@ public class Intake {
     }
 
     private final PriorityMotor intake;
-    private final PriorityServo actuation;
+    public PriorityServo actuation;
     private State state = State.OFF;
     private final Sensors sensors;
 
@@ -31,7 +31,8 @@ public class Intake {
     private boolean alreadyTriggered = false;
     private int numberOfTimesIntakeBeamBreakTriggered = 0;
 
-    double actuationLength = 5.0;
+    double actuationLength = 3.5;
+    double actuationAngle = 0.0;
 
     private double delayToTurnOffIntake = 50; // ms
     private long startTime = 0; // ms
@@ -45,11 +46,11 @@ public class Intake {
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
-                PriorityServo.ServoType.AXON_MINI,
+                PriorityServo.ServoType.PRO_MODELER,
                 1.0,
                 0.0,
-                1.0,
-                0.0,
+                0.915,
+                0.663,
                 false,
                 1.0,
                 1.0
@@ -57,10 +58,13 @@ public class Intake {
 
         this.state = State.OFF;
         hardwareQueue.addDevice(intake);
+        hardwareQueue.addDevice(actuation);
     }
 
+    double maxHeightAtParallel = 2.4;
+
     public void update() {
-        //actuation.setTargetAngle(Math.asin(actuationHeight/actuationLength), 1.0);
+        actuation.setTargetAngle(actuationAngle, 1.0);
 
         /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
@@ -97,13 +101,12 @@ public class Intake {
                 intake.setTargetPower(0.0);
                 break;
             case REVERSED:
-                intake.setTargetPower(-0.1);
+                intake.setTargetPower(-0.65);
 //                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
 //                    off();
 //                }
                 break;
         }
-       TelemetryUtil.packet.put("Intake State", state + "");
     }
 
     public void on() {
@@ -131,12 +134,20 @@ public class Intake {
         state = State.REVERSED;
     }
 
-    private void setActuationHeight (double height) {
-        actuationHeight = Utils.minMaxClip(height, 0.5, 2.5);;
+    public void setActuationAngle (double angle) {
+        actuationAngle = angle;
     }
 
-    public void setActuationPixelHeight (int numPixels) {
-        setActuationHeight(numPixels * 0.5);
+    public void actuationDown () {
+        actuationAngle = 30;
+    }
+
+    public void actuationUp () {
+        actuationAngle = -90;
+    }
+
+    public void actuationSinglePixel () {
+        actuationAngle = 28;
     }
 
     public double getIntakeActuationOffset() {

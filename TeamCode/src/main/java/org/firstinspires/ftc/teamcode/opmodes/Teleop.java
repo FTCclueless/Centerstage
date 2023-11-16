@@ -39,10 +39,10 @@ public class Teleop extends LinearOpMode {
         while (!isStopRequested()) {
             // Weemawaeoeoewa :)
             if (btRightBumper.isClicked(gamepad1.right_bumper)) {
-                robot.intake.setActuationPixelHeight((int) (robot.intake.getIntakeActuationOffset() + 1));
+//                robot.intake.setActuationPixelHeight((int) (robot.intake.getIntakeActuationOffset() + 1));
             }
             if (btRightTrigger.isClicked(gamepad1.right_trigger > 0.2)) {
-                robot.intake.setActuationPixelHeight((int) (robot.intake.getIntakeActuationOffset() - 1));
+//                robot.intake.setActuationPixelHeight((int) (robot.intake.getIntakeActuationOffset() - 1));
             }
 
             boolean depoFlag = false;
