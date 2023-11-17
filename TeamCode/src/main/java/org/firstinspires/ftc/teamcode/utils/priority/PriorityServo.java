@@ -116,7 +116,7 @@ public class PriorityServo extends PriorityDevice{
         }
 
         TelemetryUtil.packet.put("reachedIntermediate", reachedIntermediate);
-        return (reachedIntermediate ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000.0 * priorityScale;
+        return (reachedIntermediate ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000000.0 * priorityScale;
     }
 
     @Override
