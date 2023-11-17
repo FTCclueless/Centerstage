@@ -115,6 +115,7 @@ public class PriorityServo extends PriorityDevice{
             return 0;
         }
 
+        TelemetryUtil.packet.put("reachedIntermediate", reachedIntermediate);
         return (reachedIntermediate ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000.0 * priorityScale;
     }
 
@@ -133,9 +134,9 @@ public class PriorityServo extends PriorityDevice{
         }
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
-        if (power == 1){
+        /*if (power == 1){ bruh -- Eric
             currentIntermediateTargetAngle = targetAngle; // makes it so that it goes to the end if the power is 1.0 ie no slow downs
-        }
+        }*/
 
         for (int i = 0; i < servo.length; i++) {
             servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle * multipliers[i])); //sets the servo to actual move to the target
