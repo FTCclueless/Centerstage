@@ -44,7 +44,7 @@ public class Deposit {
     double xOffset = 2;
     private double v4barClipThreshold = Math.toRadians(135);
     private static double intakePitch = Math.toRadians(225); //todo
-    public static double slidesV4Thresh = 4; //todo
+    public static double slidesV4Thresh = 12; //todo
 
     boolean inPlace = false;
 
@@ -60,7 +60,7 @@ public class Deposit {
         dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
 
         endAffector.setV4Bar(intakePitch);
-        endAffector.setBotTurret(0);
+        //endAffector.setBotTurret(0); these aren't used for lgm1
         //finish init other classes
     }
 
@@ -113,6 +113,7 @@ public class Deposit {
     public void update() {
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
+                targetY = 0; // temporary to remove bottom turret
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
                         xOffset,
@@ -126,6 +127,7 @@ public class Deposit {
                         yError = targetBoard.y - ROBOT_POSITION.y;
                         headingError = targetBoard.heading - ROBOT_POSITION.heading;
                     }
+                    yError = 0; // again temporary to remove bottom turret --Kyle
 
                     depositMath.calculate(
                         xError,
@@ -134,21 +136,21 @@ public class Deposit {
                         targetH, targetY
                     );
                 }
-                slides.setLength(depositMath.slideExtension);
+                slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
 
                 if (slides.getLength() > slidesV4Thresh)
-                    state = State.FINISH_DEPOSIT; // skipping two cases because no need anymore --kyle
+                    state = State.MOVE_V4UP;
 
                 break;
             case MOVE_V4UP:
                 endAffector.setV4Bar(Math.toRadians(90));
-                if (endAffector.v4Servo.getCurrentAngle() <= v4barClipThreshold)
+                if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(100))
                     state = State.EXTEND_ROTATE180;
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setBotTurret(Math.toRadians(0));
-                if (endAffector.botTurret.getCurrentAngle() < Math.toRadians(5)) {
+                endAffector.setTopTurret(Math.toRadians(0));
+                if (endAffector.topTurret.getCurrentAngle() < Math.toRadians(5)) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
@@ -180,7 +182,7 @@ public class Deposit {
                 endAffector.setV4Bar(depositMath.v4BarPitch);
 
                 if (depositMath.v4BarPitch < 0) {
-                    endAffector.setBotTurret(0);
+                    //endAffector.setBotTurret(0);
                     Log.e("v4bar too low", "E");
                 }
 
@@ -200,32 +202,30 @@ public class Deposit {
 
             case START_RETRACT:
                 slides.setLength(slides.getLength());
-                endAffector.setBotTurret(0);
-                endAffector.setTopTurret(Math.toRadians(180));
+                //endAffector.setBotTurret(0);
                 endAffector.setV4Bar(Math.PI/2);
                 /* move v4bar servo to minimum value before bricking */
 
                 if (endAffector.v4Servo.getCurrentAngle() == Math.PI/2)
-                    state = State.FINISH_RETRACT; //skipping for same reason --kyle
+                    state = State.RETRACT_ROTATE180; //skipping for same reason --kyle
 
                 break;
             case RETRACT_ROTATE180:
-                endAffector.setBotTurret(Math.PI);
-                if (endAffector.botTurret.getCurrentAngle() >= Math.toRadians(175) ) {
+                endAffector.setTopTurret(Math.toRadians(180));;
+                if (endAffector.topTurret.getCurrentAngle() >= Math.toRadians(175) ) {
                     state = State.MOVE_V4DOWN;
                 }
                 break;
             case MOVE_V4DOWN:
                 endAffector.setV4Bar(intakePitch);
-                slides.setLength(slidesV4Thresh);
-                if (endAffector.checkV4())
+                if (endAffector.checkV4()) {
                     state = State.FINISH_RETRACT;
+                }
                 break;
 
             case FINISH_RETRACT:
                 slides.setLength(0);
 
-                endAffector.setV4Bar(intakePitch);
                 /* set v4bar to retract angle */
 
                 if (!slides.isBusy() && endAffector.checkReady()) {
