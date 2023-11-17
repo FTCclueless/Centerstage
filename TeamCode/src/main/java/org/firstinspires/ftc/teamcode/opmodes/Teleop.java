@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -36,6 +37,8 @@ public class Teleop extends LinearOpMode {
 
         waitForStart();
 
+        boolean depoFlag = false;
+
         while (!isStopRequested()) {
             // Weemawaeoeoewa :)
             if (btRightBumper.isClicked(gamepad1.right_bumper)) {
@@ -45,42 +48,46 @@ public class Teleop extends LinearOpMode {
 //                robot.intake.setActuationPixelHeight((int) (robot.intake.getIntakeActuationOffset() - 1));
             }
 
-            boolean depoFlag = false;
-            if (btDpadUp.isClicked(gamepad1.dpad_up)) {
+            /*if (btDpadUp.isClicked(gamepad1.dpad_up)) {
                 depoFlag = true;
                 depoPos.y++;
             }
             if (btDpadDown.isClicked(gamepad1.dpad_down)) {
                 depoFlag = true;
                 depoPos.y--;
-            }
-            if (btDpadLeft.isClicked(gamepad1.dpad_left)) {
-                depoFlag = true;
+            }*/
+            if (btDpadLeft.isClicked(gamepad2.dpad_left)) {
                 depoPos.x--;
             }
-            if (btDpadRight.isClicked(gamepad1.dpad_right)) {
-                depoFlag = true;
+            if (btDpadRight.isClicked(gamepad2.dpad_right)) {
                 depoPos.x++;
             }
 
-            if (btLeftBumper.isClicked(gamepad1.left_bumper)) {
-                depoFlag = true;
-                depoPos.z++;
+            if (btLeftBumper.isClicked(gamepad2.dpad_up)) {
+                depoPos.z+=3;
             }
-            if (btLeftTrigger.isClicked(gamepad1.left_trigger > 0.2)) {
+            if (btLeftTrigger.isClicked(gamepad2.dpad_down)) {
+                depoPos.z-=3;
+            }
+            depoPos.z += gamepad2.left_stick_y;
+
+            if (btA.isClicked(gamepad2.a)) {
                 depoFlag = true;
-                depoPos.z--;
+            }
+            if (btB.isClicked(gamepad2.b)) {
+                depoFlag = false;
+                robot.deposit.retract();
             }
 
             if (depoFlag) {
-                robot.deposit.depositAt(depoPos.y, depoPos.x, depoPos.z);
+                robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
             }
 
             if (btX.isClicked(gamepad1.x)) {
                 robot.intake.toggle();
             }
 
-            if (btB.isClicked(gamepad1.b)) {
+            if (btB.isClicked(gamepad2.right_trigger > 0.2)) {
                 robot.deposit.dunk(1);
             }
 

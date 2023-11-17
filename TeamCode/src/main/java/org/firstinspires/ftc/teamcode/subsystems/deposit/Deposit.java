@@ -202,6 +202,7 @@ public class Deposit {
                 break;
 
             case START_RETRACT:
+                slides.setLength(slides.getLength());
                 endAffector.setBotTurret(0);
                 endAffector.setTopTurret(Math.toRadians(180));
                 endAffector.setV4Bar(Math.PI/2);
