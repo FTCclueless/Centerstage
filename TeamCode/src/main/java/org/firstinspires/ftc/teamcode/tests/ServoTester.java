@@ -33,6 +33,7 @@ public class ServoTester extends LinearOpMode {
 
         AnalogInput v4Bar = hardwareMap.get(AnalogInput.class, "V4BarServoEncoder");
         AnalogInput botEncoder = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
+        AnalogInput topEncoder = hardwareMap.get(AnalogInput.class, "topTurretEncoder");
 
         ArrayList<PriorityServo> servos = new ArrayList<>();
 
@@ -103,6 +104,7 @@ public class ServoTester extends LinearOpMode {
                 telemetry.addData("servoIndex", servoIndex);
                 telemetry.addData("servoPos", servoPos[servoIndex]);
                 telemetry.addData("averageServoTime", totalTime/numLoops);
+                telemetry.addData("v4Encoder", v4Bar);
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
 

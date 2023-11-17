@@ -8,11 +8,12 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoMINIP;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoTunable;
 
 public class EndAffector {
-    public final PriorityServoMINIP v4Servo;
-    public final PriorityServoMINIP botTurret;
-    public final PriorityServo topTurret;
+    public final PriorityServoTunable v4Servo;
+    public final PriorityServoTunable botTurret;
+    public final PriorityServoTunable topTurret;
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
     private double bottomAngle;
@@ -21,43 +22,50 @@ public class EndAffector {
     private double power = 1;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+        Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
+        double[] multipliers = new double[] {1.0, 1.0};
         // TODO: Value yoink
-        v4Servo = new PriorityServoMINIP(
-            hardwareMap.get(Servo.class, "V4BarServo"),
+        v4Servo = new PriorityServoTunable(
+            v4bar,
             "V4BarServo",
+            PriorityServo.ServoType.AXON_MINI,
             1,
-            0,
+            0.5,
             1,
+            0.5,
             0,
+            Math.toRadians(180),
             false,
-            1, 2,
-            hardwareMap.get(AnalogInput.class, "V4BarServoEncoder")
-        );
-        botTurret = new PriorityServoMINIP(
+            1, 2, multipliers);
+        botTurret = new PriorityServoTunable(
             hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
+            PriorityServo.ServoType.AXON_MINI,
             1,
+            0.29,
+            0.5,
             0,
-            1,
-            0,
+             0,
+             Math.toRadians(180),
             false,
-            1, 2,
-            hardwareMap.get(AnalogInput.class, "bottomTurretEncoder")
+            1, 2
         );
-        topTurret = new PriorityServoMINIP(
+        topTurret = new PriorityServoTunable(
             hardwareMap.get(Servo.class, "topTurret"),
             "topTurret",
+            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
             0,
+            0,
+            Math.toRadians(180),
             false,
-            1,2,
-                hardwareMap.get(AnalogInput.class, "topTurretEncoder")
+            1, 2
         );
         this.sensors = sensors;
         hardwareQueue.addDevice(v4Servo);
-        //hardwareQueue.addDevice(botTurret);
+        hardwareQueue.addDevice(botTurret);
         //hardwareQueue.addDevice(topTurret);
     }
 

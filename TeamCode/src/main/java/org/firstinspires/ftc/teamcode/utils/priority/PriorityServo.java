@@ -23,13 +23,13 @@ public class PriorityServo extends PriorityDevice{
         }
     }
 
-    public final Servo[] servo;
+    public Servo[] servo;
     public ServoType type;
     public double minPos, minAng, maxPos, maxAng, basePos;
     protected double currentAngle = 0, targetAngle = 0, power = 0;
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
-    protected double[] multipliers;
+    protected double[] multipliers = new double[] {1.0};
     private long lastLoopTime = System.nanoTime();
     public String name;
 
