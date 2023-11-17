@@ -25,7 +25,7 @@ public class PriorityServo extends PriorityDevice{
 
     public final Servo[] servo;
     public ServoType type;
-    public final double minPos, minAng, maxPos, maxAng, basePos;
+    public double minPos, minAng, maxPos, maxAng, basePos;
     protected double currentAngle = 0, targetAngle = 0, power = 0;
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
