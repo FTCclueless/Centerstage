@@ -23,16 +23,26 @@ public class PriorityServo extends PriorityDevice{
         }
     }
 
-    public final Servo servo;
+    public final Servo[] servo;
     public ServoType type;
     public final double minPos, minAng, maxPos, maxAng, basePos;
     protected double currentAngle = 0, targetAngle = 0, power = 0;
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
+    protected double[] multipliers;
     private long lastLoopTime = System.nanoTime();
     public String name;
 
     public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
+        this(new Servo[] {servo}, name, type, loadMultiplier, min, max, basePos, reversed, basePriority, priorityScale);
+    }
+
+    public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale, double[] multipliers) {
+        this(servo,name,type,loadMultiplier,min,max,basePos,reversed,basePriority,priorityScale);
+        this.multipliers = multipliers;
+    }
+
+    public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
         super(basePriority,priorityScale, name);
         this.servo = servo;
         this.type = type;
@@ -127,8 +137,9 @@ public class PriorityServo extends PriorityDevice{
             currentIntermediateTargetAngle = targetAngle; // makes it so that it goes to the end if the power is 1.0 ie no slow downs
         }
 
-        servo.setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
-
+        for (int i = 0; i < servo.length; i++) {
+            servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle * multipliers[i])); //sets the servo to actual move to the target
+        }
         lastUpdateTime = currentTime;
     }
 

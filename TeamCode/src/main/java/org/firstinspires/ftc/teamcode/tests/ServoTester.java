@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
@@ -24,10 +25,14 @@ public class ServoTester extends LinearOpMode {
     public static double servoAngle = 0.0;
     public static int servoNumber = 0;
 
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         HardwareQueue hardwareQueue = robot.hardwareQueue;
+
+        AnalogInput v4Bar = hardwareMap.get(AnalogInput.class, "V4BarServoEncoder");
+        AnalogInput botEncoder = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
 
         ArrayList<PriorityServo> servos = new ArrayList<>();
 
