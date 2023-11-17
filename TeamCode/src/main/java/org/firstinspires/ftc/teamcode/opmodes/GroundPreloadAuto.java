@@ -19,6 +19,13 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 public class GroundPreloadAuto extends LinearOpMode {
     private boolean up = true; // Is on top side of field
     private boolean blue = false;
+    enum PreloadGlobal {
+        TOP,
+        CENTER,
+        BOTTOM
+    }
+
+    PreloadGlobal preloadGlobal = PreloadGlobal.CENTER;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,7 +63,7 @@ public class GroundPreloadAuto extends LinearOpMode {
         robot.drivetrain.localizer.setPoseEstimate(pose);
 
         if (blue) {
-            pose.x *= -1;
+            pose.y *= -1;
             pose.heading *= -1;
         }
 
@@ -66,21 +73,24 @@ public class GroundPreloadAuto extends LinearOpMode {
 
         team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
-        switch (team_prop_location) {
-            case RIGHT:
+        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+            preloadGlobal = PreloadGlobal.CENTER;
+        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
+            preloadGlobal = PreloadGlobal.TOP;
+        }
+        else {
+            preloadGlobal = PreloadGlobal.BOTTOM;
+        }
+        long start = 0;
+
+        switch (preloadGlobal) {
+            case TOP:
                 if (up) {
                     robot.goToPoint(new Pose2d(12, 32 * reflect, 0), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 32 * reflect, 0), this);
                 }
-                break;
-            case CENTER:
-                if (up) {
-                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.toRadians(90)), this);
-                } else {
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
-                }
-                long start = System.currentTimeMillis();
+                start = System.currentTimeMillis();
                 robot.intake.actuationDown();
                 while(System.currentTimeMillis() - start <= 500) {
                     robot.update();
@@ -91,16 +101,54 @@ public class GroundPreloadAuto extends LinearOpMode {
                     robot.update();
                 }
                 robot.intake.off();
-                robot.goToPoint(new Pose2d(36, 60*reflect, 0), this);
-                robot.goToPoint(new Pose2d(53, 60*reflect, 0), this);
+
+                robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
+                robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
                 break;
-            case LEFT:
+            case CENTER:
+                if (up) {
+                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.toRadians(90)), this);
+
+                    start = System.currentTimeMillis();
+                    robot.intake.actuationDown();
+                    while(System.currentTimeMillis() - start <= 500) {
+                        robot.update();
+                    }
+                    start = System.currentTimeMillis();
+                    while(System.currentTimeMillis() - start <= 2000) {
+                        robot.intake.reverse();
+                        robot.update();
+                    }
+                    robot.intake.off();
+                    robot.goToPoint(new Pose2d(36, 60*reflect, 0), this);
+                    robot.goToPoint(new Pose2d(52, 60*reflect, 0), this);
+                } else {
+                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
+                }
+                break;
+            case BOTTOM:
                 if (up) {
                     robot.goToPoint(new Pose2d(12, 32 * reflect, Math.PI), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.PI), this);
                 }
+
+                start = System.currentTimeMillis();
+                robot.intake.actuationDown();
+                while(System.currentTimeMillis() - start <= 500) {
+                    robot.update();
+                }
+                start = System.currentTimeMillis();
+                while(System.currentTimeMillis() - start <= 2000) {
+                    robot.intake.reverse();
+                    robot.update();
+                }
+                robot.intake.off();
+
+                robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
+                robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
                 break;
+
         }
 
         robot.intake.actuationSinglePixel();
