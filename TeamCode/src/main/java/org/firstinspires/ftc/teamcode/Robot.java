@@ -83,6 +83,7 @@ public class Robot {
             drivetrain.goToPoint(pose);
             update();
         }
+        drivetrain.state = Drivetrain.State.BRAKE;
     }
 
     public void depositAt(double targetH, double targetY) {

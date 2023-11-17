@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Config
 @TeleOp
 public class DoublePreloadAuto extends LinearOpMode {
-    private boolean up = true; // Is on top side of field
+    private boolean up = false; // Is on top side of field
     private boolean blue = false;
 
     GroundPreloadAuto.PreloadGlobal preloadGlobal = GroundPreloadAuto.PreloadGlobal.CENTER;
@@ -47,14 +47,15 @@ public class DoublePreloadAuto extends LinearOpMode {
             telemetry.update();
         }
 
+        int reflect = blue ? 1 : -1; // Reflect for blue side
+
         if (up) {
-            robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
+            robot.drivetrain.setPoseEstimate(new Pose2d(12, 63, Math.toRadians(90 * reflect)));
         } else {
-            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
+            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 63, Math.toRadians(90 * reflect))); // up and down are mixed together
         }
 
         waitForStart();
-        int reflect = blue ? 1 : -1; // Reflect for blue side
 
         // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();

@@ -101,7 +101,7 @@ public class Intake {
                 intake.setTargetPower(0.0);
                 break;
             case REVERSED:
-                intake.setTargetPower(-0.65);
+                intake.setTargetPower(-0.7);
 //                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
 //                    off();
 //                }
@@ -139,7 +139,7 @@ public class Intake {
     }
 
     public void actuationDown () {
-        actuationAngle = 30;
+        actuationAngle = 40;
     }
 
     public void actuationUp () {

@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Autonomous(group = "opmodes", name = "Ground Preload Auto")
 public class GroundPreloadAuto extends LinearOpMode {
     private boolean up = true; // Is on top side of field
-    private boolean blue = false;
+    private boolean blue = true;
     enum PreloadGlobal {
         TOP,
         CENTER,
@@ -53,25 +53,24 @@ public class GroundPreloadAuto extends LinearOpMode {
             telemetry.update();
         }
 
+        int reflect = blue ? 1 : -1; // Reflect for blue side
+
         Pose2d pose = null;
         if (up) {
-            pose = new Pose2d(12, -60, Math.toRadians(-90));
+            pose = new Pose2d(12, -63, Math.toRadians(90 * reflect));
         } else {
-            pose = new Pose2d(-36, -60, Math.toRadians(90)); //  up and down are mixed together
+            pose = new Pose2d(-36, -63, Math.toRadians(90 * reflect)); //  up and down are mixed together
+        }
+
+        if (blue) {
+            pose.y *= -1;
         }
 
         robot.drivetrain.localizer.setPoseEstimate(pose);
 
-        if (blue) {
-            pose.y *= -1;
-            pose.heading *= -1;
-        }
-
         waitForStart();
 
-        int reflect = blue ? 1 : -1; // Reflect for blue side
-
-        team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT;
 
         if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
             preloadGlobal = PreloadGlobal.CENTER;
@@ -81,35 +80,35 @@ public class GroundPreloadAuto extends LinearOpMode {
         else {
             preloadGlobal = PreloadGlobal.BOTTOM;
         }
-        long start = 0;
 
         switch (preloadGlobal) {
             case TOP:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 32 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(13, 39 * reflect, 0), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(-32, 35 * reflect, 0), this);
                 }
 
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.toRadians(90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(12, 39 * reflect, Math.toRadians(-90 * reflect)), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.toRadians(-90 * reflect)), this);
                 }
                 break;
             case BOTTOM:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 32 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(12, 39 * reflect, Math.PI), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.PI), this);
                 }
 
                 break;
 
         }
-        start = System.currentTimeMillis();
+
+        long start = System.currentTimeMillis();
         robot.intake.actuationDown();
         while(System.currentTimeMillis() - start <= 500) {
             robot.update();
@@ -120,10 +119,8 @@ public class GroundPreloadAuto extends LinearOpMode {
             robot.update();
         }
         robot.intake.off();
-
-        robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
-        robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
-
-        robot.intake.actuationSinglePixel();
+        robot.goToPoint(new Pose2d(12, 60 * reflect, 0), this);
+        robot.goToPoint(new Pose2d(36, 60*reflect, 0), this);
+        robot.goToPoint(new Pose2d(53, 60*reflect, 0), this);
     }
 }
