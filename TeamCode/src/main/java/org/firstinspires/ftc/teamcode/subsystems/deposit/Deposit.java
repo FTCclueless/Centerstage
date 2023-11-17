@@ -201,7 +201,6 @@ public class Deposit {
                 break;
 
             case START_RETRACT:
-                slides.setLength(slides.getLength());
                 //endAffector.setBotTurret(0);
                 endAffector.setV4Bar(Math.PI/2);
                 /* move v4bar servo to minimum value before bricking */
