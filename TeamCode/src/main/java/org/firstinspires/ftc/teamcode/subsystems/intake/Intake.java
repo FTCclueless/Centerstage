@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -20,7 +21,7 @@ public class Intake {
     }
 
     private final PriorityMotor intake;
-    private final PriorityServo actuation;
+    public PriorityServo actuation;
     private State state = State.OFF;
     private final Sensors sensors;
 
@@ -30,7 +31,8 @@ public class Intake {
     private boolean alreadyTriggered = false;
     private int numberOfTimesIntakeBeamBreakTriggered = 0;
 
-    double actuationLength = 5.0;
+    double actuationLength = 3.5;
+    double actuationAngle = 0.0;
 
     private double delayToTurnOffIntake = 50; // ms
     private long startTime = 0; // ms
@@ -40,27 +42,31 @@ public class Intake {
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
-        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2);
+        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2, -1);
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
-                PriorityServo.ServoType.AXON_MINI,
+                PriorityServo.ServoType.PRO_MODELER,
                 1.0,
                 0.0,
-                1.0,
-                0.0,
+                0.915,
+                0.663,
                 false,
                 1.0,
                 1.0
         );
 
+        this.state = State.OFF;
         hardwareQueue.addDevice(intake);
+        hardwareQueue.addDevice(actuation);
     }
 
-    public void update() {
-        actuation.setTargetAngle(Math.asin(actuationHeight/actuationLength), 1.0);
+    double maxHeightAtParallel = 2.4;
 
-        if (sensors.isIntakeTriggered() && !alreadyTriggered) {
+    public void update() {
+        actuation.setTargetAngle(actuationAngle, 1.0);
+
+        /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
             if (state == State.ON) {
                 numberOfTimesIntakeBeamBreakTriggered++;
@@ -74,13 +80,13 @@ public class Intake {
 
         if (numberOfTimesIntakeBeamBreakTriggered > 2) {
             reverse();
-        }
+        }*/
 
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
-                if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
+                /*if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
                     if (!isAlreadyTriggered) {
                         isAlreadyTriggered = true;
                         startTime = System.currentTimeMillis();
@@ -89,15 +95,17 @@ public class Intake {
                         off();
                         isReady = true;
                     }
-                }
+                }*/
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
+                break;
             case REVERSED:
-                intake.setTargetPower(-intakePower);
-                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
-                    off();
-                }
+                intake.setTargetPower(-0.65);
+//                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
+//                    off();
+//                }
+                break;
         }
     }
 
@@ -126,12 +134,20 @@ public class Intake {
         state = State.REVERSED;
     }
 
-    private void setActuationHeight (double height) {
-        actuationHeight = Utils.minMaxClip(height, 0.5, 2.5);;
+    public void setActuationAngle (double angle) {
+        actuationAngle = angle;
     }
 
-    public void setActuationPixelHeight (int numPixels) {
-        setActuationHeight(numPixels * 0.5);
+    public void actuationDown () {
+        actuationAngle = 30;
+    }
+
+    public void actuationUp () {
+        actuationAngle = -90;
+    }
+
+    public void actuationSinglePixel () {
+        actuationAngle = 28;
     }
 
     public double getIntakeActuationOffset() {

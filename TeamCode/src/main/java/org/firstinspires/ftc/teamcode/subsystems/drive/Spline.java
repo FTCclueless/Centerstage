@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
 import java.util.ArrayList;
@@ -130,6 +131,15 @@ public class Spline {
         return this;
     }
 
+    public static Spline reflecth(Spline spline) {
+        Spline temp = new Spline(new Pose2d(0,0,0), spline.inchesPerNewPointGenerated);
+        temp.poses = new ArrayList<>();
+        for (SplinePose2d point : spline.poses) {
+            temp.poses.add(new SplinePose2d(point.x,-point.y, AngleUtil.clipAngle(point.heading + Math.PI),point.reversed,point.radius));
+        }
+        return temp;
+    }
+
     public static Spline reflect(Spline spline) {
         Spline temp = new Spline(new Pose2d(0,0,0), spline.inchesPerNewPointGenerated);
         temp.poses = new ArrayList<>();
@@ -138,5 +148,4 @@ public class Spline {
         }
         return temp;
     }
-
 }

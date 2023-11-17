@@ -79,8 +79,8 @@ public class Robot {
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
-        drivetrain.goToPoint(pose);
-        while((Math.abs(pose.x-ROBOT_POSITION.x) > 2 || Math.abs(pose.y-ROBOT_POSITION.y) > 2 || Math.abs(pose.heading - ROBOT_POSITION.heading) > Math.toRadians(2)) && opMode.opModeIsActive()) {
+        while((Math.abs(pose.x-ROBOT_POSITION.x) > 4 || Math.abs(pose.y-ROBOT_POSITION.y) > 4 || Math.abs(pose.heading - ROBOT_POSITION.heading) > Math.toRadians(5)) && opMode.opModeIsActive()) {
+            drivetrain.goToPoint(pose);
             update();
         }
     }

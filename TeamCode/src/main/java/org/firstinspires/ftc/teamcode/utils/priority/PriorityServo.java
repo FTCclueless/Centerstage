@@ -25,17 +25,19 @@ public class PriorityServo extends PriorityDevice{
 
     public final Servo servo;
     public ServoType type;
-    private final double minPos, minAng, maxPos, maxAng, basePos;
+    public final double minPos, minAng, maxPos, maxAng, basePos;
     protected double currentAngle = 0, targetAngle = 0, power = 0;
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
     private long lastLoopTime = System.nanoTime();
+    public String name;
 
     public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
         super(basePriority,priorityScale, name);
         this.servo = servo;
         this.type = type;
         this.type.speed *= loadMultiplier;
+        this.name = name;
         if (reversed) {
             this.type.positionPerRadian *= -1;
         }
@@ -126,6 +128,11 @@ public class PriorityServo extends PriorityDevice{
         }
 
         servo.setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
+
         lastUpdateTime = currentTime;
+    }
+
+    public double getTargetPosition () {
+        return convertAngleToPos(currentIntermediateTargetAngle);
     }
 }

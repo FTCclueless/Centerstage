@@ -111,10 +111,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-//        leftFront.setMinimumPowerToOvercomeFriction(0.34759999999997804);
-//        leftRear.setMinimumPowerToOvercomeFriction(0.5678999999999538);
-//        rightRear.setMinimumPowerToOvercomeFriction(0.38109999999997435);
-//        rightFront.setMinimumPowerToOvercomeFriction(0.3940999999999729);
+        leftFront.setMinimumPowerToOvercomeFriction(0.3351999999999794);
+        leftRear.setMinimumPowerToOvercomeFriction(0.4605999999999656);
+        rightRear.setMinimumPowerToOvercomeFriction(0.29679999999998363);
+        rightFront.setMinimumPowerToOvercomeFriction(0.39299999999997304);
     }
 
     public void setCurrentPath(Spline path) {
@@ -140,8 +140,6 @@ public class Drivetrain {
         Canvas canvas = TelemetryUtil.packet.fieldOverlay();
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
-        TelemetryUtil.packet.put("robot pos", ROBOT_POSITION.x);
-        TelemetryUtil.packet.put("odo raw", rightRear.motor[0].getCurrentPosition());
         ROBOT_VELOCITY = localizer.getPoseVelocity();
 
 
@@ -182,8 +180,6 @@ public class Drivetrain {
 
                     Pose2d lookAhead = currentPath.poses.get(targetIndex);
 
-                    TelemetryUtil.packet.put("pathIndex", pathIndex + "/" + currentPath.poses.size());
-
                     // Plot the lookahead point
                     canvas.setFill("#ff0000");
                     canvas.fillCircle(lookAhead.x, lookAhead.y, 1.5);
@@ -196,8 +192,6 @@ public class Drivetrain {
 
                     double relativeErrorY = error.y * Math.cos(estimate.heading) - error.x * Math.sin(estimate.heading);
                     double relativeErrorX = error.x * Math.cos(estimate.heading) + error.y * Math.sin(estimate.heading); // why calculate it like this??????
-
-                    TelemetryUtil.packet.put("rel_error", relativeErrorX + " " + relativeErrorY);
 
                     double radius = (error.x * error.x + error.y * error.y) / (2 * relativeErrorY);
                     radius *= Math.signum(relativeErrorX);
@@ -226,10 +220,7 @@ public class Drivetrain {
                     double targetStrafe = speed * relativeErrorY;
                     */
 
-                    TelemetryUtil.packet.put("error heading", error.heading);
-
-
-                    if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) < Math.toRadians(headingError)) {
+                    if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) - (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0) < Math.toRadians(headingError)) {
                         state = State.GO_POINT;
                         return;
                     }
@@ -271,13 +262,14 @@ public class Drivetrain {
                     */
                 break;
             case GO_POINT:
-                Log.e("gopoint!", "e");
                 Pose2d target = currentPath.getLastPoint();
-                Log.e("lastpoint", target +"");
                 goToPoint(target);
                 //TODO tune the threshold
-                if (Math.abs(target.x-ROBOT_POSITION.x) < 0.5 && Math.abs(target.y-ROBOT_POSITION.y) < 0.5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
-                    currentPath = null;
+                TelemetryUtil.packet.put("ErrorX", Math.abs(target.x - ROBOT_POSITION.x));
+                TelemetryUtil.packet.put("ErrorY", Math.abs(target.y - ROBOT_POSITION.y));
+                TelemetryUtil.packet.put("ErrorH", Math.abs(target.heading - ROBOT_POSITION.heading));
+
+                if (Math.abs(target.x-ROBOT_POSITION.x) < 2 && Math.abs(target.y-ROBOT_POSITION.y) < 2 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
                     state = State.BRAKE;
                 }
                 break;
@@ -285,10 +277,14 @@ public class Drivetrain {
                 for (PriorityMotor motor : motors) {
                     motor.setTargetPower(0);
                 }
+                state = State.DRIVE;
                 break;
             case DRIVE:
                 return;
+
         }
+        TelemetryUtil.packet.put("Drivetrain State", state);
+
 
     }
 
@@ -305,7 +301,7 @@ public class Drivetrain {
 
     public static double kx = 0.087; //todo tune these
     public static double ky = 0.05;
-    public static double kang = 0.78;
+    public static double kang = 0.64;
     public void goToPoint(Pose2d targetPoint) {
         double x = (targetPoint.x - localizer.x);
         double y = (targetPoint.y-localizer.y);
@@ -317,7 +313,6 @@ public class Drivetrain {
         TelemetryUtil.packet.put("fwd", fwd);
         TelemetryUtil.packet.put("strafe", strafe);
         TelemetryUtil.packet.put("turn", turn);
-
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
@@ -424,7 +419,7 @@ public class Drivetrain {
     }
 
     public boolean isBusy() {
-        return currentPath != null;
+        return state != State.BRAKE;
     }
 
     public Vector2 lineCircleIntersection(Pose2d start, Pose2d end, Pose2d robot, double radius) {
