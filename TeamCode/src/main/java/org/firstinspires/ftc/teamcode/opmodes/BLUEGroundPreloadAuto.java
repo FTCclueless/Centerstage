@@ -2,11 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -15,8 +12,8 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 // The following auto does NOT do the init
 
-@Autonomous(group = "opmodes", name = "Ground Preload Auto")
-public class GroundPreloadAuto extends LinearOpMode {
+@Autonomous(group = "opmodes", name = "BLUE Ground Preload Auto")
+public class BLUEGroundPreloadAuto extends LinearOpMode {
     private boolean up = true; // Is on top side of field
     private boolean blue = true;
     enum PreloadGlobal {
@@ -37,7 +34,7 @@ public class GroundPreloadAuto extends LinearOpMode {
         TeamPropDetectionPipeline teamPropDetectionPipeline;
 
         // TODO: add initalization sequence
-        teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
+        teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, false);
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
 
         while (opModeInInit()) {
@@ -70,8 +67,6 @@ public class GroundPreloadAuto extends LinearOpMode {
 
         waitForStart();
 
-        team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT;
-
         if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
             preloadGlobal = PreloadGlobal.CENTER;
         } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
@@ -101,7 +96,7 @@ public class GroundPreloadAuto extends LinearOpMode {
                 if (up) {
                     robot.goToPoint(new Pose2d(12, 39 * reflect, Math.PI), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(-32, 35 * reflect, Math.PI), this);
                 }
 
                 break;

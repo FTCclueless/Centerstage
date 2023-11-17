@@ -20,9 +20,9 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     static int YCRCB_CHANNEL_IDX = 1;
 
-    Rect leftRegion = new Rect(150,210,60,50);
-    Rect centerRegion = new Rect(270,210,60,50);
-    Rect rightRegion = new Rect(380,210,60,50);
+    Rect leftRegion = new Rect(85,260,95,50);
+    Rect centerRegion = new Rect(235,260,160,50);
+    Rect rightRegion = new Rect(435,260,85,50);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();
@@ -58,6 +58,9 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat input, long captureTimeNanos) {
+
+        // flip camera stream because neil is a monkey
+        Core.flip(input,input,-1);
 
         // converting color space to YCRCB
         Imgproc.cvtColor(input, cbMat, Imgproc.COLOR_RGB2YCrCb);

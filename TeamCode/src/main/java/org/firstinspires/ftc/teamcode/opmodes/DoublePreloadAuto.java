@@ -3,12 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -21,7 +18,7 @@ public class DoublePreloadAuto extends LinearOpMode {
     private boolean up = false; // Is on top side of field
     private boolean blue = false;
 
-    GroundPreloadAuto.PreloadGlobal preloadGlobal = GroundPreloadAuto.PreloadGlobal.CENTER;
+    REDGroundPreloadAuto.PreloadGlobal preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.CENTER;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
@@ -60,11 +57,11 @@ public class DoublePreloadAuto extends LinearOpMode {
         // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();
         if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
-            preloadGlobal = GroundPreloadAuto.PreloadGlobal.CENTER;
+            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.CENTER;
         } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
-            preloadGlobal = GroundPreloadAuto.PreloadGlobal.TOP;
+            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.TOP;
         } else {
-            preloadGlobal = GroundPreloadAuto.PreloadGlobal.BOTTOM;
+            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.BOTTOM;
         }
 
         long start = 0;
