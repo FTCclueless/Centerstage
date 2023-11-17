@@ -56,9 +56,9 @@ public class EndAffector {
                 hardwareMap.get(AnalogInput.class, "topTurretEncoder")
         );
         this.sensors = sensors;
-        hardwareQueue.addDevice(v4Servo);
-        hardwareQueue.addDevice(botTurret);
-        hardwareQueue.addDevice(topTurret);
+        //hardwareQueue.addDevice(v4Servo);
+        //hardwareQueue.addDevice(botTurret);
+        //hardwareQueue.addDevice(topTurret);
     }
 
     public double getPower() {

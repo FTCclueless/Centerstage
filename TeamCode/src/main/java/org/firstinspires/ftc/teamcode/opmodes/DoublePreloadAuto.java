@@ -122,5 +122,74 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
             robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
         }
+        else {
+            switch (preloadGlobal) {
+                case TOP:
+                    robot.goToPoint(new Pose2d(-32, 32 * reflect, 0), this);
+
+                    start = System.currentTimeMillis();
+                    robot.intake.actuationDown();
+                    while(System.currentTimeMillis() - start <= 500) {
+                        robot.update();
+                    }
+                    start = System.currentTimeMillis();
+                    while(System.currentTimeMillis() - start <= 2000) {
+                        robot.intake.reverse();
+                        robot.update();
+                    }
+                    robot.intake.off();
+
+                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(48, 42*reflect, 0), this);
+                    robot.depositAt(8, 6 * reflect);
+                    robot.dunk(1);
+                    break;
+                case CENTER:
+                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
+
+                    start = System.currentTimeMillis();
+                    robot.intake.actuationDown();
+                    while(System.currentTimeMillis() - start <= 500) {
+                        robot.update();
+                    }
+                    start = System.currentTimeMillis();
+                    while(System.currentTimeMillis() - start <= 2000) {
+                        robot.intake.reverse();
+                        robot.update();
+                    }
+                    robot.intake.off();
+
+                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
+                    robot.goToPoint( new Pose2d(36, 12 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(48, 36 * reflect, 0), this);
+                    robot.depositAt(8,0);
+                    robot.dunk(1);
+                    break;
+                case BOTTOM:
+                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.PI), this);
+
+                    start = System.currentTimeMillis();
+                    robot.intake.actuationDown();
+                    while(System.currentTimeMillis() - start <= 500) {
+                        robot.update();
+                    }
+                    start = System.currentTimeMillis();
+                    while(System.currentTimeMillis() - start <= 2000) {
+                        robot.intake.reverse();
+                        robot.update();
+                    }
+                    robot.intake.off();
+
+                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
+                    robot.goToPoint( new Pose2d(36, 12 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(48, 30 * reflect, 0), this);
+                    robot.depositAt(8,-6 * reflect);
+                    robot.dunk(1);
+                    break;
+            }
+            robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
+        }
     }
 }

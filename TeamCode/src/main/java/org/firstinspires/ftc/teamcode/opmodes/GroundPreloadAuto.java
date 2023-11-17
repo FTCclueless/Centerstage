@@ -90,38 +90,11 @@ public class GroundPreloadAuto extends LinearOpMode {
                 } else {
                     robot.goToPoint(new Pose2d(-32, 32 * reflect, 0), this);
                 }
-                start = System.currentTimeMillis();
-                robot.intake.actuationDown();
-                while(System.currentTimeMillis() - start <= 500) {
-                    robot.update();
-                }
-                start = System.currentTimeMillis();
-                while(System.currentTimeMillis() - start <= 2000) {
-                    robot.intake.reverse();
-                    robot.update();
-                }
-                robot.intake.off();
 
-                robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
-                robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.toRadians(90)), this);
-
-                    start = System.currentTimeMillis();
-                    robot.intake.actuationDown();
-                    while(System.currentTimeMillis() - start <= 500) {
-                        robot.update();
-                    }
-                    start = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - start <= 2000) {
-                        robot.intake.reverse();
-                        robot.update();
-                    }
-                    robot.intake.off();
-                    robot.goToPoint(new Pose2d(36, 60*reflect, 0), this);
-                    robot.goToPoint(new Pose2d(52, 60*reflect, 0), this);
+                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.toRadians(90 * reflect)), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
                 }
@@ -133,23 +106,23 @@ public class GroundPreloadAuto extends LinearOpMode {
                     robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.PI), this);
                 }
 
-                start = System.currentTimeMillis();
-                robot.intake.actuationDown();
-                while(System.currentTimeMillis() - start <= 500) {
-                    robot.update();
-                }
-                start = System.currentTimeMillis();
-                while(System.currentTimeMillis() - start <= 2000) {
-                    robot.intake.reverse();
-                    robot.update();
-                }
-                robot.intake.off();
-
-                robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
-                robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
                 break;
 
         }
+        start = System.currentTimeMillis();
+        robot.intake.actuationDown();
+        while(System.currentTimeMillis() - start <= 500) {
+            robot.update();
+        }
+        start = System.currentTimeMillis();
+        while(System.currentTimeMillis() - start <= 2000) {
+            robot.intake.reverse();
+            robot.update();
+        }
+        robot.intake.off();
+
+        robot.goToPoint(new Pose2d(pose.x, 12 * reflect, 0), this);
+        robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
 
         robot.intake.actuationSinglePixel();
     }

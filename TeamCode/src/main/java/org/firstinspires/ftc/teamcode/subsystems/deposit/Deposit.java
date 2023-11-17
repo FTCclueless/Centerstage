@@ -79,7 +79,7 @@ public class Deposit {
     }
 
     public void depositAt(double targetH, double targetY) {
-        this.depositAt(targetH, targetY, 2);
+        this.depositAt(targetH, targetY, 4);
     }
 
     public void resetXOffset() {
@@ -228,8 +228,10 @@ public class Deposit {
                 endAffector.setV4Bar(intakePitch);
                 /* set v4bar to retract angle */
 
-                if (!slides.isBusy() && endAffector.checkReady())
+                if (!slides.isBusy() && endAffector.checkReady()) {
+                    inPlace = false; // this might also be a temporary bomb rn --Kyle
                     state = State.DOWN;
+                }
 
                 break;
 

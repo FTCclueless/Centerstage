@@ -85,8 +85,10 @@ public class Robot {
         }
     }
 
-    public void depositAt(double targetX, double targetY) {
-        deposit.depositAt(targetX, targetY);
+    public void depositAt(double targetH, double targetY) {
+
+        deposit.inPlace(); // temporary since we're starting depositAt when we're alredy ready for lgm1 --Kyle
+        deposit.depositAt(targetH, targetY);
 
         while (deposit.state != Deposit.State.WAIT_DUNK) {
             update();
