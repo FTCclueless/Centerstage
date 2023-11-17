@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -17,13 +18,10 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 @Config
 @TeleOp
 public class DoublePreloadAuto extends LinearOpMode {
-    enum State {
-        READY
-    }
+    private boolean up = true; // Is on top side of field
+    private boolean blue = false;
 
-
-    private boolean up = false; // Is on top side of field
-
+    GroundPreloadAuto.PreloadGlobal preloadGlobal = GroundPreloadAuto.PreloadGlobal.CENTER;
 
     private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
 
@@ -49,96 +47,80 @@ public class DoublePreloadAuto extends LinearOpMode {
             telemetry.update();
         }
 
-        Spline initSpline = null;
-        Spline leaveSpline = null;
         if (up) {
             robot.drivetrain.setPoseEstimate(new Pose2d(12, 60, Math.toRadians(90)));
         } else {
             robot.drivetrain.setPoseEstimate(new Pose2d(-36, 60, Math.toRadians(90))); // up and down are mixed together
         }
 
+        waitForStart();
+        int reflect = blue ? 1 : -1; // Reflect for blue side
+
         // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();
-        switch (team_prop_location) {
-            case LEFT:
-                initSpline = new Spline(pose, 4)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(0)));
-                leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .setReversed(true)
-                        .addPoint(new Pose2d(pose.x - 12, pose.y - 24, 0))
-                        .setReversed(false)
-                        .addPoint(new Pose2d(pose.x, pose.y-36, Math.toRadians(-90)));
-                break;
-            case CENTER:
-                initSpline = new Spline(pose, 4)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-90)));
-                if (!up) {
-                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                            .setReversed(true)
-                            .addPoint(new Pose2d(pose.x, pose.y - 12, Math.toRadians(-90)))
-                            .addPoint(new Pose2d(pose.x - 24, pose.y - 24, Math.toRadians(-90)))
-                            .addPoint(new Pose2d(pose.x - 24, pose.y - 48, Math.toRadians(0)));
-                }
-                else {
-                    leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                            .addPoint(new Pose2d(pose.x + 12, pose.y - 24, 0));
-                }
-                break;
-            case RIGHT:
-                initSpline = new Spline(pose, 4)
-                        .addPoint(new Pose2d(pose.x, pose.y - 24, Math.toRadians(-180)));
-                leaveSpline = new Spline(initSpline.getLastPoint(), 4)
-                        .addPoint(new Pose2d(pose.x, pose.y-48, 0));
-                break;
-            default:
-                // CRASH CRASH BAD BAD!
-                RobotLog.e("BAD BAD! CRASH! SOMETHING TERRIBLE HAPPENED! GET HUDSON!");
-                break;
+        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+            preloadGlobal = GroundPreloadAuto.PreloadGlobal.CENTER;
+        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
+            preloadGlobal = GroundPreloadAuto.PreloadGlobal.TOP;
+        } else {
+            preloadGlobal = GroundPreloadAuto.PreloadGlobal.BOTTOM;
         }
 
-        Spline toSide = new Spline(leaveSpline.getLastPoint(), 4)
-                .addPoint(new Pose2d(36, 12, 0));
-
-        Spline toDeposit = new Spline(toSide.getLastPoint(), 4)
-                .addPoint(new Pose2d(40, 36, 0));
-
-        Spline toPark = new Spline(toDeposit.getLastPoint(), 4)
-                .setReversed(true)
-                .addPoint(new Pose2d(36, 12, 0))
-                .setReversed(false)
-                .addPoint(new Pose2d(60,12,0));
+        long start = 0;
 
 
-        robot.deposit.setTargetBoard(new Pose2d(64, 36, 0));
+        robot.goToPoint(new Pose2d(12, 60 * reflect, 0), this);
 
-        waitForStart();
+        if (up) {
+            switch (preloadGlobal) {
+                case TOP:
+                    robot.goToPoint(new Pose2d(48, 42 * reflect, 0), this);
+                    robot.depositAt(8,6 * reflect);
+                    robot.deposit.dunk(1);
+                    while (robot.deposit.state != Deposit.State.DOWN) {
+                        robot.update();
+                    }
 
-       robot.followSpline(initSpline, this);
+                    robot.goToPoint(new Pose2d(36, 36 * reflect, Math.PI), this);
 
-       robot.intake.reverse();
-       long time = System.currentTimeMillis();
-       while (System.currentTimeMillis() - time < 3000) {
-           break;
-       }
-       robot.intake.off();
+                    break;
 
-       robot.followSpline(leaveSpline, this);
-       robot.followSpline(toSide, this);
+                case CENTER:
+                    robot.goToPoint(new Pose2d(48, 36 * reflect, 0), this);
+                    robot.depositAt(8,0);
+                    robot.deposit.dunk(1);
+                    while (robot.deposit.state != Deposit.State.DOWN) {
+                        robot.update();
+                    }
 
-        double y;
-       if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT) {
-           y = 4.5;
-       }
-       else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT) {
-           y = -4.5;
-       }
-       else {
-           y = 0;
-       }
-       robot.deposit.depositAt(10, y, 3, 0, 0);
-       robot.followSpline(toDeposit, this);
-       robot.deposit.inPlace();
-       robot.deposit.dunk(1);
-       robot.followSpline(toPark, this);
+                    robot.goToPoint(new Pose2d(30, 24 * reflect, Math.PI), this);
+
+                    break;
+                case BOTTOM:
+                    robot.goToPoint(new Pose2d(48, 30*reflect, 0), this);
+                    robot.depositAt(8, 6);
+                    robot.deposit.dunk(1);
+                    while (robot.deposit.state != Deposit.State.DOWN) {
+                        robot.update();
+                    }
+
+                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.PI), this);
+            }
+
+            start = System.currentTimeMillis();
+            robot.intake.actuationDown();
+            while(System.currentTimeMillis() - start <= 500) {
+                robot.update();
+            }
+            start = System.currentTimeMillis();
+            while(System.currentTimeMillis() - start <= 2000) {
+                robot.intake.reverse();
+                robot.update();
+            }
+            robot.intake.off();
+
+            robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
+        }
     }
 }

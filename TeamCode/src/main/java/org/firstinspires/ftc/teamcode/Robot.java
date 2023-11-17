@@ -85,6 +85,14 @@ public class Robot {
         }
     }
 
+    public void depositAt(double targetX, double targetY) {
+        deposit.depositAt(targetX, targetY);
+
+        while (deposit.state != Deposit.State.WAIT_DUNK) {
+            update();
+        }
+    }
+
     public void dunk(int numpix) {
         deposit.inPlace();
         while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric

@@ -80,7 +80,7 @@ public class Teleop extends LinearOpMode {
             }
 
             if (depoFlag) {
-                robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
+                robot.deposit.depositAt(depoPos.z, depoPos.y);
             }
 
             if (btX.isClicked(gamepad1.x)) {

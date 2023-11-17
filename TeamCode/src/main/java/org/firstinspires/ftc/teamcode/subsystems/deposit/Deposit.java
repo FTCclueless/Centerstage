@@ -69,20 +69,17 @@ public class Deposit {
     }
 
     // Call this whenever you want! It can be an updating function!
-    public void depositAt(double targetH, double targetY, double xError, double yError, double headingError) {
+    public void depositAt(double targetH, double targetY, double xError) {
         this.targetH = targetH;
         this.targetY = targetY;
         this.xError = xError;
-        this.yError = yError;
-        this.headingError = headingError;
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
     }
 
-    public void depositAt(double targetH, double targetY, double xOffset) {
-        this.depositAt(targetH, targetY, 2, 0, 0);
-        this.xOffset = xOffset;
+    public void depositAt(double targetH, double targetY) {
+        this.depositAt(targetH, targetY, 2);
     }
 
     public void resetXOffset() {
