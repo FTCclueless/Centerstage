@@ -44,16 +44,16 @@ public class EndAffector {
             1, 2,
             hardwareMap.get(AnalogInput.class, "bottomTurretEncoder")
         );
-        topTurret = new PriorityServo(
+        topTurret = new PriorityServoMINIP(
             hardwareMap.get(Servo.class, "topTurret"),
             "topTurret",
-            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
             0,
             false,
-            1,2
+            1,2,
+                hardwareMap.get(AnalogInput.class, "topTurretEncoder")
         );
         this.sensors = sensors;
         hardwareQueue.addDevice(v4Servo);
