@@ -13,7 +13,8 @@ public class PriorityServo extends PriorityDevice{
         AMAZON(0.2122065908, Math.toRadians(60) / 0.13),
         PRO_MODELER(0.32698, Math.toRadians(60) / 0.139),
         JX(0.3183098862, Math.toRadians(60) / 0.12),
-        AXON_MINI(0.173623, Math.toRadians(330) / 1.05); //todo
+        AXON_MINI(0.173623, Math.toRadians(330) / 3), //todo
+        AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05);
 
         public double positionPerRadian;
         public double speed;

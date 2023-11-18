@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.airplane.Airplane;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Dunker;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
@@ -103,10 +104,12 @@ public class Robot {
     public void dunk(int numpix) {
         deposit.inPlace();
         while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric
+            System.out.println("first bomb");
             update();
         }
         deposit.dunk(numpix);
-        while (deposit.state == Deposit.State.WAIT_DUNK) {
+        while (deposit.dunker.dunkState != Dunker.DunkState.CHILL) {
+            System.out.println("Bomb 2");
             update();
         }
     }

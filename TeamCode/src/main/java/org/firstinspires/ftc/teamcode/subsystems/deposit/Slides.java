@@ -24,8 +24,8 @@ public class Slides {
     public static double maxVel = 1.6528571428571428;
     public static double kP = 0.07;
     public static double kA = 0.5;
-    public static double kStatic = 0.18700000000000014;
-    public static double threshold = 0.5;
+    public static double kStatic = 0.2770000000000002;
+    public static double threshold = 1.5;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -53,9 +53,7 @@ public class Slides {
     public void update() {
         length = sensors.getSlidesPos() * ticksToInches;
         vel = sensors.getSlidesVelocity() * ticksToInches;
-        if (targetLength > 0.5) {
-            slidesMotors.setTargetPower(feedforward());
-        }
+        slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 0.5),-0.5));
     }
 
     public void setLength(double length) {

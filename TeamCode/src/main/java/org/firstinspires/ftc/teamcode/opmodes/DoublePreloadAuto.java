@@ -75,7 +75,7 @@ public class DoublePreloadAuto extends LinearOpMode {
                     robot.goToPoint(new Pose2d(48, 42 * reflect, 0), this);
                     robot.depositAt(8,6 * reflect);
                     robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.DOWN) {
+                    while (robot.deposit.state != Deposit.State.WAIT) {
                         robot.update();
                     }
 
@@ -87,7 +87,7 @@ public class DoublePreloadAuto extends LinearOpMode {
                     robot.goToPoint(new Pose2d(48, 36 * reflect, 0), this);
                     robot.depositAt(8,0);
                     robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.DOWN) {
+                    while (robot.deposit.state != Deposit.State.WAIT) {
                         robot.update();
                     }
 
@@ -98,7 +98,7 @@ public class DoublePreloadAuto extends LinearOpMode {
                     robot.goToPoint(new Pose2d(48, 30*reflect, 0), this);
                     robot.depositAt(8, 6);
                     robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.DOWN) {
+                    while (robot.deposit.state != Deposit.State.WAIT) {
                         robot.update();
                     }
 

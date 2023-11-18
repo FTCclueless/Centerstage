@@ -84,7 +84,7 @@ public class ServoTester extends LinearOpMode {
 
                 // figuring out time to set servo pos
                 long start = System.nanoTime();
-                servos.get(servoIndex).setTargetPose(servoPos[servoIndex],1.0);
+                servos.get(servoIndex).setTargetPose(servoPos[servoIndex],0.3);
                 double elapsedTime = (System.nanoTime()-start)/1000000000.0;
                 totalTime += elapsedTime;
 
@@ -105,8 +105,9 @@ public class ServoTester extends LinearOpMode {
                 telemetry.addData("servoPos", servoPos[servoIndex]);
                 telemetry.addData("averageServoTime", totalTime/numLoops);
                 telemetry.addData("v4Encoder", v4Bar);
+                telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
             } else {
-                servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
+                servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 0.3);
 
                 TelemetryUtil.packet.put("servoAngle", servoAngle);
                 TelemetryUtil.packet.put("servoNumber", servoNumber);

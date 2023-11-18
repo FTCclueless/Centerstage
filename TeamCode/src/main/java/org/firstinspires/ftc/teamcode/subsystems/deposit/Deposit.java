@@ -23,8 +23,8 @@ public class Deposit {
         START_RETRACT,
         RETRACT_ROTATE180,
         MOVE_V4DOWN,
-        FINISH_RETRACT,
         DOWN,
+        WAIT,
     };
     public State state;
 
@@ -42,8 +42,11 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    private static double intakePitch = Math.toRadians(225); //todo
+    public static double intakePitch = 7.804; //todo
     public static double slidesV4Thresh = 12; //todo
+    public static double upPitch = 2.791;
+    public static double depositTop = 3.05829;
+    public static double intakeTop = 0;
 
     boolean inPlace = false;
 
@@ -52,14 +55,12 @@ public class Deposit {
         this.sensors = sensors;
         depositMath = new DepositMath();
 
-        state = State.DOWN;
+        state = State.WAIT;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
 
-        endAffector.setV4Bar(intakePitch);
-        //endAffector.setBotTurret(0); these aren't used for lgm1
         //finish init other classes
     }
 
@@ -73,7 +74,7 @@ public class Deposit {
         this.targetY = targetY;
         this.xError = xError;
 
-        if (state == State.DOWN)
+        if (state == State.WAIT)
             state = State.START_DEPOSIT;
     }
 
@@ -142,14 +143,14 @@ public class Deposit {
 
                 break;
             case MOVE_V4UP:
-                endAffector.setV4Bar(Math.toRadians(90));
-                if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(100))
+                endAffector.setV4Bar(upPitch);
+                if (endAffector.v4Servo.getCurrentAngle() == upPitch)
                     state = State.EXTEND_ROTATE180;
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setTopTurret(Math.toRadians(0));
-                if (endAffector.topTurret.getCurrentAngle() < Math.toRadians(5)) {
+                endAffector.setTopTurret(depositTop);
+                if (endAffector.topTurret.getCurrentAngle() == depositTop) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
@@ -202,39 +203,35 @@ public class Deposit {
 
             case START_RETRACT:
                 //endAffector.setBotTurret(0);
-                endAffector.setV4Bar(Math.PI/2);
+                slides.setLength(slidesV4Thresh);
+                endAffector.setV4Bar(upPitch);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.v4Servo.getCurrentAngle() == Math.PI/2)
+                if (endAffector.v4Servo.getCurrentAngle() == upPitch)
                     state = State.RETRACT_ROTATE180; //skipping for same reason --kyle
 
                 break;
             case RETRACT_ROTATE180:
-                endAffector.setTopTurret(Math.toRadians(180));;
-                if (endAffector.topTurret.getCurrentAngle() >= Math.toRadians(175) ) {
+                endAffector.setTopTurret(0);;
+                if (endAffector.topTurret.getCurrentAngle() == 0 ) {
                     state = State.MOVE_V4DOWN;
                 }
                 break;
             case MOVE_V4DOWN:
                 endAffector.setV4Bar(intakePitch);
-                if (endAffector.checkV4()) {
-                    state = State.FINISH_RETRACT;
+                if (endAffector.v4Servo.getCurrentAngle() == intakePitch) {
+                    state = State.DOWN;
                 }
                 break;
 
-            case FINISH_RETRACT:
-                slides.setLength(0);
+            case DOWN:
+                slides.setLength(-2);
 
                 /* set v4bar to retract angle */
 
-                if (!slides.isBusy() && endAffector.checkReady()) {
-                    inPlace = false; // this might also be a temporary bomb rn --Kyle
-                    state = State.DOWN;
-                }
-
                 break;
 
-            case DOWN: // We are boring :(
+            case WAIT: // We are boring :(
                 break;
         }
         slides.update();
