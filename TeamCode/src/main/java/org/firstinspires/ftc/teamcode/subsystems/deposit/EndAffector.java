@@ -31,7 +31,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.2,
+            0,
             false,
             1, 2,
             new double[] {1, -1}

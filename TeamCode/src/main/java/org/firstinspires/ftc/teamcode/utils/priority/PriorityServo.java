@@ -148,11 +148,11 @@ public class PriorityServo extends PriorityDevice{
             if (multipliers[i] == 1) {
                 servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
             } else {
-                servo[i].setPosition( convertAngleToPos(maxAng- currentIntermediateTargetAngle)-2*basePos); //this might be completely wrong --Kyle
+                servo[i].setPosition( 1 - convertAngleToPos(-currentIntermediateTargetAngle)); //this might be completely wrong --Kyle
             }
         }
         lastUpdateTime = currentTime;
-        System.out.println("SERVO UPDATE " + name + " " + ( convertAngleToPos(maxAng- currentIntermediateTargetAngle)-2*basePos));
+        System.out.println("SERVO UPDATE " + name + " " + ( 1 - convertAngleToPos(-currentIntermediateTargetAngle)));
     }
 
     public double getTargetPosition () {
