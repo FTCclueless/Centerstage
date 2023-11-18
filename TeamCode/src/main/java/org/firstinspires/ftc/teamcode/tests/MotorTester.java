@@ -49,9 +49,8 @@ public class MotorTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            robot.update();
-
             if (buttonX.isClicked(gamepad1.x)) {
+                motors.get(motorIndex).setTargetPower(0.0);
                 motorIndex++;
                 motorPower = 0.5;
             }
@@ -68,6 +67,8 @@ public class MotorTester extends LinearOpMode {
             motorIndex = Math.abs(motorIndex) % motorSize;
 
             motors.get(motorIndex).setTargetPower(motorPower);
+
+            robot.update();
 
             telemetry.addData("motor index", motorIndex);
             telemetry.addData("motor name", motors.get(motorIndex).name);

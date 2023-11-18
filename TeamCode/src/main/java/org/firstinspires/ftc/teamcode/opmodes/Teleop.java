@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -20,6 +21,7 @@ public class Teleop extends LinearOpMode {
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);
         Intake intake = robot.intake;
+        Hang hang = robot.hang;
 
         robot.drivetrain.setMinPowersToOvercomeFriction();
 
@@ -106,6 +108,15 @@ public class Teleop extends LinearOpMode {
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2)) {
                 robot.deposit.dunk(1);
                 depoPos = new Vector3(2,0,10);
+            }
+
+            // hanging mechanism
+            if (gamepad1.y) {
+                hang.on();
+            } else if (gamepad1.a) {
+                hang.reverse();
+            } else {
+                hang.off();
             }
 
             robot.drivetrain.drive(gamepad1);
