@@ -19,7 +19,7 @@ public class EndAffector {
     private double bottomAngle;
     private double targetPitch;
     private double topAngle;
-    private double power = 0.6;
+    private double power = 0.5;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
@@ -65,7 +65,8 @@ public class EndAffector {
         hardwareQueue.addDevice(topTurret);
 
         v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
-        botTurret.servo[0].setPosition(0.389);
+        topTurret.setTargetAngle(Deposit.intakeTop, 1.0);
+        botTurret.servo[0].setPosition(0.3819);
     }
 
     public double getPower() {
@@ -78,15 +79,15 @@ public class EndAffector {
 
     public void setBotTurret(double ang) {
         bottomAngle = ang;
-        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), power);
+        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), 0.5);
     }
     public void setTopTurret(double ang) {
         topAngle = ang;
-        topTurret.setTargetAngle(ang, power);
+        topTurret.setTargetAngle(ang, 0.5);
     }
     public void setV4Bar(double pitch) {
         targetPitch = pitch;
-        v4Servo.setTargetAngle(pitch, power);
+        v4Servo.setTargetAngle(pitch, 0.5);
     }
 
     public double getBottomAngle() {

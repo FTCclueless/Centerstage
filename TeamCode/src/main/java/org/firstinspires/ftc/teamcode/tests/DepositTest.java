@@ -23,6 +23,9 @@ public class DepositTest extends LinearOpMode{
 
         waitForStart();
 
+        robot
+
+/*
         while (opModeIsActive()) {
             robot.intake.on();
 
@@ -37,6 +40,6 @@ public class DepositTest extends LinearOpMode{
             }
 
             robot.update();
-        }
+        }*/
     }
 }

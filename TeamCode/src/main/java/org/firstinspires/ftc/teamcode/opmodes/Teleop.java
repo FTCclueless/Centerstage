@@ -51,11 +51,11 @@ public class Teleop extends LinearOpMode {
 
             // adjusting angle of actuation
             if (gamepad1.right_bumper) {
-                robot.intake.actuation.setTargetAngle(robot.intake.actuation.getCurrentAngle() + 5, 1.0);
+                robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() + Math.toRadians(5));
             }
 
             if (gamepad1.right_trigger > 0.2) {
-                robot.intake.actuation.setTargetAngle(robot.intake.actuation.getCurrentAngle() - 5, 1.0);
+                robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() - Math.toRadians(5));
             }
 
             /*if (dpadUp_1.isClicked(gamepad1.dpad_up)) {
@@ -84,7 +84,7 @@ public class Teleop extends LinearOpMode {
             }
             if (b_2.isClicked(gamepad2.b)) {
                 depoFlag = false;
-                robot.deposit.retract();
+                robot.deposit.state = Deposit.State.START_RETRACT;
             }
 
             if (depoFlag) {

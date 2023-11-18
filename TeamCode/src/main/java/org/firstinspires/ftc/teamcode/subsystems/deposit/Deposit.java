@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 @Config
@@ -44,10 +45,10 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = 7.784; //todo
+    public static double intakePitch = 7.936; //todo
     public static double slidesV4Thresh = 12; //todo
     public static double upPitch = 2.791;
-    public static double depositTop = 3.05829;
+    public static double depositTop = 3.058;
     public static double intakeTop = 0;
 
     boolean inPlace = false;
@@ -75,6 +76,7 @@ public class Deposit {
         this.targetH = targetH;
         this.targetY = targetY;
         this.xError = xError;
+        inPlace();
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
@@ -113,6 +115,7 @@ public class Deposit {
     }
 
     public void update() {
+        TelemetryUtil.packet.put("depoState", state);
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
                 targetY = 0; // temporary to remove bottom turret
@@ -214,12 +217,13 @@ public class Deposit {
 
                 break;
             case RETRACT_ROTATE180:
-                endAffector.setTopTurret(0);;
-                if (endAffector.topTurret.getCurrentAngle() == 0 ) {
+                endAffector.setTopTurret(intakeTop);;
+                if (endAffector.topTurret.getCurrentAngle() == intakeTop ) {
                     state = State.MOVE_V4DOWN;
                 }
                 break;
             case MOVE_V4DOWN:
+                System.out.println("out");
                 endAffector.setV4Bar(intakePitch);
                 if (endAffector.v4Servo.getCurrentAngle() == intakePitch) {
                     state = State.DOWN;

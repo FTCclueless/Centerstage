@@ -79,7 +79,7 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
         switch (preloadGlobal) {
             case TOP:
                 if (up) {
-                    robot.goToPoint(new Pose2d(13, 39 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(15, 35 * reflect, 0), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 35 * reflect, 0), this);
                 }
@@ -87,29 +87,27 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 39 * reflect, Math.toRadians(-90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(7.5, 38 * reflect, Math.toRadians(-90 * reflect)), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.toRadians(-90 * reflect)), this);
                 }
                 break;
             case BOTTOM:
                 if (up) {
-                    robot.goToPoint(new Pose2d(12, 39 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(14.5, 35 * reflect, Math.PI), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 35 * reflect, Math.PI), this);
                 }
-
                 break;
-
         }
 
         long start = System.currentTimeMillis();
-        robot.intake.actuationDown();
-        while(System.currentTimeMillis() - start <= 500) {
-            robot.update();
-        }
-        start = System.currentTimeMillis();
-        while(System.currentTimeMillis() - start <= 2000) {
+//        robot.intake.actuationDown();
+//        while(System.currentTimeMillis() - start <= 100) {
+//            robot.update();
+//        }
+//        start = System.currentTimeMillis();
+        while(System.currentTimeMillis() - start <= 6000) {
             robot.intake.reverse();
             robot.update();
         }
