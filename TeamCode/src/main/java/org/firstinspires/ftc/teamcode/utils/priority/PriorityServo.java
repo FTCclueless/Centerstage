@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils.priority;
 
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
 public class PriorityServo extends PriorityDevice{
@@ -29,7 +30,7 @@ public class PriorityServo extends PriorityDevice{
     protected double currentAngle = 0, targetAngle = 0, power = 0;
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
-    protected double[] multipliers = new double[] {1.0};
+    protected double[] multipliers = null;
     private long lastLoopTime = System.nanoTime();
     public String name;
 
@@ -61,6 +62,11 @@ public class PriorityServo extends PriorityDevice{
         maxAng = convertPosToAngle(maxPos);
 
         callLengthMillis = 1.0;
+
+        multipliers = new double[servo.length];
+        for (int i = 0; i < servo.length; i++) {
+            multipliers[i] = 1;
+        }
     }
 
     public double convertPosToAngle(double pos){
@@ -139,9 +145,14 @@ public class PriorityServo extends PriorityDevice{
         }
 
         for (int i = 0; i < servo.length; i++) {
-            servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle * multipliers[i])); //sets the servo to actual move to the target
+            if (multipliers[i] == 1) {
+                servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
+            } else {
+                servo[i].setPosition( convertAngleToPos(maxAng- currentIntermediateTargetAngle)-2*basePos); //this might be completely wrong --Kyle
+            }
         }
         lastUpdateTime = currentTime;
+        System.out.println("SERVO UPDATE " + name + " " + ( convertAngleToPos(maxAng- currentIntermediateTargetAngle)-2*basePos));
     }
 
     public double getTargetPosition () {
