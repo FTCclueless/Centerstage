@@ -34,7 +34,7 @@ public class Dunker {
                 0,
                 false,
                 1, 2);
-        //hardwareQueue.addDevice(dunker);
+        hardwareQueue.addDevice(dunker);
     }
 
     public void dunk1() {

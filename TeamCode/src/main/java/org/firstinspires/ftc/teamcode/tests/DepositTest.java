@@ -21,6 +21,7 @@ public class DepositTest extends LinearOpMode{
 
         while (opModeIsActive()) {
             robot.deposit.state = state;
+            robot.intake.on();
 
             robot.update();
         }

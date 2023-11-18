@@ -58,7 +58,7 @@ public class Intake {
 
         this.state = State.OFF;
         hardwareQueue.addDevice(intake);
-        hardwareQueue.addDevice(actuation);
+        //hardwareQueue.addDevice(actuation); BOMBS -- Eric FIXME
     }
 
     double maxHeightAtParallel = 2.4;
