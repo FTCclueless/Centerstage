@@ -26,6 +26,7 @@ public class Teleop extends LinearOpMode {
         robot.drivetrain.setMinPowersToOvercomeFriction();
 
         Globals.RUNMODE = RunMode.TELEOP;
+        robot.deposit.state = Deposit.State.DOWN;
 
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
@@ -108,6 +109,10 @@ public class Teleop extends LinearOpMode {
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2)) {
                 robot.deposit.dunk(1);
                 depoPos = new Vector3(2,0,10);
+            }
+
+            if (a_2.isClicked(gamepad2.a)) {
+                robot.depositAt(depoPos.z, depoPos.y);
             }
 
             // hanging mechanism

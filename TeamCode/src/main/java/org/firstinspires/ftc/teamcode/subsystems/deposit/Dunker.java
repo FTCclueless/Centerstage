@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 @Config
 public class Dunker {
     public PriorityServo dunker;
-    public static double dunkPos = 0.146; //TODO
+    public static double dunkPos = 0.2; //TODO
     public static double holdPos = 0.417;
     public enum DunkState {
         STARTDUNK,
@@ -58,7 +58,7 @@ public class Dunker {
             case CHILL:
                 break;
             case STARTDUNK:
-                dunker.setTargetPose(dunkPos, 0.01);
+                dunker.setTargetPose(dunkPos, 0.7);
                 dunkState = DunkState.WAIT;
                 break;
             case WAIT:

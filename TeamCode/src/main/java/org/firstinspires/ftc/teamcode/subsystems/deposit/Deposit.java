@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 
 import android.util.Log;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
+@Config
 public class Deposit {
     DepositMath depositMath;
     public enum State {
@@ -42,7 +44,7 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = 7.804; //todo
+    public static double intakePitch = 7.784; //todo
     public static double slidesV4Thresh = 12; //todo
     public static double upPitch = 2.791;
     public static double depositTop = 3.05829;
@@ -55,7 +57,7 @@ public class Deposit {
         this.sensors = sensors;
         depositMath = new DepositMath();
 
-        state = State.WAIT;
+        state = State.DOWN;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
@@ -74,7 +76,7 @@ public class Deposit {
         this.targetY = targetY;
         this.xError = xError;
 
-        if (state == State.WAIT)
+        if (state == State.DOWN)
             state = State.START_DEPOSIT;
     }
 
@@ -196,7 +198,7 @@ public class Deposit {
 
                 break;
             case WAIT_DUNK:
-                if (Globals.RUNMODE == RunMode.TELEOP) {
+                if (Globals.RUNMODE == RunMode.AUTO && dunker.dunkState == Dunker.DunkState.CHILL) {
                     state = State.START_RETRACT;
                 }
                 break;
@@ -225,7 +227,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                slides.setLength(-2);
+                slides.setLength(-2.5);
 
                 /* set v4bar to retract angle */
 
