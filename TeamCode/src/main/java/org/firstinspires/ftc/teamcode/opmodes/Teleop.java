@@ -56,12 +56,7 @@ public class Teleop extends LinearOpMode {
                 depoFlag = true;
                 depoPos.y--;
             }*/
-            if (btDpadLeft.isClicked(gamepad2.dpad_left)) {
-                depoPos.x--;
-            }
-            if (btDpadRight.isClicked(gamepad2.dpad_right)) {
-                depoPos.x++;
-            }
+            depoPos.x += gamepad2.right_stick_y * 0.2;
 
             if (btLeftBumper.isClicked(gamepad2.dpad_up)) {
                 depoPos.z+=3;
