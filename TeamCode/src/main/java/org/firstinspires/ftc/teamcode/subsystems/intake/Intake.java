@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
 public class Intake {
-    enum State {
+    public enum State {
         ON,
         OFF,
         REVERSED
@@ -22,7 +22,7 @@ public class Intake {
 
     private final PriorityMotor intake;
     public PriorityServo actuation;
-    private State state = State.OFF;
+    public State state = State.OFF;
     private final Sensors sensors;
 
     public static double intakePower = 0.5; // TODO: Made this editable in FTC dashboard
@@ -120,14 +120,6 @@ public class Intake {
         isAlreadyTriggered = false;
         numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.OFF;
-    }
-
-    public void toggle() {
-        if (state == State.ON) {
-            off();
-        } else if (state == State.OFF) {
-            on();
-        }
     }
 
     public void reverse() {
