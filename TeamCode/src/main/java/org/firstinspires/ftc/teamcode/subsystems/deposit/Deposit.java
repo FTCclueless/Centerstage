@@ -42,7 +42,6 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    private double v4barClipThreshold = Math.toRadians(135);
     private static double intakePitch = Math.toRadians(225); //todo
     public static double slidesV4Thresh = 12; //todo
 

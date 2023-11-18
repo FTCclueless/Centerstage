@@ -27,14 +27,14 @@ public class Dunker {
 
     public Dunker(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         dunker = new PriorityServo(hardwareMap.get(Servo.class, "dunker"), "dunker",
-                PriorityServo.ServoType.AXON_MINI,
+                PriorityServo.ServoType.SPEED,
                 1,
                 0,
                 1,
                 0,
                 false,
                 1, 2);
-        hardwareQueue.addDevice(dunker);
+        //hardwareQueue.addDevice(dunker);
     }
 
     public void dunk1() {
