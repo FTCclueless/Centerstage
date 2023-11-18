@@ -2,11 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -15,9 +12,9 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 // The following auto does NOT do the init
 
-@Autonomous(group = "opmodes", name = "RED Ground Preload Auto")
-public class REDGroundPreloadAuto extends LinearOpMode {
-    private boolean up = true; // Is on top side of field
+@Autonomous(group = "opmodes", name = "RED Ground Preload Auto Down")
+public class REDGroundPreloadAutoDown extends LinearOpMode {
+    private boolean up = false; // Is on top side of field
     private boolean blue = false;
     enum PreloadGlobal {
         TOP,
@@ -84,22 +81,22 @@ public class REDGroundPreloadAuto extends LinearOpMode {
                 if (up) {
                     robot.goToPoint(new Pose2d(15, 35 * reflect, 0), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 35 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(-28, 35 * reflect, 0), this);
                 }
 
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(10, 38 * reflect, Math.toRadians(-90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(7.5, 35.5 * reflect, Math.toRadians(-90 * reflect)), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.toRadians(-90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(-32, 35.5 * reflect, Math.toRadians(-90 * reflect)), this);
                 }
                 break;
             case BOTTOM:
                 if (up) {
                     robot.goToPoint(new Pose2d(14.5, 35 * reflect, Math.PI), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 35 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(-36, 35 * reflect, Math.PI), this);
                 }
                 break;
         }
@@ -116,15 +113,17 @@ public class REDGroundPreloadAuto extends LinearOpMode {
         }
         robot.intake.off();
         if (!up) {
-            if (preloadGlobal == PreloadGlobal.CENTER) {
-                robot.goToPoint(new Pose2d(-53, 50 * reflect, Math.toRadians(-90) * reflect), this);
-                robot.goToPoint(new Pose2d(-53, 50 * reflect, 0), this);
-                robot.goToPoint(new Pose2d(-53, 10 * reflect, 0), this);
-                robot.goToPoint(new Pose2d(53, 10*reflect, 0), this);
+            if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+                robot.goToPoint(new Pose2d(-53, 55 * reflect, 0), this);
+                start = System.currentTimeMillis();
+                while(System.currentTimeMillis() - start <= 6000) {
+                    robot.update();
+                }
+                robot.goToPoint(new Pose2d(53, 58*reflect, 0), this);
             }
             else {
-                robot.goToPoint(new Pose2d(-48, 10*reflect, 0), this);
-                robot.goToPoint(new Pose2d(53, 10 * reflect, 0), this);
+                robot.goToPoint(new Pose2d(-48, 55*reflect, 0), this);
+                robot.goToPoint(new Pose2d(53, 55 * reflect, 0), this);
             }
         }
         else {

@@ -112,7 +112,7 @@ public class Intake {
 //                }
                 break;
             case SOFT_REVERSED:
-                intake.setTargetPower(-0.4);
+                intake.setTargetPower(-0.45);
                 break;
         }
     }

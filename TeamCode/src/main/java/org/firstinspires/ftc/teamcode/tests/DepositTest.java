@@ -23,7 +23,7 @@ public class DepositTest extends LinearOpMode{
 
         waitForStart();
 
-        robot
+
 
 /*
         while (opModeIsActive()) {

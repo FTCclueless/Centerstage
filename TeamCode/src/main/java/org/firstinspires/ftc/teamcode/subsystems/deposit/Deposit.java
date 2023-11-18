@@ -76,7 +76,6 @@ public class Deposit {
         this.targetH = targetH;
         this.targetY = targetY;
         this.xError = xError;
-        inPlace();
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;

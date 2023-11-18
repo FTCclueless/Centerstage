@@ -80,6 +80,7 @@ public class Robot {
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
+
         long start = System.currentTimeMillis();
         while((Math.abs(pose.x-ROBOT_POSITION.x) > 4 || Math.abs(pose.y-ROBOT_POSITION.y) > 4 || Math.abs(pose.heading - ROBOT_POSITION.heading) > Math.toRadians(5)) && opMode.opModeIsActive()) {
             if (System.currentTimeMillis() - start >= 5000) { // TODO: change time
