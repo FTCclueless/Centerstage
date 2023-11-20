@@ -230,7 +230,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                slides.setLength(-2.5);
+                slides.setLength(0.0);
 
                 /* set v4bar to retract angle */
 

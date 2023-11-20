@@ -60,8 +60,8 @@ public class Sensors {
 
             imu = hardwareMap.get(BHI260IMU.class, "imu");
             BHI260IMU.Parameters params = new IMU.Parameters(new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.DOWN
+                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
             ));
             imu.initialize(params);
             imu.resetYaw();
@@ -90,8 +90,6 @@ public class Sensors {
                 addToCumulativeHeading(imuHeading);
                 imuLastUpdateTime = System.currentTimeMillis();
             }
-
-
 //            slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
@@ -117,7 +115,8 @@ public class Sensors {
     }
 
     public void updateTelemetry() {
-        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(imuHeading));
+        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getNormalizedIMUHeading()));
+        TelemetryUtil.packet.put("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1.0e6);
     }
 
     public int[] getOdometry() {
@@ -143,8 +142,12 @@ public class Sensors {
         return depositTriggered;
     }
 
-    public double getImuHeading() {
+    private double getImuHeading() {
         return imuHeading + numRotations*(2*Math.PI);
+    }
+
+    public double getNormalizedIMUHeading() {
+        return getImuHeading() - (numRotations*(2*Math.PI));
     }
 
     private double previousAngle = 0.0;
