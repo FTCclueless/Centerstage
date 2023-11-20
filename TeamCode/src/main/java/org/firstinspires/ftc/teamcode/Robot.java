@@ -89,6 +89,9 @@ public class Robot {
             drivetrain.goToPoint(pose);
             update();
         }
+        Log.e("go to point x error", (pose.x - drivetrain.localizer.x) + "");
+        Log.e("go to point y error", (pose.y - drivetrain.localizer.y) + "");
+        Log.e("go to point heading error", (pose.heading - drivetrain.localizer.heading) + "");
         drivetrain.state = Drivetrain.State.BRAKE;
     }
 

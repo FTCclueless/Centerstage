@@ -81,24 +81,25 @@ public class REDGroundPreloadAuto extends LinearOpMode {
 
         switch (preloadGlobal) {
             case TOP:
-                if (up) {
-                    robot.goToPoint(new Pose2d(15, 35 * reflect, 0), this);
-                } else {
-                    robot.goToPoint(new Pose2d(-32, 35 * reflect, 0), this);
+                if (up) { // right
+                    robot.goToPoint(new Pose2d(15, 34 * reflect, 0), this);
+                } else { // left
+                    robot.goToPoint(new Pose2d(-32, 34 * reflect, 0), this);
                 }
 
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(10, 38 * reflect, Math.toRadians(-90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(15, 38 * reflect, Math.toRadians(-90 * reflect)), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.toRadians(-90 * reflect)), this);
                 }
                 break;
             case BOTTOM:
-                if (up) {
-                    robot.goToPoint(new Pose2d(14.5, 35 * reflect, Math.PI), this);
-                } else {
+                if (up) { // left
+                    robot.goToPoint(new Pose2d(15, 35 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(8, 35 * reflect, Math.PI), this);
+                } else { // right
                     robot.goToPoint(new Pose2d(-32, 35 * reflect, Math.PI), this);
                 }
                 break;
@@ -128,9 +129,8 @@ public class REDGroundPreloadAuto extends LinearOpMode {
             }
         }
         else {
-            robot.goToPoint(new Pose2d(12, 60 * reflect, 0), this);
-            robot.goToPoint(new Pose2d(36, 60 * reflect, 0), this);
-            robot.goToPoint(new Pose2d(53, 60 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(12, 57 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(53, 57 * reflect, 0), this);
         }
     }
 }

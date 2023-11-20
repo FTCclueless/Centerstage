@@ -69,8 +69,6 @@ public class Intake {
     public void update() {
         actuation.setTargetAngle(Math.toRadians(actuationAngle), 1.0);
 
-        Log.e("actuationAngle", actuationAngle + "");
-
         /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
             if (state == State.ON) {
@@ -112,7 +110,7 @@ public class Intake {
 //                }
                 break;
             case SOFT_REVERSED:
-                intake.setTargetPower(-0.45);
+                intake.setTargetPower(-0.35);
                 break;
         }
     }

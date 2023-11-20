@@ -79,22 +79,23 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
         switch (preloadGlobal) {
             case TOP:
                 if (up) {
-                    robot.goToPoint(new Pose2d(15, 35 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(15, 34 * reflect, 0), this);
                 } else {
-                    robot.goToPoint(new Pose2d(-32, 35 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(-32, 34 * reflect, 0), this);
                 }
 
                 break;
             case CENTER:
                 if (up) {
-                    robot.goToPoint(new Pose2d(7.5, 38 * reflect, Math.toRadians(-90 * reflect)), this);
+                    robot.goToPoint(new Pose2d(15, 36.5 * reflect, Math.toRadians(-90 * reflect)), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 39 * reflect, Math.toRadians(-90 * reflect)), this);
                 }
                 break;
             case BOTTOM:
                 if (up) {
-                    robot.goToPoint(new Pose2d(14.5, 35 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(15, 35 * reflect, Math.PI), this);
+                    robot.goToPoint(new Pose2d(8, 35 * reflect, Math.PI), this);
                 } else {
                     robot.goToPoint(new Pose2d(-32, 35 * reflect, Math.PI), this);
                 }
@@ -108,12 +109,31 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
 //        }
 //        start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start <= 6000) {
-            robot.intake.reverse();
+            robot.intake.softReverse();
             robot.update();
+//        robot.intake.actuationDown();
+//        while(System.currentTimeMillis() - start <= 500) {
+//            robot.update();
+//        }
         }
-        robot.intake.off();
-        robot.goToPoint(new Pose2d(12, 60 * reflect, 0), this);
-        robot.goToPoint(new Pose2d(36, 60*reflect, 0), this);
-        robot.goToPoint(new Pose2d(53, 60*reflect, 0), this);
+//
+            robot.intake.off();
+            if (!up) {
+                if (preloadGlobal == PreloadGlobal.CENTER) {
+                    robot.goToPoint(new Pose2d(-53, 50 * reflect, Math.toRadians(-90) * reflect), this);
+                    robot.goToPoint(new Pose2d(-53, 50 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(-53, 10 * reflect, 0), this);
+                    robot.goToPoint(new Pose2d(53, 10*reflect, 0), this);
+                }
+                else {
+                    robot.goToPoint(new Pose2d(-48, 10*reflect, 0), this);
+                    robot.goToPoint(new Pose2d(53, 10 * reflect, 0), this);
+                }
+            }
+            else {
+                robot.goToPoint(new Pose2d(12, 57 * reflect, 0), this);
+                robot.goToPoint(new Pose2d(53, 57 * reflect, 0), this);
+            }
+        }
     }
-}
+

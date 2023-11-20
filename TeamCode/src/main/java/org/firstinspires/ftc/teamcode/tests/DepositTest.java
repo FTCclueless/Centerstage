@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
 @Config
 @TeleOp
-public class DepositTest extends LinearOpMode{
+public class DepositTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
@@ -23,9 +23,6 @@ public class DepositTest extends LinearOpMode{
 
         waitForStart();
 
-
-
-/*
         while (opModeIsActive()) {
             robot.intake.on();
 
@@ -40,6 +37,6 @@ public class DepositTest extends LinearOpMode{
             }
 
             robot.update();
-        }*/
+        }
     }
 }
