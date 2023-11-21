@@ -91,7 +91,6 @@ public class Sensors {
             if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
                 imuHeading = orientation.getYaw(AngleUnit.RADIANS);
-                addToCumulativeHeading(imuHeading);
                 imuLastUpdateTime = System.currentTimeMillis();
                 imuJustUpdated = true;
             } else {
@@ -125,7 +124,7 @@ public class Sensors {
     }
 
     public void updateTelemetry() {
-        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getNormalizedIMUHeading()));
+        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getImuHeading()));
         TelemetryUtil.packet.put("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1.0e6);
     }
 

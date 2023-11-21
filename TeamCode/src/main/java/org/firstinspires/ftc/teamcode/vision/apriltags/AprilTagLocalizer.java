@@ -65,9 +65,9 @@ public class AprilTagLocalizer {
 //                    TelemetryUtil.packet.put("tag.ftcPose.x", tag.ftcPose.x);
 //                    TelemetryUtil.packet.put("tag.ftcPose.y", tag.ftcPose.y);
 //                    TelemetryUtil.packet.put("tag.ftcPose.z", tag.ftcPose.z);
-//                    TelemetryUtil.packet.put("tag.ftcPose.yaw", Math.toDegrees(tag.ftcPose.yaw));
-//                    TelemetryUtil.packet.put("tag.ftcPose.pitch", Math.toDegrees(tag.ftcPose.pitch));
-//                    TelemetryUtil.packet.put("tag.ftcPose.roll", Math.toDegrees(tag.ftcPose.roll));
+                    TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
+                    TelemetryUtil.packet.put("tag.ftcPose.pitch", tag.ftcPose.pitch);
+                    TelemetryUtil.packet.put("tag.ftcPose.roll", tag.ftcPose.roll);
 
                     // applying a rotation matrix for converting from relative robot to global using the odo heading
                     robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
