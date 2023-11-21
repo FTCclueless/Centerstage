@@ -51,20 +51,19 @@ public class AprilTagLocalizer {
                     Vector3 globalTagPosition = convertVectorFToPose3d(tag.metadata.fieldPosition);
 
                     Pose2d correctedTagData = new Pose2d(
-                            -tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,
-                            -tag.ftcPose.x);
+                            tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,
+                            tag.ftcPose.x);
 
                     Pose2d relativeTagPosition = new Pose2d(
                             correctedTagData.x*Math.cos(cameraOffset.heading) - correctedTagData.y*Math.sin(cameraOffset.heading) + cameraOffset.x,
-                            correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.x*Math.sin(cameraOffset.heading) + cameraOffset.y);
+                            correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.x*Math.cos(cameraOffset.heading) + cameraOffset.y);
 
 //                    TelemetryUtil.packet.put("globalTagPosition.getX()", globalTagPosition.getX());
 //                    TelemetryUtil.packet.put("globalTagPosition.getY()", globalTagPosition.getY());
 //                    TelemetryUtil.packet.put("globalTagPosition.getZ()", globalTagPosition.getZ());
 
-//                    TelemetryUtil.packet.put("tag.ftcPose.x", tag.ftcPose.x);
-//                    TelemetryUtil.packet.put("tag.ftcPose.y", tag.ftcPose.y);
-//                    TelemetryUtil.packet.put("tag.ftcPose.z", tag.ftcPose.z);
+                    TelemetryUtil.packet.put("correctedTagData.x", correctedTagData.x);
+                    TelemetryUtil.packet.put("correctedTagData.y", correctedTagData.y);
                     TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
                     TelemetryUtil.packet.put("tag.ftcPose.pitch", tag.ftcPose.pitch);
                     TelemetryUtil.packet.put("tag.ftcPose.roll", tag.ftcPose.roll);

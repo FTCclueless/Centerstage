@@ -173,20 +173,21 @@ public class Localizer {
 
     public void updateHeadingWithIMU(double imuHeading) {
         if (sensors.imuJustUpdated) {
-            headingDif = imuHeading-(currentPose.getHeading()-startHeadingOffset);
+            headingDif += imuHeading-(currentPose.getHeading()-startHeadingOffset);
             while (headingDif > Math.toRadians(180)){
                 headingDif -= Math.toRadians(360);
             }
             while (headingDif < Math.toRadians(-180)){
                 headingDif += Math.toRadians(360);
             }
-
-            // this gets how many loops before we next update imu and splits the error into small chunks and then adds those tiny chunks
-            Log.e("headingDif", headingDif + "");
-            headingDif /= (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
         }
-
-        odoHeading += headingDif;
+        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
+        if (percentHeadingDif < 1){
+            percentHeadingDif = 1;
+        }
+        double headingErrAdd = headingDif * percentHeadingDif;
+        headingDif -= headingErrAdd;
+        odoHeading += headingErrAdd;
     }
 
     public void updatePowerVector(double[] p){

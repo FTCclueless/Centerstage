@@ -152,7 +152,7 @@ public class Sensors {
     }
 
     public double getImuHeading() {
-        return imuHeading + numRotations*(2*Math.PI);
+        return imuHeading;
     }
 
     public double getNormalizedIMUHeading() {
