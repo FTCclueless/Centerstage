@@ -28,8 +28,8 @@ public class IMUTest extends LinearOpMode {
         while (opModeIsActive()) {
             sensors.update();
 
-            TelemetryUtil.packet.put("IMU ANGLE", Math.toDegrees(sensors.getNormalizedIMUHeading()));
-            TelemetryUtil.sendTelemetry();
+            telemetry.addData("IMU ANGLE", Math.toDegrees(sensors.getNormalizedIMUHeading()));
+            telemetry.update();
         }
     }
 }

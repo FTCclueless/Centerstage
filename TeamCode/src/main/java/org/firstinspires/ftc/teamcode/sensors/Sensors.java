@@ -84,7 +84,7 @@ public class Sensors {
                 odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
             }
 
-            if (System.currentTimeMillis() - imuLastUpdateTime >= 350) {
+            if (System.currentTimeMillis() - imuLastUpdateTime >= 200) {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
                 imuHeading = orientation.getYaw(AngleUnit.RADIANS);
                 addToCumulativeHeading(imuHeading);
@@ -142,7 +142,7 @@ public class Sensors {
         return depositTriggered;
     }
 
-    private double getImuHeading() {
+    public double getImuHeading() {
         return imuHeading + numRotations*(2*Math.PI);
     }
 

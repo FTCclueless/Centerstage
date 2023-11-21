@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.vision;
 
+import android.util.Log;
 import android.util.Size;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.WhiteBalanceControl;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.VisionProcessor;
 
@@ -27,12 +29,7 @@ public class Vision {
 
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {} // waiting for camera to start streaming
 
-        ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
-        exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(6, TimeUnit.MILLISECONDS);
-
-        GainControl gain = visionPortal.getCameraControl(GainControl.class);
-        gain.setGain(250);
+        setCameraSettings();
     }
 
     public void initDualCamera(HardwareMap hardwareMap, VisionProcessor pipeline) {
@@ -45,12 +42,23 @@ public class Vision {
 
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {} // waiting for camera to start streaming
 
+        setCameraSettings();
+    }
+
+    public void setCameraSettings() {
         ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
         exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(6, TimeUnit.MILLISECONDS);
+        exposure.setExposure(0, TimeUnit.MILLISECONDS);
+
+        Log.e("exposure supported", exposure.isExposureSupported() + "");
 
         GainControl gain = visionPortal.getCameraControl(GainControl.class);
-        gain.setGain(250);
+        gain.setGain(0);
+
+        WhiteBalanceControl whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
+        whiteBalanceControl.setWhiteBalanceTemperature(whiteBalanceControl.getMinWhiteBalanceTemperature());
+
+        Log.e("min white balance", whiteBalanceControl.getMinWhiteBalanceTemperature() + "");
     }
 
     public void start () {

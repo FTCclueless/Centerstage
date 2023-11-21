@@ -87,8 +87,11 @@ public class Localizer {
         return new Pose2d(currentPose.x, currentPose.y, currentPose.heading);
     }
 
+    double startHeadingOffset = 0.0;
+
     public void setPoseEstimate(Pose2d pose2d) {
         setPose(pose2d.getX(), pose2d.getY(), pose2d.getHeading());
+        startHeadingOffset = pose2d.getHeading();
     }
 
     public Pose2d getPoseVelocity() {
@@ -131,6 +134,8 @@ public class Localizer {
 
         odoHeading += deltaHeading;
 
+        updateHeadingWithIMU(sensors.getImuHeading());
+
         if (useAprilTag) {
             Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
 
@@ -143,7 +148,7 @@ public class Localizer {
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
 
-                odoHeading += combineHeadings(Utils.headingClip(aprilTagPose.heading-odoHeading));
+//                odoHeading += combineHeadings(Utils.headingClip(aprilTagPose.heading-odoHeading));
             }
         }
 
@@ -158,6 +163,18 @@ public class Localizer {
 
         updateVelocity();
         updateField();
+    }
+
+    public void updateHeadingWithIMU(double imuHeading){
+        double headingDif = imuHeading-(currentPose.getHeading()-startHeadingOffset);
+        while (headingDif > Math.toRadians(180)){
+            headingDif -= Math.toRadians(360);
+        }
+        while (headingDif < Math.toRadians(-180)){
+            headingDif += Math.toRadians(360);
+        }
+        double w = 0.9;
+        odoHeading += headingDif*w;
     }
 
     public void updatePowerVector(double[] p){
