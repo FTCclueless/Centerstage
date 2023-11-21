@@ -36,7 +36,7 @@ public class AprilTagLocalizer {
        vision.initCamera(hardwareMap, tagProcessor);
     }
 
-    Pose2d cameraOffset = new Pose2d(-7.36, 0.0, Math.toRadians(180));
+    Pose2d cameraOffset = new Pose2d(-6.5, 0.0, Math.toRadians(180));
 
     double robotXFromTag = 0;
     double robotYFromTag = 0;
