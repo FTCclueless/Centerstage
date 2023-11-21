@@ -95,6 +95,10 @@ public class Robot {
         drivetrain.state = Drivetrain.State.BRAKE;
     }
 
+    public void goToPoint(double x, double y, double heading, LinearOpMode opMode) {
+        this.goToPoint(new Pose2d(x, y, heading), opMode);
+    }
+
     public void depositAt(double targetH, double targetY) {
 
         deposit.inPlace(); // temporary since we're starting depositAt when we're alredy ready for lgm1 --Kyle
