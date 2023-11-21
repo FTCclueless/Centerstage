@@ -58,15 +58,21 @@ public class AprilTagLocalizer {
                             correctedTagData.x*Math.cos(cameraOffset.heading) - correctedTagData.y*Math.sin(cameraOffset.heading) + cameraOffset.x,
                             correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.y*Math.cos(cameraOffset.heading) + cameraOffset.y);
 
+                    TelemetryUtil.packet.put("correctedTagData.getX()", correctedTagData.getX());
+                    TelemetryUtil.packet.put("correctedTagData.getY()", correctedTagData.getY());
+
+                    TelemetryUtil.packet.put("relativeTagPosition.getX()", relativeTagPosition.getX());
+                    TelemetryUtil.packet.put("relativeTagPosition.getY()", relativeTagPosition.getY());
+
 //                    TelemetryUtil.packet.put("globalTagPosition.getX()", globalTagPosition.getX());
 //                    TelemetryUtil.packet.put("globalTagPosition.getY()", globalTagPosition.getY());
 //                    TelemetryUtil.packet.put("globalTagPosition.getZ()", globalTagPosition.getZ());
 
-                    TelemetryUtil.packet.put("correctedTagData.x", correctedTagData.x);
-                    TelemetryUtil.packet.put("correctedTagData.y", correctedTagData.y);
-                    TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
-                    TelemetryUtil.packet.put("tag.ftcPose.pitch", tag.ftcPose.pitch);
-                    TelemetryUtil.packet.put("tag.ftcPose.roll", tag.ftcPose.roll);
+//                    TelemetryUtil.packet.put("correctedTagData.x", correctedTagData.x);
+//                    TelemetryUtil.packet.put("correctedTagData.y", correctedTagData.y);
+//                    TelemetryUtil.packet.put("tag.ftcPose.yaw", tag.ftcPose.yaw);
+//                    TelemetryUtil.packet.put("tag.ftcPose.pitch", tag.ftcPose.pitch);
+//                    TelemetryUtil.packet.put("tag.ftcPose.roll", tag.ftcPose.roll);
 
                     // applying a rotation matrix for converting from relative robot to global using the odo heading
                     robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
