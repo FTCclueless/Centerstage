@@ -13,11 +13,12 @@ public class AprilTagTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        robot.drivetrain.localizer.setPoseEstimate(new Pose2d(-48,-48, Math.toRadians(180)));
+        robot.drivetrain.localizer.setPoseEstimate(new Pose2d(48,-48, Math.toRadians(180)));
 
         waitForStart();
 
         while (!isStopRequested() && opModeIsActive()) {
+            robot.drivetrain.drive(gamepad1);
             robot.update();
         }
     }

@@ -10,35 +10,26 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
 @TeleOp
 public class IMUTest extends LinearOpMode {
-    private long lastLoop = System.currentTimeMillis();
-    private double angle = 0;
-
     @Override
     public void runOpMode() {
-        FtcDashboard dashboard = FtcDashboard.getInstance();
-        BHI260IMU imu = hardwareMap.get(BHI260IMU.class, "imu");
-        BHI260IMU.Parameters params = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
-                RevHubOrientationOnRobot.UsbFacingDirection.DOWN
-        ));
-        imu.initialize(params);
-        imu.resetYaw();
+        Sensors sensors = new Sensors(hardwareMap, null);
+        Globals.RUNMODE = RunMode.TELEOP;
+        TelemetryUtil.setup();
 
         waitForStart();
-        lastLoop = System.currentTimeMillis();
 
         while (opModeIsActive()) {
-            TelemetryPacket packet = new TelemetryPacket();
-            if (System.currentTimeMillis() - lastLoop > 350) {
-                YawPitchRollAngles angles = imu.getRobotYawPitchRollAngles();
-                angle = angles.getYaw(AngleUnit.DEGREES);
-                lastLoop = System.currentTimeMillis();
-            }
-            packet.put("IMU ANGLE", angle);
-            dashboard.sendTelemetryPacket(packet);
+            sensors.update();
+
+            TelemetryUtil.packet.put("IMU ANGLE", Math.toDegrees(sensors.getNormalizedIMUHeading()));
+            TelemetryUtil.sendTelemetry();
         }
     }
 }

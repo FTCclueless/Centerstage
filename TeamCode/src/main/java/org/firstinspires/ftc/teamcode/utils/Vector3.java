@@ -77,5 +77,16 @@ public class Vector3 {
         return String.format("(%f, %f, %f)", x, y, z);
     }
 
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public double getZ() {
+        return z;
+    }
 
 }
