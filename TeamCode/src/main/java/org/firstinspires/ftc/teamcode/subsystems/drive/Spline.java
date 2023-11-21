@@ -33,6 +33,10 @@ public class Spline {
         this.inchesPerNewPointGenerated = inchesPerNewPointGenerated;
     }
 
+    public Spline(double x, double y, double heading, double inchesPerNewPointGenerated) {
+        this(new Pose2d(x,y,heading), inchesPerNewPointGenerated);
+    }
+
     double[] xCoefficents = new double[4];
     double[] yCoefficents = new double[4];
 
@@ -102,6 +106,10 @@ public class Spline {
         poses.add(new SplinePose2d(p, reversed, findR(1.0)));
 
         return this;
+    }
+
+    public Spline addPoint(double x, double y, double heading) {
+        return this.addPoint(new Pose2d(x, y, heading));
     }
 
     public Pose2d getLastPoint() {
