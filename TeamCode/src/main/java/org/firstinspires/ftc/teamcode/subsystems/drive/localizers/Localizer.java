@@ -173,7 +173,7 @@ public class Localizer {
 
     public void updateHeadingWithIMU(double imuHeading) {
         if (sensors.imuJustUpdated) {
-            headingDif += imuHeading-(currentPose.getHeading()-startHeadingOffset);
+            headingDif += imuHeading-(currentPose.getHeading()+headingDif-startHeadingOffset);
             while (headingDif > Math.toRadians(180)){
                 headingDif -= Math.toRadians(360);
             }
@@ -181,8 +181,8 @@ public class Localizer {
                 headingDif += Math.toRadians(360);
             }
         }
-        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
-        if (percentHeadingDif < 1){
+        double percentHeadingDif = GET_LOOP_TIME()/(sensors.timeTillNextIMUUpdate);
+        if (percentHeadingDif > 1){
             percentHeadingDif = 1;
         }
         double headingErrAdd = headingDif * percentHeadingDif;

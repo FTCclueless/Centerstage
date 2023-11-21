@@ -56,7 +56,7 @@ public class AprilTagLocalizer {
 
                     Pose2d relativeTagPosition = new Pose2d(
                             correctedTagData.x*Math.cos(cameraOffset.heading) - correctedTagData.y*Math.sin(cameraOffset.heading) + cameraOffset.x,
-                            correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.x*Math.cos(cameraOffset.heading) + cameraOffset.y);
+                            correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.y*Math.cos(cameraOffset.heading) + cameraOffset.y);
 
 //                    TelemetryUtil.packet.put("globalTagPosition.getX()", globalTagPosition.getX());
 //                    TelemetryUtil.packet.put("globalTagPosition.getY()", globalTagPosition.getY());
