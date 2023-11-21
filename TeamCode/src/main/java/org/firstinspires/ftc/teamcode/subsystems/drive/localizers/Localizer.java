@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
+import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BHI260IMU;
@@ -173,8 +175,10 @@ public class Localizer {
         while (headingDif < Math.toRadians(-180)){
             headingDif += Math.toRadians(360);
         }
-        double w = 0.9;
-        odoHeading += headingDif*w;
+
+        // this gets how many loops before we next update imu and splits the error into small chunks and then adds those tiny chunks
+        headingDif = headingDif / (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
+        odoHeading += headingDif;
     }
 
     public void updatePowerVector(double[] p){

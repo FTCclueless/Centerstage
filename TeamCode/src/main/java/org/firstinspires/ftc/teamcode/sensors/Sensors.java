@@ -76,6 +76,9 @@ public class Sensors {
         updateTelemetry();
     }
 
+    public double imuUpdateTime = 200;
+    public double timeTillNextIMUUpdate = imuUpdateTime;
+
     private void updateControlHub() {
         try {
             if (Globals.RUNMODE != RunMode.TELEOP) {
@@ -84,12 +87,15 @@ public class Sensors {
                 odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
             }
 
-            if (System.currentTimeMillis() - imuLastUpdateTime >= 200) {
+            if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
                 imuHeading = orientation.getYaw(AngleUnit.RADIANS);
                 addToCumulativeHeading(imuHeading);
                 imuLastUpdateTime = System.currentTimeMillis();
             }
+
+            timeTillNextIMUUpdate = 350 - System.currentTimeMillis() - imuLastUpdateTime;
+
 //            slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
