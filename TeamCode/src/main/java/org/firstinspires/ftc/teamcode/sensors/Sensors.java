@@ -78,6 +78,7 @@ public class Sensors {
 
     public double imuUpdateTime = 200;
     public double timeTillNextIMUUpdate = imuUpdateTime;
+    public boolean imuJustUpdated = false;
 
     private void updateControlHub() {
         try {
@@ -92,6 +93,9 @@ public class Sensors {
                 imuHeading = orientation.getYaw(AngleUnit.RADIANS);
                 addToCumulativeHeading(imuHeading);
                 imuLastUpdateTime = System.currentTimeMillis();
+                imuJustUpdated = true;
+            } else {
+                imuJustUpdated = false;
             }
 
             timeTillNextIMUUpdate = imuUpdateTime - System.currentTimeMillis() - imuLastUpdateTime;

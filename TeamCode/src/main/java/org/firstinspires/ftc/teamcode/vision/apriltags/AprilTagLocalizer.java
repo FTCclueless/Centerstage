@@ -43,7 +43,7 @@ public class AprilTagLocalizer {
 
     Pose2d poseEstimate = new Pose2d(0,0,0);
 
-    public Pose2d update(double odoHeading) {
+    public Pose2d update(double inputHeading) {
         if (tagProcessor.getDetections().size() > 0) {
             tags = tagProcessor.getDetections();
             for (AprilTagDetection tag : tags) {
@@ -52,8 +52,7 @@ public class AprilTagLocalizer {
 
                     Pose2d correctedTagData = new Pose2d(
                             -tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,
-                            -tag.ftcPose.x,
-                            -Math.toRadians(odoHeading + (globalTagPosition.getX() > 0 ? 0 : 180)));
+                            -tag.ftcPose.x);
 
                     Pose2d relativeTagPosition = new Pose2d(
                             correctedTagData.x*Math.cos(cameraOffset.heading) - correctedTagData.y*Math.sin(cameraOffset.heading) + cameraOffset.x,
@@ -71,13 +70,13 @@ public class AprilTagLocalizer {
 //                    TelemetryUtil.packet.put("tag.ftcPose.roll", Math.toDegrees(tag.ftcPose.roll));
 
                     // applying a rotation matrix for converting from relative robot to global using the odo heading
-                    robotXFromTag = globalTagPosition.getX() - (Math.cos(odoHeading) * relativeTagPosition.x - Math.sin(odoHeading) * relativeTagPosition.y);
-                    robotYFromTag = globalTagPosition.getY() - (Math.sin(odoHeading) * relativeTagPosition.x + Math.cos(odoHeading) * relativeTagPosition.y);
+                    robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
+                    robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
 
                     TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
                     TelemetryUtil.packet.put("robotYFromTag", robotXFromTag);
 
-                    poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, odoHeading);
+                    poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
 
                     return poseEstimate;
                 }

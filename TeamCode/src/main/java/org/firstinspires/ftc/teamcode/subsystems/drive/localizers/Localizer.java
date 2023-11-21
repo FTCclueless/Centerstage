@@ -167,17 +167,22 @@ public class Localizer {
         updateField();
     }
 
-    public void updateHeadingWithIMU(double imuHeading){
-        double headingDif = imuHeading-(currentPose.getHeading()-startHeadingOffset);
-        while (headingDif > Math.toRadians(180)){
-            headingDif -= Math.toRadians(360);
-        }
-        while (headingDif < Math.toRadians(-180)){
-            headingDif += Math.toRadians(360);
+    double headingDif = 0.0;
+
+    public void updateHeadingWithIMU(double imuHeading) {
+        if (sensors.imuJustUpdated) {
+            headingDif = imuHeading-(currentPose.getHeading()-startHeadingOffset);
+            while (headingDif > Math.toRadians(180)){
+                headingDif -= Math.toRadians(360);
+            }
+            while (headingDif < Math.toRadians(-180)){
+                headingDif += Math.toRadians(360);
+            }
+
+            // this gets how many loops before we next update imu and splits the error into small chunks and then adds those tiny chunks
+            headingDif /= (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
         }
 
-        // this gets how many loops before we next update imu and splits the error into small chunks and then adds those tiny chunks
-        headingDif = headingDif / (sensors.timeTillNextIMUUpdate/GET_LOOP_TIME());
         odoHeading += headingDif;
     }
 
