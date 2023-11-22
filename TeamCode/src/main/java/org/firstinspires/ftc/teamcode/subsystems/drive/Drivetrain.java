@@ -183,8 +183,8 @@ public class Drivetrain {
                     double closeErrorX = currentPath.poses.get(pathIndex).x - estimate.x;
                     double closeErrorY = currentPath.poses.get(pathIndex).y - estimate.y;
                     double closeHeadingChange = lookAhead.heading - currentPath.poses.get(pathIndex).heading;
-                    lookAhead.x += closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange);
-                    lookAhead.y += closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange);
+                    lookAhead.x += (closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange)) * 2.5;
+                    lookAhead.y += (closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange)) * 2.5;
                     //pj closest point turn correction
 
                     // Plot the lookahead point
@@ -265,7 +265,7 @@ public class Drivetrain {
 
 
                     for (int i = 0; i < motors.size(); i++) {
-                        motorPowers[i] /= max / 3;
+                        motorPowers[i] /= max * 3;
                         //this should already be done in priority motor --Kyle
                         //motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
                         //motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
