@@ -50,7 +50,7 @@ public class Drivetrain {
     public static double slowdown = 0.28;
 
     double maxSpeed = 54;
-    double maxTurn = maxSpeed / (TRACK_WIDTH);
+    double maxTurn = maxSpeed / (TRACK_WIDTH/2);
 
     public PriorityMotor leftFront, leftRear, rightRear, rightFront;
     private List<PriorityMotor> motors;
@@ -107,7 +107,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, sensors,true);
+        localizer = new Localizer(hardwareMap, sensors,false);
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -227,7 +227,7 @@ public class Drivetrain {
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
                     double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
-                            (TRACK_WIDTH / 2.0) / radius :
+                            (TRACK_WIDTH / 2.0) / radius + theta * headingCorrectionP/2 * (currentPath.poses.get(targetIndex).reversed ? -1: 1) :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
 
