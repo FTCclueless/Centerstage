@@ -218,16 +218,22 @@ public class Localizer {
                 lastIndex = i;
             }
         }
-        currentVel = new Pose2d(
-                (poseHistory.get(0).getX() - poseHistory.get(lastIndex).getX()) / actualVelTime,
-                (poseHistory.get(0).getY() - poseHistory.get(lastIndex).getY()) / actualVelTime,
-                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
-        );
-        relCurrentVel = new Pose2d(
-                (relDeltaXTotal) / actualVelTime,
-                (relDeltaYTotal) / actualVelTime,
-                (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
-        );
+        if (actualVelTime != 0) {
+            currentVel = new Pose2d(
+                    (poseHistory.get(0).getX() - poseHistory.get(lastIndex).getX()) / actualVelTime,
+                    (poseHistory.get(0).getY() - poseHistory.get(lastIndex).getY()) / actualVelTime,
+                    (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
+            );
+            relCurrentVel = new Pose2d(
+                    (relDeltaXTotal) / actualVelTime,
+                    (relDeltaYTotal) / actualVelTime,
+                    (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
+            );
+        }
+        else {
+            currentVel = new Pose2d(0, 0, 0);
+            relCurrentVel = new Pose2d(0, 0, 0);
+        }
         while (lastIndex + 1 < loopTimes.size()){
             loopTimes.remove(loopTimes.size() - 1);
             relHistory.remove(relHistory.size() - 1);

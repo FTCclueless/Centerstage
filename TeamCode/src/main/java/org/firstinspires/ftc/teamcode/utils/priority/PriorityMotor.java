@@ -38,6 +38,9 @@ public class PriorityMotor extends PriorityDevice{
         power = Utils.minMaxClip(power, -1.0, 1.0);
         power *= 1-minPowerToOvercomeFriction;
         this.power = power + (minPowerToOvercomeFriction * Math.signum(power));
+        if (power == 0) {
+            this.power = 0;
+        }
     }
 
     public double getPower() {

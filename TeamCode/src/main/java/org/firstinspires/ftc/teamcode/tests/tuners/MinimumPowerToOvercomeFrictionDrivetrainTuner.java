@@ -51,6 +51,7 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
                     minPowersToOvercomeFriction[i] = j;
                     break;
                 }
+                Log.e(motors.get(i).name + " ", "currnet power: " + j);
 
                 telemetry.addData(motors.get(i).name + " current power: ", j);
                 telemetry.update();

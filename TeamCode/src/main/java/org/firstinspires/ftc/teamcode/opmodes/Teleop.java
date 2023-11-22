@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
@@ -76,7 +77,7 @@ public class Teleop extends LinearOpMode {
             if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
                 depoPos.z-=3;
             }
-            depoPos.z += gamepad2.left_stick_y;
+            depoPos.z -= gamepad2.left_stick_y;
 
             // trigger / retract deposit
             if (a_2.isClicked(gamepad2.a)) {
@@ -88,6 +89,8 @@ public class Teleop extends LinearOpMode {
             }
 
             if (depoFlag) {
+                TelemetryUtil.packet.put("depoz: ", depoPos.z);
+                TelemetryUtil.packet.put("depoy: ", depoPos.y);
                 robot.deposit.depositAt(depoPos.z, depoPos.y);
             }
 

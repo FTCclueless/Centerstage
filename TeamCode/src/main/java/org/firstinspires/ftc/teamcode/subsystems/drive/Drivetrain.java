@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.DRIVETRAIN_ENABLED;
+import static org.firstinspires.ftc.teamcode.utils.Globals.MIN_MOTOR_POWER_TO_OVERCOME_FRICTION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
 import static org.firstinspires.ftc.teamcode.utils.Globals.TRACK_WIDTH;
@@ -106,14 +107,14 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, sensors,true);
+        localizer = new Localizer(hardwareMap, sensors,false);
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.3351999999999794);
-        leftRear.setMinimumPowerToOvercomeFriction(0.4605999999999656);
-        rightRear.setMinimumPowerToOvercomeFriction(0.29679999999998363);
-        rightFront.setMinimumPowerToOvercomeFriction(0.39299999999997304);
+        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999);
+        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999);
+        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999);
+        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997);
     }
 
     public void setCurrentPath(Spline path) {
@@ -178,6 +179,8 @@ public class Drivetrain {
                 }*/
 
                     Pose2d lookAhead = currentPath.poses.get(targetIndex);
+                    lookAhead.x += currentPath.poses.get(pathIndex).x - estimate.x;
+                    lookAhead.y += currentPath.poses.get(pathIndex).y - estimate.y; //pj closest point turn correction
 
                     // Plot the lookahead point
                     canvas.setFill("#ff0000");
@@ -212,25 +215,28 @@ public class Drivetrain {
                     double speed = targetRadius > minRadius ?
                             (targetRadius - minRadius) / (maxRadius - minRadius) * (1.0 - minSpeedFollowPath) + minSpeedFollowPath :
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
-                    /*double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
+                    double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
                             (TRACK_WIDTH / 2.0) / radius :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
-                    */
+
 
                     if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) - (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0) < Math.toRadians(headingError)) {
                         state = State.GO_POINT;
                         return;
                     }
 
-                    goToPoint(lookAhead);
+                    //goToPoint(lookAhead);
 
                     //apply the feedforward
-                    /*
+
                     double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
-                    double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 0.2;
+                    //Log.e("ctb", String.format("targetTurn: %f | localizer.relCurrentVel.heading : %f | maxTurn : %f", targetTurn, localizer.relCurrentVel.heading, maxTurn));
+                    double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 1;
                     turn *= turnMul;
+
+
                     double[] motorPowers = {
                             fwd - turn,
                             fwd - turn,
@@ -238,7 +244,7 @@ public class Drivetrain {
                             fwd + turn
                     };
                     TelemetryUtil.packet.put("fwd", fwd);
-                    TelemetryUtil.packet.put("turn", turn);
+                TelemetryUtil.packet.put("turn", turn);
                     TelemetryUtil.packet.put("radius", radius);
 
                     // Post 1 normalization
@@ -250,15 +256,16 @@ public class Drivetrain {
 
                     for (int i = 0; i < motors.size(); i++) {
                         motorPowers[i] /= max;
-                        motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
-                        motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
+                        //this should already be done in priority motor --Kyle
+                        //motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
+                        //motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
                         TelemetryUtil.packet.put("Max", max);
                         TelemetryUtil.packet.put("Motor power", motorPowers[0] + " " + motorPowers[1] + " " + motorPowers[2] + " " + motorPowers[3]);
 
                         //motors.get(i).setPower(motorPowers[i]);
                         motors.get(i).setTargetPower(motorPowers[i]);
                     }
-                    */
+
                 break;
             case GO_POINT:
                 Pose2d target = currentPath.getLastPoint();

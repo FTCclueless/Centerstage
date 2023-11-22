@@ -14,7 +14,7 @@ public class EndAffector {
     public final PriorityServo v4Servo;
     public final PriorityServo botTurret;
     public final PriorityServo topTurret;
-    public final PriorityServo topServo;
+    //public final PriorityServo topServo;
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
     private double bottomAngle;
@@ -61,7 +61,7 @@ public class EndAffector {
             false,
             1, 2
         );
-        topServo = new PriorityServo(
+        /*topServo = new PriorityServo(
                 hardwareMap.get(Servo.class, "topServo"),
                 "topServo",
                 PriorityServo.ServoType.AXON_MINI,
@@ -71,12 +71,12 @@ public class EndAffector {
                 0,
                 false,
                 1,2
-        );
+        );*/
         this.sensors = sensors;
-        hardwareQueue.addDevice(v4Servo);
-        hardwareQueue.addDevice(botTurret);
-        hardwareQueue.addDevice(topTurret);
-        hardwareQueue.addDevice(topServo);
+        //hardwareQueue.addDevice(v4Servo);
+        //hardwareQueue.addDevice(botTurret);
+        //hardwareQueue.addDevice(topTurret);
+        //hardwareQueue.addDevice(topServo);
 
         v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
         topTurret.setTargetAngle(Deposit.intakeTop, 1.0);

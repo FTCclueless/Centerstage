@@ -180,6 +180,7 @@ public class Deposit {
                             targetH, targetY
                     );
                 }
+                TelemetryUtil.packet.put("slideExtension: ", depositMath.slideExtension);
 
                 slides.setLength(depositMath.slideExtension);
                 //endAffector.setBotTurret(depositMath.v4BarYaw);  no adjustments in auto
