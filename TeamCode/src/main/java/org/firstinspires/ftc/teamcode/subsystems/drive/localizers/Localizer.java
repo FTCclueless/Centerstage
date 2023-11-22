@@ -181,11 +181,19 @@ public class Localizer {
                 headingDif += Math.toRadians(360);
             }
         }
-        double percentHeadingDif = GET_LOOP_TIME()/(sensors.timeTillNextIMUUpdate);
+        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1e3)/GET_LOOP_TIME();
         if (percentHeadingDif > 1){
             percentHeadingDif = 1;
         }
-        double headingErrAdd = headingDif * percentHeadingDif;
+        double headingErrAdd = headingDif * (1/percentHeadingDif);
+
+        Log.e("GET_LOOP_TIME()", GET_LOOP_TIME() + "");
+        Log.e("sensors.timeTillNextIMUUpdate/1e3", sensors.timeTillNextIMUUpdate/1e3 + "");
+        Log.e("percentHeadingDif", percentHeadingDif + "");
+
+        Log.e("headingDif", headingDif + "");
+        Log.e("headingErrAdd", headingErrAdd + "");
+
         headingDif -= headingErrAdd;
         odoHeading += headingErrAdd;
     }

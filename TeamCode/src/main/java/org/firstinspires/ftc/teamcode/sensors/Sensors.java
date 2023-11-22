@@ -97,7 +97,7 @@ public class Sensors {
                 imuJustUpdated = false;
             }
 
-            timeTillNextIMUUpdate = imuUpdateTime - System.currentTimeMillis() - imuLastUpdateTime;
+            timeTillNextIMUUpdate = imuUpdateTime - (System.currentTimeMillis() - imuLastUpdateTime);
 
 //            slidesDown = magnetSensor.getState();
         }

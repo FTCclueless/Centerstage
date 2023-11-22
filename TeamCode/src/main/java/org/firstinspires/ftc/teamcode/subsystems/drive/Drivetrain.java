@@ -107,7 +107,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, sensors,false);
+        localizer = new Localizer(hardwareMap, sensors,true);
     }
 
     public void setMinPowersToOvercomeFriction() {
