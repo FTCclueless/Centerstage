@@ -178,13 +178,22 @@ public class Drivetrain {
                     estimate.heading += Math.PI;
                 }*/
 
-                    Pose2d lookAhead = currentPath.poses.get(targetIndex);
-                    lookAhead.x += currentPath.poses.get(pathIndex).x - estimate.x;
-                    lookAhead.y += currentPath.poses.get(pathIndex).y - estimate.y; //pj closest point turn correction
+                    Pose2d lookAhead = new Pose2d(currentPath.poses.get(targetIndex).x, currentPath.poses.get(targetIndex).y, currentPath.poses.get(targetIndex).heading);
+                    double closeErrorX = currentPath.poses.get(pathIndex).x - estimate.x;
+                    double closeErrorY = currentPath.poses.get(pathIndex).y - estimate.y;
+                    double closeHeadingChange = lookAhead.heading - currentPath.poses.get(pathIndex).heading;
+                    lookAhead.x = closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange);
+                    lookAhead.y = closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange);
+                    //pj closest point turn correction
 
                     // Plot the lookahead point
                     canvas.setFill("#ff0000");
                     canvas.fillCircle(lookAhead.x, lookAhead.y, 1.5);
+
+                    // If you are reading this kyle u r a monkey
+                    Pose2d pi = currentPath.poses.get(pathIndex);
+                    canvas.setFill("#ff00ff");
+                    canvas.fillCircle(pi.x, pi.y, 1.5);
 
                     Pose2d error = new Pose2d(
                             lookAhead.x - estimate.x,
@@ -255,7 +264,7 @@ public class Drivetrain {
 
 
                     for (int i = 0; i < motors.size(); i++) {
-                        motorPowers[i] /= max;
+                        motorPowers[i] /= max / 3;
                         //this should already be done in priority motor --Kyle
                         //motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
                         //motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
