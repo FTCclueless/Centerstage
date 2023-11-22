@@ -167,6 +167,7 @@ public class Drivetrain {
                         lastRadius = targetRadius;
                         targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
                         if (targetRadius < lastRadius) { //If the radius becomes smaller it means you are missing part of the trajectory and therefore we do this so that it finds the next point again
+                            Log.e("e", "sdfsdf");
                             targetIndex--;
                             targetRadius = lastRadius;
                             break;
@@ -182,8 +183,8 @@ public class Drivetrain {
                     double closeErrorX = currentPath.poses.get(pathIndex).x - estimate.x;
                     double closeErrorY = currentPath.poses.get(pathIndex).y - estimate.y;
                     double closeHeadingChange = lookAhead.heading - currentPath.poses.get(pathIndex).heading;
-                    lookAhead.x = closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange);
-                    lookAhead.y = closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange);
+                    lookAhead.x += closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange);
+                    lookAhead.y += closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange);
                     //pj closest point turn correction
 
                     // Plot the lookahead point
