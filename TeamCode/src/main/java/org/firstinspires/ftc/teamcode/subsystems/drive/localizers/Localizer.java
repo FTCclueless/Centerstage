@@ -83,11 +83,6 @@ public class Localizer {
         this.odoY = y;
         this.odoHeading += h - this.odoHeading;
         currentPose = new Pose2d(x, y, h);
-//        imuTimeStamp = System.currentTimeMillis();
-//        lastPose = new MyPose2d(x,y,h);
-//        lastImuHeading = imu.getAngularOrientation().firstAngle;
-//        relIMUHistory.clear();
-//        loopIMUTimes.clear();
     }
 
     public Pose2d getPoseEstimate() {
@@ -127,7 +122,6 @@ public class Localizer {
         double relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
 
         relHistory.add(0,new Pose2d(relDeltaX,relDeltaY,deltaHeading));
-//        relIMUHistory.add(0,new MyPose2d(relDeltaX,relDeltaY,deltaHeading));
 
         if (deltaHeading != 0) { // this avoids the issue where deltaHeading = 0 and then it goes to undefined. This effectively does L'Hopital's
             double r1 = relDeltaX / deltaHeading;
@@ -156,8 +150,6 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
                 odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
-
-//                odoHeading += combineHeadings(Utils.headingClip(aprilTagPose.heading-odoHeading));
             }
         }
 
@@ -272,49 +264,4 @@ public class Localizer {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
     }
-
-//    MyPose2d lastPose = new MyPose2d(0,0,0);
-//    long imuTimeStamp = System.currentTimeMillis();
-//    ArrayList<MyPose2d> relIMUHistory = new ArrayList<MyPose2d>();
-//    ArrayList<Double> loopIMUTimes = new ArrayList<Double>();
-//    double lastImuHeading = 0;
-//
-//    public void updateHeadingIMU() {
-//        if (System.currentTimeMillis() - imuTimeStamp >= 200){
-//            double imuHeading = imu.getAngularOrientation().firstAngle;
-//            double deltaHeading = (imuHeading - lastImuHeading) - (heading - lastPose.heading);
-//            while (Math.abs(deltaHeading) > Math.PI){
-//                deltaHeading -= Math.PI * 2 * Math.signum(deltaHeading);
-//            }
-//            double sumLoopTime = 0;
-//            for (int i = 0; i < loopIMUTimes.size(); i ++){
-//                sumLoopTime += loopIMUTimes.get(i);
-//            }
-//            double backX = encoders[2].x;
-//            for (int i = 0; i < loopIMUTimes.size(); i ++){
-//                double relDeltaHeading = (loopIMUTimes.get(i)/sumLoopTime) * deltaHeading;
-//                relIMUHistory.get(i).y -= relDeltaHeading * backX;
-//                relIMUHistory.get(i).heading += relDeltaHeading;
-//
-//                if (relIMUHistory.get(i).heading != 0) { // this avoids the issue where deltaHeading = 0 and then it goes to undefined. This effectively does L'Hopital's
-//                    double r1 = relIMUHistory.get(i).x / deltaHeading;
-//                    double r2 = relIMUHistory.get(i).y / deltaHeading;
-//                    relIMUHistory.get(i).x = Math.sin(relIMUHistory.get(i).heading) * r1 - (1.0 - Math.cos(relIMUHistory.get(i).heading)) * r2;
-//                    relIMUHistory.get(i).y = (1.0 - Math.cos(relIMUHistory.get(i).heading)) * r1 + Math.sin(relIMUHistory.get(i).heading) * r2;
-//                }
-//                lastPose.x += relIMUHistory.get(i).x * Math.cos(lastPose.heading) - relIMUHistory.get(i).y * Math.sin(lastPose.heading);
-//                lastPose.y += relIMUHistory.get(i).y * Math.cos(lastPose.heading) + relIMUHistory.get(i).x * Math.sin(lastPose.heading);
-//
-//                lastPose.heading += relIMUHistory.get(i).heading;
-//            }
-//            relIMUHistory.clear();
-//            loopIMUTimes.clear();
-//            imuTimeStamp = System.currentTimeMillis();
-//            x = lastPose.x;
-//            y = lastPose.y;
-//            heading = lastPose.heading;
-//            currentPose = new MyPose2d(x,y,heading);
-//            lastImuHeading = imuHeading;
-//        }
-//    }
 }
