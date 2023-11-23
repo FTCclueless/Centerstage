@@ -59,12 +59,14 @@ public class Sensors {
             expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
             imu = hardwareMap.get(BHI260IMU.class, "imu");
-            BHI260IMU.Parameters params = new IMU.Parameters(new RevHubOrientationOnRobot(
-                    RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                    RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-            ));
-            imu.initialize(params);
-            imu.resetYaw();
+            imu.initialize(
+                    new IMU.Parameters(new RevHubOrientationOnRobot(
+                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                    )
+                )
+            );
+//            imu.resetYaw();
         } catch (RuntimeException e) {
             throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
         }
@@ -152,7 +154,7 @@ public class Sensors {
     }
 
     public double getImuHeading() {
-        return imuHeading;
+        return imuHeading - Globals.START_HEADING_OFFSET;
     }
 
     public double getNormalizedIMUHeading() {

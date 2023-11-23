@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -48,12 +49,13 @@ public class Localizer {
     ArrayList<Double> loopTimes = new ArrayList<Double>();
 
     public boolean useAprilTag;
+    public boolean useIMU;
 
     AprilTagLocalizer aprilTagLocalizer;
     double minAprilTagWeight = 1/40;
     double maxVel = 0.0;
 
-    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag) {
+    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU) {
         this.sensors = sensors;
 
         encoders = new Encoder[3];
@@ -63,6 +65,7 @@ public class Localizer {
         encoders[2] = new Encoder(new Pose2d(-7.1660442092285175, 0),  -1); // back
 
         this.useAprilTag = useAprilTag;
+        this.useIMU = useIMU;
 
         if (useAprilTag) {
             aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
@@ -91,11 +94,10 @@ public class Localizer {
         return new Pose2d(currentPose.x, currentPose.y, currentPose.heading);
     }
 
-    double startHeadingOffset = 0.0;
 
     public void setPoseEstimate(Pose2d pose2d) {
         setPose(pose2d.getX(), pose2d.getY(), pose2d.getHeading());
-        startHeadingOffset = pose2d.getHeading();
+        Globals.START_HEADING_OFFSET = pose2d.getHeading();
     }
 
     public Pose2d getPoseVelocity() {
@@ -138,7 +140,9 @@ public class Localizer {
 
         odoHeading += deltaHeading;
 
-        updateHeadingWithIMU(sensors.getImuHeading());
+        if (useIMU) {
+            updateHeadingWithIMU(sensors.getImuHeading());
+        }
 
         if (useAprilTag) {
             Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
@@ -147,7 +151,7 @@ public class Localizer {
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
                 weight = Math.max(1/Math.max(maxVel,10), minAprilTagWeight); // as speed increases we should decrease weight of april tags
-                weight/=10;
+                weight/=5;
 
                 // resetting odo with april tag data
                 odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
@@ -174,7 +178,7 @@ public class Localizer {
 
     public void updateHeadingWithIMU(double imuHeading) {
         if (sensors.imuJustUpdated) {
-            headingDif += imuHeading-(currentPose.getHeading()+headingDif-startHeadingOffset);
+            headingDif += imuHeading-(currentPose.getHeading()+headingDif);
             while (headingDif > Math.toRadians(180)){
                 headingDif -= Math.toRadians(360);
             }
@@ -187,13 +191,6 @@ public class Localizer {
             percentHeadingDif = 1;
         }
         double headingErrAdd = headingDif * (1/percentHeadingDif);
-
-        Log.e("GET_LOOP_TIME()", GET_LOOP_TIME() + "");
-        Log.e("sensors.timeTillNextIMUUpdate/1e3", sensors.timeTillNextIMUUpdate/1e3 + "");
-        Log.e("percentHeadingDif", percentHeadingDif + "");
-
-        Log.e("headingDif", headingDif + "");
-        Log.e("headingErrAdd", headingErrAdd + "");
 
         headingDif -= headingErrAdd;
         odoHeading += headingErrAdd;
@@ -267,6 +264,10 @@ public class Localizer {
         TelemetryUtil.packet.put("x", x);
         TelemetryUtil.packet.put("y", y);
         TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
+
+        Log.e("x", x + "");
+        Log.e("y", y + "");
+        Log.e("heading (deg)", Math.toDegrees(heading) + "");
 
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
