@@ -8,6 +8,8 @@ import static org.firstinspires.ftc.teamcode.utils.Globals.TRACK_WIDTH;
 
 import android.util.Log;
 
+import androidx.core.math.MathUtils;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -215,7 +217,7 @@ public class Drivetrain {
                         canvas.setStroke("#0000ff");
                         perp.norm();
                         perp.mul(radius);
-                        perp.mul(Math.signum(radius));
+                        //perp.mul(Math.signum(radius));
                         perp.add(new Vector2(estimate.x, estimate.y));
                         canvas.strokeLine(estimate.x, estimate.y, perp.x, perp.y);
                         canvas.strokeCircle(perp.x, perp.y, Math.abs(radius));
@@ -227,7 +229,7 @@ public class Drivetrain {
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
                     double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
-                            (TRACK_WIDTH / 2.0) / radius + theta * headingCorrectionP/2 * (currentPath.poses.get(targetIndex).reversed ? -1: 1) :
+                            (TRACK_WIDTH / 2.0) / radius + AngleUtil.clipAngle(theta + (currentPath.poses.get(targetIndex).reversed ? Math.PI : 0)) * headingCorrectionP/5 :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
 
@@ -265,7 +267,7 @@ public class Drivetrain {
 
 
                     for (int i = 0; i < motors.size(); i++) {
-                        motorPowers[i] /= max * 3;
+                        motorPowers[i] /= max;
                         //this should already be done in priority motor --Kyle
                         //motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
                         //motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
