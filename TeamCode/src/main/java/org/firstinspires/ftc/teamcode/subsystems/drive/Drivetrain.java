@@ -51,7 +51,7 @@ public class Drivetrain {
     public static double minSpeedFollowPath = 0.3;
     public static double slowdown = 0.28;
 
-    double maxSpeed = 54;
+    double maxSpeed = 64.796;
     double maxTurn = maxSpeed / (TRACK_WIDTH/2);
 
     public PriorityMotor leftFront, leftRear, rightRear, rightFront;
@@ -229,7 +229,7 @@ public class Drivetrain {
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
                     double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
-                            (TRACK_WIDTH / 2.0) / radius + AngleUtil.clipAngle(theta + (currentPath.poses.get(targetIndex).reversed ? Math.PI : 0)) * headingCorrectionP/5 :
+                            (TRACK_WIDTH / 2.0) / radius + /*AngleUtil.clipAngle(theta + (currentPath.poses.get(targetIndex).reversed ? Math.PI : 0))*/ Math.atan2(distanceToClosestPoint, radius) * Math.signum(relativeErrorY * relativeErrorX) * headingCorrectionP/5 :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
 
