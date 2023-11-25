@@ -31,7 +31,7 @@ public class EndAffectorTester extends LinearOpMode {
 
             TelemetryUtil.packet.put("v4Bar", ea.checkV4() + " " + ea.getTargetPitch());
             TelemetryUtil.packet.put("bot", ea.checkBottom() + " " + ea.getBottomAngle());
-            TelemetryUtil.packet.put("top", ea.checkTop() + " " + ea.getTopAngle());
+            TelemetryUtil.packet.put("top", ea.checkTopTurret() + " " + ea.getTopAngle());
             robot.update();
         }
     }
