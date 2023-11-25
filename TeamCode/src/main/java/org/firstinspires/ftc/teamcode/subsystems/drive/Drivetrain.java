@@ -50,6 +50,7 @@ public class Drivetrain {
     public static double headingError = 5;
     public static double minSpeedFollowPath = 0.3;
     public static double slowdown = 0.28;
+    public static double turnP = 1;
 
     double maxSpeed = 64.796;
     double maxTurn = maxSpeed / (TRACK_WIDTH/2);
@@ -229,7 +230,7 @@ public class Drivetrain {
                             (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
                     double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
                     double targetTurn = speed * (targetRadius > minRadius ?
-                            (TRACK_WIDTH / 2.0) / radius + /*AngleUtil.clipAngle(theta + (currentPath.poses.get(targetIndex).reversed ? Math.PI : 0))*/ Math.atan2(distanceToClosestPoint, radius) * Math.signum(relativeErrorY * relativeErrorX) * headingCorrectionP/5 :
+                            (TRACK_WIDTH / 2.0) / radius + Math.atan2(distanceToClosestPoint, radius) * Math.signum(relativeErrorY * relativeErrorX) * headingCorrectionP/5 :
                             error.heading * headingCorrectionP);
                     double targetStrafe = speed * relativeErrorY;
 
@@ -245,7 +246,7 @@ public class Drivetrain {
 
                     double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
                     //Log.e("ctb", String.format("targetTurn: %f | localizer.relCurrentVel.heading : %f | maxTurn : %f", targetTurn, localizer.relCurrentVel.heading, maxTurn));
-                    double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * 1;
+                    double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * turnP;
                     turn *= turnMul;
 
 

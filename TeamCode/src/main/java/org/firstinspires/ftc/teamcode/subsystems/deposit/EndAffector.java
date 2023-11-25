@@ -75,9 +75,9 @@ public class EndAffector {
         //hardwareQueue.addDevice(topTurret);
         //hardwareQueue.addDevice(topServo);
 
-        v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
-        topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
-        botTurret.servo[0].setPosition(0.3819);
+        //v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
+        //topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
+        //botTurret.servo[0].setPosition(0.3819);
         //add for top servo
     }
 
