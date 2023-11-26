@@ -27,8 +27,8 @@ public class Sensors {
     //private IMU imu;
     private int[] odometry = new int[] {0,0,0};
 //    private final DigitalChannel magnetSensor;
-//    private final DigitalChannel intakeBeamBreak;
-//    private final DigitalChannel depositBeamBreak;
+    private final DigitalChannel intakeBeamBreak;
+    private final DigitalChannel depositBeamBreak;
 
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
@@ -44,8 +44,8 @@ public class Sensors {
         this.hardwareQueue = hardwareQueue;
 
 //        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
-//        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
-//        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
+        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
+        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
 
         initHubs(hardwareMap);
     }
@@ -66,7 +66,7 @@ public class Sensors {
                     )
                 )
             );
-//            imu.resetYaw();
+            imu.resetYaw();
         } catch (RuntimeException e) {
             throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
         }
@@ -101,6 +101,8 @@ public class Sensors {
 
             timeTillNextIMUUpdate = imuUpdateTime - (System.currentTimeMillis() - imuLastUpdateTime);
 
+            intakeTriggered = intakeBeamBreak.getState();
+            depositTriggered = depositBeamBreak.getState();
 //            slidesDown = magnetSensor.getState();
         }
         catch (Exception e) {
@@ -112,9 +114,6 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-//            slidesDown = magnetSensor.getState();
-//            intakeTriggered = intakeBeamBreak.getState();
-//            depositTriggered = depositBeamBreak.getState();
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getVelocity() * -1;
         }
