@@ -45,11 +45,13 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = 7.936; //todo
+    public static double intakePitch = Math.toRadians(-70); //todo
     public static double slidesV4Thresh = 12; //todo
-    public static double upPitch = 2.791;
-    public static double depositTop = 3.058;
-    public static double intakeTop = 0;
+    public static double upPitch = Math.toRadians(-45);
+    public static double depositTopTurret = 0;
+    public static double intakeTopTurret = 0;
+    public static double intakeTopServoAngle = Math.toRadians(10);
+    public static double intakeBotTurret = Math.PI;
 
     boolean inPlace = false;
 
@@ -131,7 +133,6 @@ public class Deposit {
                         yError = targetBoard.y - ROBOT_POSITION.y;
                         headingError = targetBoard.heading - ROBOT_POSITION.heading;
                     }
-                    yError = 0; // again temporary to remove bottom turret --Kyle
 
                     depositMath.calculate(
                         xError,
@@ -153,8 +154,10 @@ public class Deposit {
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setTopTurret(depositTop);
-                if (endAffector.topTurret.getCurrentAngle() == depositTop) {
+                endAffector.setTopTurret(depositTopTurret);
+                endAffector.setBotTurret(depositMath.v4BarYaw);
+                endAffector.setTopServo(-1 * depositMath.v4BarYaw);
+                if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
@@ -183,21 +186,20 @@ public class Deposit {
                 TelemetryUtil.packet.put("slideExtension: ", depositMath.slideExtension);
 
                 slides.setLength(depositMath.slideExtension);
-                //endAffector.setBotTurret(depositMath.v4BarYaw);  no adjustments in auto
+                endAffector.setBotTurret(depositMath.v4BarYaw);
                 endAffector.setV4Bar(depositMath.v4BarPitch);
+                endAffector.setTopServo(-1 * depositMath.v4BarPitch);
 
                 if (depositMath.v4BarPitch < 0) {
                     //endAffector.setBotTurret(0);
                     Log.e("v4bar too low", "E");
                 }
 
-                /*if (Globals.RUNMODE == RunMode.TELEOP) {
+                if (Globals.RUNMODE == RunMode.TELEOP) {
                     endAffector.setTopTurret(-depositMath.v4BarYaw);
                 } else {
                     endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
-                } still not being used since unnecessary */
-
-                endAffector.setV4Bar(depositMath.v4BarPitch);
+                }
 
                 break;
             case WAIT_DUNK:
@@ -210,6 +212,8 @@ public class Deposit {
                 //endAffector.setBotTurret(0);
                 slides.setLength(slidesV4Thresh);
                 endAffector.setV4Bar(upPitch);
+                endAffector.setTopServo(intakeTopServoAngle);
+                endAffector.setTopTurret(intakeTopTurret);
                 /* move v4bar servo to minimum value before bricking */
 
                 if (endAffector.v4Servo.getCurrentAngle() == upPitch)
@@ -217,8 +221,8 @@ public class Deposit {
 
                 break;
             case RETRACT_ROTATE180:
-                endAffector.setTopTurret(intakeTop);;
-                if (endAffector.topTurret.getCurrentAngle() == intakeTop ) {
+                endAffector.setBotTurret(intakeBotTurret);
+                if (endAffector.checkBottom()) {
                     state = State.MOVE_V4DOWN;
                 }
                 break;
@@ -232,6 +236,11 @@ public class Deposit {
 
             case DOWN:
                 slides.setLength(0.0);
+                endAffector.setV4Bar(intakePitch);
+                endAffector.setTopTurret(intakeTopTurret);
+                endAffector.setBotTurret(intakeBotTurret);
+                endAffector.setTopServo(intakeTopServoAngle);
+
 
                 /* set v4bar to retract angle */
 

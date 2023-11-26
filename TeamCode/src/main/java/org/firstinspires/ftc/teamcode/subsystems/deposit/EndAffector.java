@@ -1,20 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoMINIP;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoTunable;
 
 public class EndAffector {
     public final PriorityServo v4Servo;
     public final PriorityServo botTurret;
     public final PriorityServo topTurret;
-    //public final PriorityServo topServo;
+    public final PriorityServo topServo;
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
     private double bottomAngle;
@@ -61,7 +58,7 @@ public class EndAffector {
             false,
             1, 2
         );
-        /*topServo = new PriorityServo(
+        topServo = new PriorityServo(
                 hardwareMap.get(Servo.class, "topServo"),
                 "topServo",
                 PriorityServo.ServoType.AXON_MINI,
@@ -71,16 +68,16 @@ public class EndAffector {
                 0,
                 false,
                 1,2
-        );*/
+        );
         this.sensors = sensors;
         //hardwareQueue.addDevice(v4Servo);
         //hardwareQueue.addDevice(botTurret);
         //hardwareQueue.addDevice(topTurret);
         //hardwareQueue.addDevice(topServo);
 
-        v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
-        topTurret.setTargetAngle(Deposit.intakeTop, 1.0);
-        botTurret.servo[0].setPosition(0.3819);
+        //v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
+        //topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
+        //botTurret.servo[0].setPosition(0.3819);
         //add for top servo
     }
 
@@ -128,11 +125,12 @@ public class EndAffector {
     public boolean checkV4() {
         return (v4Servo.getCurrentAngle() == targetPitch);
     }
-    public boolean checkTop() {
+    public boolean checkTopTurret() {
         return (topTurret.getCurrentAngle() == topAngle);
     }
+    public boolean checkTopServo() { return (topServo.getCurrentAngle() == topAngle); }
     public boolean checkReady() {
-        return checkBottom() && checkTop() && checkV4();
+        return checkBottom() && checkTopTurret() && checkV4() && checkTopServo();
     }
 
 }
