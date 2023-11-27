@@ -14,15 +14,15 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 @TeleOp
 @Config
 public class GoToPointTester extends LinearOpMode {
-    public static double x = -20;
-    public static double y = 32;
-    public static double h = 180;
+    public static double x = 0;
+    public static double y = 0;
+    public static double h = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Drivetrain drivetrain = robot.drivetrain;
-        drivetrain.setPoseEstimate(new Pose2d(0,0, Math.toRadians(-90)));
+        drivetrain.setPoseEstimate(new Pose2d(0,0, Math.toRadians(0)));
 
         waitForStart();
 

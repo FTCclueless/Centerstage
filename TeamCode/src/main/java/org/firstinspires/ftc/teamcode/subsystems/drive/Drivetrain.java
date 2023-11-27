@@ -327,24 +327,24 @@ public class Drivetrain {
     }
 
     // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
-    public static PID xPID = new PID(0.087,0.0,0.0);
-    public static PID yPID = new PID(0.05,0.0,0.0);
-    public static PID turnPID = new PID(3.0,0.3,0.0);
+    public static PID xPID = new PID(0.15,0.2,0.01);
+    public static PID yPID = new PID(0.1,0.0,0.0);
+    public static PID turnPID = new PID(5.0,0.75,0.2);
 
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
     public void goToPoint(Pose2d targetPoint) {
-//        if (targetPoint != lastTargetPoint) { // if we set a new target point we reset integral
-//            xPID.resetIntegral();
-//            yPID.resetIntegral();
-//            turnPID.resetIntegral();
-//
+        if (targetPoint != lastTargetPoint) { // if we set a new target point we reset integral
+            xPID.resetIntegral();
+            yPID.resetIntegral();
+            turnPID.resetIntegral();
+
 //            xPID.updatePID(0.087,0.0,0.0);
 //            yPID.updatePID(0.05,0.0,0.0);
 //            turnPID.updatePID(5.0,0.5,0.0);
-//
-//            lastTargetPoint = targetPoint;
-//        }
+
+            lastTargetPoint = targetPoint;
+        }
 
         double deltaX = (targetPoint.x - localizer.x);
         double deltaY = (targetPoint.y-localizer.y);
@@ -361,11 +361,11 @@ public class Drivetrain {
         double strafe = yPID.update(yError);
         double turn = turnPID.update(turnError);
 
-        if (Math.abs(xError) < 5 && Math.abs(yError) < 5 && Math.abs(turnError) < Math.toRadians(5)) {
+        if (Math.abs(xError) < 3 && Math.abs(yError) < 3 && Math.abs(turnError) < Math.toRadians(5)) {
             // changing PIDs to be stronger for final adjustment
-//            xPID.updatePID(0.4, 0.0,0.0);
-//            yPID.updatePID(0.1,0.0,0.0);
-//            turnPID.updatePID(5.0,0.5,0.0);
+//            xPID.updatePID(0.15, 0.2, 0.01);
+//            yPID.updatePID(0.1, 0.0, 0.0);
+//            turnPID.updatePID(5.0, 0.75, 0.2);
 
             Log.e("FINAL ADJUSTMENT", "");
 

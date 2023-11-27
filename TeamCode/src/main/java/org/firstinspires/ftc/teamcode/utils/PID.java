@@ -18,7 +18,7 @@ public class PID {
     long lastLoopTime = System.nanoTime();
     double lastError = 0;
     int counter = 0;
-    public double loopTime = 0.0;
+    double loopTime = 0.0;
 
     public void resetIntegral() {
         integral = 0;
