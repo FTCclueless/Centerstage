@@ -28,9 +28,6 @@ public class GoToPointTester extends LinearOpMode {
 
         while (!isStopRequested()) {
             drivetrain.goToPoint(new Pose2d(x, y, Math.toRadians(h)));
-            Canvas ctx = TelemetryUtil.packet.fieldOverlay();
-            ctx.setStroke("red");
-            ctx.strokeCircle(x, y, 3);
             robot.update();
         }
     }
