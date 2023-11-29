@@ -59,25 +59,25 @@ public class EndAffector {
             1, 2
         );
         topServo = new PriorityServo(
-                hardwareMap.get(Servo.class, "topServo"),
-                "topServo",
-                PriorityServo.ServoType.AXON_MINI,
-                1,
-                0,
-                1,
-                0,
-                false,
-                1,2
+            hardwareMap.get(Servo.class, "topServo"),
+            "topServo",
+            PriorityServo.ServoType.AXON_MINI,
+            1,
+            0,
+            1,
+            0,
+            false,
+            1,2
         );
         this.sensors = sensors;
-        //hardwareQueue.addDevice(v4Servo);
-        //hardwareQueue.addDevice(botTurret);
-        //hardwareQueue.addDevice(topTurret);
-        //hardwareQueue.addDevice(topServo);
+        hardwareQueue.addDevice(v4Servo);
+        hardwareQueue.addDevice(botTurret);
+        hardwareQueue.addDevice(topTurret);
+        hardwareQueue.addDevice(topServo);
 
-        //v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
-        //topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
-        //botTurret.servo[0].setPosition(0.3819);
+        /*v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
+        topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
+        botTurret.servo[0].setPosition(0.3819);*/
         //add for top servo
     }
 
