@@ -257,10 +257,6 @@ public class Localizer {
         TelemetryUtil.packet.put("y", y);
         TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
 
-        Log.e("x", x + "");
-        Log.e("y", y + "");
-        Log.e("heading (deg)", Math.toDegrees(heading) + "");
-
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
     }

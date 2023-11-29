@@ -13,21 +13,21 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
 @TeleOp
 @Config
-public class GoPointTester extends LinearOpMode {
-    public static double x = 20;
-    public static double y = 32;
-    public static double h = 90;
+public class GoToPointTester extends LinearOpMode {
+    public static double x = 0;
+    public static double y = 0;
+    public static double h = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Drivetrain drivetrain = robot.drivetrain;
+        drivetrain.setPoseEstimate(new Pose2d(0,0, Math.toRadians(0)));
+
         waitForStart();
+
         while (!isStopRequested()) {
             drivetrain.goToPoint(new Pose2d(x, y, Math.toRadians(h)));
-            Canvas ctx = TelemetryUtil.packet.fieldOverlay();
-            ctx.setStroke("red");
-            ctx.strokeCircle(x, y, 3);
             robot.update();
         }
     }

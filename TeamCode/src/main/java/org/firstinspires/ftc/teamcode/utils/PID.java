@@ -1,34 +1,49 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 // https://www.ctrlaltftc.com/the-pid-controller
+@Config
 public class PID {
-    public double p, i, d;
-    private double lastError = 0;
-    private double integralSum = 0;
-    private final ElapsedTime timer = new ElapsedTime();
+    public double p;
+    public double i;
+    public double d;
+    public PID(double P, double I, double D){
+        p=P;
+        i=I;
+        d=D;
+    }
+    double integral = 0;
+    long lastLoopTime = System.nanoTime();
+    double lastError = 0;
+    int counter = 0;
+    double loopTime = 0.0;
 
-    public PID(double p, double i, double d) {
-        this.p = p;
-        this.i = i;
-        this.d = d;
+    public void resetIntegral() {
+        integral = 0;
     }
 
-    public double getOut(double error) {
+    public double update(double error){
+        if (counter == 0) {
+            lastLoopTime = System.nanoTime() - 10000000;
+        }
+
+        long currentTime = System.nanoTime();
+        loopTime = (currentTime - lastLoopTime)/1000000000.0;
+        lastLoopTime = currentTime; // lastLoopTime's start time
+
+        double proportion = p * error;
+        integral += error * i * loopTime;
+        double derivative = d * (error - lastError)/loopTime;
+
         lastError = error;
-        integralSum += error * i * timer.seconds();
-        double out = (p * error) + integralSum + (d * (error - lastError) / timer.seconds());
-        timer.reset();
-        return out;
+        counter ++;
+
+        return proportion + integral + derivative;
     }
 
-    public void reset() {
-        integralSum = 0;
-        timer.reset();
-    }
-
-    public void updatePID(double p, double i, double d){
+    public void updatePID(double p, double i, double d) {
         this.p = p;
         this.i = i;
         this.d = d;

@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.DRIVETRAIN_ENABLED;
-import static org.firstinspires.ftc.teamcode.utils.Globals.MIN_MOTOR_POWER_TO_OVERCOME_FRICTION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
 import static org.firstinspires.ftc.teamcode.utils.Globals.TRACK_WIDTH;
 
 import android.util.Log;
-
-import androidx.core.math.MathUtils;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -22,6 +19,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
+import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
@@ -286,14 +284,23 @@ public class Drivetrain {
             case GO_POINT:
                 Pose2d target = currentPath.getLastPoint();
                 goToPoint(target);
-                //TODO tune the threshold
-                TelemetryUtil.packet.put("ErrorX", Math.abs(target.x - ROBOT_POSITION.x));
-                TelemetryUtil.packet.put("ErrorY", Math.abs(target.y - ROBOT_POSITION.y));
-                TelemetryUtil.packet.put("ErrorH", Math.abs(target.heading - ROBOT_POSITION.heading));
 
-                if (Math.abs(target.x-ROBOT_POSITION.x) < 2 && Math.abs(target.y-ROBOT_POSITION.y) < 2 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
-                    state = State.BRAKE;
+                Log.e("DRIVING", "");
+
+                if (Math.abs(target.x-ROBOT_POSITION.x) < 5 && Math.abs(target.y-ROBOT_POSITION.y) < 5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
+                    // changing PIDs to be stronger for final adjustment
+                    xPID.updatePID(0.4, 0.0,0.0);
+                    yPID.updatePID(0.1,0.0,0.0);
+                    turnPID.updatePID(0.128,0.0,0.0);
+
+                    Log.e("FINAL ADJUSTMENT", "");
+
+                    if (Math.abs(target.x-ROBOT_POSITION.x) < 1 && Math.abs(target.y-ROBOT_POSITION.y) < 1 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(1)) {
+                        state = State.BRAKE;
+                    }
                 }
+
+                Log.e("xPID.p", xPID.p + "");
                 break;
             case BRAKE:
                 for (PriorityMotor motor : motors) {
@@ -306,8 +313,6 @@ public class Drivetrain {
 
         }
         TelemetryUtil.packet.put("Drivetrain State", state);
-
-
     }
 
     public void updateLocalizer() {
@@ -321,20 +326,57 @@ public class Drivetrain {
         DashboardUtil.drawSampledPath(fieldOverlay, getCurrentPath());
     }
 
-    public static double kx = 0.087; //todo tune these
-    public static double ky = 0.05;
-    public static double kang = 0.64;
+    // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
+    public static PID xPID = new PID(0.15,0.2,0.01);
+    public static PID yPID = new PID(0.1,0.0,0.0);
+    public static PID turnPID = new PID(5.0,0.75,0.2);
+
+    Pose2d lastTargetPoint = new Pose2d(0,0,0);
+
     public void goToPoint(Pose2d targetPoint) {
-        double x = (targetPoint.x - localizer.x);
-        double y = (targetPoint.y-localizer.y);
+        if (targetPoint != lastTargetPoint) { // if we set a new target point we reset integral
+            xPID.resetIntegral();
+            yPID.resetIntegral();
+            turnPID.resetIntegral();
 
-        double fwd = kx*(Math.cos(localizer.heading)*x + Math.sin(localizer.heading)*y);
-        double strafe = ky*(-Math.sin(localizer.heading)*x + Math.cos(localizer.heading)*y);
+//            xPID.updatePID(0.087,0.0,0.0);
+//            yPID.updatePID(0.05,0.0,0.0);
+//            turnPID.updatePID(5.0,0.5,0.0);
 
-        double turn = kang*(targetPoint.heading-localizer.heading);
-        TelemetryUtil.packet.put("fwd", fwd);
-        TelemetryUtil.packet.put("strafe", strafe);
-        TelemetryUtil.packet.put("turn", turn);
+            lastTargetPoint = targetPoint;
+        }
+
+        double deltaX = (targetPoint.x - localizer.x);
+        double deltaY = (targetPoint.y-localizer.y);
+
+        double xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
+        double yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
+        double turnError = targetPoint.heading-localizer.heading;
+
+        while(Math.abs(turnError) > Math.PI ){
+            turnError -= Math.PI * 2 * Math.signum(turnError);
+        }
+
+        double fwd = xPID.update(xError);
+        double strafe = yPID.update(yError);
+        double turn = turnPID.update(turnError);
+
+        if (Math.abs(xError) < 3 && Math.abs(yError) < 3 && Math.abs(turnError) < Math.toRadians(5)) {
+            // changing PIDs to be stronger for final adjustment
+//            xPID.updatePID(0.15, 0.2, 0.01);
+//            yPID.updatePID(0.1, 0.0, 0.0);
+//            turnPID.updatePID(5.0, 0.75, 0.2);
+
+            Log.e("FINAL ADJUSTMENT", "");
+
+            if (Math.abs(xError) < 1 && Math.abs(yError) < 1 && Math.abs(turnError) < Math.toRadians(1)) {
+                state = State.BRAKE;
+            }
+        }
+
+        TelemetryUtil.packet.put("xError", xError);
+        TelemetryUtil.packet.put("yError", yError);
+        TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
@@ -474,10 +516,6 @@ public class Drivetrain {
             } else {
                 return null;
             }
-
         }
-
-
     }
-
 }
