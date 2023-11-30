@@ -258,7 +258,7 @@ public class Drivetrain {
                             fwd + turn
                     };
                     TelemetryUtil.packet.put("fwd", fwd);
-                TelemetryUtil.packet.put("turn", turn);
+                    TelemetryUtil.packet.put("turn", turn);
                     TelemetryUtil.packet.put("radius", radius);
 
                     // Post 1 normalization
@@ -344,6 +344,7 @@ public class Drivetrain {
 //            turnPID.updatePID(5.0,0.5,0.0);
 
             lastTargetPoint = targetPoint;
+            state = State.DRIVE;
         }
 
         double deltaX = (targetPoint.x - localizer.x);
