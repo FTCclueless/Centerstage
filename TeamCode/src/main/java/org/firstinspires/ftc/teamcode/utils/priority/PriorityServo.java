@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils.priority;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
@@ -148,8 +150,10 @@ public class PriorityServo extends PriorityDevice{
         for (int i = 0; i < servo.length; i++) {
             if (multipliers[i] == 1) {
                 servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
+                Log.e(name,convertAngleToPos(currentIntermediateTargetAngle) +"");
             } else {
                 servo[i].setPosition(maxPos - convertAngleToPos(currentIntermediateTargetAngle)); //this might be completely wrong --Kyle
+                Log.e(name,(maxPos - convertAngleToPos(currentIntermediateTargetAngle)) + "");
             }
         }
         lastUpdateTime = currentTime;
