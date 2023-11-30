@@ -241,10 +241,13 @@ public class Drivetrain {
                         return;
                     }
 
+                    goToPoint(targetPose);
+
                     //goToPoint(lookAhead);
 
                     //apply the feedforward
 
+                /*
                     double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
                     //Log.e("ctb", String.format("targetTurn: %f | localizer.relCurrentVel.heading : %f | maxTurn : %f", targetTurn, localizer.relCurrentVel.heading, maxTurn));
                     double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * turnP;
@@ -278,7 +281,7 @@ public class Drivetrain {
 
                         //motors.get(i).setPower(motorPowers[i]);
                         motors.get(i).setTargetPower(motorPowers[i]);
-                    }
+                    }*/
 
                 break;
             case GO_POINT:
@@ -289,9 +292,9 @@ public class Drivetrain {
 
                 if (Math.abs(target.x-ROBOT_POSITION.x) < 5 && Math.abs(target.y-ROBOT_POSITION.y) < 5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
                     // changing PIDs to be stronger for final adjustment
-                    xPID.updatePID(0.4, 0.0,0.0);
-                    yPID.updatePID(0.1,0.0,0.0);
-                    turnPID.updatePID(0.128,0.0,0.0);
+                    //xPID.updatePID(0.4, 0.0,0.0);
+                    //yPID.updatePID(0.1,0.0,0.0);
+                    //turnPID.updatePID(0.128,0.0,0.0);
 
                     Log.e("FINAL ADJUSTMENT", "");
 
@@ -310,7 +313,6 @@ public class Drivetrain {
                 break;
             case DRIVE:
                 return;
-
         }
         TelemetryUtil.packet.put("Drivetrain State", state);
     }
@@ -368,10 +370,6 @@ public class Drivetrain {
 //            turnPID.updatePID(5.0, 0.75, 0.2);
 
             Log.e("FINAL ADJUSTMENT", "");
-
-            if (Math.abs(xError) < 1 && Math.abs(yError) < 1 && Math.abs(turnError) < Math.toRadians(1)) {
-                state = State.BRAKE;
-            }
         }
 
         TelemetryUtil.packet.put("xError", xError);
