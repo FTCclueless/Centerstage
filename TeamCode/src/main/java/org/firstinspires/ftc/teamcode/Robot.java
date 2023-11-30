@@ -81,9 +81,8 @@ public class Robot {
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
         long start = System.currentTimeMillis();
-        while(System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
-            TelemetryUtil.packet.fieldOverlay().setStroke("red");
-            TelemetryUtil.packet.fieldOverlay().strokeCircle(pose.x, pose.y, 3);
+        drivetrain.goToPoint(pose); // need this to start the process so thresholds don't immediately become true
+        while(System.currentTimeMillis() - start <= 5000 && !drivetrain.atPoint(3,3,Math.toRadians(5))) {
             drivetrain.goToPoint(pose);
             update();
         }

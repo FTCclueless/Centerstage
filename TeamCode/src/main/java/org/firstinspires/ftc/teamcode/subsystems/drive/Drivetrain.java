@@ -145,7 +145,6 @@ public class Drivetrain {
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
         ROBOT_VELOCITY = localizer.getPoseVelocity();
 
-
         switch (state) {
             case FOLLOW_SPLINE:
                 if (currentPath == null) {
@@ -335,15 +334,18 @@ public class Drivetrain {
 
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
+    double xError = 0.0;
+    double yError = 0.0;
+    double turnError = 0.0;
+
     public void goToPoint(Pose2d targetPoint) {
+        TelemetryUtil.packet.fieldOverlay().setStroke("red");
+        TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, 3);
+
         if (targetPoint != lastTargetPoint) { // if we set a new target point we reset integral
             xPID.resetIntegral();
             yPID.resetIntegral();
             turnPID.resetIntegral();
-
-//            xPID.updatePID(0.087,0.0,0.0);
-//            yPID.updatePID(0.05,0.0,0.0);
-//            turnPID.updatePID(5.0,0.5,0.0);
 
             lastTargetPoint = targetPoint;
             state = State.DRIVE;
@@ -352,9 +354,9 @@ public class Drivetrain {
         double deltaX = (targetPoint.x - localizer.x);
         double deltaY = (targetPoint.y-localizer.y);
 
-        double xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
-        double yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
-        double turnError = targetPoint.heading-localizer.heading;
+        xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
+        yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
+        turnError = targetPoint.heading-localizer.heading;
 
         while(Math.abs(turnError) > Math.PI ){
             turnError -= Math.PI * 2 * Math.signum(turnError);
@@ -364,21 +366,19 @@ public class Drivetrain {
         double strafe = yPID.update(yError);
         double turn = turnPID.update(turnError);
 
-        if (Math.abs(xError) < 3 && Math.abs(yError) < 3 && Math.abs(turnError) < Math.toRadians(5)) {
-            // changing PIDs to be stronger for final adjustment
-//            xPID.updatePID(0.15, 0.2, 0.01);
-//            yPID.updatePID(0.1, 0.0, 0.0);
-//            turnPID.updatePID(5.0, 0.75, 0.2);
-
-            Log.e("FINAL ADJUSTMENT", "");
-        }
-
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
         TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
+    }
+
+    public boolean atPoint (double xThreshold, double yThreshold, double headingThreshold) {
+        if (Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < headingThreshold) {
+            return true;
+        }
+        return false;
     }
 
     public void setMode(DcMotor.RunMode runMode) {

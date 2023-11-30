@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,8 +26,6 @@ public class ServoTester extends LinearOpMode {
 
     public static double servoAngle = 0.0;
     public static int servoNumber = 0;
-    public static boolean updateAll = false;
-
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -64,9 +64,9 @@ public class ServoTester extends LinearOpMode {
         TelemetryUtil.setup();
 
         waitForStart();
-
         while (!isStopRequested()) {
-            robot.update();
+            START_LOOP();
+            hardwareQueue.update();
 
             if (toggleRightBumper.isClicked(gamepad1.right_bumper)) {
                 controllerMode = !controllerMode;
@@ -85,13 +85,7 @@ public class ServoTester extends LinearOpMode {
 
                 // figuring out time to set servo pos
                 long start = System.nanoTime();
-                if (updateAll) {
-                    for (int i = 0; i < servoSize; i++) {
-                        servos.get(i).setTargetPose(servoPos[i], 0.3);
-                    }
-                } else {
-                    servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 0.3);
-                }
+                servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 1.0);
                 double elapsedTime = (System.nanoTime()-start)/1000000000.0;
                 totalTime += elapsedTime;
 
@@ -114,7 +108,7 @@ public class ServoTester extends LinearOpMode {
                 //telemetry.addData("v4Encoder", v4Bar);
                 telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
             } else {
-                servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 0.3);
+                servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
 
                 TelemetryUtil.packet.put("servoAngle", servoAngle);
                 TelemetryUtil.packet.put("servoNumber", servoNumber);

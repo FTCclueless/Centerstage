@@ -80,6 +80,8 @@ public class REDGroundPreloadAuto extends LinearOpMode {
             preloadGlobal = PreloadGlobal.BOTTOM;
         }
 
+        preloadGlobal = PreloadGlobal.TOP;
+
         switch (preloadGlobal) {
             case TOP:
                 if (up) { // right

@@ -19,7 +19,7 @@ public class Dunker {
         CLOSE,
         CHILL
     }
-    public DunkState dunkState = DunkState.CLOSE;
+    public DunkState dunkState = DunkState.CHILL; //todo change to close later
 
     private double startTime = 0;
     private boolean oneDunk = true;

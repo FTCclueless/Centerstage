@@ -114,6 +114,10 @@ public class Localizer {
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
+//        Log.e("deltaLeft", deltaLeft + "");
+//        Log.e("deltaRight", deltaRight + "");
+//        Log.e("deltaBack", deltaBack + "");
+
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
@@ -161,6 +165,9 @@ public class Localizer {
 
         loopTimes.add(0,loopTime);
         poseHistory.add(0,currentPose);
+
+//        Log.e("x", x + "");
+//        Log.e("y", y + "");
 
         updateVelocity();
         updateField();

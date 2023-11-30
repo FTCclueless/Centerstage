@@ -60,7 +60,7 @@ public class Deposit {
         this.sensors = sensors;
         depositMath = new DepositMath();
 
-        state = State.DOWN;
+        state = State.WAIT;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);

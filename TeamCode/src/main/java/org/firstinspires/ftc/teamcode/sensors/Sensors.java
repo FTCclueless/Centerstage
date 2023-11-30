@@ -84,11 +84,9 @@ public class Sensors {
 
     private void updateControlHub() {
         try {
-            if (Globals.RUNMODE != RunMode.TELEOP) {
-                odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
-                odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
-                odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
-            }
+            odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
+            odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
+            odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
 
             if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();

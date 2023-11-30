@@ -83,7 +83,7 @@ public class PriorityServo extends PriorityDevice{
         return ang;
     }
 
-    public void setTargetPose(double targetPose, double power){
+    public void setTargetPose(double targetPose, double power) {
         setTargetAngle(convertPosToAngle(targetPose),power);
     }
 
@@ -94,6 +94,7 @@ public class PriorityServo extends PriorityDevice{
     public void setTargetAngle(double targetAngle, double power){
         this.power = power;
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
+//        Log.e(name, "targetAngle " + targetAngle);
         TelemetryUtil.packet.put("target", targetAngle);
     }
 
@@ -135,6 +136,7 @@ public class PriorityServo extends PriorityDevice{
         double timeSinceLastUpdate = ((double) currentTime - lastUpdateTime)/1.0E9;
 
         double error = targetAngle - currentAngle;
+//        Log.e(name, "error: " + error);
         //find the amount of movement the servo theoretically should have done in the time it took to update the servo
         double deltaAngle = timeSinceLastUpdate * type.speed * power * Math.signum(error);
 
@@ -150,14 +152,13 @@ public class PriorityServo extends PriorityDevice{
         for (int i = 0; i < servo.length; i++) {
             if (multipliers[i] == 1) {
                 servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
-                Log.e(name,convertAngleToPos(currentIntermediateTargetAngle) +"");
+//                Log.e(name,convertAngleToPos(currentIntermediateTargetAngle) +" angleToPos");
             } else {
                 servo[i].setPosition(maxPos - convertAngleToPos(currentIntermediateTargetAngle)); //this might be completely wrong --Kyle
-                Log.e(name,(maxPos - convertAngleToPos(currentIntermediateTargetAngle)) + "");
+//                Log.e(name,(maxPos - convertAngleToPos(currentIntermediateTargetAngle)) + " angleToPos");
             }
         }
         lastUpdateTime = currentTime;
-        System.out.println("SERVO UPDATE " + name + " " + ( maxPos + convertAngleToPos(-currentIntermediateTargetAngle)));
     }
 
     public double getTargetPosition () {
