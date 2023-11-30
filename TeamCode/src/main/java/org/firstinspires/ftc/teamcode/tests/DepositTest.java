@@ -14,12 +14,17 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode {
+    public static double height = 30;
+    public static double targetY = 30;
+    public static double xError = 30;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
 
         ButtonToggle btx = new ButtonToggle();
         ButtonToggle bty = new ButtonToggle();
+
 
         waitForStart();
 
@@ -29,6 +34,8 @@ public class DepositTest extends LinearOpMode {
             if (btx.isClicked(gamepad1.x)) {
                 robot.deposit.state = Deposit.State.START_DEPOSIT;
             }
+
+            robot.deposit.depositAt(height, targetY, xError);
 
             if (bty.isClicked(gamepad1.y)) {
                 System.out.println("I NEED TO DO SOMETHING");
