@@ -24,6 +24,7 @@ public class ServoTester extends LinearOpMode {
 
     public static double servoAngle = 0.0;
     public static int servoNumber = 0;
+    public static boolean updateAll = false;
 
 
     @Override
@@ -31,9 +32,9 @@ public class ServoTester extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
         HardwareQueue hardwareQueue = robot.hardwareQueue;
 
-        AnalogInput v4Bar = hardwareMap.get(AnalogInput.class, "V4BarServoEncoder");
-        AnalogInput botEncoder = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
-        AnalogInput topEncoder = hardwareMap.get(AnalogInput.class, "topTurretEncoder");
+//        AnalogInput v4Bar = hardwareMap.get(AnalogInput.class, "V4BarServoEncoder");
+//        AnalogInput botEncoder = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
+//        AnalogInput topEncoder = hardwareMap.get(AnalogInput.class, "topTurretEncoder");
 
         ArrayList<PriorityServo> servos = new ArrayList<>();
 
@@ -84,7 +85,13 @@ public class ServoTester extends LinearOpMode {
 
                 // figuring out time to set servo pos
                 long start = System.nanoTime();
-                servos.get(servoIndex).setTargetPose(servoPos[servoIndex],0.3);
+                if (updateAll) {
+                    for (int i = 0; i < servoSize; i++) {
+                        servos.get(i).setTargetPose(servoPos[i], 0.3);
+                    }
+                } else {
+                    servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 0.3);
+                }
                 double elapsedTime = (System.nanoTime()-start)/1000000000.0;
                 totalTime += elapsedTime;
 
@@ -104,7 +111,7 @@ public class ServoTester extends LinearOpMode {
                 telemetry.addData("servoIndex", servoIndex);
                 telemetry.addData("servoPos", servoPos[servoIndex]);
                 telemetry.addData("averageServoTime", totalTime/numLoops);
-                telemetry.addData("v4Encoder", v4Bar);
+                //telemetry.addData("v4Encoder", v4Bar);
                 telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 0.3);

@@ -67,6 +67,7 @@ public class REDGroundPreloadAuto extends LinearOpMode {
         }
 
         robot.drivetrain.localizer.setPoseEstimate(pose);
+        robot.drivetrain.update();
 
         waitForStart();
 
@@ -129,8 +130,8 @@ public class REDGroundPreloadAuto extends LinearOpMode {
             }
         }
         else {
-            robot.goToPoint(new Pose2d(12, 57 * reflect, 0), this);
-            robot.goToPoint(new Pose2d(53, 57 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(12, 53 * reflect, 0), this);
+            robot.goToPoint(new Pose2d(53, 53 * reflect, 0), this);
         }
     }
 }

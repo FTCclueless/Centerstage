@@ -82,6 +82,8 @@ public class Robot {
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
         long start = System.currentTimeMillis();
         while(System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+            TelemetryUtil.packet.fieldOverlay().setStroke("red");
+            TelemetryUtil.packet.fieldOverlay().strokeCircle(pose.x, pose.y, 3);
             drivetrain.goToPoint(pose);
             update();
         }
