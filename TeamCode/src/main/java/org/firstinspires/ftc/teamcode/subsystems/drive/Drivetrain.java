@@ -328,9 +328,9 @@ public class Drivetrain {
     }
 
     // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
-    public static PID xPID = new PID(0.15,0.2,0.01);
-    public static PID yPID = new PID(0.1,0.0,0.0);
-    public static PID turnPID = new PID(5.0,0.75,0.2);
+    public static PID xPID = new PID(0.15,0,0.01);
+    public static PID yPID = new PID(0.35,0.0,0.01);
+    public static PID turnPID = new PID(5.0,0,0.2);
 
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
@@ -342,7 +342,7 @@ public class Drivetrain {
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, 3);
 
-        if (targetPoint != lastTargetPoint) { // if we set a new target point we reset integral
+        if (targetPoint.x != lastTargetPoint.x && targetPoint.y != lastTargetPoint.y && targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             xPID.resetIntegral();
             yPID.resetIntegral();
             turnPID.resetIntegral();
@@ -401,11 +401,11 @@ public class Drivetrain {
     }
 
     private void normalizeArray(double[] arr) {
-        double largest = arr[0];
+        double largest = Math.abs(arr[0]);
         boolean greaterThan1 = false;
         for (int i = 1; i < arr.length; i++) {
-            largest = Math.max(largest, arr[i]);
-            if (arr[i] > 1) {
+            largest = Math.max(Math.abs(largest), arr[i]);
+            if (Math.abs(arr[i]) > 1) {
                 greaterThan1 = true;
                 TelemetryUtil.packet.put("normalized", greaterThan1);
             }

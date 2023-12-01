@@ -38,6 +38,8 @@ public class Teleop extends LinearOpMode {
         // DRIVER 2
         ButtonToggle dpadUp_2 = new ButtonToggle();
         ButtonToggle dpadDown_2 = new ButtonToggle();
+        ButtonToggle dpadLeft_2 = new ButtonToggle();
+        ButtonToggle dpadRight_2 = new ButtonToggle();
         ButtonToggle rightTrigger_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle b_2 = new ButtonToggle();
@@ -59,14 +61,14 @@ public class Teleop extends LinearOpMode {
                 robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() - Math.toRadians(5));
             }
 
-            /*if (dpadUp_1.isClicked(gamepad1.dpad_up)) {
+            if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
                 depoFlag = true;
                 depoPos.y++;
             }
-            if (dpadDown_1.isClicked(gamepad1.dpad_down)) {
+            if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
                 depoFlag = true;
                 depoPos.y--;
-            }*/
+            }
 
             // driver B adjusting deposit position
             depoPos.x += gamepad2.right_stick_y * 0.2;

@@ -45,7 +45,7 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = Math.toRadians(-70); //todo
+    public static double intakePitch = 4.1199; //todo
     public static double slidesV4Thresh = 12; //todo
     public static double upPitch = Math.toRadians(-45);
     public static double depositTopTurret = 0;

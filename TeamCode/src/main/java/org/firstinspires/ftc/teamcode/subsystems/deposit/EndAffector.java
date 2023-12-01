@@ -26,11 +26,11 @@ public class EndAffector {
         v4Servo = new PriorityServo(
             v4bar,
             "V4BarServo",
-            PriorityServo.ServoType.AXON_MINI_SCUFF,
+            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
-            0,
+            0.26, //0.2609
             //0, Math.toRadians(240),
             false,
             1, 2,
@@ -39,22 +39,22 @@ public class EndAffector {
         botTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
-            PriorityServo.ServoType.PRO_MODELER,
+            PriorityServo.ServoType.AXON_MINI_SCUFF_TURRET,
             1,
             0,
             1,
-            0.389,
+            0.652,
             false,
             1, 2
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),
             "topTurret",
-            PriorityServo.ServoType.PRO_MODELER,
+            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
-            0,
+            0.446,
             false,
             1, 2
         );
@@ -65,7 +65,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0,
+            0.3,
             false,
             1,2
         );
@@ -74,6 +74,8 @@ public class EndAffector {
         hardwareQueue.addDevice(botTurret);
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
+
+        v4Servo.setTargetAngle(Deposit.intakePitch, 0.5);
 
         /*v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
         topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
