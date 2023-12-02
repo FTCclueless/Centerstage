@@ -111,6 +111,7 @@ public class Drivetrain {
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
         localizer = new Localizer(hardwareMap, sensors,false, true);
+        setMinPowersToOvercomeFriction();
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -342,7 +343,7 @@ public class Drivetrain {
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, 3);
 
-        if (targetPoint.x != lastTargetPoint.x && targetPoint.y != lastTargetPoint.y && targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
+        if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             xPID.resetIntegral();
             yPID.resetIntegral();
             turnPID.resetIntegral();

@@ -24,8 +24,6 @@ public class Teleop extends LinearOpMode {
         Intake intake = robot.intake;
         Hang hang = robot.hang;
 
-        robot.drivetrain.setMinPowersToOvercomeFriction();
-
         Globals.RUNMODE = RunMode.TELEOP;
         robot.deposit.state = Deposit.State.DOWN;
 
