@@ -14,7 +14,6 @@ public class PurePursuitTest extends LinearOpMode {
     public void runOpMode() {
         Robot robot = new Robot(hardwareMap);
         Drivetrain drivetrain = robot.drivetrain;
-        drivetrain.setMinPowersToOvercomeFriction();
 
         double garbageValue = -20;
         drivetrain.setPoseEstimate(new Pose2d(garbageValue, 0, 0));
