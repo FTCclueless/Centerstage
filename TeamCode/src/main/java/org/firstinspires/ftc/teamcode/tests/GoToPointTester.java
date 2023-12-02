@@ -27,7 +27,7 @@ public class GoToPointTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            drivetrain.goToPoint(new Pose2d(x, y, Math.toRadians(h)));
+            robot.goToPoint(new Pose2d(x, y, Math.toRadians(h)),this);
             robot.update();
         }
     }

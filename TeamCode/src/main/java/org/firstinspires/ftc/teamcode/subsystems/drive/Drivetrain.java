@@ -111,7 +111,7 @@ public class Drivetrain {
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
         localizer = new Localizer(hardwareMap, sensors,false, true);
-        setMinPowersToOvercomeFriction();
+//        setMinPowersToOvercomeFriction();
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -315,6 +315,7 @@ public class Drivetrain {
                 return;
         }
         TelemetryUtil.packet.put("Drivetrain State", state);
+        TelemetryUtil.packet.put("drivetrain at point", atPoint());
     }
 
     public void updateLocalizer() {
@@ -333,6 +334,7 @@ public class Drivetrain {
     public static PID yPID = new PID(0.35,0.0,0.01);
     public static PID turnPID = new PID(5.0,0,0.2);
 
+    Pose2d targetPose = new Pose2d(0, 0, 0);
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
     double xError = 0.0;
@@ -341,7 +343,7 @@ public class Drivetrain {
 
     public void goToPoint(Pose2d targetPoint) {
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
-        TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, 3);
+        TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
 
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             xPID.resetIntegral();
@@ -350,6 +352,7 @@ public class Drivetrain {
 
             lastTargetPoint = targetPoint;
             state = State.DRIVE;
+            Log.e("resetting integrals", "");
         }
 
         double deltaX = (targetPoint.x - localizer.x);
@@ -375,7 +378,17 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    public boolean atPoint (double xThreshold, double yThreshold, double headingThreshold) {
+    double xThreshold = 1.0;
+    double yThreshold = 1.0;
+    double headingThreshold = Math.toRadians(2.0);
+
+    public void setBreakFollowingThresholds(Pose2d thresholds, Pose2d targetPose) {
+        xThreshold = thresholds.getX();
+        yThreshold = thresholds.getY();
+        headingThreshold = thresholds.getHeading();
+    }
+
+    public boolean atPoint () {
         if (Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < headingThreshold) {
             return true;
         }
@@ -445,20 +458,6 @@ public class Drivetrain {
         };
         normalizeArray(powers);
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
-    }
-
-    boolean breakFollowing = false;
-    Pose2d targetPose = new Pose2d(0, 0, 0);
-    double xThreshold = 0.5;
-    double yThreshold = 0.5;
-    double headingThreshold = Math.toRadians(5.0);
-
-    public void setBreakFollowingThresholds(Pose2d thresholds, Pose2d targetPose) {
-        this.targetPose = targetPose;
-        breakFollowing = true;
-        xThreshold = thresholds.getX();
-        yThreshold = thresholds.getY();
-        headingThreshold = thresholds.getHeading();
     }
 
 //public void breakFollowing() {

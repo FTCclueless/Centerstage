@@ -26,6 +26,7 @@ public class Teleop extends LinearOpMode {
 
         Globals.RUNMODE = RunMode.TELEOP;
         robot.deposit.state = Deposit.State.DOWN;
+        robot.drivetrain.setMinPowersToOvercomeFriction();
 
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
