@@ -70,6 +70,7 @@ public class PriorityServo extends PriorityDevice{
         multipliers = new double[servo.length];
         for (int i = 0; i < servo.length; i++) {
             multipliers[i] = 1;
+            //servo[i].getController().pwmEnable(); turn on if u want -- Eric
         }
     }
 
@@ -132,6 +133,8 @@ public class PriorityServo extends PriorityDevice{
 
     @Override
     public void update(){
+        System.out.println(name + " has been updated");
+
         //Finds the amount of time since the intermediate target variable has been updated
         long currentTime = System.nanoTime();
         double timeSinceLastUpdate = ((double) currentTime - lastUpdateTime)/1.0E9;

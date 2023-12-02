@@ -18,7 +18,7 @@ public class EndAffector {
     private double targetPitch;
     private double topAngle;
     private double topPitch;
-    private double power = 0.5;
+    private double power = 1;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
@@ -30,7 +30,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.248, //0.2609
+            0.25, //0.2609
             //0, Math.toRadians(240),
             false,
             1, 2,
@@ -43,7 +43,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.651,
+            0.259,
             false,
             1, 2
         );
@@ -54,7 +54,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.446,
+            0.5,
             false,
             1, 2
         );
@@ -65,7 +65,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.3,
+            0.492,
             false,
             1,2
         );
@@ -74,13 +74,6 @@ public class EndAffector {
         hardwareQueue.addDevice(botTurret);
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
-
-        v4Servo.setTargetAngle(Deposit.intakePitch, 0.5);
-
-        /*v4Servo.setTargetAngle(Deposit.intakePitch, 1.0);
-        topTurret.setTargetAngle(Deposit.intakeTopTurret, 1.0);
-        botTurret.servo[0].setPosition(0.3819);*/
-        //add for top servo
     }
 
     public double getPower() {
@@ -93,19 +86,19 @@ public class EndAffector {
 
     public void setBotTurret(double ang) {
         bottomAngle = ang;
-        botTurret.setTargetAngle(Math.max(Math.min(ang,maxYaw),-maxYaw), 0.5);
+        botTurret.setTargetAngle(ang, power);
     }
     public void setTopTurret(double ang) {
         topAngle = ang;
-        topTurret.setTargetAngle(ang, 0.5);
+        topTurret.setTargetAngle(ang, power);
     }
     public void setV4Bar(double pitch) {
         targetPitch = pitch;
-        v4Servo.setTargetAngle(pitch, 0.5);
+        v4Servo.setTargetAngle(pitch, power);
     }
     public void setTopServo(double pitch) {
         topPitch = pitch;
-        v4Servo.setTargetAngle(pitch, 0.5);
+        topServo.setTargetAngle(pitch, power);
     }
 
     public double getBottomAngle() {

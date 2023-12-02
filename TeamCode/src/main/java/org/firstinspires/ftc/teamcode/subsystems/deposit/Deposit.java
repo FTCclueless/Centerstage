@@ -45,13 +45,13 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = 1.059; //todo
+    public static double intakePitch = 1.53; //todo
     public static double slidesV4Thresh = 12; //todo
-    public static double upPitch = 0.733;
+    public static double upPitch = 0.597;
     public static double depositTopTurret = 4.311;
-    public static double intakeTopTurret = 0.4747;
-    public static double intakeTopServoAngle = 1.12;
-    public static double intakeBotTurret = -Math.PI;
+    public static double intakeTopTurret = 0.1747;
+    public static double intakeTopServoAngle = -1.2935;
+    public static double intakeBotTurret = 2.99386;
 
     boolean inPlace = false;
 
@@ -60,7 +60,7 @@ public class Deposit {
         this.sensors = sensors;
         depositMath = new DepositMath();
 
-        state = State.WAIT;
+        state = State.DOWN;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
@@ -141,7 +141,7 @@ public class Deposit {
                         targetH, targetY
                     );
                 }
-                slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
+                slides.setLength(Math.min(depositMath.slideExtension, slidesV4Thresh));
 
                 if (slides.getLength() > slidesV4Thresh)
                     state = State.MOVE_V4UP;
@@ -154,9 +154,7 @@ public class Deposit {
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setTopTurret(depositTopTurret);
                 endAffector.setBotTurret(depositMath.v4BarYaw);
-                endAffector.setTopServo(-1 * depositMath.v4BarYaw);
                 if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
@@ -240,10 +238,6 @@ public class Deposit {
                 endAffector.setTopTurret(intakeTopTurret);
                 endAffector.setBotTurret(intakeBotTurret);
                 endAffector.setTopServo(intakeTopServoAngle);
-
-
-                /* set v4bar to retract angle */
-
                 break;
 
             case WAIT: // We are boring :(
