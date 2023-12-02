@@ -82,7 +82,7 @@ public class Robot {
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose); // need this to start the process so thresholds don't immediately become true
-        while(System.currentTimeMillis() - start <= 5000 && !drivetrain.atPoint(3,3,Math.toRadians(5))) {
+        while(System.currentTimeMillis() - start <= 5000 && !drivetrain.atPoint()) {
             drivetrain.goToPoint(pose);
             update();
         }
