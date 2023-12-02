@@ -401,16 +401,11 @@ public class Drivetrain {
     }
 
     private void normalizeArray(double[] arr) {
-        double largest = Math.abs(arr[0]);
-        boolean greaterThan1 = false;
-        for (int i = 1; i < arr.length; i++) {
+        double largest = 1;
+        for (int i = 0; i < arr.length; i++) {
             largest = Math.max(Math.abs(largest), arr[i]);
-            if (Math.abs(arr[i]) > 1) {
-                greaterThan1 = true;
-                TelemetryUtil.packet.put("normalized", greaterThan1);
-            }
         }
-        for (int i = 0; i < arr.length && greaterThan1; i++) {
+        for (int i = 0; i < arr.length; i++) {
             arr[i] /= largest;
         }
     }
