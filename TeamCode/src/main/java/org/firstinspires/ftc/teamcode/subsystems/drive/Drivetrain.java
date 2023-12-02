@@ -417,7 +417,7 @@ public class Drivetrain {
     private void normalizeArray(double[] arr) {
         double largest = 1;
         for (int i = 0; i < arr.length; i++) {
-            largest = Math.max(Math.abs(largest), arr[i]);
+            largest = Math.max(largest, Math.abs(arr[i]));
         }
         for (int i = 0; i < arr.length; i++) {
             arr[i] /= largest;
