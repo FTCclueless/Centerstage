@@ -30,7 +30,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.26, //0.2609
+            0.248, //0.2609
             //0, Math.toRadians(240),
             false,
             1, 2,
@@ -43,7 +43,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.652,
+            0.651,
             false,
             1, 2
         );
