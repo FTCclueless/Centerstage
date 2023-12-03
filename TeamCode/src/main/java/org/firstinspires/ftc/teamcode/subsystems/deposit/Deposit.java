@@ -51,7 +51,7 @@ public class Deposit {
     public static double depositTopTurret = 4.311;
     public static double intakeTopTurret = 0.1747;
     public static double intakeTopServoAngle = -1.2935;
-    public static double intakeBotTurret = 2.99386;
+    public static double intakeBotTurret = 3.13666;
 
     boolean inPlace = false;
 
