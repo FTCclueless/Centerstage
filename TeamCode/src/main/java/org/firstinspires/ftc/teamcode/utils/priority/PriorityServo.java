@@ -37,17 +37,21 @@ public class PriorityServo extends PriorityDevice{
     protected double[] multipliers = null;
     private long lastLoopTime = System.nanoTime();
     public String name;
+    public double slowdownDist;
+    public double slowdownPow;
 
+    //basic 1 servo constructor
     public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
-        this(new Servo[] {servo}, name, type, loadMultiplier, min, max, basePos, reversed, basePriority, priorityScale);
+        this(new Servo[] {servo}, name, type, loadMultiplier, min, max, basePos, reversed, 0, 1, basePriority, priorityScale);
     }
 
+    //load multiplier multi servo constructor
     public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale, double[] multipliers) {
-        this(servo,name,type,loadMultiplier,min,max,basePos,reversed,basePriority,priorityScale);
+        this(servo,name,type,loadMultiplier,min,max,basePos,reversed, 0, 1, basePriority,priorityScale);
         this.multipliers = multipliers;
     }
 
-    public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale) {
+    public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale) {
         super(basePriority,priorityScale, name);
         this.servo = servo;
         this.type = type;
@@ -72,6 +76,9 @@ public class PriorityServo extends PriorityDevice{
             multipliers[i] = 1;
             //servo[i].getController().pwmEnable(); turn on if u want -- Eric
         }
+
+        this.slowdownDist = slowdownDist;
+        this.slowdownPow = slowdownPow;
     }
 
     public double convertPosToAngle(double pos){
@@ -105,7 +112,8 @@ public class PriorityServo extends PriorityDevice{
         long currentTime = System.nanoTime();
         double loopTime = ((double) currentTime - lastLoopTime)/1.0E9;
         double error = currentIntermediateTargetAngle - currentAngle;
-        double deltaAngle = loopTime * type.speed * power * Math.signum(error);
+        double deltaAngle = loopTime * type.speed * (Math.abs(error) <= slowdownDist ? slowdownPow : power) * Math.signum(error);
+        //double deltaAngle = timeSinceLastUpdate * type.speed * power * Math.signum(error);
         reachedIntermediate = Math.abs(deltaAngle) > Math.abs(error);
         if (reachedIntermediate){
             deltaAngle = error;
@@ -142,7 +150,8 @@ public class PriorityServo extends PriorityDevice{
         double error = targetAngle - currentAngle;
 //        Log.e(name, "error: " + error);
         //find the amount of movement the servo theoretically should have done in the time it took to update the servo
-        double deltaAngle = timeSinceLastUpdate * type.speed * power * Math.signum(error);
+        double deltaAngle = timeSinceLastUpdate * type.speed * (Math.abs(error) <= slowdownDist ? slowdownPow : power) * Math.signum(error);
+        //double deltaAngle = timeSinceLastUpdate * type.speed * power * Math.signum(error);
 
         if (Math.abs(deltaAngle) > Math.abs(error)){ //make sure that the servo doesn't ossilate over target
             deltaAngle = error;
@@ -150,7 +159,8 @@ public class PriorityServo extends PriorityDevice{
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
         if (power == 1){
-            currentIntermediateTargetAngle = targetAngle; // makes it so that it goes to the end if the power is 1.0 ie no slow downs
+            currentIntermediateTargetAngle = targetAngle-slowdownDist; // makes it so that it goes to the end if the power is 1.0 ie no slow downs
+            //currentIntermediateTargetAngle = targetAngle;
         }
 
         double sum = 0;
