@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import android.widget.Button;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -9,26 +8,32 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode {
     public static double height = 30;
     public static double targetY = 30;
-    public static double xError = 30;
+    public static double xError = 5;
+    public static double heading = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-
+        Globals.RUNMODE = RunMode.AUTO;
         ButtonToggle btx = new ButtonToggle();
         ButtonToggle bty = new ButtonToggle();
 
-
         waitForStart();
 
+        robot.deposit.inPlace();
+
         while (opModeIsActive()) {
+            robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
+            robot.deposit.setTargetBoard(new Pose2d(xError,0, 0));
             robot.intake.on();
 
             if (btx.isClicked(gamepad1.x)) {

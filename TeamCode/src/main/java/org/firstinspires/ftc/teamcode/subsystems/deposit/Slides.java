@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -58,6 +60,7 @@ public class Slides {
 
     public void setLength(double length) {
         targetLength = Math.min(length, maxSlidesHeight);
+        Log.e("slides target length", length + "");
     }
 
     public boolean isBusy() {

@@ -30,22 +30,23 @@ public class EndAffector {
             1,
             0,
             1,
-            0.25, //0.2609
+            0.753, //0.2609
             //0, Math.toRadians(240),
             false,
             1, 2,
-            new double[] {1, -1}
+            new double[] {-1, 1}
         );
         botTurret = new PriorityServo(
-            hardwareMap.get(Servo.class, "bottomTurret"),
+            new Servo[] {hardwareMap.get(Servo.class, "bottomTurret")},
             "bottomTurret",
             PriorityServo.ServoType.AXON_MINI_SCUFF_TURRET,
             1,
             0,
             1,
-            0.259,
+            0.71,
             false,
-            1, 2
+            1, 2,
+            new double[] {-1}
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),
@@ -54,20 +55,21 @@ public class EndAffector {
             1,
             0,
             1,
-            0.5,
+            0.242,
             false,
             1, 2
         );
         topServo = new PriorityServo(
-            hardwareMap.get(Servo.class, "topServo"),
+            new Servo[] {hardwareMap.get(Servo.class, "topServo")},
             "topServo",
             PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1,
-            0.492,
+            0.519,
             false,
-            1,2
+            1,2,
+            new double[] {-1}
         );
         this.sensors = sensors;
         hardwareQueue.addDevice(v4Servo);

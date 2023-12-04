@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 public class DepositMath {
-    public final double v4BarLength = 40;
+    public final double v4BarLength = 10.125;
     private final Vector3 slidePos = new Vector3(0,0,0);
     public final double slideAngle = Math.toRadians(60);
     private final Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));
