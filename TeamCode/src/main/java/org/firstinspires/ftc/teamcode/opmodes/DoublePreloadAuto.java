@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
  * TODO: There is no blue side support
  */
 
-@Autonomous(name = "Park Auto")
-public class ParkAuto extends LinearOpMode {
+@Autonomous(name = "Double Preload Auto")
+public class DoublePreloadAuto extends LinearOpMode {
     protected Robot robot;
     protected TeamPropDetectionPipeline.TeamPropLocation teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
     protected boolean up = true;
