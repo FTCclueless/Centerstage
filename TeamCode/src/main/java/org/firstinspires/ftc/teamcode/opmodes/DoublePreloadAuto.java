@@ -53,9 +53,15 @@ public class DoublePreloadAuto extends LinearOpMode {
         reflect = red ? 1 : -1;
 
         if (up) {
-            robot.drivetrain.setPoseEstimate(AutoPathConstants.startUp);
+            Pose2d startPos = AutoPathConstants.startUp.clone();
+            startPos.y *= reflect;
+            startPos.heading*= reflect;
+            robot.drivetrain.setPoseEstimate(startPos);
         } else {
-            robot.drivetrain.setPoseEstimate(AutoPathConstants.startDown);
+            Pose2d startPos = AutoPathConstants.startDown.clone();
+            startPos.y *= reflect;
+            startPos.heading *= reflect;
+            robot.drivetrain.setPoseEstimate(startPos);
         }
 
         Vision vision = new Vision();
