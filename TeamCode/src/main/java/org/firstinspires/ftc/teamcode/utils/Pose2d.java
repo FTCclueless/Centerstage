@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-public class Pose2d {
+import androidx.annotation.NonNull;
+
+public class Pose2d implements Cloneable {
     public double x;
     public double y;
     public double heading;
@@ -37,5 +39,11 @@ public class Pose2d {
 
     public void clipAngle() {
         heading = AngleUtil.clipAngle(heading);
+    }
+
+    @NonNull
+    @Override
+    public Pose2d clone() {
+        return new Pose2d(x, y, heading);
     }
 }

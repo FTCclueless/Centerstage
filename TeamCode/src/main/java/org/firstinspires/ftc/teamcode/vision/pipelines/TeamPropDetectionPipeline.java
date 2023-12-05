@@ -28,14 +28,14 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     Mat cbMat = new Mat();
     Mat deNoiseMat = new Mat();
 
-    public enum TEAM_PROP_LOCATION {
+    public enum TeamPropLocation {
         LEFT,
         CENTER,
         RIGHT,
         NONE
     }
 
-    public TEAM_PROP_LOCATION team_prop_location = TEAM_PROP_LOCATION.NONE; // default is center
+    public TeamPropLocation team_prop_location = TeamPropLocation.NONE; // default is center
 
     public double leftAvg, centerAvg, rightAvg;
 
@@ -81,17 +81,17 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
         // finding which region has greatest average
         if (leftAvg > centerAvg && leftAvg > rightAvg) {
-            team_prop_location = TEAM_PROP_LOCATION.LEFT;
+            team_prop_location = TeamPropLocation.LEFT;
         } else if (centerAvg > leftAvg && centerAvg > rightAvg) {
-            team_prop_location = TEAM_PROP_LOCATION.CENTER;
+            team_prop_location = TeamPropLocation.CENTER;
         } else {
-            team_prop_location = TEAM_PROP_LOCATION.RIGHT;
+            team_prop_location = TeamPropLocation.RIGHT;
         }
 
         return cbMat;
     }
 
-    public TEAM_PROP_LOCATION getTeamPropLocation() {
+    public TeamPropLocation getTeamPropLocation() {
         return team_prop_location;
     }
 
