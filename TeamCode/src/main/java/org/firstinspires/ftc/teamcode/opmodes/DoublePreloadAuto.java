@@ -104,7 +104,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         }
 
         robot.goToPoint(startPosition, this);
-        // TODO depo goofy
+        // TODO deposit ground preload
     }
 
     /**
@@ -123,11 +123,10 @@ public class DoublePreloadAuto extends LinearOpMode {
         // Up behavior is to instantly deposit preload on board
         if (!up)
             robot.goToPoint(initialIntake, this);
-            // TOOD: Intake
+            // TODO: Intake
 
         robot.goToPoint(boardPreload, this);
-        robot.goToPoint(boardPreload.x, AutoPathConstants.depositLocation.y, AutoPathConstants.depositLocation.heading, this);
-        // Deposit
+        // TODO: deposit board preload
     }
 
     public void park() {
