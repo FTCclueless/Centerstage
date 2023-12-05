@@ -159,10 +159,11 @@ public class PriorityServo extends PriorityDevice{
         }
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
-        if (power == 1){
-            currentIntermediateTargetAngle = targetAngle-slowdownDist; // makes it so that it goes to the end if the power is 1.0 ie no slow downs
+        if (power == 1 && Math.abs(error) > slowdownDist){
+            currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(targetAngle); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
             //currentIntermediateTargetAngle = targetAngle;
         }
+
 
         double sum = 0;
         for (int i = 0; i < servo.length; i++) {
