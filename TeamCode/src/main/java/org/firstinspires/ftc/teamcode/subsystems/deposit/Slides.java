@@ -49,7 +49,7 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
         TelemetryUtil.packet.put("Error", error);
-        return (error * (maxVel / kA)) * kP + kStatic;
+        return (error * (maxVel / kA)) * kP + kStatic * (Math.abs(error) > 1.2 ? Math.signum(error) : 1);
     }
 
     public void update() {

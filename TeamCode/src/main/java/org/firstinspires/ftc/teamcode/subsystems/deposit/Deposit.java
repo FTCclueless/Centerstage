@@ -242,7 +242,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                slides.setLength(0.0);
+                // slides.setLength(0.0); BOMB -- Eric
                 endAffector.setV4Bar(intakePitch);
                 endAffector.setTopTurret(intakeTopTurret);
                 endAffector.setBotTurret(intakeBotTurret);

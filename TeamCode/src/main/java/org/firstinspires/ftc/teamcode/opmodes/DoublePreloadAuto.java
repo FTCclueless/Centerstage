@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -14,13 +15,14 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 @Config
 @TeleOp
+@Disabled
 public class DoublePreloadAuto extends LinearOpMode {
     private boolean up = false; // Is on top side of field
     private boolean blue = false;
 
-    REDGroundPreloadAuto.PreloadGlobal preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.CENTER;
+    StupidOldAuto.PreloadGlobal preloadGlobal = StupidOldAuto.PreloadGlobal.CENTER;
 
-    private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+    private TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -56,12 +58,12 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         // Wubba lubba dub dub
         Pose2d pose = robot.drivetrain.getPoseEstimate();
-        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
-            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.CENTER;
-        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
-            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.TOP;
+        if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
+            preloadGlobal = StupidOldAuto.PreloadGlobal.CENTER;
+        } else if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !blue) {
+            preloadGlobal = StupidOldAuto.PreloadGlobal.TOP;
         } else {
-            preloadGlobal = REDGroundPreloadAuto.PreloadGlobal.BOTTOM;
+            preloadGlobal = StupidOldAuto.PreloadGlobal.BOTTOM;
         }
 
         long start = 0;

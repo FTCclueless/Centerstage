@@ -1,24 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
-import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
 // The following auto does NOT do the init
 
 @Autonomous(group = "opmodes", name = "RED Ground Preload Auto")
-public class REDGroundPreloadAuto extends LinearOpMode {
-    private boolean up = true; // Is on top side of field
-    private boolean blue = false;
+@Config
+@Disabled
+public class StupidOldAuto extends LinearOpMode {
+    public static boolean up = true; // Is on top side of field
+    public static boolean blue = false;
     enum PreloadGlobal {
         TOP,
         CENTER,
@@ -29,27 +29,27 @@ public class REDGroundPreloadAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
         Robot robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.AUTO;
 
-        Vision vision = new Vision();
+        /*Vision vision = new Vision();
         TeamPropDetectionPipeline teamPropDetectionPipeline;
 
         // TODO: add initalization sequence
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
-        vision.initCamera(hardwareMap, teamPropDetectionPipeline);
+        vision.initCamera(hardwareMap, teamPropDetectionPipeline);*/
 
         while (opModeInInit()) {
             robot.intake.actuationUp();
-            team_prop_location = teamPropDetectionPipeline.getTeamPropLocation();
+            team_prop_location = /*teamPropDetectionPipeline.getTeamPropLocation()*/ TeamPropDetectionPipeline.TeamPropLocation.CENTER;
 
             robot.update();
 
-            telemetry.addData("leftAvg", teamPropDetectionPipeline.leftAvg);
+            /*telemetry.addData("leftAvg", teamPropDetectionPipeline.leftAvg);
             telemetry.addData("centerAvg", teamPropDetectionPipeline.centerAvg);
             telemetry.addData("rightAvg", teamPropDetectionPipeline.rightAvg);
-            telemetry.addData("propLocation: ", team_prop_location);
+            telemetry.addData("propLocation: ", team_prop_location);*/
             telemetry.update();
         }
 
@@ -71,9 +71,9 @@ public class REDGroundPreloadAuto extends LinearOpMode {
 
         waitForStart();
 
-        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+        if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
             preloadGlobal = PreloadGlobal.CENTER;
-        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
+        } else if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !blue) {
             preloadGlobal = PreloadGlobal.TOP;
         }
         else {

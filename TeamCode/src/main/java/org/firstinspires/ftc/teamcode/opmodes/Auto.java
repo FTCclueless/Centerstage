@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 // The following auto does NOT do the init
 
 @Autonomous(group = "opmodes", name = "Auto (Good luck!)")
+@Disabled
 public class Auto extends LinearOpMode {
     enum State {
         PRELOAD_START,
@@ -39,7 +41,7 @@ public class Auto extends LinearOpMode {
 
     private long start;
 
-    private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+    private TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
 
     @Override
     public void runOpMode() throws InterruptedException {

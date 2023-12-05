@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 // The following auto does NOT do the init
 
 @Autonomous(group = "opmodes", name = "BLUE Ground Preload Auto")
+@Disabled
 public class BLUEGroundPreloadAuto extends LinearOpMode {
     private boolean up = true; // Is on top side of field
     private boolean blue = true;
@@ -26,7 +28,7 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
         Robot robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.AUTO;
 
@@ -67,9 +69,9 @@ public class BLUEGroundPreloadAuto extends LinearOpMode {
 
         waitForStart();
 
-        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+        if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
             preloadGlobal = PreloadGlobal.CENTER;
-        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
+        } else if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !blue) {
             preloadGlobal = PreloadGlobal.TOP;
         }
         else {

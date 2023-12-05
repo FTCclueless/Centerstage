@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.autosSplines;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.opmodes.REDGroundPreloadAutoDown;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -24,7 +23,7 @@ public class GroundPreloadAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
         Robot robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.AUTO;
 
@@ -60,9 +59,9 @@ public class GroundPreloadAuto extends LinearOpMode {
 
         robot.drivetrain.localizer.setPoseEstimate(pose);
 
-        if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+        if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
             preloadGlobal = PreloadGlobal.CENTER;
-        } else if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.RIGHT && !blue) {
+        } else if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !blue) {
             preloadGlobal = PreloadGlobal.TOP;
         }
         else {
@@ -111,7 +110,7 @@ public class GroundPreloadAuto extends LinearOpMode {
                 .addPoint(53, 55, 0);
 
         if (!up) {
-            if (team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER) {
+            if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
                 robot.goToPoint(new Pose2d(-53, 55 * reflect, 0), this);
 
                 robot.goToPoint(new Pose2d(53, 58*reflect, 0), this);

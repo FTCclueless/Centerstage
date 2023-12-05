@@ -21,7 +21,7 @@ public class AutoPathTester extends LinearOpMode {
     public Spline initSpline = null;
     boolean up = true;
 
-    private TeamPropDetectionPipeline.TEAM_PROP_LOCATION team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+    private TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -65,10 +65,10 @@ public class AutoPathTester extends LinearOpMode {
         Pose2d pose = robot.drivetrain.localizer.getPoseEstimate();
         Log.e("pose: " , pose.x + "");
         Log.e(pose.y + "", "" + pose.heading);
-        if (team_prop_location == null || team_prop_location == TeamPropDetectionPipeline.TEAM_PROP_LOCATION.NONE) {
-            team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.CENTER;
+        if (team_prop_location == null || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.NONE) {
+            team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
         }
-        team_prop_location = TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT; //temp testing code --kyle
+        team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.LEFT; //temp testing code --kyle
         switch (team_prop_location) {
             case LEFT:
                 initSpline = new Spline(pose, 4)
@@ -161,7 +161,7 @@ public class AutoPathTester extends LinearOpMode {
         }
         robot.followSpline(leaveSpline, this);
         while (!gamepad1.a) {}
-        if (up && team_prop_location != TeamPropDetectionPipeline.TEAM_PROP_LOCATION.LEFT) { // maybe overcomplicating it?? --kyle
+        if (up && team_prop_location != TeamPropDetectionPipeline.TeamPropLocation.LEFT) { // maybe overcomplicating it?? --kyle
             robot.followSpline(toSide, this);
         }
         while (!gamepad1.a) {}
