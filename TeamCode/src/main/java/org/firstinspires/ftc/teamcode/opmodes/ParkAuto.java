@@ -53,9 +53,9 @@ public class ParkAuto extends LinearOpMode {
         reflect = red ? 1 : -1;
 
         if (up) {
-            robot.drivetrain.setPoseEstimate(APC.startUp);
+            robot.drivetrain.setPoseEstimate(AutoPathConstants.startUp);
         } else {
-            robot.drivetrain.setPoseEstimate(APC.startDown);
+            robot.drivetrain.setPoseEstimate(AutoPathConstants.startDown);
         }
 
         Vision vision = new Vision();
@@ -78,19 +78,19 @@ public class ParkAuto extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                parkPosition.x += APC.groundPreloadTopOffset.x;
-                parkPosition.y += APC.groundPreloadTopOffset.y;
-                parkPosition.heading += APC.groundPreloadTopOffset.heading;
+                parkPosition.x += AutoPathConstants.groundPreloadTopOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadTopOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadTopOffset.heading;
                 break;
             case CENTER:
-                parkPosition.x += APC.groundPreloadCenterOffset.x;
-                parkPosition.y += APC.groundPreloadCenterOffset.y;
-                parkPosition.heading += APC.groundPreloadCenterOffset.heading;
+                parkPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
                 break;
             case RIGHT:
-                parkPosition.x += APC.groundPreloadBottomOffset.x;
-                parkPosition.y += APC.groundPreloadBottomOffset.y;
-                parkPosition.heading += APC.groundPreloadBottomOffset.heading;
+                parkPosition.x += AutoPathConstants.groundPreloadBottomOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadBottomOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadBottomOffset.heading;
                 break;
             case NONE:
             default:
@@ -108,10 +108,10 @@ public class ParkAuto extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        Pose2d boardPreload = APC.boardPreload.clone();
+        Pose2d boardPreload = AutoPathConstants.boardPreload.clone();
         boardPreload.y *= reflect;
 
-        Pose2d initialIntake = APC.initialIntake.clone();
+        Pose2d initialIntake = AutoPathConstants.initialIntake.clone();
         initialIntake.y *= reflect;
 
         // Up behavior is to instantly deposit preload on board
@@ -120,12 +120,12 @@ public class ParkAuto extends LinearOpMode {
             // TOOD: Intake
 
         robot.goToPoint(boardPreload, this);
-        robot.goToPoint(boardPreload.x, APC.depositLocation.y, APC.depositLocation.heading, this);
+        robot.goToPoint(boardPreload.x, AutoPathConstants.depositLocation.y, AutoPathConstants.depositLocation.heading, this);
         // Deposit
     }
 
     public void park() {
-        Pose2d park = APC.parkingLocation.clone();
+        Pose2d park = AutoPathConstants.parkingLocation.clone();
         park.y *= reflect;
 
         robot.goToPoint(park, this);

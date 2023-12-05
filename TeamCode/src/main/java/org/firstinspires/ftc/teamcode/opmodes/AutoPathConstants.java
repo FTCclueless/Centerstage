@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
  */
 
 @Config
-public class APC {
+public class AutoPathConstants {
     // Internally defined robot starting position
     public static Pose2d startUp =                   new Pose2d(12, -62, Math.PI / 2);
     public static Pose2d startDown =                 new Pose2d(-36, 62, Math.PI / 2);
