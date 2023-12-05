@@ -104,8 +104,8 @@ public class PriorityServo extends PriorityDevice{
         this.power = power;
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
 //        Log.e(name, "targetAngle " + targetAngle);
-        TelemetryUtil.packet.put(name + " target angle", targetAngle);
-        TelemetryUtil.packet.put(name + " current angle", currentAngle);
+        //TelemetryUtil.packet.put(name + " target angle", targetAngle);
+        //TelemetryUtil.packet.put(name + " current angle", currentAngle);
     }
 
     public void updateServoValues() {
