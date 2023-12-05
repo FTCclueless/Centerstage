@@ -26,12 +26,6 @@ public class DepositMath {
         double relX = xError*Math.cos(headingError) - yError*Math.sin(headingError);
         double relY = +xError*Math.sin(headingError) + yError*Math.cos(headingError);
 
-        Log.e("relx", relX + "");
-        Log.e("rely", relY + "");
-        Log.e("yError", yError + "");
-        Log.e("headingError", headingError + "");
-        TelemetryUtil.packet.put("headingError", headingError);
-
 
         Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight*Math.sin(slideAngle) - slidePos.z);
         Vector3 slideProject = Vector3.project(depositPos, slideUnit);
@@ -52,7 +46,6 @@ public class DepositMath {
             slideExtension = Math.min(Math.max(slideExtension,0),Slides.maxSlidesHeight);
         }
         v4BarYaw = Math.atan2(remainder.y,remainder.x);
-        TelemetryUtil.packet.put("remainder y", remainder.y);
         v4BarPitch = Math.atan2(remainder.z, Math.sqrt(Math.pow(remainder.x,2) + Math.pow(remainder.y,2)));
     }
 
