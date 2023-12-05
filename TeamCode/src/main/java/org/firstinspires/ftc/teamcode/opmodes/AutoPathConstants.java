@@ -32,5 +32,5 @@ public class AutoPathConstants {
     // First intake if we are on the bottom side of field. Should be the rightmost intake stack (from current origin)
     public static Pose2d initialIntake =             new Pose2d(-58, -36, Math.PI);
 
-    public static Pose2d depositLocation =           new Pose2d(60, -12, 0);
+    public static Pose2d depositLocation =           new Pose2d(55, -12, 0);
 }
