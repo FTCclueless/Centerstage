@@ -1,195 +1,133 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import android.util.Log;
+
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
-@Config
-@TeleOp
-@Disabled
+/**
+ * Auto that just parks
+ *
+ * TODO: There is no blue side support
+ */
+
+@Autonomous(name = "Double Preload Auto")
 public class DoublePreloadAuto extends LinearOpMode {
-    private boolean up = false; // Is on top side of field
-    private boolean blue = false;
-
-    StupidOldAuto.PreloadGlobal preloadGlobal = StupidOldAuto.PreloadGlobal.CENTER;
-
-    private TeamPropDetectionPipeline.TeamPropLocation team_prop_location = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
+    protected Robot robot;
+    protected TeamPropDetectionPipeline.TeamPropLocation teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
+    protected boolean up = true;
+    protected boolean red = true;
+    protected int reflect = 1;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(hardwareMap);
+        doInitialization();
+
+        waitForStart();
+        doGroundPreload();
+        doBoardPreload();
+        park();
+    }
+
+    /**
+     * <b>brief:</b> Does initialization for potential auto <br>
+     * <br>
+     * <ul>
+     *     <li>Instantiates robot</li>
+     *     <li>Sets Globals.RUNMODE</li>
+     *     <li>Defines the reflect variable for your own usage</li>
+     *     <li>Sets drivetrain initial position</li>
+     *     <li>Does vision init</li>
+     * </ul>
+     */
+    public void doInitialization() {
+        robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.AUTO;
+        reflect = red ? 1 : -1;
+
+        if (up) {
+            robot.drivetrain.setPoseEstimate(AutoPathConstants.startUp);
+        } else {
+            robot.drivetrain.setPoseEstimate(AutoPathConstants.startDown);
+        }
 
         Vision vision = new Vision();
         TeamPropDetectionPipeline teamPropDetectionPipeline;
 
-        // TODO: add initalization sequence
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
 
-        while (opModeInInit()) {
-            team_prop_location = teamPropDetectionPipeline.getTeamPropLocation();
+        // TODO: Add disable vision flag in case of complications :)
+        teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
+    }
 
-            telemetry.addData("leftAvg", teamPropDetectionPipeline.leftAvg);
-            telemetry.addData("centerAvg", teamPropDetectionPipeline.centerAvg);
-            telemetry.addData("rightAvg", teamPropDetectionPipeline.rightAvg);
-            telemetry.addData("propLocation: ", team_prop_location);
-            telemetry.update();
+    /**
+     * <b>Do preload operation</b> <br>
+     * <br>
+     * Go to preload position and deposit it
+     */
+    public void doGroundPreload() {
+        Pose2d parkPosition = robot.drivetrain.getPoseEstimate();
+
+        switch (teamPropLocation) {
+            case LEFT:
+                parkPosition.x += AutoPathConstants.groundPreloadTopOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadTopOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadTopOffset.heading;
+                break;
+            case CENTER:
+                parkPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
+                break;
+            case RIGHT:
+                parkPosition.x += AutoPathConstants.groundPreloadBottomOffset.x;
+                parkPosition.y += AutoPathConstants.groundPreloadBottomOffset.y;
+                parkPosition.heading += AutoPathConstants.groundPreloadBottomOffset.heading;
+                break;
+            case NONE:
+            default:
+                Log.e("ParkAuto", "Error! No team prop location!");
         }
 
-        int reflect = blue ? 1 : -1; // Reflect for blue side
+        robot.goToPoint(parkPosition, this);
+        // TODO depo goofy
+    }
 
-        if (up) {
-            robot.drivetrain.setPoseEstimate(new Pose2d(12, 63, Math.toRadians(90 * reflect)));
-        } else {
-            robot.drivetrain.setPoseEstimate(new Pose2d(-36, 63, Math.toRadians(90 * reflect))); // up and down are mixed together
-        }
+    /**
+     * Do board preload in deposit <br>
+     * <br>
+     * If it is up it will intake one before it goes to the bord to deposit <br>
+     * Ends on the center lane
+     */
+    public void doBoardPreload() {
+        Pose2d boardPreload = AutoPathConstants.boardPreload.clone();
+        boardPreload.y *= reflect;
 
-        waitForStart();
+        Pose2d initialIntake = AutoPathConstants.initialIntake.clone();
+        initialIntake.y *= reflect;
 
-        // Wubba lubba dub dub
-        Pose2d pose = robot.drivetrain.getPoseEstimate();
-        if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
-            preloadGlobal = StupidOldAuto.PreloadGlobal.CENTER;
-        } else if (team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.LEFT && blue || team_prop_location == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !blue) {
-            preloadGlobal = StupidOldAuto.PreloadGlobal.TOP;
-        } else {
-            preloadGlobal = StupidOldAuto.PreloadGlobal.BOTTOM;
-        }
+        // Up behavior is to instantly deposit preload on board
+        if (!up)
+            robot.goToPoint(initialIntake, this);
+            // TOOD: Intake
 
-        long start = 0;
+        robot.goToPoint(boardPreload, this);
+        robot.goToPoint(boardPreload.x, AutoPathConstants.depositLocation.y, AutoPathConstants.depositLocation.heading, this);
+        // Deposit
+    }
 
+    public void park() {
+        Pose2d park = AutoPathConstants.parkingLocation.clone();
+        park.y *= reflect;
 
-        robot.goToPoint(new Pose2d(12, 60 * reflect, 0), this);
-
-        if (up) {
-            switch (preloadGlobal) {
-                case TOP:
-                    robot.goToPoint(new Pose2d(48, 42 * reflect, 0), this);
-                    robot.depositAt(8,6 * reflect);
-                    robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.WAIT) {
-                        robot.update();
-                    }
-
-                    robot.goToPoint(new Pose2d(36, 36 * reflect, Math.PI), this);
-
-                    break;
-
-                case CENTER:
-                    robot.goToPoint(new Pose2d(48, 36 * reflect, 0), this);
-                    robot.depositAt(8,0);
-                    robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.WAIT) {
-                        robot.update();
-                    }
-
-                    robot.goToPoint(new Pose2d(30, 24 * reflect, Math.PI), this);
-
-                    break;
-                case BOTTOM:
-                    robot.goToPoint(new Pose2d(48, 30*reflect, 0), this);
-                    robot.depositAt(8, 6);
-                    robot.deposit.dunk(1);
-                    while (robot.deposit.state != Deposit.State.WAIT) {
-                        robot.update();
-                    }
-
-                    robot.goToPoint(new Pose2d(12, 36 * reflect, Math.PI), this);
-            }
-
-            start = System.currentTimeMillis();
-            robot.intake.actuationDown();
-            while(System.currentTimeMillis() - start <= 500) {
-                robot.update();
-            }
-            start = System.currentTimeMillis();
-            while(System.currentTimeMillis() - start <= 2000) {
-                robot.intake.reverse();
-                robot.update();
-            }
-            robot.intake.off();
-
-            robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
-            robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
-        }
-        else {
-            switch (preloadGlobal) {
-                case TOP:
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, 0), this);
-
-                    start = System.currentTimeMillis();
-                    robot.intake.actuationDown();
-                    while(System.currentTimeMillis() - start <= 500) {
-                        robot.update();
-                    }
-                    start = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - start <= 2000) {
-                        robot.intake.reverse();
-                        robot.update();
-                    }
-                    robot.intake.off();
-
-                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
-                    robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
-                    robot.goToPoint(new Pose2d(48, 42*reflect, 0), this);
-                    robot.depositAt(8, 6 * reflect);
-                    robot.dunk(1);
-                    break;
-                case CENTER:
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.toRadians(90 * reflect)), this);
-
-                    start = System.currentTimeMillis();
-                    robot.intake.actuationDown();
-                    while(System.currentTimeMillis() - start <= 500) {
-                        robot.update();
-                    }
-                    start = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - start <= 2000) {
-                        robot.intake.reverse();
-                        robot.update();
-                    }
-                    robot.intake.off();
-
-                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
-                    robot.goToPoint( new Pose2d(36, 12 * reflect, 0), this);
-                    robot.goToPoint(new Pose2d(48, 36 * reflect, 0), this);
-                    robot.depositAt(8,0);
-                    robot.dunk(1);
-                    break;
-                case BOTTOM:
-                    robot.goToPoint(new Pose2d(-32, 32 * reflect, Math.PI), this);
-
-                    start = System.currentTimeMillis();
-                    robot.intake.actuationDown();
-                    while(System.currentTimeMillis() - start <= 500) {
-                        robot.update();
-                    }
-                    start = System.currentTimeMillis();
-                    while(System.currentTimeMillis() - start <= 2000) {
-                        robot.intake.reverse();
-                        robot.update();
-                    }
-                    robot.intake.off();
-
-                    robot.goToPoint(new Pose2d(-36, 12 * reflect, 0), this);
-                    robot.goToPoint( new Pose2d(36, 12 * reflect, 0), this);
-                    robot.goToPoint(new Pose2d(48, 30 * reflect, 0), this);
-                    robot.depositAt(8,-6 * reflect);
-                    robot.dunk(1);
-                    break;
-            }
-            robot.goToPoint(new Pose2d(36, 12 * reflect, 0), this);
-            robot.goToPoint(new Pose2d(52, 12 * reflect, 0), this);
-        }
+        robot.goToPoint(park, this);
     }
 }
