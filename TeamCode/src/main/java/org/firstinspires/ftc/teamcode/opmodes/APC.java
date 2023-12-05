@@ -5,10 +5,10 @@ import com.acmerobotics.dashboard.config.Config;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
 /**
- * Tunable auto variables
- *
- * All the points that an auto would need.
- * Makes an easy and tunable auto.
+ * Auto Path Constants <br>
+ * <br>
+ * All the points that an auto would need. <br>
+ * Makes an easy and tunable auto. <br>
  * These constants are ALL for red sided auto
  */
 
