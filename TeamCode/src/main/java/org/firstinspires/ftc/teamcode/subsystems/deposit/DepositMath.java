@@ -3,11 +3,12 @@ package org.firstinspires.ftc.teamcode.subsystems.deposit;
 import android.util.Log;
 
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 public class DepositMath {
     public final double v4BarLength = 10.125;
-    private final Vector3 slidePos = new Vector3(0,0,0);
+    private final Vector3 slidePos = new Vector3(7,0,10.827);
     public final double slideAngle = Math.toRadians(60);
     private final Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));
 
@@ -22,8 +23,9 @@ public class DepositMath {
     public void calculate(double xError, double yError, double headingError, double slideHeight, double yOffset) {
         xError += slideHeight * Math.cos(slideAngle);
         yError += yOffset;
-        double relX = xError*Math.cos(headingError) + yError*Math.sin(headingError);
-        double relY = -xError*Math.sin(headingError) + yError*Math.cos(headingError);
+        double relX = xError*Math.cos(headingError) - yError*Math.sin(headingError);
+        double relY = +xError*Math.sin(headingError) + yError*Math.cos(headingError);
+
 
         Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight*Math.sin(slideAngle) - slidePos.z);
         Vector3 slideProject = Vector3.project(depositPos, slideUnit);
@@ -37,6 +39,7 @@ public class DepositMath {
             double extra = Math.sqrt(Math.pow(v4BarLength, 2) - Math.pow(remainder.getMag(), 2));
             slideExtension -= extra;
             remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
+            TelemetryUtil.packet.put("depositPos", depositPos);
         }
         if (slideExtension > Slides.maxSlidesHeight || slideExtension < 0) {
             Log.e("slide out of range", slideExtension + "");

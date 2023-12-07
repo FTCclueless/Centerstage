@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -131,7 +132,7 @@ public class Deposit {
                     if (inPlace) {
                         xError = targetBoard.x - ROBOT_POSITION.x;
                         yError = targetBoard.y - ROBOT_POSITION.y;
-                        headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                        headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
                     }
 
                     depositMath.calculate(
@@ -172,7 +173,7 @@ public class Deposit {
                     if (inPlace) {
                         xError = targetBoard.x - ROBOT_POSITION.x;
                         yError = targetBoard.y - ROBOT_POSITION.y;
-                        headingError = targetBoard.heading - ROBOT_POSITION.heading;
+                        headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
                     }
 
                     TelemetryUtil.packet.put("xError", xError);
@@ -188,6 +189,8 @@ public class Deposit {
                 }
                 TelemetryUtil.packet.put("slideExtension: ", depositMath.slideExtension);
                 TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
+                Log.e("v4Yaw", depositMath.v4BarYaw + "");
+
 
                 slides.setLength(depositMath.slideExtension);
                 endAffector.setBotTurret(depositMath.v4BarYaw);
@@ -205,7 +208,7 @@ public class Deposit {
                     endAffector.setTopTurret(-depositMath.v4BarYaw);
                     Log.e("topTurret angle", -depositMath.v4BarYaw + "");
                 } else {
-                    endAffector.setTopTurret(targetBoard.heading - ROBOT_POSITION.heading - depositMath.v4BarYaw);
+                    endAffector.setTopTurret(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw);
                 }
 
                 break;
@@ -242,7 +245,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                // slides.setLength(0.0); BOMB -- Eric
+                slides.setLength(0.0);
                 endAffector.setV4Bar(intakePitch);
                 endAffector.setTopTurret(intakeTopTurret);
                 endAffector.setBotTurret(intakeBotTurret);

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
+@Config
 public class EndAffector {
     public final PriorityServo v4Servo;
     public final PriorityServo botTurret;
@@ -19,6 +21,9 @@ public class EndAffector {
     private double topAngle;
     private double topPitch;
     private double power = 1;
+
+    public static double minDist = 90; //temp
+    public static double slowPow = 0.2;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
@@ -37,7 +42,7 @@ public class EndAffector {
             new double[] {-1, 1}
         );
         botTurret = new PriorityServo(
-            new Servo[] {hardwareMap.get(Servo.class, "bottomTurret")},
+            hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
             PriorityServo.ServoType.AXON_MINI_SCUFF_TURRET,
             1,
@@ -45,6 +50,7 @@ public class EndAffector {
             1,
             0.71,
             false,
+            Math.toRadians(minDist), slowPow,
             1, 2,
             new double[] {-1}
         );

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.tests;
 
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,9 +18,9 @@ import org.firstinspires.ftc.teamcode.utils.RunMode;
 @TeleOp
 public class DepositTest extends LinearOpMode {
     public static double height = 30;
-    public static double targetY = 30;
+    public static double targetY = 0;
     public static double xError = 5;
-    public static double heading = 0;
+    public static double heading = 180;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -31,10 +33,11 @@ public class DepositTest extends LinearOpMode {
 
         robot.deposit.inPlace();
 
+        robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
+        robot.deposit.setTargetBoard(new Pose2d(xError,0,0));
+
         while (opModeIsActive()) {
-            robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
-            robot.deposit.setTargetBoard(new Pose2d(xError,0, 0));
-            robot.intake.on();
+            //robot.intake.on();
 
             if (btx.isClicked(gamepad1.x)) {
                 robot.deposit.state = Deposit.State.START_DEPOSIT;

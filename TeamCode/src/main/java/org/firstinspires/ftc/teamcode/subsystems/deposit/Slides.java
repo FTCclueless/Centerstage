@@ -25,9 +25,11 @@ public class Slides {
     private double targetLength = 0;
     public static double maxVel = 1.6528571428571428;
     public static double kP = 0.1;
-    public static double kA = 0.5;
-    public static double kStatic = 0.341;
+    public static double kA = 3;
+    public static double kStatic = 0.1;
     public static double threshold = 0.5;
+    public static double minPower = 0.25;
+    public static double minPowerThresh = 0.8;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -49,7 +51,7 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
         TelemetryUtil.packet.put("Error", error);
-        return (error * (maxVel / kA)) * kP + kStatic;
+        return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }
 
     public void update() {
