@@ -51,6 +51,11 @@ public class PriorityServo extends PriorityDevice{
         this.multipliers = multipliers;
     }
 
+    public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale, double [] multipliers) {
+        this(new Servo[] {servo}, name, type, loadMultiplier, min,  max,  basePos,  reversed, slowdownDist, slowdownPow,  basePriority,  priorityScale);
+        this.multipliers = multipliers;
+    }
+
     public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale) {
         super(basePriority,priorityScale, name);
         this.servo = servo;
@@ -142,8 +147,6 @@ public class PriorityServo extends PriorityDevice{
 
     @Override
     public void update(){
-        System.out.println(name + " has been updated");
-
         //Finds the amount of time since the intermediate target variable has been updated
         long currentTime = System.nanoTime();
         double timeSinceLastUpdate = ((double) currentTime - lastUpdateTime)/1.0E9;
@@ -160,10 +163,12 @@ public class PriorityServo extends PriorityDevice{
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
         if (power == 1 && Math.abs(error) > slowdownDist){
-            currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(targetAngle); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
+            currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
             //currentIntermediateTargetAngle = targetAngle;
         }
 
+        Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
+        Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
 
         double sum = 0;
         for (int i = 0; i < servo.length; i++) {

@@ -25,9 +25,10 @@ public class SlideTester extends LinearOpMode {
         while (!isStopRequested()) {
             Globals.START_LOOP();
             slides.setLength(distance);
+            TelemetryUtil.packet.put("state", robot.deposit.state);
 
             robot.sensors.update();
-            robot.deposit.update();;
+            robot.deposit.update();
             TelemetryUtil.sendTelemetry();
             robot.hardwareQueue.update();
         }

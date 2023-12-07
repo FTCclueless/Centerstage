@@ -52,7 +52,7 @@ public class Deposit {
     public static double depositTopTurret = 0.0;
     public static double intakeTopTurret = 0.1047197;
     public static double intakeTopServoAngle = 1.34288;
-    public static double intakeBotTurret = 3.03323619;
+    public static double intakeBotTurret = -3.03323619;
 
     boolean inPlace = false;
 
@@ -245,7 +245,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                // slides.setLength(0.0); BOMB -- Eric
+                slides.setLength(0.0);
                 endAffector.setV4Bar(intakePitch);
                 endAffector.setTopTurret(intakeTopTurret);
                 endAffector.setBotTurret(intakeBotTurret);
