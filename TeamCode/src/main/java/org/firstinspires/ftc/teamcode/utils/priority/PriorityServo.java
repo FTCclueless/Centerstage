@@ -17,7 +17,7 @@ public class PriorityServo extends PriorityDevice{
         JX(0.3183098862, Math.toRadians(60) / 0.12),
         AXON_MINI(0.162338041953733, Math.toRadians(330) / 3), //todo 0.173623,
         AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05),
-        AXON_MINI_SCUFF_TURRET(0.203081707385258, Math.toRadians(330) / 3.75); //todo all speeds somehow
+        AXON_MINI_SCUFF_TURRET(0.203081707385258, Math.toRadians(180) / 0.5); //todo all speeds somehow
 
         public double positionPerRadian;
         public double speed;
@@ -167,23 +167,18 @@ public class PriorityServo extends PriorityDevice{
             //currentIntermediateTargetAngle = targetAngle;
         }
 
-        Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
-        Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
+        //Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
+        TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
+       // Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
 
-        double sum = 0;
         for (int i = 0; i < servo.length; i++) {
             if (multipliers[i] == 1) {
                 servo[i].setPosition(convertAngleToPos(currentIntermediateTargetAngle)); //sets the servo to actual move to the target
-                //Log.e(name,convertAngleToPos(currentIntermediateTargetAngle) +" angleToPos 1");
-                sum += convertAngleToPos(currentIntermediateTargetAngle);
             } else {
                 servo[i].setPosition(maxPos - convertAngleToPos(currentIntermediateTargetAngle)); //this might be completely wrong --Kyle
-                //Log.e(name,(maxPos - convertAngleToPos(currentIntermediateTargetAngle)) + " angleToPos -1");
-                sum += maxPos - convertAngleToPos(currentIntermediateTargetAngle);
             }
         }
 
-        //Log.e("sum, ", sum +"");
         lastUpdateTime = currentTime;
     }
 

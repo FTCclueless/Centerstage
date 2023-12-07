@@ -143,8 +143,9 @@ public class Deposit {
                     );
                 }
                 slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
+                TelemetryUtil.packet.put("slide state", slides.getLength());
 
-                if (slides.getLength() > slidesV4Thresh)
+                if (slides.getLength() > slidesV4Thresh-4)
                     state = State.MOVE_V4UP;
 
                 break;

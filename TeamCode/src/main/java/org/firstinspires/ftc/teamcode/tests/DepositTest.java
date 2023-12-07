@@ -35,20 +35,26 @@ public class DepositTest extends LinearOpMode {
 
         robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
         robot.deposit.setTargetBoard(new Pose2d(xError,0,0));
+        boolean depo = false;
 
         while (opModeIsActive()) {
             //robot.intake.on();
 
             if (btx.isClicked(gamepad1.x)) {
+                depo = true;
                 robot.deposit.state = Deposit.State.START_DEPOSIT;
             }
 
-            robot.deposit.depositAt(height, targetY, xError);
+            if (depo) {
+                robot.deposit.depositAt(height, targetY, xError);
+            }
 
+            Log.e("gamepady", " " + gamepad1.y);
             if (bty.isClicked(gamepad1.y)) {
                 System.out.println("I NEED TO DO SOMETHING");
                 robot.dunk(1);
                 robot.deposit.state = Deposit.State.START_RETRACT;
+                depo = false;
             }
 
             robot.update();

@@ -102,6 +102,9 @@ public class Sensors {
             intakeTriggered = intakeBeamBreak.getState();
             depositTriggered = depositBeamBreak.getState();
 //            slidesDown = magnetSensor.getState();
+
+            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition() * -1;
+            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getVelocity() * -1;
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -112,8 +115,6 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getCurrentPosition() * -1;
-            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("slidesMotor")).motor[0].getVelocity() * -1;
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
