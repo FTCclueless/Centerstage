@@ -107,10 +107,10 @@ public class Robot {
 
     public void dunk(int numpix) {
         deposit.inPlace();
-        while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric
+        /*while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric
             System.out.println("first bomb");
             update();
-        }
+        }*/
         deposit.dunk(numpix);
         while (deposit.dunker.dunkState != Dunker.DunkState.CHILL) {
             System.out.println("Bomb 2");

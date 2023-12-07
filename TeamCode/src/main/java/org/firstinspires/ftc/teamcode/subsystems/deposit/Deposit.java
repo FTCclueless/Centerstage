@@ -157,7 +157,6 @@ public class Deposit {
 
             case EXTEND_ROTATE180:
                 endAffector.setBotTurret(depositMath.v4BarYaw);
-                Log.e("depositMath.v4BarYaw", depositMath.v4BarYaw + "");
                 if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
@@ -190,7 +189,6 @@ public class Deposit {
                 }
                 TelemetryUtil.packet.put("slideExtension: ", depositMath.slideExtension);
                 TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
-                Log.e("v4Yaw", depositMath.v4BarYaw + "");
 
 
                 slides.setLength(depositMath.slideExtension);
@@ -198,7 +196,6 @@ public class Deposit {
                 endAffector.setV4Bar(depositMath.v4BarPitch);
                 endAffector.setTopServo(-depositMath.v4BarPitch);
 
-                Log.e("topServo angle", -depositMath.v4BarPitch + "");
 
                 if (depositMath.v4BarPitch < 0) {
                     //endAffector.setBotTurret(0);
@@ -207,7 +204,6 @@ public class Deposit {
 
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     endAffector.setTopTurret(-depositMath.v4BarYaw);
-                    Log.e("topTurret angle", -depositMath.v4BarYaw + "");
                 } else {
                     endAffector.setTopTurret(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw);
                 }

@@ -27,7 +27,7 @@ public class Slides {
     public static double kP = 0.1;
     public static double kA = 3;
     public static double kStatic = 0.1;
-    public static double threshold = 0.5;
+    public static double threshold = 2;
     public static double minPower = 0.25;
     public static double minPowerThresh = 0.8;
 
