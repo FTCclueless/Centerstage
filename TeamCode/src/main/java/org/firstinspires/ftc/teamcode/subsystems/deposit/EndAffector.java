@@ -22,8 +22,10 @@ public class EndAffector {
     private double topPitch;
     private double power = 1;
 
-    public static double minDist = 90; //temp
-    public static double slowPow = 0.2;
+    public static double botTurretMinDist = 45; //temp
+    public static double botTurretSlowPow = 0.56;
+    public static double v4MinDist = 10;
+    public static double v4SlowDown = 0.3;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
@@ -36,8 +38,8 @@ public class EndAffector {
             0,
             1,
             0.753, //0.2609
-            //0, Math.toRadians(240),
             false,
+            Math.toRadians(v4MinDist), v4SlowDown,
             1, 2,
             new double[] {-1, 1}
         );
@@ -50,7 +52,7 @@ public class EndAffector {
             1,
             0.71,
             false,
-            Math.toRadians(minDist), slowPow,
+            Math.toRadians(botTurretMinDist), botTurretSlowPow,
             1, 2,
             new double[] {-1}
         );

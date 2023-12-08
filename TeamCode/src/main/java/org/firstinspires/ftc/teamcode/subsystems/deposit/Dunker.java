@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 @Config
 public class Dunker {
     public PriorityServo dunker;
-    public static double dunkAng = 3.034; //TODO
+    public static double dunkAng = 3.76022; //TODO
     public static double lockAng = 2.52069;
     public static double openAng = 2.6502;
 

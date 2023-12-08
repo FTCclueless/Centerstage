@@ -15,9 +15,9 @@ public class PriorityServo extends PriorityDevice{
         AMAZON(0.2122065908, Math.toRadians(60) / 0.13),
         PRO_MODELER(0.32698, Math.toRadians(60) / 0.139),
         JX(0.3183098862, Math.toRadians(60) / 0.12),
-        AXON_MINI(0.162338041953733, Math.toRadians(330) / 3), //todo 0.173623,
+        AXON_MINI(0.162338041953733, 6.48678), //todo 0.173623,
         AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05),
-        AXON_MINI_SCUFF_TURRET(0.203081707385258, Math.toRadians(180) / 0.5); //todo all speeds somehow
+        AXON_MINI_SCUFF_TURRET(0.203081707385258, 5.18535705328); //todo all speeds somehow
 
         public double positionPerRadian;
         public double speed;
@@ -53,6 +53,11 @@ public class PriorityServo extends PriorityDevice{
 
     public PriorityServo(Servo servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale, double [] multipliers) {
         this(new Servo[] {servo}, name, type, loadMultiplier, min,  max,  basePos,  reversed, slowdownDist, slowdownPow,  basePriority,  priorityScale);
+        this.multipliers = multipliers;
+    }
+
+    public PriorityServo(Servo[] servo, String name, ServoType type, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale, double [] multipliers) {
+        this(servo, name, type, loadMultiplier, min,  max,  basePos,  reversed, slowdownDist, slowdownPow,  basePriority,  priorityScale);
         this.multipliers = multipliers;
     }
 

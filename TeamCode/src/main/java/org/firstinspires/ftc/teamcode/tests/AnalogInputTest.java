@@ -3,32 +3,31 @@ package org.firstinspires.ftc.teamcode.tests;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
 @TeleOp
 @Config
-public class DepositStateTest extends LinearOpMode {
-    public static Deposit.State state = Deposit.State.DOWN;
-    public static RunMode runmode = RunMode.TELEOP;
-    public static boolean update = true;
+public class AnalogInputTest extends LinearOpMode {
+    public static String encoderName = "analogInput0";
 
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
+        Globals.RUNMODE = RunMode.TESTER;
+        robot.deposit.state = Deposit.State.DOWN;
+        AnalogInput encoder = hardwareMap.get(AnalogInput.class, encoderName);
+        TelemetryUtil.setup();
 
         waitForStart();
 
         while (opModeIsActive()) {
-            if (update) {
-                Globals.RUNMODE = runmode;
-                robot.deposit.state = state;
-                update = false;
-            }
-
+            TelemetryUtil.packet.put("encoderValue", encoder.getVoltage() / 3.3 * 180);
             robot.update();
         }
     }

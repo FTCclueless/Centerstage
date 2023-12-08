@@ -7,49 +7,59 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+
 @Config
 @TeleOp
 public class AxonServoTuner extends LinearOpMode {
     public static String servoName = "bottomTurret";
-    public static String encoderName = "servoThing1";
-    public static double speed = 0.002;
+    public static String encoderName = "analogInput2";
+    public static double testPos = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
         Servo servo = hardwareMap.get(Servo.class, servoName);
         AnalogInput encoder = hardwareMap.get(AnalogInput.class, encoderName);
+        TelemetryUtil.setup();
 
         double minAngle = 0;
         double maxAngle = 0;
-        double minPose = 0;
-        double maxPose = 0;
 
         waitForStart();
 
-        servo.setPosition(servo.getPosition());
+        servo.setPosition(0);
         waitUntilServoDone(encoder);
 
         System.out.println("Servo is at base position");
 
-        minPose = moveServoUntilCant(servo, encoder, 0);
+        servo.setPosition(0);
+        waitUntilServoDone(encoder);
         minAngle = getEncAngle(encoder);
-        RobotLog.e("minAngle " + Math.toRadians(minAngle));
+        RobotLog.e("minAngle " + minAngle);
 
-        maxPose = moveServoUntilCant(servo, encoder, 1);
+        servo.setPosition(1);
+        waitUntilServoDone(encoder);
         maxAngle = getEncAngle(encoder);
-        RobotLog.e("maxAngle " + Math.toRadians(maxAngle));
+        RobotLog.e("maxAngle " + maxAngle);
 
-        /*servo.setPosition(0);
+        /*while (opModeIsActive()) {
+            servo.setPosition(testPos);
+            TelemetryUtil.packet.put("enc", getEncAngle(encoder));
+            TelemetryUtil.sendTelemetry();
+        }*/
+
+        servo.setPosition(0);
         waitUntilServoDone(encoder);
 
         servo.setPosition(1);
         long startTime = System.currentTimeMillis();
         waitUntilServoDone(encoder);
-        long endTime = System.currentTimeMillis() - 100; // Tee hee amirite
-        servo.setPosition(0);*/
+        long endTime = System.currentTimeMillis(); // Tee hee amirite
+        servo.setPosition(0);
 
-        RobotLog.e("posToRadians " + (maxAngle - minAngle) / (maxPose - minPose));
-        //RobotLog.e("speed " + (maxAngle - minAngle) / ((endTime - startTime) / 1000));
+        RobotLog.e("posToRadians " + 1 / (maxAngle - minAngle));
+        RobotLog.e("1: " + (maxAngle - minAngle) + " 2: " + (endTime - startTime));
+        RobotLog.e("speed " + (maxAngle - minAngle) / ((endTime - startTime) / 1000));
     }
 
     public static double getEncAngle(AnalogInput encoder) {
@@ -60,37 +70,13 @@ public class AxonServoTuner extends LinearOpMode {
         double lastAngle = getEncAngle(encoder);
 
         long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < 100) {
+        while (System.currentTimeMillis() - startTime < 300) {
             double angle = getEncAngle(encoder);
 
-            if (lastAngle != angle) {
+            if (Math.abs(lastAngle - angle) > Math.toRadians(4)) {
                 startTime = System.currentTimeMillis();
-                lastAngle = angle;
             }
+            lastAngle = angle;
         }
-    }
-
-    public static double moveServoUntilCant(Servo servo, AnalogInput encoder, double position) {
-        double currentPos = servo.getPosition();
-        double lastAngle = getEncAngle(encoder);
-        boolean tickedOnce = false;
-
-        if (currentPos == position)
-            return position;
-
-        long startTime = System.currentTimeMillis();
-        while (System.currentTimeMillis() - startTime < 100 || !tickedOnce) {
-            double angle = getEncAngle(encoder);
-
-            if (lastAngle != angle) {
-                startTime = System.currentTimeMillis();
-                lastAngle = angle;
-                tickedOnce = true;
-            } else {
-                currentPos = Math.min(currentPos + speed, position);
-                servo.setPosition(currentPos);
-            }
-        }
-        return currentPos;
     }
 }
