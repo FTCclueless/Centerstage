@@ -80,30 +80,34 @@ public class DoublePreloadAuto extends LinearOpMode {
      * Go to preload position and deposit it
      */
     public void doGroundPreload() {
-        Pose2d parkPosition = robot.drivetrain.getPoseEstimate();
+        Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
         switch (teamPropLocation) {
             case LEFT:
-                parkPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
-                parkPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
-                parkPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
+                groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
                 break;
             case CENTER:
-                parkPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
-                parkPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
-                parkPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
+                groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
                 break;
             case RIGHT:
-                parkPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
-                parkPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
-                parkPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
+                groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
                 break;
             case NONE:
             default:
                 Log.e("ParkAuto", "Error! No team prop location!");
         }
 
-        robot.goToPoint(parkPosition, this);
+        Log.e("groundPreloadPosition.x", groundPreloadPosition.x + "");
+        Log.e("groundPreloadPosition.y", groundPreloadPosition.y + "");
+        Log.e("groundPreloadPosition.heading (deg)", Math.toDegrees(groundPreloadPosition.heading) + "");
+
+        robot.goToPoint(groundPreloadPosition, this);
         // TODO depo goofy
     }
 

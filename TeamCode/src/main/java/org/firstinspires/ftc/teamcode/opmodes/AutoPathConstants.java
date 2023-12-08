@@ -22,11 +22,11 @@ public class AutoPathConstants {
     public static Pose2d parkingLocation =           new Pose2d(60, -12, 0);
 
     // ground preload position offsets
-    public static Pose2d groundPreloadRightOffset =  new Pose2d(12, 24, Math.PI / 2);
-    public static Pose2d groundPreloadCenterOffset = new Pose2d(0, 24, Math.PI / 2);
-    public static Pose2d groundPreloadLeftOffset =   new Pose2d(-12, 24, Math.PI / 2);
+    public static Pose2d groundPreloadRightOffset =  new Pose2d(12, 24, 0);
+    public static Pose2d groundPreloadCenterOffset = new Pose2d(0, 24, 0);
+    public static Pose2d groundPreloadLeftOffset =   new Pose2d(-12, 24, 0);
 
-    // Initial deposit. Should be in front of the red side board
+    // Initial deposit. Should be in fr ont of the red side board
     public static Pose2d boardPreload =              new Pose2d(48, -36, Math.PI);
 
     // First intake if we are on the bottom side of field. Should be the rightmost intake stack (from current origin)

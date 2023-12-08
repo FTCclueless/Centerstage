@@ -103,8 +103,8 @@ public class Sensors {
             depositTriggered = depositBeamBreak.getState();
 //            slidesDown = magnetSensor.getState();
 
-            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition() * -1;
-            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getVelocity() * -1;
+            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
+            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
