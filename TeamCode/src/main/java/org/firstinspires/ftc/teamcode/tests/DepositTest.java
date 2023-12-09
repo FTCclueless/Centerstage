@@ -34,8 +34,6 @@ public class DepositTest extends LinearOpMode {
 
         waitForStart();
 
-        robot.deposit.inPlace();
-
         robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
         robot.deposit.setTargetBoard(new Pose2d(xError,0,0));
         boolean depo = false;

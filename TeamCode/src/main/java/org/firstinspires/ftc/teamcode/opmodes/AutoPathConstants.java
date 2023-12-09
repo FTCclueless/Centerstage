@@ -26,7 +26,7 @@ public class AutoPathConstants {
     // ground preload position offsets
     public static Pose2d groundPreloadLeftOffset =   new Pose2d(-4, 24, 0);
     public static Pose2d groundPreloadCenterOffset = new Pose2d(0, 24, 0);
-    public static Pose2d groundPreloadRightOffset =  new Pose2d(5, 24, 0);
+    public static Pose2d groundPreloadRightOffset =  new Pose2d(18, 24, 0);
 
     // Initial deposit. Should be in fr ont of the red side board
     public static Pose2d boardPreload =              new Pose2d(48, -36, Math.PI);
@@ -34,5 +34,7 @@ public class AutoPathConstants {
     // First intake if we are on the bottom side of field. Should be the rightmost intake stack (from current origin)
     public static Pose2d initialIntake =             new Pose2d(-58, -36, Math.PI);
 
-    public static Pose2d depositLocation =           new Pose2d(50, -12, 0);
+    public static Pose2d sideDepositLocation =           new Pose2d(48, -12, 0);
+
+    public static Pose2d targetBoard =               new Pose2d(60,-36,0);
 }

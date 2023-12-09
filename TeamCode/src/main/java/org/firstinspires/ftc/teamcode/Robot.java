@@ -69,6 +69,8 @@ public class Robot {
     private void updateTelemetry() {
         TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
         TelemetryUtil.sendTelemetry();
+
+        Log.e("robot.deposit.checkReady", deposit.checkReady() + "");
     }
 
     public void followSpline(Spline spline, LinearOpMode opMode) {
@@ -97,7 +99,6 @@ public class Robot {
 
     public void depositAt(double targetH, double targetY) {
 
-        deposit.inPlace(); // temporary since we're starting depositAt when we're alredy ready for lgm1 --Kyle
         deposit.depositAt(targetH, targetY);
 
         while (deposit.state != Deposit.State.WAIT_DUNK) {
@@ -106,11 +107,6 @@ public class Robot {
     }
 
     public void dunk(int numpix) {
-        deposit.inPlace();
-        /*while (!deposit.endAffector.checkReady() && deposit.slides.isBusy()) { // TODO: Might be a bomb -- Eric
-            System.out.println("first bomb");
-            update();
-        }*/
         deposit.dunk(numpix);
         while (deposit.dunker.dunkState != Dunker.DunkState.CHILL) {
             System.out.println("Bomb 2");

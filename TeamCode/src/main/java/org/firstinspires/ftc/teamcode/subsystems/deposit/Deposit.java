@@ -56,8 +56,6 @@ public class Deposit {
 
     public static double interpolationDist = 3;
 
-    boolean inPlace = false;
-
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
@@ -106,16 +104,12 @@ public class Deposit {
         /* Deposit this number of pixels and because its one servo we don't need none of that state yucky yucky (I THINK??) */
     }
 
-    public void inPlace() {
-        inPlace = true;
-    }
-
-    public void unInPlace() {
-        inPlace = false;
-    }
-
     public void retract() {
         state = State.START_RETRACT;
+    }
+
+    public boolean checkReady() {
+        return endAffector.checkReady() && !slides.isBusy();
     }
 
     public void update() {
@@ -131,11 +125,9 @@ public class Deposit {
                         targetH, targetY
                     );
                 } else {
-                    if (inPlace) {
-                        xError = targetBoard.x - ROBOT_POSITION.x;
-                        yError = targetBoard.y - ROBOT_POSITION.y;
-                        headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
-                    }
+                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    yError = targetBoard.y - ROBOT_POSITION.y;
+                    headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
 
                     depositMath.calculate(
                         xError,
@@ -172,11 +164,9 @@ public class Deposit {
                             targetH, targetY
                     );
                 } else {
-                    if (inPlace) {
-                        xError = targetBoard.x - ROBOT_POSITION.x;
-                        yError = targetBoard.y - ROBOT_POSITION.y;
-                        headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
-                    }
+                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    yError = targetBoard.y - ROBOT_POSITION.y;
+                    headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
 
                     TelemetryUtil.packet.put("xError", xError);
                     TelemetryUtil.packet.put("yError", yError);

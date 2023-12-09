@@ -71,9 +71,9 @@ public class Dunker {
                 if (System.nanoTime()/1.0e9 - startTime >=  oneTime ) {
                     intake();
                 }
-            if (System.nanoTime()/1.0e9 - startTime >= twoTime) {
-                dunk1();
-            }
+                if (System.nanoTime()/1.0e9 - startTime >= twoTime) {
+                    dunk1();
+                }
                 break;
             case WAIT1:
                 if (System.nanoTime()/1.0e9 - startTime >=  oneTime ) {

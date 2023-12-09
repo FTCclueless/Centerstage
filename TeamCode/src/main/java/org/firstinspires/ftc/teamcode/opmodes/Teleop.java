@@ -77,7 +77,7 @@ public class Teleop extends LinearOpMode {
             depoPos.y += gamepad2.left_stick_x*0.2;
             depoPos.z -= gamepad2.left_stick_y*0.2;
 
-            // trigger / retract deposit
+            // trigger deposit
             if (a_2.isClicked(gamepad2.a)) {
                 depoFlag = true;
             }

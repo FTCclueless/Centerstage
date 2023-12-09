@@ -70,6 +70,10 @@ public class DoublePreloadAuto extends LinearOpMode {
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, true);
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
 
+        Pose2d targetBoard = AutoPathConstants.targetBoard.clone();
+        targetBoard.y *= reflect;
+        robot.deposit.setTargetBoard(targetBoard);
+
         // TODO: Add disable vision flag in case of complications :)
         while (opModeInInit()) {
             teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
@@ -136,14 +140,22 @@ public class DoublePreloadAuto extends LinearOpMode {
             // TODO: Intake
 
         robot.goToPoint(boardPreload, this);
-        robot.goToPoint(boardPreload.x, AutoPathConstants.depositLocation.y, AutoPathConstants.depositLocation.heading, this);
-        // TODO deposit ground preload
+
+        robot.deposit.depositAt(20, 0, 2);
+        while (!robot.deposit.checkReady()) {
+            robot.update();
+        }
+        robot.dunk(1);
     }
 
     public void park() {
         Pose2d park = AutoPathConstants.parkingLocation.clone();
         park.y *= reflect;
 
+        Pose2d sideDepositLocation = AutoPathConstants.sideDepositLocation.clone();
+        sideDepositLocation.y *= reflect;
+
+        robot.goToPoint(sideDepositLocation, this);
         robot.goToPoint(park, this);
     }
 }

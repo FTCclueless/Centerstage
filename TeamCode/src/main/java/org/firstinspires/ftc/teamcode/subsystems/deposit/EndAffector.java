@@ -53,12 +53,12 @@ public class EndAffector {
             PriorityServo.ServoType.AXON_MINI_SCUFF_TURRET,
             1,
             0,
-            1,
-            0.71,
+            1, 
+            0.708,
             false,
             Math.toRadians(botTurretMinDist), botTurretSlowPow,
             1, 2,
-            new double[] {-1}
+            new double[] {1}
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),
