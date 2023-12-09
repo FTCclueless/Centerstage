@@ -31,6 +31,8 @@ public class Teleop extends LinearOpMode {
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
         // DRIVER 1
+        ButtonToggle rightBump = new ButtonToggle();
+        ButtonToggle leftBump = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
 
@@ -43,7 +45,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle b_2 = new ButtonToggle();
 
-        Vector3 depoPos = new Vector3(0, 0, 0); /* I messed up the coord systems so badly :( */
+        Vector3 depoPos = new Vector3(10, 0, 10); /* I messed up the coord systems so badly :( */
 
         waitForStart();
 
@@ -52,33 +54,34 @@ public class Teleop extends LinearOpMode {
         while (!isStopRequested()) {
 
             // adjusting angle of actuation
-            if (gamepad1.right_bumper) {
+            if (rightBump.isClicked(gamepad1.right_bumper)) {
                 robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() + Math.toRadians(5));
             }
 
-            if (gamepad1.right_trigger > 0.2) {
+            if (leftBump.isClicked(gamepad1.left_bumper)) {
                 robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() - Math.toRadians(5));
             }
 
+
+
+            // driver B adjusting deposit position
             if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
                 depoFlag = true;
-                depoPos.y++;
+                depoPos.y+=6;
             }
             if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
                 depoFlag = true;
-                depoPos.y--;
+                depoPos.y-=6;
             }
-
-            // driver B adjusting deposit position
-            depoPos.x += gamepad2.right_stick_y * 0.2;
-
             if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
-                depoPos.z+=3;
+                depoPos.z+=6;
             }
             if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
-                depoPos.z-=3;
+                depoPos.z-=6;
             }
-            depoPos.z -= gamepad2.left_stick_y;
+            depoPos.x -= gamepad2.left_stick_y*0.2;
+            depoPos.y += gamepad2.left_stick_x*0.2;
+            depoPos.z -= gamepad2.left_stick_y*0.2;
 
             // trigger / retract deposit
             if (a_2.isClicked(gamepad2.a)) {
@@ -92,7 +95,8 @@ public class Teleop extends LinearOpMode {
             if (depoFlag) {
                 TelemetryUtil.packet.put("depoz: ", depoPos.z);
                 TelemetryUtil.packet.put("depoy: ", depoPos.y);
-                robot.deposit.depositAt(depoPos.z, depoPos.y);
+                TelemetryUtil.packet.put("depox", depoPos.x);
+                robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
             }
 
             // toggle intake on and off
