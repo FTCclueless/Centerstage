@@ -254,5 +254,7 @@ public class Deposit {
         }
         slides.update();
         dunker.update();
+
+        TelemetryUtil.packet.put("RAHHH", endAffector.v4Servo.getCurrentAngle());
     }
 }

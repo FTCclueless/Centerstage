@@ -23,9 +23,9 @@ public class EndAffector {
     private double power = 1;
 
     public static double botTurretMinDist = 45; //temp
-    public static double botTurretSlowPow = 0.56;
-    public static double v4MinDist = 10;
-    public static double v4SlowDown = 0.3;
+    public static double botTurretSlowPow = 0.8;
+    public static double v4MinDist = 45;
+    public static double v4SlowDown = 0.667;
 
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
