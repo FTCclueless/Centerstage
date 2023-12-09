@@ -450,11 +450,9 @@ public class Drivetrain {
     public void drive(Gamepad gamepad) {
         state = State.DRIVE;
 
-        double forward = gamepad.left_stick_y;
-        TelemetryUtil.packet.put("forward", forward);
-        double strafe = -gamepad.left_stick_x;
+        double forward = -gamepad.left_stick_y;
+        double strafe = gamepad.left_stick_x;
         double turn = gamepad.right_stick_x;
-        TelemetryUtil.packet.put("turn", turn);
 
         double[] powers = {
             forward + turn + strafe,
