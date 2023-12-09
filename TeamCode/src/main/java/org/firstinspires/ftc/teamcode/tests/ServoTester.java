@@ -108,6 +108,10 @@ public class ServoTester extends LinearOpMode {
                 //telemetry.addData("v4Encoder", v4Bar);
                 telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
                 telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
+                telemetry.addData("voltage0", robot.sensors.getAnalog0Volt());
+                telemetry.addData("voltage1", robot.sensors.getAnalog1Volt());
+                telemetry.addData("volatge2", robot.sensors.getAnalog2Volt());
+                telemetry.addData("voltage3", robot.sensors.getAnalog3Volt());
                 //TelemetryUtil.packet.put("encoder1", hardwareMap.get(AnalogInput.class, ));
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);

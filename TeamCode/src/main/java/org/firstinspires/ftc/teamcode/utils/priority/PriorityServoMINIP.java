@@ -13,17 +13,20 @@ public class PriorityServoMINIP extends PriorityServo {
     private final double baseAngle;
     Sensors sensors;
     int analogInput;
+    double baseVolt;
 
-    public PriorityServoMINIP(Servo servo, String name, Sensors sensors, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale, int analogInput) {
+    public PriorityServoMINIP(Servo servo, String name, Sensors sensors, double loadMultiplier, double min, double max, double basePos, boolean reversed, double basePriority, double priorityScale, int analogInput, double baseVolt) {
         super(servo, name, PriorityServo.ServoType.AXON_MINI, loadMultiplier, min, max, basePos, reversed, basePriority, priorityScale);
         baseAngle = convertPosToAngle(basePos);
         this.analogInput = analogInput;
+        this.baseVolt = baseVolt;
     }
-    public PriorityServoMINIP(Servo servo, String name, ServoType type, Sensors sensors, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale, double [] multipliers, int analogInput) {
+    public PriorityServoMINIP(Servo servo, String name, ServoType type, Sensors sensors, double loadMultiplier, double min, double max, double basePos, boolean reversed, double slowdownDist, double slowdownPow, double basePriority, double priorityScale, double [] multipliers, int analogInput, double baseVolt) {
         super(new Servo[]{servo}, name, type, loadMultiplier, min,  max,  basePos,  reversed, slowdownDist, slowdownPow,  basePriority,  priorityScale);
         this.multipliers = multipliers;
         baseAngle = convertAngleToPos(basePos);
         this.analogInput = analogInput;
+        this.baseVolt = baseVolt;
     }
 
     @Override
@@ -43,9 +46,8 @@ public class PriorityServoMINIP extends PriorityServo {
                 encoderVolt = sensors.getAnalog3Volt();
                 break;
         }
-        double newAngle = encoderVolt / 3.3 * 2 * Math.PI + baseAngle;
+        double newAngle = (encoderVolt-baseVolt) / 3.3 * 2 * Math.PI;
 
-        currentAngle = newAngle + convertPosToAngle(basePos);
-        reachedIntermediate = Math.abs(newAngle - currentAngle) < Math.toRadians(5);
+        reachedIntermediate = Math.abs(currentIntermediateTargetAngle - currentAngle) < Math.toRadians(5);
     }
 }
