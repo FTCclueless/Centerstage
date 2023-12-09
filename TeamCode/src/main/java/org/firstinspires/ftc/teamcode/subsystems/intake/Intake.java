@@ -67,7 +67,7 @@ public class Intake {
     double maxHeightAtParallel = 2.4;
 
     public void update() {
-        actuation.setTargetAngle(Math.toRadians(actuationAngle), 1.0);
+        actuation.setTargetAngle(actuationAngle, 1.0);
 
         /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
             alreadyTriggered = true;
@@ -136,16 +136,12 @@ public class Intake {
         state = State.SOFT_REVERSED;
     }
 
-    public void setActuationAngle (double angle) {
-        actuationAngle = angle;
-    }
-
     public void actuationDown () {
-        actuationAngle = -65;
+        actuationAngle = 1.378;
     }
 
     public void actuationUp () {
-        actuationAngle = 65;
+        actuationAngle = 3.1728;
     }
 
     public void actuationSinglePixel () {

@@ -32,7 +32,6 @@ public class Teleop extends LinearOpMode {
 
         // DRIVER 1
         ButtonToggle rightBump = new ButtonToggle();
-        ButtonToggle leftBump = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
 
@@ -43,7 +42,6 @@ public class Teleop extends LinearOpMode {
         ButtonToggle dpadRight_2 = new ButtonToggle();
         ButtonToggle rightTrigger_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
-        ButtonToggle b_2 = new ButtonToggle();
 
         Vector3 depoPos = new Vector3(10, 0, 10); /* I messed up the coord systems so badly :( */
 
@@ -54,15 +52,11 @@ public class Teleop extends LinearOpMode {
         while (!isStopRequested()) {
 
             // adjusting angle of actuation
-            if (rightBump.isClicked(gamepad1.right_bumper)) {
-                robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() + Math.toRadians(5));
+            if (rightBump.isToggled(gamepad1.right_bumper)) {
+                robot.intake.actuationUp();
+            } else {
+                robot.intake.actuationDown();
             }
-
-            if (leftBump.isClicked(gamepad1.left_bumper)) {
-                robot.intake.setActuationAngle(robot.intake.actuation.getCurrentAngle() - Math.toRadians(5));
-            }
-
-
 
             // driver B adjusting deposit position
             if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
@@ -87,10 +81,6 @@ public class Teleop extends LinearOpMode {
             if (a_2.isClicked(gamepad2.a)) {
                 depoFlag = true;
             }
-            if (b_2.isClicked(gamepad2.b)) {
-                depoFlag = false;
-                robot.deposit.state = Deposit.State.START_RETRACT;
-            }
 
             if (depoFlag) {
                 TelemetryUtil.packet.put("depoz: ", depoPos.z);
@@ -98,6 +88,8 @@ public class Teleop extends LinearOpMode {
                 TelemetryUtil.packet.put("depox", depoPos.x);
                 robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
             }
+
+            TelemetryUtil.packet.put("depoFlag", depoFlag);
 
             // toggle intake on and off
             if (x_1.isClicked(gamepad1.x)) {
@@ -114,9 +106,10 @@ public class Teleop extends LinearOpMode {
             }
 
             // dunking
-            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2)) {
+            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2 && robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.dunk(1);
                 depoPos = new Vector3(2,0,10);
+                depoFlag = false;
             }
 
             if (a_2.isClicked(gamepad2.a)) {

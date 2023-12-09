@@ -71,7 +71,11 @@ public class DoublePreloadAuto extends LinearOpMode {
         vision.initCamera(hardwareMap, teamPropDetectionPipeline);
 
         // TODO: Add disable vision flag in case of complications :)
-        teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
+        while (opModeInInit()) {
+            teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
+            teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
+        }
+        Log.e("team prop location", teamPropLocation + "");
     }
 
     /**
@@ -82,11 +86,16 @@ public class DoublePreloadAuto extends LinearOpMode {
     public void doGroundPreload() {
         Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
+        Log.e("teamPropLocation", teamPropLocation + "");
+        Log.e("groundPreloadPosition.x", groundPreloadPosition.x + "");
+        Log.e("groundPreloadPosition.y", groundPreloadPosition.y + "");
+        Log.e("groundPreloadPosition.heading (deg)", Math.toDegrees(groundPreloadPosition.heading) + "");
+
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
-                groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
-                groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
+                groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
                 break;
             case CENTER:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
@@ -94,13 +103,10 @@ public class DoublePreloadAuto extends LinearOpMode {
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
                 break;
             case RIGHT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
-                groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
-                groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
+                groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
                 break;
-            case NONE:
-            default:
-                Log.e("ParkAuto", "Error! No team prop location!");
         }
 
         Log.e("groundPreloadPosition.x", groundPreloadPosition.x + "");

@@ -71,7 +71,6 @@ public class Slides {
 
     public void setLength(double length) {
         targetLength = Math.min(length, maxSlidesHeight);
-        Log.e("slides target length", length + "");
     }
 
     public boolean isBusy() {

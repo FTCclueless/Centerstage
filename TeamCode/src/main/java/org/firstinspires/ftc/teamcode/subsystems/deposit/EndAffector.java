@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -97,6 +99,7 @@ public class EndAffector {
     }
 
     public void setBotTurret(double ang) {
+//        Log.e("setting bot turret (deg)", Math.toDegrees(ang) + "");
         bottomAngle = ang;
         botTurret.setTargetAngle(ang, power);
     }

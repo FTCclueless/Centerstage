@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.vision.pipelines;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
@@ -35,7 +36,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
         NONE
     }
 
-    public TeamPropLocation team_prop_location = TeamPropLocation.NONE; // default is center
+    public TeamPropLocation team_prop_location = TeamPropLocation.LEFT; // default is center
 
     public double leftAvg, centerAvg, rightAvg;
 
@@ -93,6 +94,14 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     public TeamPropLocation getTeamPropLocation() {
         return team_prop_location;
+    }
+
+    public void sendTeamPropTelemetry(Telemetry telemetry) {
+        telemetry.addData("leftAvg", leftAvg);
+        telemetry.addData("centerAvg", centerAvg);
+        telemetry.addData("rightAvg", rightAvg);
+        telemetry.addData("team prop location", getTeamPropLocation() + "");
+        telemetry.update();
     }
 
     Mat erodeElement = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(4, 4));

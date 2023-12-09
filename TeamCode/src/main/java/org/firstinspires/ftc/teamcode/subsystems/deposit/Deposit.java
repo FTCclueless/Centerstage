@@ -212,7 +212,7 @@ public class Deposit {
 
                 break;
             case WAIT_DUNK:
-                if (Globals.RUNMODE == RunMode.AUTO && dunker.dunkState == Dunker.DunkState.CHILL) {
+                if (dunker.dunkState == Dunker.DunkState.CHILL) {
                     state = State.START_RETRACT;
                 }
                 break;

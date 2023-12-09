@@ -65,6 +65,7 @@ public class Dunker {
     public void update() {
         switch (dunkState) {
             case CHILL:
+                intake();
                 break;
             case WAIT2:
                 if (System.nanoTime()/1.0e9 - startTime >=  oneTime ) {
