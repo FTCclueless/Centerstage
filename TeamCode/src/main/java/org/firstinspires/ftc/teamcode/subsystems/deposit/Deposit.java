@@ -52,7 +52,9 @@ public class Deposit {
     public static double depositTopTurret = 0.0;
     public static double intakeTopTurret = 0.1047197;
     public static double intakeTopServoAngle = 1.34288;
-    public static double intakeBotTurret = -3.03323619;
+    public static double intakeBotTurret = -3.1;
+
+    public static double interpolationDist = 3;
 
     boolean inPlace = false;
 
@@ -255,6 +257,6 @@ public class Deposit {
         slides.update();
         dunker.update();
 
-        TelemetryUtil.packet.put("RAHHH", endAffector.v4Servo.getCurrentAngle());
+        TelemetryUtil.packet.put("v4servoAngle", endAffector.v4Servo.getCurrentAngle());
     }
 }

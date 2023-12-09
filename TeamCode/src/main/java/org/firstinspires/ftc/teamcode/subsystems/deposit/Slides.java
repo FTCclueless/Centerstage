@@ -24,9 +24,9 @@ public class Slides {
     public static double maxSlidesHeight = 28.3465;
     private double targetLength = 0;
     public static double maxVel = 1.6528571428571428;
-    public static double kP = 0.1;
+    public static double kP = 0.13;
     public static double kA = 3;
-    public static double kStatic = 0.1;
+    public static double kStatic = 0.15;
     public static double threshold = 2;
     public static double minPower = 0.25;
     public static double minPowerThresh = 0.8;
@@ -56,7 +56,7 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
         TelemetryUtil.packet.put("Error", error);
-        if (length <= 0.8 && targetLength <= 0.6) {
+        if (length <= 3 && targetLength <= 0.6) {
             return downPower;
         } else {
             return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);

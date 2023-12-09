@@ -107,6 +107,8 @@ public class ServoTester extends LinearOpMode {
                 telemetry.addData("averageServoTime", totalTime/numLoops);
                 //telemetry.addData("v4Encoder", v4Bar);
                 telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
+                telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
+                //TelemetryUtil.packet.put("encoder1", hardwareMap.get(AnalogInput.class, ));
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
 

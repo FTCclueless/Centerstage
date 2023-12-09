@@ -17,7 +17,7 @@ public class PriorityServo extends PriorityDevice{
         JX(0.3183098862, Math.toRadians(60) / 0.12),
         AXON_MINI(0.162338041953733, 6.48678), //todo 0.173623,
         AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05),
-        AXON_MINI_SCUFF_TURRET(0.203081707385258, 5.18535705328); //todo all speeds somehow
+        AXON_MINI_SCUFF_TURRET(0.1980808297, 4.845061010565304); //todo all speeds somehow 5.18535705328
 
         public double positionPerRadian;
         public double speed;
@@ -189,5 +189,8 @@ public class PriorityServo extends PriorityDevice{
 
     public double getTargetPosition () {
         return convertAngleToPos(currentIntermediateTargetAngle);
+    }
+    public double getTargetAngle() {
+        return currentIntermediateTargetAngle;
     }
 }

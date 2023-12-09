@@ -59,7 +59,7 @@ public class AxonServoTuner extends LinearOpMode {
 
         RobotLog.e("posToRadians " + 1 / (maxAngle - minAngle));
         RobotLog.e("1: " + (maxAngle - minAngle) + " 2: " + (endTime - startTime));
-        RobotLog.e("speed " + (maxAngle - minAngle) / ((endTime - startTime) / 1000));
+        RobotLog.e("speed " + (maxAngle - minAngle) / ((endTime - startTime) / 1000.0));
     }
 
     public static double getEncAngle(AnalogInput encoder) {

@@ -2,13 +2,16 @@ package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
 import android.util.Log;
 
+import com.acmerobotics.dashboard.config.Config;
+
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
+@Config
 public class DepositMath {
-    public final double v4BarLength = 10.125;
-    private final Vector3 slidePos = new Vector3(7,0,10.827);
+    public static double v4BarLength = 10.125;
+    public static Vector3 slidePos = new Vector3(7,0,10.827);
     public final double slideAngle = Math.toRadians(60);
     private final Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));
 
