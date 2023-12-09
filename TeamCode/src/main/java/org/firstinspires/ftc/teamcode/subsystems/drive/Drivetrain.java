@@ -318,6 +318,12 @@ public class Drivetrain {
         TelemetryUtil.packet.put("drivetrain at point", atPoint());
     }
 
+    public void stopAllMotors() {
+        for (PriorityMotor motor : motors) {
+            motor.setTargetPower(0);
+        }
+    }
+
     public void updateLocalizer() {
         localizer.updateEncoders(sensors.getOdometry());
         localizer.update();
