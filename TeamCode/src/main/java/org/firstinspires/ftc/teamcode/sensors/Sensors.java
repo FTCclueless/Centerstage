@@ -7,6 +7,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055Util;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -30,11 +31,20 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
 
+    private final AnalogInput analogInput0;
+    private final AnalogInput analogInput1;
+    private final AnalogInput analogInput2;
+    private final AnalogInput analogInput3;
+
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
+    private double analog0Volt;
+    private double analog1Volt;
+    private double analog2Volt;
+    private double analog3Volt;
 
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -47,6 +57,10 @@ public class Sensors {
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
 
+        analogInput0 = hardwareMap.get(AnalogInput.class, "analogInput0");
+        analogInput1 = hardwareMap.get(AnalogInput.class, "analogInput1");
+        analogInput2 = hardwareMap.get(AnalogInput.class, "analogInput2");
+        analogInput3 = hardwareMap.get(AnalogInput.class, "analogInput3");
         initHubs(hardwareMap);
     }
 
@@ -115,6 +129,10 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
+            analog0Volt = analogInput0.getVoltage();
+            analog1Volt = analogInput1.getVoltage();
+            analog2Volt = analogInput2.getVoltage();
+            analog3Volt = analogInput3.getVoltage();
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -166,6 +184,22 @@ public class Sensors {
             numRotations += Math.signum(previousAngle);
         }
         previousAngle = angle;
+    }
+
+    public double getAnalog0Volt() {
+        return analog0Volt;
+    }
+
+    public double getAnalog1Volt() {
+        return analog1Volt;
+    }
+
+    public double getAnalog2Volt() {
+        return analog2Volt;
+    }
+
+    public double getAnalog3Volt() {
+        return analog3Volt;
     }
 }
 
