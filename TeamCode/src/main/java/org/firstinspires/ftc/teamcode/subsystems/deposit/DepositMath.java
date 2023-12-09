@@ -40,7 +40,12 @@ public class DepositMath {
         }
         else {
             double extra = Math.sqrt(Math.pow(v4BarLength, 2) - Math.pow(remainder.getMag(), 2));
-            slideExtension -= extra;
+            if (slideExtension < 0) {
+                slideExtension += extra;
+            }
+            else {
+                slideExtension -= extra;
+            }
             remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
             TelemetryUtil.packet.put("depositPos", depositPos);
         }
@@ -48,6 +53,7 @@ public class DepositMath {
             Log.e("slide out of range", slideExtension + "");
             slideExtension = Math.min(Math.max(slideExtension,0),Slides.maxSlidesHeight);
         }
+
         v4BarYaw = Math.atan2(remainder.y,remainder.x);
         v4BarPitch = Math.atan2(remainder.z, Math.sqrt(Math.pow(remainder.x,2) + Math.pow(remainder.y,2)));
     }
