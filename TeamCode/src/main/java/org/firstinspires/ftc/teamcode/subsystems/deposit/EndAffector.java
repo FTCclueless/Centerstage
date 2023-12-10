@@ -50,7 +50,7 @@ public class EndAffector {
         botTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
-            PriorityServo.ServoType.AXON_MINI_SCUFF_TURRET,
+            PriorityServo.ServoType.AXON_MINI,
             1,
             0,
             1, 
@@ -130,10 +130,10 @@ public class EndAffector {
     }
 
     public boolean checkBottom() {
-        return (botTurret.getCurrentAngle() == bottomAngle);
+        return (Math.abs(botTurret.getCurrentAngle()-bottomAngle) <= Math.toRadians(2) );
     }
     public boolean checkV4() {
-        return (v4Servo.getCurrentAngle() == targetPitch);
+        return (Math.abs(v4Servo.getCurrentAngle()-targetPitch) <= Math.toRadians(2));
     }
     public boolean checkTopTurret() {
         return (topTurret.getCurrentAngle() == topAngle);

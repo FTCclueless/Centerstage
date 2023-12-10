@@ -150,7 +150,7 @@ public class Deposit {
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setBotTurret(depositMath.v4BarYaw);
+                endAffector.setBotTurret(depositMath.v4BarYaw * 40/36);
                 if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
@@ -184,7 +184,7 @@ public class Deposit {
 
 
                 slides.setLength(depositMath.slideExtension);
-                endAffector.setBotTurret(depositMath.v4BarYaw);
+                endAffector.setBotTurret(depositMath.v4BarYaw * 40.0/36); //scuffed kinda --kyle
                 endAffector.setV4Bar(depositMath.v4BarPitch);
                 endAffector.setTopServo(-depositMath.v4BarPitch);
 

@@ -7,17 +7,25 @@ import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
 @Config
 @TeleOp
 public class AxonServoTuner extends LinearOpMode {
+    Robot robot;
     public static String servoName = "bottomTurret";
     public static String encoderName = "analogInput2";
     public static double testPos = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        robot = new Robot(hardwareMap);
+        robot.deposit.state = Deposit.State.WAIT;
+        robot.update();
+        robot.deposit.endAffector.v4Servo.setTargetAngle(0,1);
+        robot.hardwareQueue.update();
         Servo servo = hardwareMap.get(Servo.class, servoName);
         AnalogInput encoder = hardwareMap.get(AnalogInput.class, encoderName);
         TelemetryUtil.setup();
