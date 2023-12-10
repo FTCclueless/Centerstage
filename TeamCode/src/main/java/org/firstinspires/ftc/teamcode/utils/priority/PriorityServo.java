@@ -16,6 +16,7 @@ public class PriorityServo extends PriorityDevice{
         PRO_MODELER(0.32698, Math.toRadians(60) / 0.139),
         JX(0.3183098862, Math.toRadians(60) / 0.12),
         AXON_MINI(0.1784612002049795, 6.403953024772129), //todo 0.173623, 0.162338041953733
+        AXON_MAX(0.1775562245447108, 5.830247235911042),
         AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05),
         AXON_MINI_SCUFF_TURRET(0.1980808297, 4.845061010565304); //todo all speeds somehow 5.18535705328
 
@@ -131,6 +132,9 @@ public class PriorityServo extends PriorityDevice{
         }
         currentAngle += deltaAngle;
         lastLoopTime = currentTime;
+
+        Log.e("deltaAngle", deltaAngle + "");
+        Log.e("currentAngle", currentAngle + "");
     }
 
     @Override

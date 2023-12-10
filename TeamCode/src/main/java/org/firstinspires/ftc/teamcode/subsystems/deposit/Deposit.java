@@ -51,7 +51,7 @@ public class Deposit {
     public static double upPitch = 1.38;
     public static double intakeTopTurret = 0.011206;
     public static double intakeTopServoAngle = 1.31681;
-    public static double intakeBotTurret = -3.14 * (40/36.0);
+    public static double intakeBotTurret = 3.48;
 
     public static double interpolationDist = 3;
 
@@ -149,6 +149,7 @@ public class Deposit {
 
             case EXTEND_ROTATE180:
                 endAffector.setBotTurret(depositMath.v4BarYaw * 40/36.0);
+                Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
                 if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
@@ -156,7 +157,7 @@ public class Deposit {
             case FINISH_DEPOSIT: // Also our update state -- Eric
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
-                            xOffset,
+                            xError,
                             0,
                             0,
                             targetH, targetY
@@ -207,14 +208,17 @@ public class Deposit {
             case START_RETRACT:
                 //endAffector.setBotTurret(0);
                 slides.setLength(slidesV4Thresh);
-                endAffector.setV4Bar(upPitch);
+                endAffector.setBotTurret(0.0);
                 endAffector.setTopServo(intakeTopServoAngle);
                 endAffector.setTopTurret(intakeTopTurret);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.v4Servo.getCurrentAngle() == upPitch)
-                    state = State.RETRACT_ROTATE180; //skipping for same reason --kyle
-
+                if (endAffector.checkBottom()) {
+                    endAffector.setV4Bar(upPitch);
+                    if (endAffector.v4Servo.getCurrentAngle() == upPitch) {
+                        state = State.RETRACT_ROTATE180;
+                    }
+                }
                 break;
             case RETRACT_ROTATE180:
                 endAffector.setBotTurret(intakeBotTurret);

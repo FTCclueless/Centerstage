@@ -25,6 +25,7 @@ public class DepositMath {
 
     public void calculate(double xError, double yError, double headingError, double slideHeight, double yOffset) {
         xError += slideHeight * Math.cos(slideAngle);
+        TelemetryUtil.packet.put("xError", xError);
         yError += yOffset;
         double relX = xError*Math.cos(headingError) - yError*Math.sin(headingError);
         double relY = +xError*Math.sin(headingError) + yError*Math.cos(headingError);
@@ -32,10 +33,11 @@ public class DepositMath {
         TelemetryUtil.packet.put("mathrelx", relX);
         TelemetryUtil.packet.put("mathrely", relY);
 
-
         Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight*Math.sin(slideAngle) - slidePos.z);
         Vector3 slideProject = Vector3.project(depositPos, slideUnit);
         Vector3 remainder = Vector3.subtract(depositPos, slideProject);
+
+        TelemetryUtil.packet.put("depositPos.z", depositPos.z);
 
         slideExtension = slideProject.getMag();
         if (Math.abs(remainder.getMag()) > v4BarLength) {
@@ -51,6 +53,7 @@ public class DepositMath {
             }
             remainder = Vector3.subtract(depositPos, Vector3.mul(slideUnit, slideExtension));
             TelemetryUtil.packet.put("depositPos", depositPos);
+            TelemetryUtil.packet.put("extra", extra);
         }
         if (slideExtension > Slides.maxSlidesHeight || slideExtension < 0) {
             Log.e("slide out of range", slideExtension + "");
@@ -62,6 +65,10 @@ public class DepositMath {
             v4BarYaw -= 2*Math.PI;
         }
         v4BarPitch = Math.atan2(remainder.z, Math.sqrt(Math.pow(remainder.x,2) + Math.pow(remainder.y,2)));
+
+        TelemetryUtil.packet.put("slideProject", slideProject);
+        TelemetryUtil.packet.put("slideExtension", slideExtension);
+        TelemetryUtil.packet.put("remainder", remainder);
     }
 
 

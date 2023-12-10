@@ -43,7 +43,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle rightTrigger_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
 
-        Vector3 depoPos = new Vector3(10, 0, 10); /* I messed up the coord systems so badly :( */
+        Vector3 depoPos = new Vector3(15, 0, 10);
 
         waitForStart();
 
@@ -73,22 +73,23 @@ public class Teleop extends LinearOpMode {
             if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
                 depoPos.z-=6;
             }
-            depoPos.x -= gamepad2.left_stick_y*0.2;
+            depoPos.x -= gamepad2.right_stick_y*0.2;
             depoPos.y += gamepad2.left_stick_x*0.2;
             depoPos.z -= gamepad2.left_stick_y*0.2;
 
             // trigger deposit
             if (a_2.isClicked(gamepad2.a)) {
+                depoPos = new Vector3(15, 0, 10);
                 depoFlag = true;
             }
 
             if (depoFlag) {
-                TelemetryUtil.packet.put("depoz: ", depoPos.z);
-                TelemetryUtil.packet.put("depoy: ", depoPos.y);
-                TelemetryUtil.packet.put("depox", depoPos.x);
                 robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
             }
 
+            TelemetryUtil.packet.put("depoz: ", depoPos.z);
+            TelemetryUtil.packet.put("depoy: ", depoPos.y);
+            TelemetryUtil.packet.put("depox", depoPos.x);
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
             // toggle intake on and off
@@ -108,12 +109,8 @@ public class Teleop extends LinearOpMode {
             // dunking
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2 && robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.dunk(1);
-                depoPos = new Vector3(2,0,10);
+                depoPos = new Vector3(15,0,10);
                 depoFlag = false;
-            }
-
-            if (a_2.isClicked(gamepad2.a)) {
-                robot.depositAt(depoPos.z, depoPos.y);
             }
 
             // hanging mechanism

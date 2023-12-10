@@ -50,15 +50,15 @@ public class EndAffector {
         botTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "bottomTurret"),
             "bottomTurret",
-            PriorityServo.ServoType.AXON_MINI,
+            PriorityServo.ServoType.AXON_MAX,
             1,
             0,
-            1, 
-            0.718,
+            1,
+            0.333,
             false,
             Math.toRadians(botTurretMinDist), botTurretSlowPow,
             1, 2,
-            new double[] {1} //basevolt = 0.189 --Kyle
+            new double[] {-1} //basevolt = 0.189 --Kyle
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),

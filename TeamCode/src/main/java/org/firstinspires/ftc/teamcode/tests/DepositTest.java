@@ -17,9 +17,9 @@ import org.firstinspires.ftc.teamcode.utils.RunMode;
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode {
-    public static double height = 30;
+    public static double height = 10;
     public static double targetY = 0;
-    public static double xError = 5;
+    public static double xError = 15;
     public static double heading = 180;
     public static boolean startDeposit = false;
     public static boolean startRetract = false;
