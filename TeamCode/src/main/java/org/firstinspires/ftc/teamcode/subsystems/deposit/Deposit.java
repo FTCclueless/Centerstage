@@ -208,12 +208,12 @@ public class Deposit {
             case START_RETRACT:
                 //endAffector.setBotTurret(0);
                 slides.setLength(slidesV4Thresh);
-                endAffector.setBotTurret(0.0);
+                endAffector.setTopTurret(0.0);
                 endAffector.setTopServo(intakeTopServoAngle);
                 endAffector.setTopTurret(intakeTopTurret);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.checkBottom()) {
+                if (endAffector.checkTopTurret()) {
                     endAffector.setV4Bar(upPitch);
                     if (endAffector.v4Servo.getCurrentAngle() == upPitch) {
                         state = State.RETRACT_ROTATE180;
