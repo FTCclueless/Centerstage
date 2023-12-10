@@ -27,7 +27,7 @@ public class EndAffector {
     private double power = 1;
 
     public static double botTurretMinDist = 45; //temp
-    public static double botTurretSlowPow = 0.8;
+    public static double botTurretSlowPow = 0.4;
     public static double v4MinDist = 45;
     public static double v4SlowDown = 0.667;
 
@@ -54,11 +54,11 @@ public class EndAffector {
             1,
             0,
             1, 
-            0.708,
+            0.718,
             false,
             Math.toRadians(botTurretMinDist), botTurretSlowPow,
             1, 2,
-            new double[] {1}
+            new double[] {1} //basevolt = 0.189 --Kyle
         );
         topTurret = new PriorityServo(
             hardwareMap.get(Servo.class, "topTurret"),

@@ -146,7 +146,6 @@ public class PriorityServo extends PriorityDevice{
             return 0;
         }
 
-        TelemetryUtil.packet.put("reachedIntermediate", reachedIntermediate);
         return (reachedIntermediate ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000000.0 * priorityScale;
     }
 
@@ -173,7 +172,7 @@ public class PriorityServo extends PriorityDevice{
         }
 
         //Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
-        TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
+        //TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
        // Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
 
         for (int i = 0; i < servo.length; i++) {

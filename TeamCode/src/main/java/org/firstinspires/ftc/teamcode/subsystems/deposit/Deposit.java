@@ -46,13 +46,12 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = -1.201197; //todo
-    public static double slidesV4Thresh = 12; //todo
-    public static double upPitch = 1.5215;
-    public static double depositTopTurret = 0.0;
-    public static double intakeTopTurret = 0.1047197;
-    public static double intakeTopServoAngle = 1.34288;
-    public static double intakeBotTurret = -3.1;
+    public static double intakePitch = -1.07586;
+    public static double slidesV4Thresh = 12;
+    public static double upPitch = 1.38;
+    public static double intakeTopTurret = 0.011206;
+    public static double intakeTopServoAngle = 1.31681;
+    public static double intakeBotTurret = -3.14 * (40/36.0);
 
     public static double interpolationDist = 3;
 
@@ -137,7 +136,6 @@ public class Deposit {
                     );
                 }
                 slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
-                TelemetryUtil.packet.put("slide state", slides.getLength());
 
                 if (slides.getLength() > slidesV4Thresh-4)
                     state = State.MOVE_V4UP;
@@ -150,7 +148,7 @@ public class Deposit {
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setBotTurret(depositMath.v4BarYaw * 40/36);
+                endAffector.setBotTurret(depositMath.v4BarYaw * 40/36.0);
                 if (endAffector.checkBottom()) {
                     state = State.FINISH_DEPOSIT;
                 }
@@ -179,12 +177,11 @@ public class Deposit {
                             targetH, targetY
                     );
                 }
-                TelemetryUtil.packet.put("slideExtension: ", depositMath.slideExtension);
                 TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
 
 
                 slides.setLength(depositMath.slideExtension);
-                endAffector.setBotTurret(depositMath.v4BarYaw * 40.0/36); //scuffed kinda --kyle
+                endAffector.setBotTurret(depositMath.v4BarYaw * 40.0/36); //scuffed kinda (gear ratio) --kyle
                 endAffector.setV4Bar(depositMath.v4BarPitch);
                 endAffector.setTopServo(-depositMath.v4BarPitch);
 

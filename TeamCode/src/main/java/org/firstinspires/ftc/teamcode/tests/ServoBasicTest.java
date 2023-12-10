@@ -9,11 +9,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp
 public class ServoBasicTest extends LinearOpMode {
 
-    public static double servoSetPosition = 0.8;
+    public static double servoSetPosition = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Servo servo = hardwareMap.get(Servo.class, "V4BarServo2");
+        Servo servo = hardwareMap.get(Servo.class, "bottomTurret");
 
         waitForStart();
 
