@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
-import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
 
 import android.util.Log;
@@ -13,18 +12,16 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.airplane.Airplane;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Dunker;
-import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
+import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
-import org.firstinspires.ftc.teamcode.tests.AutoPathTester;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 public class Robot {
-    private HardwareMap hardwareMap;
     public HardwareQueue hardwareQueue;
 
     public final Sensors sensors;
@@ -33,10 +30,9 @@ public class Robot {
     public final Intake intake;
     public final Airplane airplane;
     public final Hang hang;
+    public final Droppers droppers;
 
     public Robot(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
-
         hardwareQueue = new HardwareQueue();
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
@@ -45,6 +41,7 @@ public class Robot {
         intake = new Intake(hardwareMap, hardwareQueue, sensors);
         airplane = new Airplane(hardwareMap, hardwareQueue);
         hang = new Hang(hardwareMap, hardwareQueue);
+        droppers = new Droppers(hardwareMap, hardwareQueue);
 
         TelemetryUtil.setup();
     }
@@ -64,6 +61,7 @@ public class Robot {
         intake.update();
         airplane.update();
         hang.update();
+        droppers.update();
     }
 
     private void updateTelemetry() {

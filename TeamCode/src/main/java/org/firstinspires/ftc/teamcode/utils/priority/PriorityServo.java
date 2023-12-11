@@ -114,9 +114,9 @@ public class PriorityServo extends PriorityDevice{
     public void setTargetAngle(double targetAngle, double power){
         this.power = power;
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
-//        Log.e(name, "targetAngle " + targetAngle);
-        //TelemetryUtil.packet.put(name + " target angle", targetAngle);
-        //TelemetryUtil.packet.put(name + " current angle", currentAngle);
+        Log.e(name, "targetAngle " + targetAngle);
+//        TelemetryUtil.packet.put(name + " target angle", targetAngle);
+//        TelemetryUtil.packet.put(name + " current angle", currentAngle);
     }
 
     public void updateServoValues() {
@@ -132,9 +132,6 @@ public class PriorityServo extends PriorityDevice{
         }
         currentAngle += deltaAngle;
         lastLoopTime = currentTime;
-
-        Log.e("deltaAngle", deltaAngle + "");
-        Log.e("currentAngle", currentAngle + "");
     }
 
     @Override

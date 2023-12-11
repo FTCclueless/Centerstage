@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 @Config
 public class Dunker {
     public PriorityServo dunker;
-    public static double dunkAng = 3.76022; //TODO
-    public static double lockAng = 2.52069;
-    public static double openAng = 2.6502;
+    public static double dunkAng = 2.59006; // angle to push out pixels
+    public static double lockAng = 2.113680; // this is for when we are moving to deposit. The dunker pushes against the pixels and "locks" them in place
+    public static double openAng = 2.229309; // this is for when we are transfering, the pixels are pretty loose
 
     public enum DunkState {
         WAIT1,

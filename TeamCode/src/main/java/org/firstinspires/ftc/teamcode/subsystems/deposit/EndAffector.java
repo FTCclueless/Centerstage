@@ -109,11 +109,11 @@ public class EndAffector {
     }
     public void setV4Bar(double pitch) {
         targetPitch = pitch;
-        v4Servo.setTargetAngle(pitch, power);
+        v4Servo.setTargetAngle(pitch, 0.5);
     }
     public void setTopServo(double pitch) {
         topPitch = pitch;
-        topServo.setTargetAngle(pitch, power);
+        topServo.setTargetAngle(pitch, 0.5);
     }
 
     public double getBottomAngle() {

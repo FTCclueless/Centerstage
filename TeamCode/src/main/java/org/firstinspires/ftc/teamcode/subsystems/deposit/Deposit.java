@@ -46,10 +46,10 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 2;
-    public static double intakePitch = -1.07586;
+    public static double intakePitch = -1.1038814026450954;
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
-    public static double intakeTopTurret = 0.011206;
+    public static double intakeTopTurret = 0.1849141;
     public static double intakeTopServoAngle = 1.31681;
     public static double intakeBotTurret = 3.48;
 
@@ -235,7 +235,7 @@ public class Deposit {
                 break;
 
             case DOWN:
-                slides.setLength(0.0);
+                slides.setLength(-1.0);
                 endAffector.setV4Bar(intakePitch);
                 endAffector.setTopTurret(intakeTopTurret);
                 endAffector.setBotTurret(intakeBotTurret);

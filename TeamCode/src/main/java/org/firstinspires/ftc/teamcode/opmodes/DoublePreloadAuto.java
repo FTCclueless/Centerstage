@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -74,10 +75,18 @@ public class DoublePreloadAuto extends LinearOpMode {
         targetBoard.y *= reflect;
         robot.deposit.setTargetBoard(targetBoard);
 
+        if (red) {
+            robot.droppers.leftDown();
+        } else {
+            robot.droppers.rightDown();
+        }
+
         // TODO: Add disable vision flag in case of complications :)
         while (opModeInInit()) {
             teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
             teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
+
+            robot.update();
         }
         Log.e("team prop location", teamPropLocation + "");
     }
@@ -91,9 +100,6 @@ public class DoublePreloadAuto extends LinearOpMode {
         Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
         Log.e("teamPropLocation", teamPropLocation + "");
-        Log.e("groundPreloadPosition.x", groundPreloadPosition.x + "");
-        Log.e("groundPreloadPosition.y", groundPreloadPosition.y + "");
-        Log.e("groundPreloadPosition.heading (deg)", Math.toDegrees(groundPreloadPosition.heading) + "");
 
         switch (teamPropLocation) {
             case LEFT:
@@ -113,12 +119,17 @@ public class DoublePreloadAuto extends LinearOpMode {
                 break;
         }
 
-        Log.e("groundPreloadPosition.x", groundPreloadPosition.x + "");
-        Log.e("groundPreloadPosition.y", groundPreloadPosition.y + "");
-        Log.e("groundPreloadPosition.heading (deg)", Math.toDegrees(groundPreloadPosition.heading) + "");
-
         robot.goToPoint(groundPreloadPosition, this);
-        // TODO depo goofy
+
+        if (red) {
+            robot.droppers.leftRelease();
+        } else {
+            robot.droppers.rightRelease();
+        }
+
+        while (robot.droppers.state == Droppers.STATE.BUSY) {
+            robot.update();
+        }
     }
 
     /**
