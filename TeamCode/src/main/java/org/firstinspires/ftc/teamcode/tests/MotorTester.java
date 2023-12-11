@@ -18,8 +18,6 @@ import java.util.ArrayList;
 @TeleOp(group = "Test")
 public class MotorTester extends LinearOpMode {
 
-    boolean controllerMode = true;
-
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
@@ -27,16 +25,13 @@ public class MotorTester extends LinearOpMode {
 
         ArrayList<PriorityMotor> motors = new ArrayList<>();
 
-        // buttons for switching motors
-        ButtonToggle buttonX = new ButtonToggle();
-
-        // buttons for changing motor speed
+        // buttons for changing motor
         ButtonToggle buttonY = new ButtonToggle();
         ButtonToggle buttonA = new ButtonToggle();
 
         int motorSize = 0;
         int motorIndex = 0;
-        double motorPower = 0.5;
+        double motorPower = 0.0;
 
         // getting number of motors we have;
         for (PriorityDevice device : hardwareQueue.devices) {
@@ -49,17 +44,23 @@ public class MotorTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            if (buttonX.isClicked(gamepad1.x)) {
+            if (buttonY.isClicked(gamepad1.y)) {
                 motors.get(motorIndex).setTargetPower(0.0);
                 motorIndex++;
-                motorPower = 0.5;
+                motorPower = 0.0;
             }
 
-            if (gamepad1.y) {
+            if (buttonA.isClicked(gamepad1.a)) {
+                motors.get(motorIndex).setTargetPower(0.0);
+                motorIndex--;
+                motorPower = 0.0;
+            }
+
+            if (gamepad1.b) {
                 motorPower += 0.01;
             }
 
-            if (gamepad1.a) {
+            if (gamepad1.x) {
                 motorPower -= 0.01;
             }
 
