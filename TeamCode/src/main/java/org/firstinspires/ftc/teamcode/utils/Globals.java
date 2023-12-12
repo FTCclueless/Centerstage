@@ -20,8 +20,6 @@ public class Globals {
     public static double START_HEADING_OFFSET = 0.0;
 
 
-
-
     public static Pose2d ROBOT_POSITION =new Pose2d(0,0,0);
     public static Pose2d ROBOT_VELOCITY = new Pose2d(0,0,0);
 

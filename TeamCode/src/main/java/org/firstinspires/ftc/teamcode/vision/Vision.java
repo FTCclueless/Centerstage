@@ -27,7 +27,9 @@ public class Vision {
                 .addProcessor(pipeline)
                 .build();
 
-        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {} // waiting for camera to start streaming
+        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            Log.e("initializing camera....", "");
+        } // waiting for camera to start streaming
 
         setCameraSettings();
     }

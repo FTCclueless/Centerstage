@@ -55,8 +55,10 @@ public class Localizer {
     double minAprilTagWeight = 1/40;
     double maxVel = 0.0;
 
+
     public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU) {
         this.sensors = sensors;
+        this.useAprilTag = useAprilTag;
 
         encoders = new Encoder[3];
 

@@ -110,7 +110,7 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, sensors,false, true);
+        localizer = new Localizer(hardwareMap, sensors,true, true);
 //        setMinPowersToOvercomeFriction();
     }
 
@@ -447,12 +447,16 @@ public class Drivetrain {
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
     }
 
+    public double smoothControls(double value) {
+        return Math.pow(value,3);
+    }
+
     public void drive(Gamepad gamepad) {
         state = State.DRIVE;
 
-        double forward = gamepad.left_stick_y;
-        double strafe = -gamepad.left_stick_x;
-        double turn = gamepad.right_stick_x;
+        double forward = smoothControls(gamepad.left_stick_y);
+        double strafe = smoothControls(-gamepad.left_stick_x);
+        double turn = smoothControls(gamepad.right_stick_x);
 
         double[] powers = {
             forward + turn + strafe,
