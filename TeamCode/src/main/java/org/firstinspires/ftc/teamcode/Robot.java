@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
+import org.firstinspires.ftc.teamcode.vision.Vision;
 
 public class Robot {
     public HardwareQueue hardwareQueue;
@@ -31,12 +32,24 @@ public class Robot {
     public final Airplane airplane;
     public final Hang hang;
     public final Droppers droppers;
+    public final Vision vision;
 
     public Robot(HardwareMap hardwareMap) {
+        this(hardwareMap, null);
+    }
+
+    public Robot(HardwareMap hardwareMap, Vision vision) {
         hardwareQueue = new HardwareQueue();
+        this.vision = vision;
 
         sensors = new Sensors(hardwareMap, hardwareQueue);
-        drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
+
+        if (vision != null) {
+            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors, vision);
+        } else {
+            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
+        }
+
         deposit = new Deposit(hardwareMap, hardwareQueue, sensors);
         intake = new Intake(hardwareMap, hardwareQueue, sensors);
         airplane = new Airplane(hardwareMap, hardwareQueue);

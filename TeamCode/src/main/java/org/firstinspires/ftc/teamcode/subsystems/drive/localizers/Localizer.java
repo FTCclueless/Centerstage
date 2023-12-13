@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
+import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class Localizer {
     double maxVel = 0.0;
 
 
-    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU) {
+    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision) {
         this.sensors = sensors;
         this.useAprilTag = useAprilTag;
 
@@ -70,7 +71,7 @@ public class Localizer {
         this.useIMU = useIMU;
 
         if (useAprilTag) {
-            aprilTagLocalizer = new AprilTagLocalizer(hardwareMap);
+            aprilTagLocalizer = new AprilTagLocalizer(vision);
         }
     }
 

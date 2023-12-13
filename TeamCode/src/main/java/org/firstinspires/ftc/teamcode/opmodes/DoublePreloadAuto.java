@@ -22,8 +22,7 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 @Autonomous(name = "Double Preload Auto")
 public class DoublePreloadAuto extends LinearOpMode {
-    private Vision vision = new Vision();
-    private TeamPropDetectionPipeline teamPropDetectionPipeline;
+    private Vision vision;
     protected TeamPropDetectionPipeline.TeamPropLocation teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
     protected Robot robot;
 
@@ -32,6 +31,7 @@ public class DoublePreloadAuto extends LinearOpMode {
     protected int reflect = 1;
 
     long start;
+    double yOffset = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -57,7 +57,8 @@ public class DoublePreloadAuto extends LinearOpMode {
     public void doInitialization() {
         Globals.RUNMODE = RunMode.AUTO;
 
-        robot = new Robot(hardwareMap);
+        vision = new Vision(hardwareMap, telemetry, red, true, true);
+        robot = new Robot(hardwareMap, vision);
         reflect = red ? 1 : -1;
 
         if (up) {
@@ -78,26 +79,27 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         if (red) {
             robot.droppers.leftDown();
+            robot.droppers.rightRelease();
         } else {
             robot.droppers.rightDown();
+            robot.droppers.leftRelease();
         }
 
-        initVision();
+        robot.deposit.dunker.close();
+
+        vision.enableTeamProp();
+        vision.disableAprilTag();
 
         // TODO: Add disable vision flag in case of complications :)
         while (opModeInInit()) {
-            teamPropLocation = teamPropDetectionPipeline.getTeamPropLocation();
-            teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
+            teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
+            vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
 
             robot.update();
         }
         Log.e("team prop location", teamPropLocation + "");
-        vision.close();
-    }
-
-    public void initVision() {
-        teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, false);
-        vision.initCamera(hardwareMap, teamPropDetectionPipeline);
+        vision.disableTeamProp();
+        vision.enableAprilTag();
     }
 
     /**
@@ -116,20 +118,31 @@ public class DoublePreloadAuto extends LinearOpMode {
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
+                yOffset = 9;
                 break;
             case CENTER:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
+                yOffset = 0;
                 break;
             case RIGHT:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
+                yOffset = -9;
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this);
+
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && red) {
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x-8, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+        }
+
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x-8, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+        }
 
         start = System.currentTimeMillis();
         if (red) {
@@ -161,15 +174,14 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.goToPoint(initialIntake, this);
             // TODO: Intake
 
+        robot.drivetrain.setBreakFollowingThresholds(new Pose2d(0.75,0.75, Math.toRadians(1.5)));
         robot.goToPoint(boardPreload, this);
 
-        robot.deposit.depositAt(15, 0, 2);
-        while (!robot.deposit.checkReady()) {
-            robot.update();
+        robot.deposit.depositAt(8, yOffset, 4);
 
-            if (System.currentTimeMillis() - start > 750) {
-                break;
-            }
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 3000) {
+            robot.update();
         }
         robot.dunk(1);
     }
@@ -178,10 +190,15 @@ public class DoublePreloadAuto extends LinearOpMode {
         Pose2d park = AutoPathConstants.parkingLocation.clone();
         park.y *= reflect;
 
-        Pose2d sideDepositLocation = AutoPathConstants.sideDepositLocation.clone();
-        sideDepositLocation.y *= reflect;
+        Pose2d parkIntermediate = AutoPathConstants.intermediateParkingLocation.clone();
+        parkIntermediate.y *= reflect;
 
-        robot.goToPoint(sideDepositLocation, this);
+        robot.goToPoint(parkIntermediate, this);
         robot.goToPoint(park, this);
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 750) {
+            robot.update();
+        }
     }
 }

@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
+import org.firstinspires.ftc.teamcode.vision.Vision;
 
 import java.util.Arrays;
 import java.util.List;
@@ -62,11 +63,12 @@ public class Drivetrain {
     private Sensors sensors;
 
     public Localizer localizer;
+    public Vision vision;
 
     private Spline currentPath = null;
     private int pathIndex = 0;
 
-    public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+    public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Vision vision) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
 
@@ -110,8 +112,20 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        localizer = new Localizer(hardwareMap, sensors,true, true);
+        if (vision != null) {
+            if (vision.tagProcessor != null) {
+                localizer = new Localizer(hardwareMap, sensors,true, true, vision);
+                Log.e("using vision localizer", "erfjwlefwef");
+            }
+        } else {
+            localizer = new Localizer(hardwareMap, sensors,false, true, null);
+            Log.e("NOT using vision localizer", "123124r1cs");
+        }
 //        setMinPowersToOvercomeFriction();
+    }
+
+    public Drivetrain (HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+        this(hardwareMap, hardwareQueue, sensors, null);
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -388,7 +402,7 @@ public class Drivetrain {
     double yThreshold = 1.0;
     double headingThreshold = Math.toRadians(2.0);
 
-    public void setBreakFollowingThresholds(Pose2d thresholds, Pose2d targetPose) {
+    public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();
         yThreshold = thresholds.getY();
         headingThreshold = thresholds.getHeading();

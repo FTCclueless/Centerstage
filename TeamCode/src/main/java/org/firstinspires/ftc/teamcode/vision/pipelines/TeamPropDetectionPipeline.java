@@ -54,6 +54,10 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
         }
     }
 
+    public VisionProcessor getVisionProcessor() {
+        return this;
+    }
+
     @Override
     public void init(int width, int height, CameraCalibration calibration) {}
 

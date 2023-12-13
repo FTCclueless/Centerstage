@@ -60,17 +60,17 @@ public class Teleop extends LinearOpMode {
             // driver B adjusting deposit position
             if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
                 depoFlag = true;
-                depoPos.y+=6;
+                depoPos.y+=3;
             }
             if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
                 depoFlag = true;
-                depoPos.y-=6;
+                depoPos.y-=3;
             }
             if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
-                depoPos.z+=6;
+                depoPos.z+=3;
             }
             if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
-                depoPos.z-=6;
+                depoPos.z-=3;
             }
             depoPos.x -= gamepad2.right_stick_y*0.2;
             depoPos.y += gamepad2.left_stick_x*0.2;

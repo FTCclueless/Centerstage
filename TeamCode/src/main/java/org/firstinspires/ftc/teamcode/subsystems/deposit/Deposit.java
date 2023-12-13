@@ -45,7 +45,7 @@ public class Deposit {
     double xError = 5;
     double yError = 5;
     double headingError = 0;
-    double xOffset = 2;
+    double xOffset = 0;
     public static double intakePitch = -1.1038814026450954;
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
@@ -74,10 +74,10 @@ public class Deposit {
     }
 
     // Call this whenever you want! It can be an updating function!
-    public void depositAt(double targetH, double targetY, double xError) {
+    public void depositAt(double targetH, double targetY, double xOffset) {
         this.targetH = targetH;
         this.targetY = targetY;
-        this.xError = xError;
+        this.xOffset = xOffset;
 
         if (state == State.DOWN)
             state = State.START_DEPOSIT;
@@ -88,7 +88,7 @@ public class Deposit {
     }
 
     public void resetXOffset() {
-        xOffset = 2;
+        xOffset = 0;
     }
 
     public void dunk(int numPixels) {
@@ -115,16 +115,15 @@ public class Deposit {
         TelemetryUtil.packet.put("depoState", state);
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
-                targetY = 0; // temporary to remove bottom turret
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
-                        xError,
+                        xOffset,
                         0,
                         0,
                         targetH, targetY
                     );
                 } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    xError = targetBoard.x - ROBOT_POSITION.x + xOffset;
                     yError = targetBoard.y - ROBOT_POSITION.y;
                     headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
 
@@ -136,6 +135,8 @@ public class Deposit {
                     );
                 }
                 slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
+
+                Log.e("targetY START", targetY + "");
 
                 if (slides.getLength() > slidesV4Thresh-4)
                     state = State.MOVE_V4UP;
@@ -157,13 +158,13 @@ public class Deposit {
             case FINISH_DEPOSIT: // Also our update state -- Eric
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
-                            xError,
+                            xOffset,
                             0,
-                            0,
+                            targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI),
                             targetH, targetY
                     );
                 } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x;
+                    xError = targetBoard.x - ROBOT_POSITION.x + xOffset;
                     yError = targetBoard.y - ROBOT_POSITION.y;
                     headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
 
@@ -177,6 +178,7 @@ public class Deposit {
                             headingError,
                             targetH, targetY
                     );
+                    Log.e("targetY END", targetY + "");
                 }
                 TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
 

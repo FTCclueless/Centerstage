@@ -10,7 +10,7 @@ import java.util.List;
  * Set of helper functions for drawing Road Runner paths and trajectories on dashboard canvases.
  */
 public class DashboardUtil {
-    private static final double ROBOT_RADIUS = 9; // in
+    private static final double ROBOT_RADIUS = 7; // in
     private static final double POLE_RADIUS = 0.5; // in
 
     public static void drawPoseHistory(Canvas canvas, List<Pose2d> poseHistory) {

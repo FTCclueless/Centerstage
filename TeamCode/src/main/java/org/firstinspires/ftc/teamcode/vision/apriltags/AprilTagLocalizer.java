@@ -21,20 +21,11 @@ import java.util.Arrays;
 
 public class AprilTagLocalizer {
     private AprilTagProcessor tagProcessor;
-    private Vision vision = new Vision();
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
 
-    public AprilTagLocalizer(HardwareMap hardwareMap) {
-        this.tagProcessor = new AprilTagProcessor.Builder()
-            .setDrawAxes(true)
-            .setDrawCubeProjection(true)
-            .setDrawTagID(true)
-            .setDrawTagOutline(true)
-            .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
-            .build();
-
-       vision.initCamera(hardwareMap, tagProcessor);
+    public AprilTagLocalizer(Vision vision) {
+        this.tagProcessor = vision.tagProcessor;
     }
 
     Pose2d cameraOffset = new Pose2d(-6.5, 0.0, Math.toRadians(180));
@@ -77,6 +68,13 @@ public class AprilTagLocalizer {
 
             poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
 
+            Log.e("found tag", closestTag.metadata.name + "");
+
+            TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.x);
+            TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.y);
+            TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
+            TelemetryUtil.packet.put("robotYFromTag", robotYFromTag);
+
             return poseEstimate;
         }
         return null;
@@ -99,18 +97,6 @@ public class AprilTagLocalizer {
 
     public Pose2d getPoseEstimate() {
         return poseEstimate;
-    }
-
-    public void start () {
-        vision.start();
-    }
-
-    public void stop () {
-        vision.stop();
-    }
-
-    public void close () {
-        vision.close();
     }
 
     public boolean detectedTag () {
