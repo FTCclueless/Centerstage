@@ -174,7 +174,6 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.goToPoint(initialIntake, this);
             // TODO: Intake
 
-        robot.drivetrain.setBreakFollowingThresholds(new Pose2d(0.75,0.75, Math.toRadians(1.5)));
         robot.goToPoint(boardPreload, this);
 
         robot.deposit.depositAt(8, yOffset, 4);
