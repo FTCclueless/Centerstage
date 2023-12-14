@@ -386,9 +386,9 @@ public class Drivetrain {
             turnError -= Math.PI * 2 * Math.signum(turnError);
         }
 
-        double fwd = xPID.update(xError);
-        double strafe = yPID.update(yError);
-        double turn = turnPID.update(turnError);
+        double fwd = xPID.update(Math.abs(xError) > xThreshold ? xError : 0);
+        double strafe = yPID.update(Math.abs(yError) > yThreshold ? yError : 0);
+        double turn = turnPID.update(Math.abs(turnError) > headingThreshold ? turnError : 0);
 
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
