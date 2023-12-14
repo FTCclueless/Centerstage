@@ -45,13 +45,13 @@ public class Drivetrain {
     public static double headingCorrectionP = 0.8;
     public static double minRadius = 4;
     public static double maxCurve = 0.2;
-    public static double turnMul = 1;
+    //public static double turnMul = 1;
     public static double headingError = 5;
     public static double minSpeedFollowPath = 0.2;
     public static double slowdown = 0.28;
-    public static double turnP = 1;
+    //public static double turnP = 1;
     public static double stupidDivisor = 1;
-    public static double radiusSlowDown = 10;
+    //public static double radiusSlowDown = 10;
 
     double maxSpeed = 64.796;
     double maxTurn = maxSpeed / (TRACK_WIDTH/2);
@@ -357,9 +357,9 @@ public class Drivetrain {
     }
 
     // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
-    public static PID xPID = new PID(0.15,0,0.01);
-    public static PID yPID = new PID(0.35,0.0,0.01);
-    public static PID turnPID = new PID(5.0,0,0.2);
+    public static PID xPID = new PID(0.085,0,0.01);
+    public static PID yPID = new PID(0.25,0.0,0.01);
+    public static PID turnPID = new PID(1.0,0,0.001);
 
     Pose2d targetPose = new Pose2d(0, 0, 0);
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
@@ -395,7 +395,7 @@ public class Drivetrain {
 
         double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
         double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
-        double turn = turnPID.update(Math.abs(turnError) > headingThreshold/2 ? turnError : 0);
+        double turn = turnPID.update(Math.abs(turnError) > Math.toRadians(headingThreshold)/2 ? turnError : 0);
 
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
@@ -405,9 +405,9 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    double xThreshold = 1.0;
-    double yThreshold = 1.0;
-    double headingThreshold = Math.toRadians(2.0);
+    public static double xThreshold = 1;
+    public static double yThreshold = 1;
+    public static double headingThreshold = 5;
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();
@@ -416,10 +416,7 @@ public class Drivetrain {
     }
 
     public boolean atPoint () {
-        if (Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < headingThreshold) {
-            return true;
-        }
-        return false;
+        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(headingThreshold);
     }
 
     public void setMode(DcMotor.RunMode runMode) {

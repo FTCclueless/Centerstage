@@ -27,7 +27,7 @@ public class DoublePreloadAuto extends LinearOpMode {
     protected Robot robot;
 
     protected boolean up = true;
-    protected boolean red = true;
+    protected boolean red = false;
     protected int reflect = 1;
 
     long start;
@@ -64,7 +64,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         if (up) {
             Pose2d startPos = AutoPathConstants.startUp.clone();
             startPos.y *= reflect;
-            startPos.heading*= reflect;
+            startPos.heading *= reflect;
             robot.drivetrain.setPoseEstimate(startPos);
         } else {
             Pose2d startPos = AutoPathConstants.startDown.clone();
@@ -115,20 +115,20 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
-                groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x * reflect;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
                 yOffset = 9;
                 break;
             case CENTER:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
-                groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x * reflect;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
                 yOffset = 0;
                 break;
             case RIGHT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
-                groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x * reflect;
+                groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
                 yOffset = -9;
                 break;
@@ -137,11 +137,11 @@ public class DoublePreloadAuto extends LinearOpMode {
         robot.goToPoint(groundPreloadPosition, this);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && red) {
-            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x-8, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
-            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x-8, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
         start = System.currentTimeMillis();
