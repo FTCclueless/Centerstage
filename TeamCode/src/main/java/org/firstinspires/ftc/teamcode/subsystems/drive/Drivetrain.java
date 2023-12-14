@@ -121,7 +121,7 @@ public class Drivetrain {
             localizer = new Localizer(hardwareMap, sensors,false, true, null);
             Log.e("NOT using vision localizer", "123124r1cs");
         }
-//        setMinPowersToOvercomeFriction();
+        setMinPowersToOvercomeFriction();
     }
 
     public Drivetrain (HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
@@ -133,6 +133,13 @@ public class Drivetrain {
         leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999);
         rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999);
         rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997);
+    }
+
+    public void resetMinPowersToOvercomeFriction() {
+        leftFront.setMinimumPowerToOvercomeFriction(0.0);
+        leftRear.setMinimumPowerToOvercomeFriction(0.0);
+        rightRear.setMinimumPowerToOvercomeFriction(0.0);
+        rightFront.setMinimumPowerToOvercomeFriction(0.0);
     }
 
     public void setCurrentPath(Spline path) {
@@ -466,6 +473,8 @@ public class Drivetrain {
     }
 
     public void drive(Gamepad gamepad) {
+        resetMinPowersToOvercomeFriction();
+
         state = State.DRIVE;
 
         double forward = smoothControls(gamepad.left_stick_y);
