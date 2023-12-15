@@ -93,12 +93,7 @@ public class Deposit {
 
     public void dunk(int numPixels) {
         numPixels = Math.min(Math.max(0, numPixels), 2);
-        if (numPixels == 2) {
-            dunker.dunk2();
-        }
-        else {
-            dunker.dunk1();
-        }
+        dunker.dunk2(); // TODO
         state = State.WAIT_DUNK;
         /* Deposit this number of pixels and because its one servo we don't need none of that state yucky yucky (I THINK??) */
     }
@@ -202,7 +197,7 @@ public class Deposit {
 
                 break;
             case WAIT_DUNK:
-                if (dunker.dunkState == Dunker.DunkState.CHILL) {
+                if (!dunker.busy()) {
                     state = State.START_RETRACT;
                 }
                 break;

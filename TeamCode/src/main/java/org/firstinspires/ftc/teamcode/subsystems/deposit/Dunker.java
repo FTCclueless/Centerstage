@@ -9,24 +9,13 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
+// If you are reading this it is YOUR job to recode this hunk of junk!
 public class Dunker {
     public PriorityServo dunker;
-    public static double dunkAng = 2.59006; // angle to push out pixels
-    public static double lockAng = 2.113680; // this is for when we are moving to deposit. The dunker pushes against the pixels and "locks" them in place
-    public static double openAng = 2.229309; // this is for when we are transfering, the pixels are pretty loose
-
-    public enum DunkState {
-        WAIT1,
-        WAIT2,
-        CHILL,
-    }
-    public DunkState dunkState = DunkState.CHILL; //todo change to close later
-
-    private double startTime = 0;
-    private boolean oneDunk = true;
-
-    public static double oneTime = 1;
-    public static double twoTime = 2;
+    public static double openAng = 2.25;
+    public static double depoAng = 3.57;
+    public static double dunkTime = 1000;
+    public static double startTime = 0;
 
     public Dunker(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         dunker = new PriorityServo(hardwareMap.get(Servo.class, "dunker"), "dunker",
@@ -44,44 +33,20 @@ public class Dunker {
         dunker.setTargetAngle(openAng, 1);
     }
 
-    public void close() {
-        dunker.setTargetAngle(lockAng, 1);
-    }
-
-    public void dunk1() {
-        startTime = System.nanoTime()/(1.0e9);
-        dunker.setTargetAngle(dunkAng, 1);
-        dunkState = DunkState.WAIT1;
-        oneDunk = true;
-    }
     public void dunk2() {
-        startTime = System.nanoTime()/(1.0e9);
-        dunker.setTargetAngle(dunkAng, 1);
-        dunkState = DunkState.WAIT2;
-        oneDunk= false;
+        startTime = System.currentTimeMillis();
+        dunker.setTargetAngle(depoAng, 1);
     }
 
-    boolean hasTime = false;
-    public void update() {
-        switch (dunkState) {
-            case CHILL:
-                intake();
-                break;
-            case WAIT2:
-                if (System.nanoTime()/1.0e9 - startTime >=  oneTime ) {
-                    intake();
-                }
-                if (System.nanoTime()/1.0e9 - startTime >= twoTime) {
-                    dunk1();
-                }
-                break;
-            case WAIT1:
-                if (System.nanoTime()/1.0e9 - startTime >=  oneTime ) {
-                    intake();
-                    dunkState = DunkState.CHILL;
-                }
-                break;
+    // Send help this function is actually so bad
+    public boolean busy() {
+        return dunker.getCurrentAngle() != dunker.getTargetAngle();
+    }
 
+    public void update() {
+        if (System.currentTimeMillis() - startTime >= dunkTime && startTime != 0) {
+            dunker.setTargetAngle(openAng, 1);
+            startTime = 0;
         }
     }
 }

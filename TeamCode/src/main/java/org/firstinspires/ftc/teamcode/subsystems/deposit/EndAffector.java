@@ -67,7 +67,7 @@ public class EndAffector {
             1,
             0,
             1,
-            0.242,
+            0.113,
             false,
             1, 2
         );
@@ -88,6 +88,8 @@ public class EndAffector {
         hardwareQueue.addDevice(botTurret);
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
+
+        //topServo.setCurrentAngle(Deposit.intakeTopTurret);
     }
 
     public double getPower() {

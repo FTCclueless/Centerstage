@@ -129,10 +129,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999);
-        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999);
-        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999);
-        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997);
+        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
+        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
+        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
+        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -358,8 +358,8 @@ public class Drivetrain {
 
     // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
     public static PID xPID = new PID(0.085,0,0.01);
-    public static PID yPID = new PID(0.25,0.0,0.01);
-    public static PID turnPID = new PID(1.0,0,0.001);
+    public static PID yPID = new PID(0.15,0.0,0.01);
+    public static PID turnPID = new PID(0.73,0,0.001);
 
     Pose2d targetPose = new Pose2d(0, 0, 0);
     Pose2d lastTargetPoint = new Pose2d(0,0,0);

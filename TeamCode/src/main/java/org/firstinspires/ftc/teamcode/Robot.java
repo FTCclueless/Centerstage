@@ -121,10 +121,9 @@ public class Robot {
 
     public void dunk(int numpix) {
         deposit.dunk(numpix);
-        while (deposit.dunker.dunkState != Dunker.DunkState.CHILL) {
+        while (deposit.dunker.busy()) {
             System.out.println("Bomb 2");
             update();
         }
     }
-
 }

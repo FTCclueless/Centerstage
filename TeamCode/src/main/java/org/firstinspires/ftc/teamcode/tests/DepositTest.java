@@ -23,7 +23,6 @@ public class DepositTest extends LinearOpMode {
     public static double heading = 180;
     public static boolean startDeposit = false;
     public static boolean startRetract = false;
-    public static boolean close = false;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -35,7 +34,7 @@ public class DepositTest extends LinearOpMode {
         waitForStart();
 
         robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
-        robot.deposit.setTargetBoard(new Pose2d(xError,0,0));
+        robot.deposit.setTargetBoard(new Pose2d(0,0,0));
         boolean depo = false;
 
         while (opModeIsActive()) {
@@ -49,11 +48,6 @@ public class DepositTest extends LinearOpMode {
 
             if (depo) {
                 robot.deposit.depositAt(height, targetY, xError);
-            }
-
-            if (close) {
-                robot.deposit.dunker.close();
-                close = false;
             }
 
             Log.e("gamepady", " " + gamepad1.y);

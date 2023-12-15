@@ -134,6 +134,13 @@ public class PriorityServo extends PriorityDevice{
         lastLoopTime = currentTime;
     }
 
+    public void setCurrentAngle(double currentAngle) {
+        this.currentAngle = currentAngle;
+        for (Servo s : servo) {
+            s.setPosition(convertAngleToPos(currentAngle));
+        }
+    }
+
     @Override
     public double getPriority(double timeRemaining) {
         updateServoValues();

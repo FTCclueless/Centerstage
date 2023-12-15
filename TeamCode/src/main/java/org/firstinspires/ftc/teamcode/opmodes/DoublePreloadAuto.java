@@ -27,7 +27,7 @@ public class DoublePreloadAuto extends LinearOpMode {
     protected Robot robot;
 
     protected boolean up = true;
-    protected boolean red = false;
+    protected boolean red = true;
     protected int reflect = 1;
 
     long start;
@@ -85,8 +85,6 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.droppers.leftRelease();
         }
 
-        robot.deposit.dunker.close();
-
         vision.enableTeamProp();
         vision.disableAprilTag();
 
@@ -115,22 +113,22 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x * reflect;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
-                yOffset = 9;
+                yOffset = AutoPathConstants.groundPreloadLeftDepositY;
                 break;
             case CENTER:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x * reflect;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
-                yOffset = 0;
+                yOffset = AutoPathConstants.groundPreloadCenterDepositY;
                 break;
             case RIGHT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x * reflect;
+                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
-                yOffset = -9;
+                yOffset = AutoPathConstants.groundPreloadRightDepositY;
                 break;
         }
 
@@ -176,7 +174,7 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         robot.goToPoint(boardPreload, this);
 
-        robot.deposit.depositAt(8, yOffset, 4);
+        robot.deposit.depositAt(AutoPathConstants.groundPreloadDepositH, yOffset, AutoPathConstants.groundPreloadDepositX);
 
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 3000) {

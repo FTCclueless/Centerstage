@@ -8,7 +8,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityDevice;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -35,14 +37,18 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
         }
 
         Pose2d robotPose;
+        robot.drivetrain.resetMinPowersToOvercomeFriction();
 
         waitForStart();
 
         for (int i = 0; i < 4; i++) {
             localizer.setPoseEstimate(new Pose2d(0,0,0));
 
-            for (double j = 0; j < 1; j += 0.0001) {
-                robot.update();
+            for (double j = 0; j < 1; j += 0.00001) {
+                Globals.START_LOOP();
+                robot.drivetrain.update();
+                robot.hardwareQueue.update();
+                TelemetryUtil.sendTelemetry();
 
                 motors.get(i).setTargetPower(j);
 
@@ -58,6 +64,7 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
             }
 
             motors.get(i).setTargetPower(0.0);
+            Thread.sleep(1000);
 
             Log.e(motors.get(i).name + " min power", minPowersToOvercomeFriction[i] + "");
 
