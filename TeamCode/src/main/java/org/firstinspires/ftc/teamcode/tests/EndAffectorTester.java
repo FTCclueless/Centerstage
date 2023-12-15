@@ -20,18 +20,16 @@ public class EndAffectorTester extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
         EndAffector ea = robot.deposit.endAffector;
 
-        ea.setPower(0.1);
-
         waitForStart();
 
         while (opModeIsActive()) {
-            ea.setV4Bar(Math.toRadians(v4ServoAngle));
-            ea.setBotTurret(Math.toRadians(botTurretAngle));
-            ea.setTopTurret(Math.toRadians(topTurretAngle));
+            ea.v4Servo.setTargetAngle(Math.toRadians(v4ServoAngle),0.1);
+            ea.botTurret.setTargetAngle(Math.toRadians(botTurretAngle),0.1);
+            ea.topTurret.setTargetAngle(Math.toRadians(topTurretAngle),0.1);
 
-            TelemetryUtil.packet.put("v4Bar", ea.checkV4() + " " + ea.getTargetPitch());
-            TelemetryUtil.packet.put("bot", ea.checkBottom() + " " + ea.getBottomAngle());
-            TelemetryUtil.packet.put("top", ea.checkTopTurret() + " " + ea.getTopAngle());
+            TelemetryUtil.packet.put("v4Bar", ea.v4Servo.inPosition() + " " + ea.v4Servo.getTargetAngle());
+            TelemetryUtil.packet.put("bot", ea.botTurret.inPosition() + " " + ea.botTurret.getTargetAngle());
+            TelemetryUtil.packet.put("top", ea.topTurret.inPosition() + " " + ea.topTurret.getTargetAngle());
             robot.update();
         }
     }

@@ -53,6 +53,8 @@ public class Deposit {
     public static double intakeTopServoAngle = 1.31681;
     public static double intakeBotTurret = 3.48;
 
+    public static double power = 1.0;
+
     public static double interpolationDist = 3;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
@@ -138,15 +140,15 @@ public class Deposit {
 
                 break;
             case MOVE_V4UP:
-                endAffector.setV4Bar(upPitch);
-                if (endAffector.v4Servo.getCurrentAngle() == upPitch)
+                endAffector.v4Servo.setTargetAngle(upPitch,power);
+                if (endAffector.v4Servo.inPosition())
                     state = State.EXTEND_ROTATE180;
                 break;
 
             case EXTEND_ROTATE180:
-                endAffector.setBotTurret(depositMath.v4BarYaw * 40/36.0);
+                endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40/36.0,power);
                 Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
-                if (endAffector.checkBottom()) {
+                if (endAffector.botTurret.inPosition()) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
@@ -179,9 +181,9 @@ public class Deposit {
 
 
                 slides.setLength(depositMath.slideExtension);
-                endAffector.setBotTurret(depositMath.v4BarYaw * 40.0/36); //scuffed kinda (gear ratio) --kyle
-                endAffector.setV4Bar(depositMath.v4BarPitch);
-                endAffector.setTopServo(-depositMath.v4BarPitch);
+                endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40.0/36,power); //scuffed kinda (gear ratio) --kyle
+                endAffector.v4Servo.setTargetAngle(depositMath.v4BarPitch,power);
+                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch,power);
 
 
                 if (depositMath.v4BarPitch < 0) {
@@ -190,9 +192,9 @@ public class Deposit {
                 }
 
                 if (Globals.RUNMODE == RunMode.TELEOP) {
-                    endAffector.setTopTurret(-depositMath.v4BarYaw);
+                    endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw,power);
                 } else {
-                    endAffector.setTopTurret(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw);
+                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw,power);
                 }
 
                 break;
@@ -205,38 +207,38 @@ public class Deposit {
             case START_RETRACT:
                 //endAffector.setBotTurret(0);
                 slides.setLength(slidesV4Thresh);
-                endAffector.setBotTurret(0.0);
-                endAffector.setTopServo(intakeTopServoAngle);
-                endAffector.setTopTurret(intakeTopTurret);
+                endAffector.botTurret.setTargetAngle(0.0,power);
+                endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);
+                endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
                 /* move v4bar servo to minimum value before bricking */
 
-                if (endAffector.checkBottom()) {
-                    endAffector.setV4Bar(upPitch);
-                    if (endAffector.v4Servo.getCurrentAngle() == upPitch) {
+                if (endAffector.botTurret.inPosition()) {
+                    endAffector.v4Servo.setTargetAngle(upPitch,power);
+                    if (endAffector.v4Servo.inPosition()) {
                         state = State.RETRACT_ROTATE180;
                     }
                 }
                 break;
             case RETRACT_ROTATE180:
-                endAffector.setBotTurret(intakeBotTurret);
-                if (endAffector.checkBottom()) {
+                endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
+                if (endAffector.botTurret.inPosition()) {
                     state = State.MOVE_V4DOWN;
                 }
                 break;
             case MOVE_V4DOWN:
                 System.out.println("out");
-                endAffector.setV4Bar(intakePitch);
-                if (endAffector.v4Servo.getCurrentAngle() == intakePitch) {
+                endAffector.v4Servo.setTargetAngle(intakePitch,power);
+                if (endAffector.v4Servo.inPosition()) {
                     state = State.DOWN;
                 }
                 break;
 
             case DOWN:
                 slides.setLength(-1.0);
-                endAffector.setV4Bar(intakePitch);
-                endAffector.setTopTurret(intakeTopTurret);
-                endAffector.setBotTurret(intakeBotTurret);
-                endAffector.setTopServo(intakeTopServoAngle);
+                endAffector.v4Servo.setTargetAngle(intakePitch,power);
+                endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
+                endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
+                endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);
                 break;
 
             case WAIT: // We are boring :(

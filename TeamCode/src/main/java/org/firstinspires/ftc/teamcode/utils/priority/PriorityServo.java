@@ -141,6 +141,10 @@ public class PriorityServo extends PriorityDevice{
         }
     }
 
+    public boolean inPosition(){
+        return Math.abs(targetAngle-currentAngle) > Math.toRadians(5);
+    }
+
     @Override
     public double getPriority(double timeRemaining) {
         updateServoValues();

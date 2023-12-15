@@ -20,11 +20,6 @@ public class EndAffector {
     public final PriorityServo topServo;
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
-    private double bottomAngle;
-    private double targetPitch;
-    private double topAngle;
-    private double topPitch;
-    private double power = 1;
 
     public static double botTurretMinDist = 45; //temp
     public static double botTurretSlowPow = 0.4;
@@ -89,60 +84,12 @@ public class EndAffector {
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
 
-        //topServo.setCurrentAngle(Deposit.intakeTopTurret);
+        v4Servo.setCurrentAngle(Deposit.intakePitch);
+        botTurret.setCurrentAngle(Deposit.intakeBotTurret);
     }
 
-    public double getPower() {
-        return power;
-    }
-
-    public void setPower(double power) {
-        this.power = power;
-    }
-
-    public void setBotTurret(double ang) {
-//        Log.e("setting bot turret (deg)", Math.toDegrees(ang) + "");
-        bottomAngle = ang;
-        botTurret.setTargetAngle(ang, power);
-    }
-    public void setTopTurret(double ang) {
-        topAngle = ang;
-        topTurret.setTargetAngle(ang, power);
-    }
-    public void setV4Bar(double pitch) {
-        targetPitch = pitch;
-        v4Servo.setTargetAngle(pitch, 0.5);
-    }
-    public void setTopServo(double pitch) {
-        topPitch = pitch;
-        topServo.setTargetAngle(pitch, 0.5);
-    }
-
-    public double getBottomAngle() {
-        return bottomAngle;
-    }
-    public double getTopAngle() {
-        return topAngle;
-    }
-    public double getTargetPitch() {
-        return targetPitch;
-    }
-    public double getTopPitch() {
-        return topPitch;
-    }
-
-    public boolean checkBottom() {
-        return (Math.abs(botTurret.getCurrentAngle()-bottomAngle) <= Math.toRadians(2) );
-    }
-    public boolean checkV4() {
-        return (Math.abs(v4Servo.getCurrentAngle()-targetPitch) <= Math.toRadians(2));
-    }
-    public boolean checkTopTurret() {
-        return (topTurret.getCurrentAngle() == topAngle);
-    }
-    public boolean checkTopServo() { return (topServo.getCurrentAngle() == topAngle); }
     public boolean checkReady() {
-        return checkBottom() && checkTopTurret() && checkV4() && checkTopServo();
+        return v4Servo.inPosition() && topTurret.inPosition() && botTurret.inPosition() && topServo.inPosition();
     }
 
 }
