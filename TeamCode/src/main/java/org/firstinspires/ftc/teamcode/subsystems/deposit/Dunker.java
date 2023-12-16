@@ -12,11 +12,13 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 // If you are reading this it is YOUR job to recode this hunk of junk!
 public class Dunker {
     public PriorityServo dunker;
+
     public static double intakeAng = 2.31256;
     public static double lockAng = 2.0165;
     public static double depoAng = 2.9277;
     public static double dunkTime = 1000;
-    public static double startTime = 0;
+    public static double timer = 0;
+    private boolean anotherPixel = false;
 
     public Dunker(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         dunker = new PriorityServo(hardwareMap.get(Servo.class, "dunker"), "dunker",
@@ -38,20 +40,34 @@ public class Dunker {
         dunker.setTargetAngle(lockAng, 1);
     }
 
+    public void dunk1() {
+        timer = System.currentTimeMillis();
+        if (anotherPixel) {
+            dunker.setTargetAngle(intakeAng, 1);
+            anotherPixel = false;
+        } else {
+            dunker.setTargetAngle(depoAng, 1);
+        }
+    }
+
     public void dunk2() {
-        startTime = System.currentTimeMillis();
-        dunker.setTargetAngle(depoAng, 1);
+        anotherPixel = false;
+        this.dunk1();
+        anotherPixel = true;
     }
 
     // Send help this function is actually so bad
     public boolean busy() {
-        return dunker.getCurrentAngle() != dunker.getTargetAngle();
+        return timer == 0;
     }
 
     public void update() {
-        if (System.currentTimeMillis() - startTime >= dunkTime && startTime != 0) {
-            dunker.setTargetAngle(intakeAng, 1);
-            startTime = 0;
+        if (System.currentTimeMillis() - timer >= dunkTime && timer != 0) {
+            if (anotherPixel) {
+                this.dunk1();
+            } else {
+                timer = 0;
+            }
         }
     }
 }
