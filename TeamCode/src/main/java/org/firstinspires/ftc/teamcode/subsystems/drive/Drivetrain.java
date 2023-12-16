@@ -466,7 +466,7 @@ public class Drivetrain {
     }
 
     public double smoothControls(double value) {
-        return Math.pow(value,3);
+        return 0.5*Math.tan(1.12*value);
     }
 
     public void drive(Gamepad gamepad) {

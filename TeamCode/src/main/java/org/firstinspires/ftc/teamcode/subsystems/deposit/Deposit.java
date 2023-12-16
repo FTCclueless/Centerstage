@@ -112,6 +112,7 @@ public class Deposit {
         TelemetryUtil.packet.put("depoState", state);
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
+                dunker.lock();
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
                         xOffset,
@@ -239,6 +240,7 @@ public class Deposit {
                 endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
                 endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
                 endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);
+                dunker.intake();
                 break;
 
             case WAIT: // We are boring :(
