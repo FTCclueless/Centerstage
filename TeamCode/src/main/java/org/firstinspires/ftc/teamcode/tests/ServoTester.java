@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests;
 
+import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
 import static org.firstinspires.ftc.teamcode.utils.Globals.START_LOOP;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -78,10 +79,10 @@ public class ServoTester extends LinearOpMode {
                 numLoops ++;
 
                 if (gamepad1.x) {
-                    servoPos[servoIndex] += 0.01;
+                    servoPos[servoIndex] += 0.001;
                 }
                 if (gamepad1.b){
-                    servoPos[servoIndex] -= 0.01;
+                    servoPos[servoIndex] -= 0.001;
                 }
                 servoPos[servoIndex] = Utils.minMaxClip(servoPos[servoIndex], 0.0, 1.0);
 
@@ -114,7 +115,9 @@ public class ServoTester extends LinearOpMode {
                     telemetry.addData("voltage", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderVoltage());
                     telemetry.addData("angle", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderAngle());
                 }
-                //TelemetryUtil.packet.put("encoder1", hardwareMap.get(AnalogInput.class, ));
+
+                TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
+                TelemetryUtil.sendTelemetry();
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
 

@@ -17,7 +17,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class AprilTagLocalizer {
     private AprilTagProcessor tagProcessor;

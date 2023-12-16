@@ -120,7 +120,7 @@ public class Vision {
     public void setCameraSettings() {
         ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
         exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(0, TimeUnit.MILLISECONDS);
+        exposure.setExposure(5, TimeUnit.MILLISECONDS);
 
         Log.e("exposure supported", exposure.isExposureSupported() + "");
 

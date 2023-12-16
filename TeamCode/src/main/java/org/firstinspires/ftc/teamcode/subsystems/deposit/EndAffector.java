@@ -37,7 +37,7 @@ public class EndAffector {
             0,
             1,
             0.787, //0.2609
-            0.923,
+            0.905,
             false,
             true,
             Math.toRadians(v4MinDist), v4SlowDown,
@@ -79,19 +79,19 @@ public class EndAffector {
             1,
             0,
             1,
-            0.519,
+            0.5,
             false,
             1,2,
             new double[] {-1}
         );
         this.sensors = sensors;
+        v4Servo.setCurrentAngle(Deposit.downPitch);
+        botTurret.setCurrentAngle(Deposit.intakeBotTurret);
+
         hardwareQueue.addDevice(v4Servo);
         hardwareQueue.addDevice(botTurret);
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
-
-        v4Servo.setCurrentAngle(Deposit.downPitch);
-        botTurret.setCurrentAngle(Deposit.intakeBotTurret);
     }
 
     public boolean checkReady() {

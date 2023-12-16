@@ -15,8 +15,8 @@ public class Dunker {
 
     public static double intakeAng = 2.31256;
     public static double lockAng = 2.128;
-    public static double depoAng = 2.9277;
-    public static double dunkTime = 1000;
+    public static double depoAng = 3.51;
+    public static double dunkTime = 500;
     public static double timer = 0;
     private boolean anotherPixel = false;
 

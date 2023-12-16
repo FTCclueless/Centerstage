@@ -15,8 +15,8 @@ public class PriorityServo extends PriorityDevice{
         AMAZON(0.2122065908, Math.toRadians(60) / 0.13),
         PRO_MODELER(0.32698, Math.toRadians(60) / 0.139),
         JX(0.3183098862, Math.toRadians(60) / 0.12),
-        AXON_MINI(0.1784612002049795, 6.403953024772129), //todo 0.173623, 0.162338041953733
-        AXON_MAX(0.1775562245447108, 5.830247235911042),
+        AXON_MINI(0.1784612002049795, 5.6403953024772129), //todo 0.173623, 0.162338041953733
+        AXON_MAX(0.1775562245447108, 6.5830247235911042),
         AXON_MINI_SCUFF(0.09135495634, Math.toRadians(330)/1.05),
         AXON_MINI_SCUFF_TURRET(0.1980808297, 4.845061010565304); //todo all speeds somehow 5.18535705328
 
@@ -118,6 +118,7 @@ public class PriorityServo extends PriorityDevice{
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
         Log.e(name, "targetAngle " + targetAngle);
         TelemetryUtil.packet.put(name + " target angle", targetAngle);
+        TelemetryUtil.packet.put(name + " intermediate target angle", currentIntermediateTargetAngle);
         TelemetryUtil.packet.put(name + " current angle", currentAngle);
     }
 
@@ -139,8 +140,14 @@ public class PriorityServo extends PriorityDevice{
     public void setCurrentAngle(double currentAngle) {
         this.currentAngle = currentAngle;
         this.targetAngle = currentAngle;
-        for (Servo s : servo) {
-            //s.setPosition(convertAngleToPos(currentAngle));
+        this.currentIntermediateTargetAngle=currentAngle;
+
+        for (int i = 0; i < servo.length; i++) {
+            if (multipliers[i] == 1) {
+                servo[i].setPosition(convertAngleToPos(currentAngle)); //sets the servo to actual move to the target
+            } else {
+                servo[i].setPosition(maxPos - convertAngleToPos(currentAngle)); //this might be completely wrong --Kyle
+            }
         }
     }
 
@@ -152,16 +159,18 @@ public class PriorityServo extends PriorityDevice{
     public double getPriority(double timeRemaining) {
         updateServoValues();
 
-        if (targetAngle-currentAngle == 0) {
-            lastUpdateTime = System.nanoTime();
-            return 0;
-        }
-
         if (timeRemaining * 1000.0 <= callLengthMillis/2.0) {
             return 0;
         }
 
-        return (reachedIntermediate ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000000.0 * priorityScale;
+        double priority = ((reachedIntermediate && currentIntermediateTargetAngle != targetAngle) ? basePriority : 0) + Math.abs(targetAngle-currentIntermediateTargetAngle) * (System.nanoTime() - lastUpdateTime)/1000000.0 * priorityScale;
+
+        if (priority == 0) {
+            lastUpdateTime = System.nanoTime();
+            return 0;
+        }
+
+        return priority;
     }
 
     @Override
@@ -181,11 +190,16 @@ public class PriorityServo extends PriorityDevice{
         }
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
-        if (power == 1 && Math.abs(error) > slowdownDist + 0.01 + (slowdownDist == 0 ? 0 : Math.toRadians(15))) {
-            currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
-            //currentIntermediateTargetAngle = targetAngle;
+        if (power == 1) {
+            currentIntermediateTargetAngle = targetAngle;
+            Log.e("SETTING CURRENT INTERMEDIATE", "WEFWEFEWF");
+            if (slowdownDist != 0 && Math.abs(error) > slowdownDist + Math.toRadians(15)) {
+                currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
+                //currentIntermediateTargetAngle = targetAngle;
+            }
         }
-        else if (power == 1) {
+
+        if (Math.abs(error) < Math.toRadians(15)){
             currentIntermediateTargetAngle = targetAngle;
         }
 

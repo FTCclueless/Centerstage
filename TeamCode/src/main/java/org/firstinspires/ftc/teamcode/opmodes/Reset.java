@@ -21,10 +21,10 @@ public class Reset extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            endAffector.v4Servo.setTargetAngle(Deposit.downPitch, Deposit.power);
-            endAffector.topTurret.setTargetAngle(Deposit.intakeTopTurret,Deposit.power);
-            endAffector.botTurret.setTargetAngle(Deposit.intakeBotTurret,Deposit.power);
-            endAffector.topServo.setTargetAngle(Deposit.intakeTopServoAngle,Deposit.power);
+            endAffector.v4Servo.setTargetAngle(Deposit.downPitch, 1.0);
+            endAffector.topTurret.setTargetAngle(Deposit.intakeTopTurret,1.0);
+            endAffector.botTurret.setTargetAngle(Deposit.intakeBotTurret,1.0);
+            endAffector.topServo.setTargetAngle(Deposit.intakeTopServoAngle,1.0);
             deposit.dunker.intake();
 
             robot.update();

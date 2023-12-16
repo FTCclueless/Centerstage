@@ -54,10 +54,10 @@ public class Deposit {
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
     public static double intakeTopTurret = 0.056;
-    public static double intakeTopServoAngle = 1.31681;
+    public static double intakeTopServoAngle = 1.115;
     public static double intakeBotTurret = 3.57;
 
-    public static double power = 1.0;
+    public static double power = 0.9;
 
     public static double interpolationDist = 3;
 
@@ -151,7 +151,7 @@ public class Deposit {
 
             case EXTEND_ROTATE180:
                 endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40/36.0,power);
-                endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw, power);
+                endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw, 1.0);
                 Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
                 if (endAffector.botTurret.inPosition()) {
                     state = State.FINISH_DEPOSIT;
@@ -188,8 +188,7 @@ public class Deposit {
                 slides.setLength(depositMath.slideExtension);
                 endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40.0/36,power); //scuffed kinda (gear ratio) --kyle
                 endAffector.v4Servo.setTargetAngle(depositMath.v4BarPitch,power);
-                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch,power);
-
+                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch,1.0);
 
                 if (depositMath.v4BarPitch < 0) {
                     //endAffector.setBotTurret(0);
@@ -197,9 +196,9 @@ public class Deposit {
                 }
 
                 if (Globals.RUNMODE == RunMode.TELEOP) {
-                    endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw,power);
+                    endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw,1.0);
                 } else {
-                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw,power);
+                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw,1.0);
                 }
 
                 break;
@@ -231,7 +230,7 @@ public class Deposit {
                 break;
             case MOVE_V4DOWN:
                 System.out.println("out");
-                endAffector.v4Servo.setTargetAngle(downPitch,power);
+                endAffector.v4Servo.setTargetAngle(downPitch,power/2);
                 if (endAffector.v4Servo.inPosition()) {
                     state = State.DOWN;
                 }
@@ -246,9 +245,9 @@ public class Deposit {
                     endAffector.v4Servo.setTargetAngle(downPitch,power);
                 }
 
-                endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
+                endAffector.topTurret.setTargetAngle(intakeTopTurret,1.0);
                 endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
-                endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);
+                endAffector.topServo.setTargetAngle(intakeTopServoAngle,1.0);
                 dunker.intake();
                 break;
 
@@ -260,6 +259,5 @@ public class Deposit {
 
         TelemetryUtil.packet.put("v4ServoAngle", endAffector.v4Servo.getCurrentAngle());
         TelemetryUtil.packet.put("v4ServoTarget", endAffector.v4Servo.getTargetPosition());
-        TelemetryUtil.packet.put("v4ServoEncAngle", endAffector.v4Servo.getEncoderAngle());
     }
 }
