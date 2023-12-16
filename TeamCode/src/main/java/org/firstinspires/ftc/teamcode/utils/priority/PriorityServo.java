@@ -115,8 +115,8 @@ public class PriorityServo extends PriorityDevice{
         this.power = power;
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
         Log.e(name, "targetAngle " + targetAngle);
-//        TelemetryUtil.packet.put(name + " target angle", targetAngle);
-//        TelemetryUtil.packet.put(name + " current angle", currentAngle);
+        TelemetryUtil.packet.put(name + " target angle", targetAngle);
+        TelemetryUtil.packet.put(name + " current angle", currentAngle);
     }
 
     public void updateServoValues() {
@@ -136,13 +136,14 @@ public class PriorityServo extends PriorityDevice{
 
     public void setCurrentAngle(double currentAngle) {
         this.currentAngle = currentAngle;
+        this.targetAngle = currentAngle;
         for (Servo s : servo) {
-            s.setPosition(convertAngleToPos(currentAngle));
+            //s.setPosition(convertAngleToPos(currentAngle));
         }
     }
 
     public boolean inPosition(){
-        return Math.abs(targetAngle-currentAngle) > Math.toRadians(5);
+        return Math.abs(targetAngle-currentAngle) < Math.toRadians(1);
     }
 
     @Override
@@ -182,9 +183,12 @@ public class PriorityServo extends PriorityDevice{
             currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
             //currentIntermediateTargetAngle = targetAngle;
         }
+        else if (power == 1) {
+            currentIntermediateTargetAngle = targetAngle;
+        }
 
-        //Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
-        //TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
+        Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
+        TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
        // Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
 
         for (int i = 0; i < servo.length; i++) {

@@ -33,7 +33,7 @@ public class DepositMath {
         TelemetryUtil.packet.put("mathrelx", relX);
         TelemetryUtil.packet.put("mathrely", relY);
 
-        Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight - slidePos.z);
+        Vector3 depositPos = new Vector3(relX - slidePos.x, relY - slidePos.y, slideHeight * Math.sin(slideAngle) - slidePos.z);
         TelemetryUtil.packet.put("depositPos", depositPos.toString());
         Vector3 slideProject = Vector3.project(depositPos, slideUnit);
         Vector3 remainder = Vector3.subtract(depositPos, slideProject);

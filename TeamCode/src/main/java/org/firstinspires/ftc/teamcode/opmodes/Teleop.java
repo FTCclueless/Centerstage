@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
@@ -31,6 +32,7 @@ public class Teleop extends LinearOpMode {
 
         // DRIVER 1
         ButtonToggle rightBump = new ButtonToggle();
+        ButtonToggle leftBump = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
 
@@ -44,17 +46,24 @@ public class Teleop extends LinearOpMode {
 
         Vector3 depoPos = new Vector3(15, 0, 10);
 
+        robot.deposit.setTargetBoard(new Pose2d(0,0,0));
+
         waitForStart();
 
         boolean depoFlag = false;
 
         while (!isStopRequested()) {
-
             // adjusting angle of actuation
             if (rightBump.isToggled(gamepad1.right_bumper)) {
                 robot.intake.actuationUp();
             } else {
                 robot.intake.actuationDown();
+            }
+
+            if (leftBump.isToggled(gamepad1.left_bumper)) {
+                robot.hangActuation.up();
+            } else {
+                robot.hangActuation.down();
             }
 
             // driver B adjusting deposit position

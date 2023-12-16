@@ -14,7 +14,7 @@ public class Dunker {
     public PriorityServo dunker;
 
     public static double intakeAng = 2.31256;
-    public static double lockAng = 2.0165;
+    public static double lockAng = 2.128;
     public static double depoAng = 2.9277;
     public static double dunkTime = 1000;
     public static double timer = 0;
@@ -58,7 +58,7 @@ public class Dunker {
 
     // Send help this function is actually so bad
     public boolean busy() {
-        return timer == 0;
+        return timer != 0;
     }
 
     public void update() {

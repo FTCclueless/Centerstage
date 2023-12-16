@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoMINIP;
 
 @Config
 public class EndAffector {
@@ -38,7 +34,7 @@ public class EndAffector {
             1,
             0.753, //0.2609
             false,
-            Math.toRadians(v4MinDist), v4SlowDown,
+            Math.toRadians(0), 0,
             1, 2,
             new double[] {-1, 1}
         );
@@ -51,7 +47,7 @@ public class EndAffector {
             1,
             0.333,
             false,
-            Math.toRadians(botTurretMinDist), botTurretSlowPow,
+            Math.toRadians(0), 0,
             1, 2,
             new double[] {-1} //basevolt = 0.189 --Kyle
         );
@@ -84,7 +80,7 @@ public class EndAffector {
         hardwareQueue.addDevice(topTurret);
         hardwareQueue.addDevice(topServo);
 
-        v4Servo.setCurrentAngle(Deposit.intakePitch);
+        v4Servo.setCurrentAngle(Deposit.downPitch);
         botTurret.setCurrentAngle(Deposit.intakeBotTurret);
     }
 

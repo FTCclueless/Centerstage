@@ -85,6 +85,8 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.droppers.leftRelease();
         }
 
+        robot.hangActuation.up();
+
         vision.enableTeamProp();
         vision.disableAprilTag();
 

@@ -7,7 +7,9 @@ import android.util.Log;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -36,6 +38,7 @@ public class Deposit {
     public EndAffector endAffector;
     public Dunker dunker;
     HardwareQueue hardwareQueue;
+    Robot robot;
     Sensors sensors;
 
     Pose2d targetBoard;
@@ -46,20 +49,22 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 0;
-    public static double intakePitch = -1.1038814026450954;
+    public static double downPitch = -1.08; // regular down intake pitch for arm
+    public static double transferPitch = -1.28; //2.0900 stalling pitch for arm
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
-    public static double intakeTopTurret = 0.1849141;
+    public static double intakeTopTurret = 0.056;
     public static double intakeTopServoAngle = 1.31681;
-    public static double intakeBotTurret = 3.48;
+    public static double intakeBotTurret = 3.57;
 
     public static double power = 1.0;
 
     public static double interpolationDist = 3;
 
-    public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+    public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
+        this.robot = robot;
         depositMath = new DepositMath();
 
         state = State.DOWN;
@@ -67,8 +72,6 @@ public class Deposit {
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
-
-        //finish init other classes
     }
 
     public void setTargetBoard(Pose2d targetBoard) {
@@ -148,6 +151,7 @@ public class Deposit {
 
             case EXTEND_ROTATE180:
                 endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40/36.0,power);
+                endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw, power);
                 Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
                 if (endAffector.botTurret.inPosition()) {
                     state = State.FINISH_DEPOSIT;
@@ -158,7 +162,7 @@ public class Deposit {
                     depositMath.calculate(
                             xOffset,
                             0,
-                            targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI),
+                            0, //targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI),
                             targetH, targetY
                     );
                 } else {
@@ -209,8 +213,7 @@ public class Deposit {
                 //endAffector.setBotTurret(0);
                 slides.setLength(slidesV4Thresh);
                 endAffector.botTurret.setTargetAngle(0.0,power);
-                endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);
-                endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
+                //endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
                 /* move v4bar servo to minimum value before bricking */
 
                 if (endAffector.botTurret.inPosition()) {
@@ -228,15 +231,21 @@ public class Deposit {
                 break;
             case MOVE_V4DOWN:
                 System.out.println("out");
-                endAffector.v4Servo.setTargetAngle(intakePitch,power);
+                endAffector.v4Servo.setTargetAngle(downPitch,power);
                 if (endAffector.v4Servo.inPosition()) {
-                    state = State.DOWN;
+                    //state = State.DOWN;
                 }
                 break;
 
             case DOWN:
-                slides.setLength(-1.0);
-                endAffector.v4Servo.setTargetAngle(intakePitch,power);
+                slides.setLength(0.0);
+
+                if (robot.intake.state == Intake.State.ON && sensors.getSlidesPos() < 3) {
+                    endAffector.v4Servo.setTargetAngle(transferPitch,power);
+                } else {
+                    endAffector.v4Servo.setTargetAngle(downPitch,power);
+                }
+
                 endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
                 endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
                 endAffector.topServo.setTargetAngle(intakeTopServoAngle,power);

@@ -25,10 +25,10 @@ public class Hang {
     public void update() {
         switch (state) {
             case ON:
-                hang.setTargetPower(1.0);
+                hang.setTargetPower(-1.0);
                 break;
             case REVERSE:
-                hang.setTargetPower(-1.0);
+                hang.setTargetPower(1.0);
                 break;
             case OFF:
                 hang.setTargetPower(0.0);

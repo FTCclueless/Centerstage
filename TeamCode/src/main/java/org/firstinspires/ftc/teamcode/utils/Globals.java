@@ -11,7 +11,6 @@ public class Globals {
 
 
 
-
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;
     public static double TRACK_WIDTH = 7.351173256 + 7.00091155; // 13.3750297033534346;
