@@ -36,6 +36,7 @@ public class PriorityServo extends PriorityDevice{
     protected boolean reachedIntermediate = false;
     protected double currentIntermediateTargetAngle = 0;
     protected double[] multipliers = null;
+    protected boolean reversed = false;
     private long lastLoopTime = System.nanoTime();
     public String name;
     public double slowdownDist;
@@ -68,6 +69,7 @@ public class PriorityServo extends PriorityDevice{
         this.type = type;
         this.type.speed *= loadMultiplier;
         this.name = name;
+        this.reversed = reversed;
         if (reversed) {
             this.type.positionPerRadian *= -1;
         }
@@ -143,7 +145,7 @@ public class PriorityServo extends PriorityDevice{
     }
 
     public boolean inPosition(){
-        return Math.abs(targetAngle-currentAngle) < Math.toRadians(1);
+        return Math.abs(targetAngle-currentAngle) < Math.toRadians(15);
     }
 
     @Override
@@ -179,17 +181,13 @@ public class PriorityServo extends PriorityDevice{
         }
 
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
-        if (power == 1 && Math.abs(error) > slowdownDist + 0.01) {
+        if (power == 1 && Math.abs(error) > slowdownDist + 0.01 + (slowdownDist == 0 ? 0 : Math.toRadians(15))) {
             currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
             //currentIntermediateTargetAngle = targetAngle;
         }
         else if (power == 1) {
             currentIntermediateTargetAngle = targetAngle;
         }
-
-        Log.e(name, currentIntermediateTargetAngle + " currentIntermediateTargateAngle");
-        TelemetryUtil.packet.put(name + " currentIntermediateAngle", currentIntermediateTargetAngle);
-       // Log.e(name, "slowdown? " + (Math.abs(error) <= slowdownDist));
 
         for (int i = 0; i < servo.length; i++) {
             if (multipliers[i] == 1) {

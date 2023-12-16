@@ -21,6 +21,8 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+import java.util.ArrayList;
+
 public class Sensors {
     private LynxModule controlHub, expansionHub;
     private final HardwareQueue hardwareQueue;
@@ -31,20 +33,13 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
 
-    private final AnalogInput analogInput0;
-    private final AnalogInput analogInput1;
-    private final AnalogInput analogInput2;
-    private final AnalogInput analogInput3;
-
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
-    private double analog0Volt;
-    private double analog1Volt;
-    private double analog2Volt;
-    private double analog3Volt;
+    public final AnalogInput[] analogEncoders = new AnalogInput[2];
+    public double[] analogVoltages = new double[analogEncoders.length];
 
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -56,11 +51,10 @@ public class Sensors {
 //        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
+        analogEncoders[0] = hardwareMap.get(AnalogInput.class, "v4BarServo1Encoder");
+        analogEncoders[1] = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
+        analogVoltages[0] = analogVoltages[1] = 0.0;
 
-        analogInput0 = hardwareMap.get(AnalogInput.class, "analogInput0");
-        analogInput1 = hardwareMap.get(AnalogInput.class, "analogInput1");
-        analogInput2 = hardwareMap.get(AnalogInput.class, "analogInput2");
-        analogInput3 = hardwareMap.get(AnalogInput.class, "analogInput3");
         initHubs(hardwareMap);
     }
 
@@ -129,10 +123,9 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-            analog0Volt = analogInput0.getVoltage();
-            analog1Volt = analogInput1.getVoltage();
-            analog2Volt = analogInput2.getVoltage();
-            analog3Volt = analogInput3.getVoltage();
+            for (int i = 0; i < analogVoltages.length; i++) {
+                analogVoltages[i] = analogEncoders[i].getVoltage();
+            }
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -184,22 +177,6 @@ public class Sensors {
             numRotations += Math.signum(previousAngle);
         }
         previousAngle = angle;
-    }
-
-    public double getAnalog0Volt() {
-        return analog0Volt;
-    }
-
-    public double getAnalog1Volt() {
-        return analog1Volt;
-    }
-
-    public double getAnalog2Volt() {
-        return analog2Volt;
-    }
-
-    public double getAnalog3Volt() {
-        return analog3Volt;
     }
 }
 

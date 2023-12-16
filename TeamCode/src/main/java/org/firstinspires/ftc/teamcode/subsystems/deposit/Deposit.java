@@ -233,7 +233,7 @@ public class Deposit {
                 System.out.println("out");
                 endAffector.v4Servo.setTargetAngle(downPitch,power);
                 if (endAffector.v4Servo.inPosition()) {
-                    //state = State.DOWN;
+                    state = State.DOWN;
                 }
                 break;
 
@@ -258,6 +258,8 @@ public class Deposit {
         slides.update();
         dunker.update();
 
-        TelemetryUtil.packet.put("v4servoAngle", endAffector.v4Servo.getCurrentAngle());
+        TelemetryUtil.packet.put("v4ServoAngle", endAffector.v4Servo.getCurrentAngle());
+        TelemetryUtil.packet.put("v4ServoTarget", endAffector.v4Servo.getTargetPosition());
+        TelemetryUtil.packet.put("v4ServoEncAngle", endAffector.v4Servo.getEncoderAngle());
     }
 }

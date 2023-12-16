@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityDevice;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
+import org.firstinspires.ftc.teamcode.utils.priority.PriorityServoAxonEnc;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
 import java.util.ArrayList;
@@ -77,10 +78,10 @@ public class ServoTester extends LinearOpMode {
                 numLoops ++;
 
                 if (gamepad1.x) {
-                    servoPos[servoIndex] += 0.001;
+                    servoPos[servoIndex] += 0.01;
                 }
                 if (gamepad1.b){
-                    servoPos[servoIndex] -= 0.001;
+                    servoPos[servoIndex] -= 0.01;
                 }
                 servoPos[servoIndex] = Utils.minMaxClip(servoPos[servoIndex], 0.0, 1.0);
 
@@ -109,11 +110,10 @@ public class ServoTester extends LinearOpMode {
                 //telemetry.addData("v4Encoder", v4Bar);
                 telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
                 telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
-                telemetry.addData("voltage0", robot.sensors.getAnalog0Volt() + " " + robot.sensors.getAnalog0Volt() / 3.3 * 2 * Math.PI);
-                telemetry.addData("voltage1", robot.sensors.getAnalog1Volt() + " " + robot.sensors.getAnalog1Volt() / 3.3 * 2 * Math.PI);
-                telemetry.addData("volatge2", robot.sensors.getAnalog2Volt() + " " + robot.sensors.getAnalog2Volt() / 3.3 * 2 * Math.PI);
-                telemetry.addData("voltage3", robot.sensors.getAnalog3Volt() + " " + robot.sensors.getAnalog3Volt() / 3.3 * 2 * Math.PI);
-                telemetry.addData("botAngleConsistencyTest",robot.sensors.getAnalog2Volt() / 3.3 * 2 * Math.PI - servos.get(servoIndex).getCurrentAngle() );
+                if (servos.get(servoIndex) instanceof PriorityServoAxonEnc) {
+                    telemetry.addData("voltage", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderVoltage());
+                    telemetry.addData("angle", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderAngle());
+                }
                 //TelemetryUtil.packet.put("encoder1", hardwareMap.get(AnalogInput.class, ));
             } else {
                 servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
