@@ -24,7 +24,7 @@ import java.util.ArrayList;
 @TeleOp(group = "Test")
 public class ServoTester extends LinearOpMode {
 
-    boolean controllerMode = true;
+    public static boolean controllerMode = true;
 
     public static double servoAngle = 0.0;
     public static int servoNumber = 0;

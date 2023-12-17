@@ -91,7 +91,7 @@ public class Intake {
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
-                if (System.currentTimeMillis() - start > 250) {
+                if (System.currentTimeMillis() - start > 500) {
                     intake.setTargetPower(intakePower);
                 }
                 /*if (numberOfTimesIntakeBeamBreakTriggered >= 2) {

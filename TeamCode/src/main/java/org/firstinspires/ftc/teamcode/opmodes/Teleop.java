@@ -125,7 +125,7 @@ public class Teleop extends LinearOpMode {
                 robot.deposit.dunk();
             }
 
-            if (x_2.isClicked(gamepad2.x)){
+            if (x_2.isClicked(gamepad2.x) && ( robot.deposit.state == Deposit.State.WAIT_DUNK || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)){
                 depoFlag = false;
                 robot.deposit.retract();
                 intake.off();

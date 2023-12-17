@@ -19,8 +19,8 @@ public class EndAffector {
     public final Sensors sensors;
     public static double maxYaw = Math.toRadians(45); //todo
 
-    public static double botTurretMinDist = 45; //temp
-    public static double botTurretSlowPow = 0.2; // 0.4
+    public static double botTurretMinDist = 50; //temp
+    public static double botTurretSlowPow = 0.15; // 0.4
     public static double v4MinDist = 45;
     public static double v4SlowDown = 0.2; // 0.667
 
@@ -37,7 +37,7 @@ public class EndAffector {
             0,
             1,
             0.787, //0.2609
-            0.905,
+            0.855,
             false,
             true,
             Math.toRadians(v4MinDist), v4SlowDown,

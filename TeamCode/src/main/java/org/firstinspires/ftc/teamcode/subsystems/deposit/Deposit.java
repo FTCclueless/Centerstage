@@ -54,7 +54,7 @@ public class Deposit {
     double headingError = 0;
     double xOffset = 0;
     public static double downPitch = -1.10388; // regular down intake pitch for arm
-    public static double transferPitch = -1.4088; //2.0900 stalling pitch for arm
+    public static double transferPitch = -1.2088; //2.0900 stalling pitch for arm
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
     public static double intakeTopTurret = 0.056;
