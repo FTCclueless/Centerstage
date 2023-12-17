@@ -53,7 +53,7 @@ public class Robot {
         }
 
         deposit = new Deposit(hardwareMap, hardwareQueue, sensors, this);
-        intake = new Intake(hardwareMap, hardwareQueue, sensors);
+        intake = new Intake(hardwareMap, hardwareQueue, sensors, this);
         airplane = new Airplane(hardwareMap, hardwareQueue);
         hang = new Hang(hardwareMap, hardwareQueue);
         droppers = new Droppers(hardwareMap, hardwareQueue);
@@ -122,8 +122,8 @@ public class Robot {
         }
     }
 
-    public void dunk(int numpix) {
-        deposit.dunk(numpix);
+    public void dunk() {
+        deposit.dunk();
         while (deposit.dunker.busy()) {
             System.out.println("Bomb 2");
             update();

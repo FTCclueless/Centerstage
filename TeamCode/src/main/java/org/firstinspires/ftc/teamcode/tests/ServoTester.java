@@ -56,7 +56,7 @@ public class ServoTester extends LinearOpMode {
 
         double[] servoPos = new double[servoSize];
         for (int i = 0; i < servoSize; i ++){
-            servoPos[i] = 0.5;
+            servoPos[i] = servos.get(i).basePos;
         }
 
         int servoIndex = 0;

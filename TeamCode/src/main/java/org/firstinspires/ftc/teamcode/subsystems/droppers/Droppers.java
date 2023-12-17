@@ -47,7 +47,7 @@ public class Droppers {
     }
 
     public void leftRelease() {
-        leftDropper.setTargetAngle(leftReleaseAngle, 1);
+        leftDropper.setTargetAngle(leftReleaseAngle, 0.75);
     }
 
     public void rightDown() {
@@ -55,7 +55,7 @@ public class Droppers {
     }
 
     public void rightRelease() {
-        rightDropper.setTargetAngle(rightReleaseAngle, 1);
+        rightDropper.setTargetAngle(rightReleaseAngle, 0.75);
     }
 
     public void update() {

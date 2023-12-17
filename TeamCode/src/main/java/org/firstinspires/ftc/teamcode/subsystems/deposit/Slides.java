@@ -55,10 +55,11 @@ public class Slides {
      */
     private double feedforward() {
         double error = targetLength - length;
-        TelemetryUtil.packet.put("Error", error);
         if (length <= 3 && targetLength <= 0.6) {
+            TelemetryUtil.packet.put("slidesFF", downPower);
             return downPower;
         } else {
+            TelemetryUtil.packet.put("slidesFF", "nahhh");
             return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
         }
     }

@@ -53,7 +53,7 @@ public class DepositTest extends LinearOpMode {
             Log.e("gamepady", " " + gamepad1.y);
             if (bty.isClicked(gamepad1.y) || startRetract) {
                 System.out.println("I NEED TO DO SOMETHING");
-                robot.dunk(1);
+                robot.dunk();
                 robot.deposit.state = Deposit.State.START_RETRACT;
                 depo = false;
                 startRetract = false;

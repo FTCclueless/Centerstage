@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests.yoinkers;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector2;
 
 import java.util.ArrayList;
 
+@Disabled
 @TeleOp(group = "tests")
 public class CoefFrictionFinder extends LinearOpMode {
     @Override

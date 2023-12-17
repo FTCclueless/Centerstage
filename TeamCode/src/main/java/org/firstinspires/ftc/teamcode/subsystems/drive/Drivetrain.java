@@ -395,7 +395,7 @@ public class Drivetrain {
 
         double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
         double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
-        double turn = turnPID.update(Math.abs(turnError) > Math.toRadians(headingThreshold)/2 ? turnError : 0);
+        double turn = turnPID.update(Math.abs(turnError) > headingThreshold/2 ? turnError : 0);
 
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
@@ -407,7 +407,7 @@ public class Drivetrain {
 
     public static double xThreshold = 1;
     public static double yThreshold = 1;
-    public static double headingThreshold = 5;
+    public static double headingThreshold = Math.toRadians(5);
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();
@@ -416,7 +416,7 @@ public class Drivetrain {
     }
 
     public boolean atPoint () {
-        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(headingThreshold);
+        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < headingThreshold;
     }
 
     public void setMode(DcMotor.RunMode runMode) {

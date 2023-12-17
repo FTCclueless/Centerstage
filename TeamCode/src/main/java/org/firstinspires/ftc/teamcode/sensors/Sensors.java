@@ -45,6 +45,8 @@ public class Sensors {
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
 
+    public static double voltageK = 0.3;
+
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         this.hardwareQueue = hardwareQueue;
 
@@ -124,7 +126,7 @@ public class Sensors {
     private void updateExpansionHub() {
         try {
             for (int i = 0; i < analogVoltages.length; i++) {
-                analogVoltages[i] = analogEncoders[i].getVoltage();
+                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
             }
         }
         catch (Exception e) {

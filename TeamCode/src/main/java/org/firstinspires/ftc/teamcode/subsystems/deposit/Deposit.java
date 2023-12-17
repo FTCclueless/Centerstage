@@ -24,11 +24,15 @@ public class Deposit {
         START_DEPOSIT,
         MOVE_V4UP,
         FINISH_DEPOSIT,
+        TELEOP_JANK_V4UP,
+        TELEOP_JANK_TILTUP,
+        TELEOP_JANK_TILTDOWN,
         EXTEND_ROTATE180,
         WAIT_DUNK,
         START_RETRACT,
         RETRACT_ROTATE180,
         MOVE_V4DOWN,
+        GODOWN,
         DOWN,
         WAIT,
     };
@@ -49,13 +53,14 @@ public class Deposit {
     double yError = 5;
     double headingError = 0;
     double xOffset = 0;
-    public static double downPitch = -1.08; // regular down intake pitch for arm
-    public static double transferPitch = -1.28; //2.0900 stalling pitch for arm
+    public static double downPitch = -1.10388; // regular down intake pitch for arm
+    public static double transferPitch = -1.4088; //2.0900 stalling pitch for arm
     public static double slidesV4Thresh = 12;
     public static double upPitch = 1.38;
     public static double intakeTopTurret = 0.056;
     public static double intakeTopServoAngle = 1.115;
     public static double intakeBotTurret = 3.57;
+    public static double rotate180TopServoAngle = -0.381;
 
     public static double power = 0.9;
 
@@ -96,9 +101,8 @@ public class Deposit {
         xOffset = 0;
     }
 
-    public void dunk(int numPixels) {
-        numPixels = Math.min(Math.max(0, numPixels), 2);
-        dunker.dunk2(); // TODO
+    public void dunk() {
+        dunker.dunk();
         state = State.WAIT_DUNK;
         /* Deposit this number of pixels and because its one servo we don't need none of that state yucky yucky (I THINK??) */
     }
@@ -111,11 +115,20 @@ public class Deposit {
         return endAffector.checkReady() && !slides.isBusy();
     }
 
+    public void teleopJank() {
+        if (state == State.FINISH_DEPOSIT) // Remove if something stupid is happening
+            state = State.TELEOP_JANK_V4UP;
+    }
+
     public void update() {
         TelemetryUtil.packet.put("depoState", state);
         switch (state) {
             case START_DEPOSIT: // any adjustments initialize here --Kyle
-                dunker.lock();
+                if (Globals.RUNMODE == RunMode.TELEOP) {
+                    dunker.intake();
+                } else {
+                    dunker.lock();
+                }
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
                         xOffset,
@@ -152,6 +165,7 @@ public class Deposit {
             case EXTEND_ROTATE180:
                 endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40/36.0,power);
                 endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw, 1.0);
+                endAffector.topServo.setTargetAngle(rotate180TopServoAngle, 1.0);
                 Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
                 if (endAffector.botTurret.inPosition()) {
                     state = State.FINISH_DEPOSIT;
@@ -200,16 +214,51 @@ public class Deposit {
                 } else {
                     endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw,1.0);
                 }
+                break;
+
+            case TELEOP_JANK_V4UP:
+                endAffector.v4Servo.setTargetAngle(Math.toRadians(45), 1);
+                if (endAffector.v4Servo.inPosition())
+                    state = State.TELEOP_JANK_TILTUP;
 
                 break;
+
+            case TELEOP_JANK_TILTUP:
+                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch + Math.toRadians(35), 0.4);
+                if (endAffector.topServo.inPosition())
+                    state = State.TELEOP_JANK_TILTDOWN;
+
+
+                break;
+
+            case TELEOP_JANK_TILTDOWN:
+                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch, 0.6);
+                if (endAffector.topServo.inPosition())
+                    state = State.FINISH_DEPOSIT;
+
+                break;
+
             case WAIT_DUNK:
-                if (!dunker.busy()) {
-                    state = State.START_RETRACT;
+                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch - Math.toRadians(10), 1);
+                if ( !dunker.busy()) {
+                    if (Globals.RUNMODE == RunMode.AUTO ) {
+                        endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch, 1);
+                        state = State.START_RETRACT;
+                    }
+                    else {
+                        state = State.FINISH_DEPOSIT;
+                    }
                 }
                 break;
 
             case START_RETRACT:
                 //endAffector.setBotTurret(0);
+                if (Globals.RUNMODE == RunMode.TELEOP) {
+                    dunker.intake();
+                }
+                else {
+                    dunker.lock();
+                }
                 slides.setLength(slidesV4Thresh);
                 endAffector.botTurret.setTargetAngle(0.0,power);
                 //endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
@@ -224,6 +273,7 @@ public class Deposit {
                 break;
             case RETRACT_ROTATE180:
                 endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
+                endAffector.topServo.setTargetAngle(rotate180TopServoAngle, 1.0);
                 if (endAffector.botTurret.inPosition()) {
                     state = State.MOVE_V4DOWN;
                 }
@@ -231,10 +281,17 @@ public class Deposit {
             case MOVE_V4DOWN:
                 System.out.println("out");
                 endAffector.v4Servo.setTargetAngle(downPitch,power/2);
+                endAffector.topServo.setTargetAngle(intakeTopServoAngle, 1.0);
                 if (endAffector.v4Servo.inPosition()) {
-                    state = State.DOWN;
+                    state = State.GODOWN;
                 }
                 break;
+
+            case GODOWN: // Jank but work currently but don't change
+                dunker.lock();
+                if (dunker.dunker.getCurrentAngle() == dunker.dunker.getTargetAngle()) {
+                    state = State.DOWN;
+                }
 
             case DOWN:
                 slides.setLength(0.0);

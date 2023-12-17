@@ -14,8 +14,8 @@ public class Airplane {
     private final PriorityServo airplane;
 
     // TODO: Figure out right angle
-    private double holdAngle = 0.0;
-    private double releaseAngle = 90.0;
+    private double holdAngle = 4.678;
+    private double releaseAngle = 1.64;
 
     private State state = State.HOLD;
 
@@ -33,10 +33,10 @@ public class Airplane {
     public void update() {
         switch (state) {
             case HOLD:
-                airplane.setTargetAngle(Math.toRadians(holdAngle), 1.0);
+                airplane.setTargetAngle(holdAngle, 1.0);
                 break;
             case RELEASE:
-                airplane.setTargetAngle(Math.toRadians(releaseAngle), 1.0);
+                airplane.setTargetAngle(releaseAngle, 1.0);
                 break;
         }
     }

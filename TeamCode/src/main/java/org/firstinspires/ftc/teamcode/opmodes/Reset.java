@@ -21,7 +21,7 @@ public class Reset extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            endAffector.v4Servo.setTargetAngle(Deposit.downPitch, 1.0);
+            endAffector.v4Servo.setTargetAngle(Deposit.downPitch, 0.5);
             endAffector.topTurret.setTargetAngle(Deposit.intakeTopTurret,1.0);
             endAffector.botTurret.setTargetAngle(Deposit.intakeBotTurret,1.0);
             endAffector.topServo.setTargetAngle(Deposit.intakeTopServoAngle,1.0);

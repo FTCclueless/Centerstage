@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
@@ -27,6 +28,7 @@ public class Intake {
     public PriorityServo actuation;
     public State state = State.OFF;
     private final Sensors sensors;
+    private final Robot robot;
 
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
     private double actuationHeight = 1.0;
@@ -43,8 +45,9 @@ public class Intake {
 
     public boolean isReady = false;
 
-    public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+    public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
+        this.robot = robot;
         intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2, -1);
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),

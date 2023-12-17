@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tests.yoinkers;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+@Disabled
 @TeleOp
 public class SlidesTicksToInchesYoinker extends LinearOpMode {
     @Override

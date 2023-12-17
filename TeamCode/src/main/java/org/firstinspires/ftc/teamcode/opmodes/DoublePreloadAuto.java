@@ -86,6 +86,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         }
 
         robot.hangActuation.up();
+        robot.airplane.hold();
 
         vision.enableTeamProp();
         vision.disableAprilTag();
@@ -94,6 +95,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         while (opModeInInit()) {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
+            robot.deposit.dunker.lock();
 
             robot.update();
         }
@@ -137,11 +139,11 @@ public class DoublePreloadAuto extends LinearOpMode {
         robot.goToPoint(groundPreloadPosition, this);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && red) {
-            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x - AutoPathConstants.groundPreloadStrafeOffset, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
-            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
+            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x - AutoPathConstants.groundPreloadStrafeOffset, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
         start = System.currentTimeMillis();
@@ -151,7 +153,7 @@ public class DoublePreloadAuto extends LinearOpMode {
             robot.droppers.rightRelease();
         }
 
-        while (System.currentTimeMillis() - start < 750) {
+        while (System.currentTimeMillis() - start < 400) {
             robot.update();
         }
     }
@@ -182,7 +184,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         while (System.currentTimeMillis() - start < 3000) {
             robot.update();
         }
-        robot.dunk(1);
+        robot.dunk();
     }
 
     public void park() {
@@ -199,5 +201,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         while (System.currentTimeMillis() - start < 750) {
             robot.update();
         }
+
+        Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
     }
 }
