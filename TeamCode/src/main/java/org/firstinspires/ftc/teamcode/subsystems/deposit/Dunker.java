@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Dunker {
     public PriorityServo dunker;
     public static double intakeAng = 2.280185;
-    public static double lockAng = 2.165;
+    public static double lockAng = 2.105;
     public static double depoAng = 3.25146;
     public static double dunkTime = 500;
     public static double timer = 0;
@@ -43,7 +43,7 @@ public class Dunker {
     public void dunk() {
         timer = System.currentTimeMillis();
         if (open) {
-            dunker.setTargetAngle(depoAng, 0.5);
+            dunker.setTargetAngle(depoAng, 0.35);
         } else {
             dunker.setTargetAngle(intakeAng, 0.35);
         }

@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.utils;
 
-public class Vector3 {
+public class Vector3 implements Cloneable {
     public double x;
     public double y;
     public double z;
@@ -86,6 +86,11 @@ public class Vector3 {
 
     public double getZ() {
         return z;
+    }
+
+    @Override
+    public Vector3 clone() {
+        return new Vector3(x, y, z);
     }
 
 }

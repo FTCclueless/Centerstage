@@ -19,7 +19,7 @@ public class SlideTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Slides slides = robot.deposit.slides;
-        robot.deposit.state = Deposit.State.DOWN;
+        robot.deposit.state = Deposit.State.WAIT;
         waitForStart();
 
         while (!isStopRequested()) {

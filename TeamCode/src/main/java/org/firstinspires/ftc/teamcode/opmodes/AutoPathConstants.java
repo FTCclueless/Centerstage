@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.acmerobotics.dashboard.config.Config;
 
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 /**
  * Auto Path Constants <br>
@@ -22,25 +23,31 @@ public class AutoPathConstants {
 
     // Just to the left of the red side board
     public static Pose2d intermediateParkingLocation = new Pose2d(42, -60, 0);
-    public static Pose2d parkingLocation =             new Pose2d(60, -60, 0);
+    public static Pose2d parkingLocation =             new Pose2d(58, -60, 0);
 
     // ground preload position offsets
     // TODO RENAME THEY R NOT RIGHT
     public static Pose2d groundPreloadLeftOffset =     new Pose2d(4, 26.5, 0);
-    public static double groundPreloadLeftDepositY =   3.0;
 
     public static Pose2d groundPreloadCenterOffset =   new Pose2d(6, 29.5, 0);
-    public static double groundPreloadCenterDepositY = 0.0;
 
-    public static Pose2d groundPreloadRightOffset =    new Pose2d(16.5, 26.5, 0);
-    public static double groundPreloadRightDepositY =  -3.0;
+    public static Pose2d groundPreloadRightOffset =    new Pose2d(18, 26.5, 0);
 
-    public static double groundPreloadDepositH =       -6.0;
-    public static double groundPreloadDepositX =       -0.25;
+    public static Pose2d blueGroundPreloadLeftOffset =     new Pose2d(18, 26.5, 0);
+
+    public static Pose2d blueGroundPreloadRightOffset =    new Pose2d(-4, 26.5, 0);
 
     public static double groundPreloadStrafeOffset =   6.75;
     // Initial deposit. Should be in front of the red side board
-    public static Pose2d boardPreload =                new Pose2d(45, -36, Math.PI);
+    public static Pose2d boardPreload =                new Pose2d(46, -36, Math.PI);
+    public static Vector3 boardPreloadLeftDeposit =    new Vector3(0.48, 4.5, -5.5);
+    public static Vector3 boardPreloadCenterDeposit =  new Vector3(0.4, 0, -6);
+    public static Vector3 boardPreloadRightDeposit =  new Vector3(0.65, -3.5, 2);
+
+
+    public static Vector3 blueBoardPreloadLeftDeposit =    new Vector3(0.48, 4.5, -5.5);
+    public static Vector3 blueBoardPreloadCenterDeposit =  new Vector3(0.33, 0, -6);
+    public static Vector3 blueBoardPreloadRightDeposit =  new Vector3(0.65, -3.5, 2);
 
     // First intake if we are on the bottom side of field. Should be the rightmost intake stack (from current origin)
     public static Pose2d initialIntake =               new Pose2d(-58, -36, Math.PI);

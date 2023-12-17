@@ -6,12 +6,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.vision.Vision;
-import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
 /**
@@ -27,11 +26,11 @@ public class DoublePreloadAuto extends LinearOpMode {
     protected Robot robot;
 
     protected boolean up = true;
-    protected boolean red = true;
+    protected boolean red = false;
     protected int reflect = 1;
 
-    long start;
-    double yOffset = 0;
+    private long start;
+    private Vector3 boardPreloadDeposit = null;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -126,20 +125,26 @@ public class DoublePreloadAuto extends LinearOpMode {
             case LEFT:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y * reflect;
-                groundPreloadPosition.heading += AutoPathConstants.groundPreloadLeftOffset.heading;
-                yOffset = AutoPathConstants.groundPreloadLeftDepositY;
+                groundPreloadPosition.heading += (red ? AutoPathConstants.groundPreloadLeftOffset.heading : AutoPathConstants.blueGroundPreloadRightOffset.x);
+                boardPreloadDeposit = AutoPathConstants.boardPreloadLeftDeposit.clone();
+                if (!red)
+                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadRightDeposit.clone();
                 break;
             case CENTER:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
-                yOffset = AutoPathConstants.groundPreloadCenterDepositY;
+                boardPreloadDeposit = AutoPathConstants.boardPreloadCenterDeposit.clone();
+                if (!red)
+                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadCenterDeposit.clone();
                 break;
             case RIGHT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadRightOffset.x;
+                groundPreloadPosition.x += (red ? AutoPathConstants.groundPreloadRightOffset.x : AutoPathConstants.blueGroundPreloadLeftOffset.x);
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
-                yOffset = AutoPathConstants.groundPreloadRightDepositY;
+                boardPreloadDeposit = AutoPathConstants.boardPreloadRightDeposit.clone();
+                if (!red)
+                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadLeftDeposit.clone();
                 break;
         }
 
@@ -185,13 +190,19 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         robot.goToPoint(boardPreload, this);
 
-        robot.deposit.depositAt(AutoPathConstants.groundPreloadDepositH, yOffset, AutoPathConstants.groundPreloadDepositX);
+
+
+        robot.deposit.depositAt(boardPreloadDeposit.z, boardPreloadDeposit.y, boardPreloadDeposit.x);
 
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 3000) {
             robot.update();
         }
         robot.dunk();
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 1000) {
+            robot.update();
+        }
     }
 
     /**

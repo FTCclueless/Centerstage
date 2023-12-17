@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 @Config
 public class DepositMath {
-    public static double v4BarLength = 9.25 - (1.0/16);
+    public static double v4BarLength = 9.95 - (1.0/16);
     public static Vector3 slidePos = new Vector3(6,0,11);
     public final double slideAngle = Math.toRadians(60);
     private final Vector3 slideUnit = new Vector3(Math.cos(slideAngle),0,Math.sin(slideAngle));

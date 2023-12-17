@@ -59,7 +59,7 @@ public class Deposit {
     public static double upPitch = 1.38;
     public static double intakeTopTurret = 0.056;
     public static double intakeTopServoAngle = 1.115;
-    public static double intakeBotTurret = 3.57;
+    public static double intakeBotTurret = 3.5; //3.57
     public static double rotate180TopServoAngle = -0.381;
 
     public static double power = 0.9;
@@ -273,6 +273,7 @@ public class Deposit {
                 break;
             case RETRACT_ROTATE180:
                 endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
+                endAffector.topTurret.setTargetAngle(intakeTopTurret,1.0);
                 endAffector.topServo.setTargetAngle(rotate180TopServoAngle, 1.0);
                 if (endAffector.botTurret.inPosition()) {
                     state = State.MOVE_V4DOWN;
