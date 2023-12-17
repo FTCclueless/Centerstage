@@ -91,7 +91,9 @@ public class Intake {
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
-                intake.setTargetPower(intakePower);
+                if (System.currentTimeMillis() - start > 250) {
+                    intake.setTargetPower(intakePower);
+                }
                 /*if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
                     if (!isAlreadyTriggered) {
                         isAlreadyTriggered = true;
@@ -118,8 +120,11 @@ public class Intake {
         }
     }
 
+    long start;
+
     public void on() {
         numberOfTimesIntakeBeamBreakTriggered = 0;
+        start = System.currentTimeMillis();
         isReady = false;
         state = State.ON;
     }

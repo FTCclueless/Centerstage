@@ -10,6 +10,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -40,10 +42,13 @@ public class Slides {
 
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        if (Globals.RUNMODE == RunMode.AUTO) {
+            m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
         slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5, new double[] {-1, -1});
         hardwareQueue.addDevice(slidesMotors);
