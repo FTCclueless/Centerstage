@@ -115,6 +115,13 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         Log.e("teamPropLocation", teamPropLocation + "");
 
+        // Convert because monkey coding
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && !red) {
+            teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.RIGHT;
+        } else if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
+            teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.LEFT;
+        }
+
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
@@ -187,6 +194,9 @@ public class DoublePreloadAuto extends LinearOpMode {
         robot.dunk();
     }
 
+    /**
+     * Assumes that it is in the parking line row
+     */
     public void park() {
         Pose2d park = AutoPathConstants.parkingLocation.clone();
         park.y *= reflect;
