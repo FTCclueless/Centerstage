@@ -43,7 +43,7 @@ public class Dunker {
     public void dunk() {
         timer = System.currentTimeMillis();
         if (open) {
-            dunker.setTargetAngle(depoAng, 0.35);
+            dunker.setTargetAngle(depoAng, 0.3);
         } else {
             dunker.setTargetAngle(intakeAng, 0.35);
         }

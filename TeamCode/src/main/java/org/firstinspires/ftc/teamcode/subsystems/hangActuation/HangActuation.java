@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 public class HangActuation {
     public PriorityServo hangActuation;
-    public static double downAng = 2.31256;
-    public static double upAng = 2.31256;
+    public static double downAng = 0.0;
+    public static double upAng = 4.43;
 
     public HangActuation(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         hangActuation = new PriorityServo(hardwareMap.get(Servo.class, "hangActuation"), "hangActuation",

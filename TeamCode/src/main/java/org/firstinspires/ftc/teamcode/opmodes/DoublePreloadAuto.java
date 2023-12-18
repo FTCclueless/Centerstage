@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -26,7 +27,7 @@ public class DoublePreloadAuto extends LinearOpMode {
     protected Robot robot;
 
     protected boolean up = true;
-    protected boolean red = false;
+    protected boolean red = true;
     protected int reflect = 1;
 
     private long start;
@@ -34,12 +35,16 @@ public class DoublePreloadAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        doInitialization();
+        try {
+            doInitialization();
 
-        waitForStart();
-        doGroundPreload();
-        doBoardPreload();
-        park();
+            waitForStart();
+            doGroundPreload();
+            doBoardPreload();
+            park();
+        } catch (Error e) {
+            Log.e("*******************ERROR*******************", e + "");
+        }
     }
 
     /**
@@ -115,17 +120,17 @@ public class DoublePreloadAuto extends LinearOpMode {
         Log.e("teamPropLocation", teamPropLocation + "");
 
         // Convert because monkey coding
-        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && !red) {
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && red) {
             teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.RIGHT;
-        } else if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
+        } else if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && red) {
             teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.LEFT;
         }
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition.x += AutoPathConstants.groundPreloadLeftOffset.x;
+                groundPreloadPosition.x += (red ? AutoPathConstants.groundPreloadLeftOffset.x : AutoPathConstants.blueGroundPreloadRightOffset.x);
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y * reflect;
-                groundPreloadPosition.heading += (red ? AutoPathConstants.groundPreloadLeftOffset.heading : AutoPathConstants.blueGroundPreloadRightOffset.x);
+                groundPreloadPosition.heading += (red ? AutoPathConstants.groundPreloadLeftOffset.heading : AutoPathConstants.blueGroundPreloadLeftOffset.heading);
                 boardPreloadDeposit = AutoPathConstants.boardPreloadLeftDeposit.clone();
                 if (!red)
                     boardPreloadDeposit = AutoPathConstants.blueBoardPreloadRightDeposit.clone();
@@ -148,21 +153,28 @@ public class DoublePreloadAuto extends LinearOpMode {
                 break;
         }
 
-        robot.goToPoint(groundPreloadPosition, this);
+        if (!red && teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
+            Log.e("good", "e");
+            robot.goToPoint(new Pose2d(groundPreloadPosition.x, groundPreloadPosition.y + 5, groundPreloadPosition.heading), this);
+        }
+        else {
+            robot.goToPoint(groundPreloadPosition, this);
+        }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT && red) {
             robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x - AutoPathConstants.groundPreloadStrafeOffset, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
-        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
-            robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x - AutoPathConstants.groundPreloadStrafeOffset, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
-        }
 
         start = System.currentTimeMillis();
         if (red) {
             robot.droppers.leftRelease();
         } else {
             robot.droppers.rightRelease();
+        }
+
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {
+            //robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x - AutoPathConstants.groundPreloadStrafeOffset, robot.drivetrain.getPoseEstimate().y, robot.drivetrain.getPoseEstimate().heading), this);
         }
 
         while (System.currentTimeMillis() - start < 400) {
@@ -192,12 +204,24 @@ public class DoublePreloadAuto extends LinearOpMode {
 
 
 
+
+
         robot.deposit.depositAt(boardPreloadDeposit.z, boardPreloadDeposit.y, boardPreloadDeposit.x);
 
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 3000) {
             robot.update();
         }
+        robot.deposit.teleopJank();
+        while (robot.deposit.state != Deposit.State.FINISH_DEPOSIT) {
+            robot.update();
+        }
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start <= 1500) {
+            robot.update();
+        }
+
         robot.dunk();
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 1000) {

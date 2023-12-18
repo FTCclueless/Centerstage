@@ -32,7 +32,7 @@ public class Slides {
     public static double threshold = 2;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.35; // JANK
+    public static double downPower = -0.4; // JANK
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -64,9 +64,9 @@ public class Slides {
         TelemetryUtil.packet.put("slidesError", error);
 
         if (targetLength <= 0.6) {
-            error = -3;
+            error = -4;
         }
-        if (length <= 0.6 && targetLength <= 0.6)
+        if (length <= 5 && targetLength <= 0.6)
             return downPower;
         return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }

@@ -127,7 +127,7 @@ public class Deposit {
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     dunker.intake();
                 } else {
-                    dunker.lock();
+                    dunker.intake();
                 }
                 if (Globals.RUNMODE == RunMode.TELEOP) {
                     depositMath.calculate(
@@ -225,15 +225,17 @@ public class Deposit {
 
             case TELEOP_JANK_TILTUP:
                 endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch + Math.toRadians(35), 0.4);
-                if (endAffector.topServo.inPosition())
+                endAffector.topTurret.setTargetAngle(0, 0.5);
+                if (endAffector.topServo.inPosition() && endAffector.topTurret.inPosition())
                     state = State.TELEOP_JANK_TILTDOWN;
-
-
                 break;
 
             case TELEOP_JANK_TILTDOWN:
                 endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch, 0.6);
-                if (endAffector.topServo.inPosition())
+                endAffector.topTurret.setTargetAngle(-depositMath.v4BarPitch, 0.5);
+                if (Globals.RUNMODE == RunMode.AUTO)
+                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw, 0.5);
+                if (endAffector.topServo.inPosition() && endAffector.topTurret.inPosition())
                     state = State.FINISH_DEPOSIT;
 
                 break;
@@ -257,7 +259,7 @@ public class Deposit {
                     dunker.intake();
                 }
                 else {
-                    dunker.lock();
+                    dunker.intake();
                 }
                 slides.setLength(slidesV4Thresh);
                 endAffector.botTurret.setTargetAngle(0.0,power);
@@ -289,7 +291,7 @@ public class Deposit {
                 break;
 
             case GODOWN: // Jank but work currently but don't change
-                dunker.lock();
+                dunker.intake();
                 if (dunker.dunker.getCurrentAngle() == dunker.dunker.getTargetAngle()) {
                     state = State.DOWN;
                 }
