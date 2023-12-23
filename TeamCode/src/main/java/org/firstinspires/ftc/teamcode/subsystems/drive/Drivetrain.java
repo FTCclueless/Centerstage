@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.subsystems.drive;
 import static org.firstinspires.ftc.teamcode.utils.Globals.DRIVETRAIN_ENABLED;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
-import static org.firstinspires.ftc.teamcode.utils.Globals.TRACK_WIDTH;
 
 import android.util.Log;
 
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,8 +15,6 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
-import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -32,29 +28,12 @@ import java.util.List;
 
 @Config
 public class Drivetrain {
-    // Pure pursuit tuning values
     public enum State {
         DRIVE,
-        FOLLOW_SPLINE,
-        GO_POINT,
         BRAKE,
+        IDLE
     }
     public State state = State.BRAKE;
-
-    public static double maxRadius = 30;
-    public static double headingCorrectionP = 0.8;
-    public static double minRadius = 4;
-    public static double maxCurve = 0.2;
-    //public static double turnMul = 1;
-    public static double headingError = 5;
-    public static double minSpeedFollowPath = 0.2;
-    public static double slowdown = 0.28;
-    //public static double turnP = 1;
-    public static double stupidDivisor = 1;
-    //public static double radiusSlowDown = 10;
-
-    double maxSpeed = 64.796;
-    double maxTurn = maxSpeed / (TRACK_WIDTH/2);
 
     public PriorityMotor leftFront, leftRear, rightRear, rightFront;
     private List<PriorityMotor> motors;
@@ -64,9 +43,6 @@ public class Drivetrain {
 
     public Localizer localizer;
     public Vision vision;
-
-    private Spline currentPath = null;
-    private int pathIndex = 0;
 
     public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Vision vision) {
         this.hardwareQueue = hardwareQueue;
@@ -97,7 +73,6 @@ public class Drivetrain {
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
         for (PriorityMotor motor : motors) {
-            // Boopy coding brr
             MotorConfigurationType motorConfigurationType = motor.motor[0].getMotorType().clone();
             motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
             motor.motor[0].setMotorType(motorConfigurationType);
@@ -142,17 +117,16 @@ public class Drivetrain {
         rightFront.setMinimumPowerToOvercomeFriction(0.0);
     }
 
-    public void setCurrentPath(Spline path) {
-        state = State.FOLLOW_SPLINE;
-        currentPath = path;
-        pathIndex = 0;
-    }
+    public static PID xPID = new PID(0.085,0.0,0.01);
+    public static PID yPID = new PID(0.15,0.0,0.01);
+    public static PID turnPID = new PID(0.73,0.0,0.001);
 
-    public Spline getCurrentPath() {
-        return currentPath;
-    }
+    Pose2d targetPoint = new Pose2d(0,0,0);
+    Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
-    double maxHeadingError = Math.toRadians(95);
+    double xError = 0.0;
+    double yError = 0.0;
+    double turnError = 0.0;
 
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
@@ -160,183 +134,47 @@ public class Drivetrain {
         }
 
         updateLocalizer();
-        updateDashboard();
+        updateTelemetry();
 
-        Canvas canvas = TelemetryUtil.packet.fieldOverlay();
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
         ROBOT_VELOCITY = localizer.getPoseVelocity();
 
         switch (state) {
-            case FOLLOW_SPLINE:
-                if (currentPath == null) {
-                    Log.e("its folowing point at null path", "e");
-                }
-                    //Find the closest point on the path to the robot
-                    double distanceToClosestPoint = currentPath.poses.get(pathIndex).getDistanceFromPoint(estimate);
-                    double distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
-                    while (distanceToClosestPoint > distanceToNextPoint && pathIndex < currentPath.poses.size() - 1) {
-                        pathIndex++;
-                        distanceToClosestPoint = distanceToNextPoint;
-                        distanceToNextPoint = currentPath.poses.get(Math.min(pathIndex + 1, currentPath.poses.size() - 1)).getDistanceFromPoint(estimate);
-                    }
-                    //Find the target for the robot to go to
-                    double pathCurvyness = 0;
-                    int targetIndex = pathIndex;
-                    double targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
-                    double lastRadius = targetRadius;
-                    while ((pathCurvyness < maxCurve || targetRadius < minRadius) && targetRadius < maxRadius && targetIndex < currentPath.poses.size() - 1) {
-                        pathCurvyness += 1 / Math.max(currentPath.poses.get(targetIndex).radius, 8);
-                        targetIndex++;
-                        lastRadius = targetRadius;
-                        targetRadius = currentPath.poses.get(targetIndex).getDistanceFromPoint(estimate);
-                        if (targetRadius < lastRadius) { //If the radius becomes smaller it means you are missing part of the trajectory and therefore we do this so that it finds the next point again
-                            Log.e("e", "sdfsdf");
-                            targetIndex--;
-                            targetRadius = lastRadius;
-                            break;
-                        }
-                    }
-                    //this kinda jank but will leave for now
+            case DRIVE:
+                double deltaX = (targetPoint.x - localizer.x);
+                double deltaY = (targetPoint.y-localizer.y);
 
-                /*if (currentPath.poses.get(pathIndex).reversed) {
-                    estimate.heading += Math.PI;
-                }*/
+                xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
+                yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
+                turnError = targetPoint.heading-localizer.heading;
 
-                    Pose2d lookAhead = new Pose2d(currentPath.poses.get(targetIndex).x, currentPath.poses.get(targetIndex).y, currentPath.poses.get(targetIndex).heading);
-                    double closeErrorX = currentPath.poses.get(pathIndex).x - estimate.x;
-                    double closeErrorY = currentPath.poses.get(pathIndex).y - estimate.y;
-                    double closeHeadingChange = lookAhead.heading - currentPath.poses.get(pathIndex).heading;
-                    //lookAhead.x += (closeErrorX * Math.cos(closeHeadingChange) - closeErrorY * Math.sin(closeHeadingChange)) * 2.5;
-                    //lookAhead.y += (closeErrorX * Math.sin(closeHeadingChange) + closeErrorY * Math.cos(closeHeadingChange)) * 2.5;
-                    //pj closest point turn correction
-
-                    // Plot the lookahead point
-                    canvas.setFill("#ff0000");
-                    canvas.fillCircle(lookAhead.x, lookAhead.y, 1.5);
-
-                    // If you are reading this kyle u r a monkey
-                    Pose2d pi = currentPath.poses.get(pathIndex);
-                    canvas.setFill("#ff00ff");
-                    canvas.fillCircle(pi.x, pi.y, 1.5);
-
-                    Pose2d error = new Pose2d(
-                            lookAhead.x - estimate.x,
-                            lookAhead.y - estimate.y,
-                            AngleUtil.clipAngle(lookAhead.heading - estimate.heading + (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0))
-                    );
-
-                    double relativeErrorY = error.y * Math.cos(estimate.heading) - error.x * Math.sin(estimate.heading);
-                    double relativeErrorX = error.x * Math.cos(estimate.heading) + error.y * Math.sin(estimate.heading); // why calculate it like this??????
-
-                    double radius = (error.x * error.x + error.y * error.y) / (2 * relativeErrorY);
-                    radius *= Math.signum(relativeErrorX);
-                    double theta = Math.atan2(relativeErrorY, relativeErrorX);
-
-                    // Plot the circle thing
-                    Vector2 perp = new Vector2(-Math.sin(estimate.heading), Math.cos(estimate.heading));
-                    if (Math.abs(radius) < 25) { // Don't put radius if it will explode ftc dashboard
-                        canvas.setStroke("#0000ff");
-                        perp.norm();
-                        perp.mul(radius);
-                        //perp.mul(Math.signum(radius));
-                        perp.add(new Vector2(estimate.x, estimate.y));
-                        canvas.strokeLine(estimate.x, estimate.y, perp.x, perp.y);
-                        canvas.strokeCircle(perp.x, perp.y, Math.abs(radius));
-                    }
-
-                    TelemetryUtil.packet.put("Reversed", currentPath.poses.get(pathIndex).reversed);
-                    double speed = targetRadius > minRadius ?
-                            (targetRadius - minRadius) / (maxRadius - minRadius) * (1.0 - minSpeedFollowPath) + minSpeedFollowPath :
-                            (Math.abs(relativeErrorX) / minRadius) * (minSpeedFollowPath - slowdown) + slowdown; //Find the speed based on the radius -> determined by the curvyness of the path infront of robot
-                //speed *= Math.min(1, Math.abs(radius)/radiusSlowDown);
-                    double targetFwd = speed * (Math.abs(relativeErrorX) > 0.5 ? Math.signum(relativeErrorX) : 0);
-                    double targetTurn = speed * (targetRadius > minRadius ?
-                            (TRACK_WIDTH / 2.0) / radius + Math.atan2(distanceToClosestPoint, radius) * Math.signum(relativeErrorY * relativeErrorX) * headingCorrectionP/ stupidDivisor :
-                            error.heading * headingCorrectionP);
-                    double targetStrafe = speed * relativeErrorY;
-
-
-                    if (pathIndex >= currentPath.poses.size() - 1 && Math.abs(error.heading) - (currentPath.poses.get(pathIndex).reversed ? Math.PI : 0) < Math.toRadians(headingError)) {
-                        state = State.GO_POINT;
-                        return;
-                    }
-
-                    goToPoint(targetPose);
-
-                    //goToPoint(lookAhead);
-
-                    //apply the feedforward
-
-                /*
-                    double fwd = targetFwd + (targetFwd - localizer.relCurrentVel.x / maxSpeed) * 0.35;
-                    //Log.e("ctb", String.format("targetTurn: %f | localizer.relCurrentVel.heading : %f | maxTurn : %f", targetTurn, localizer.relCurrentVel.heading, maxTurn));
-                    double turn = targetTurn + (targetTurn - localizer.relCurrentVel.heading / maxTurn) * turnP;
-                    turn *= turnMul;
-
-
-                    double[] motorPowers = {
-                            fwd - turn,
-                            fwd - turn,
-                            fwd + turn,
-                            fwd + turn
-                    };
-                    TelemetryUtil.packet.put("fwd", fwd);
-                    TelemetryUtil.packet.put("turn", turn);
-                    TelemetryUtil.packet.put("radius", radius);
-
-                    // Post 1 normalization
-                    double max = 1;
-                    for (double power : motorPowers) {
-                        max = Math.max(max, power);
-                    }
-
-
-                    for (int i = 0; i < motors.size(); i++) {
-                        motorPowers[i] /= max;
-                        //this should already be done in priority motor --Kyle
-                        //motorPowers[i] *= 1.0 - MIN_MOTOR_POWER_TO_OVERCOME_FRICTION; // we do this so that we keep proportions when we add MIN_MOTOR_POWER_TO_OVERCOME_FRICTION in the next line below. If we had just added MIN_MOTOR_POWER_TO_OVERCOME_FRICTION without doing this 0.9 and 1.0 become the same motor power
-                        //motorPowers[i] += MIN_MOTOR_POWER_TO_OVERCOME_FRICTION * Math.signum(motorPowers[i]);
-                        TelemetryUtil.packet.put("Max", max);
-                        TelemetryUtil.packet.put("Motor power", motorPowers[0] + " " + motorPowers[1] + " " + motorPowers[2] + " " + motorPowers[3]);
-
-                        //motors.get(i).setPower(motorPowers[i]);
-                        motors.get(i).setTargetPower(motorPowers[i]);
-                    }*/
-
-                break;
-            case GO_POINT:
-                Pose2d target = currentPath.getLastPoint();
-                goToPoint(target);
-
-                Log.e("DRIVING", "");
-
-                if (Math.abs(target.x-ROBOT_POSITION.x) < 5 && Math.abs(target.y-ROBOT_POSITION.y) < 5 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(5)) {
-                    // changing PIDs to be stronger for final adjustment
-                    //xPID.updatePID(0.4, 0.0,0.0);
-                    //yPID.updatePID(0.1,0.0,0.0);
-                    //turnPID.updatePID(0.128,0.0,0.0);
-
-                    Log.e("FINAL ADJUSTMENT", "");
-
-                    if (Math.abs(target.x-ROBOT_POSITION.x) < 1 && Math.abs(target.y-ROBOT_POSITION.y) < 1 && Math.abs(target.heading - ROBOT_POSITION.heading) < Math.toRadians(1)) {
-                        state = State.BRAKE;
-                    }
+                while(Math.abs(turnError) > Math.PI ){
+                    turnError -= Math.PI * 2 * Math.signum(turnError);
                 }
 
-                Log.e("xPID.p", xPID.p + "");
+                double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
+                double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
+                double turn = turnPID.update(Math.abs(turnError) > headingThreshold/2 ? turnError : 0);
+
+                Vector2 move = new Vector2(fwd, strafe);
+                setMoveVector(move, turn);
+
+                if (atPoint()) {
+                    state = State.BRAKE;
+                }
                 break;
             case BRAKE:
-                for (PriorityMotor motor : motors) {
-                    motor.setTargetPower(0);
-                }
-                state = State.DRIVE;
+                stopAllMotors();
+                state = State.IDLE;
                 break;
-            case DRIVE:
-                return;
+            case IDLE:
+                break;
         }
-        TelemetryUtil.packet.put("Drivetrain State", state);
-        TelemetryUtil.packet.put("drivetrain at point", atPoint());
+    }
+
+    public boolean isBusy() {
+        return state != State.IDLE;
     }
 
     public void stopAllMotors() {
@@ -350,23 +188,14 @@ public class Drivetrain {
         localizer.update();
     }
 
-    private void updateDashboard() {
-        Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
+    public void updateTelemetry () {
+        TelemetryUtil.packet.put("Drivetrain State", state);
+        TelemetryUtil.packet.put("drivetrain at point", atPoint());
 
-        DashboardUtil.drawSampledPath(fieldOverlay, getCurrentPath());
+        TelemetryUtil.packet.put("xError", xError);
+        TelemetryUtil.packet.put("yError", yError);
+        TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
     }
-
-    // TODO: REMEMBER TO CHANGE BOTH PxIDs BELOW
-    public static PID xPID = new PID(0.085,0,0.01);
-    public static PID yPID = new PID(0.15,0.0,0.01);
-    public static PID turnPID = new PID(0.73,0,0.001);
-
-    Pose2d targetPose = new Pose2d(0, 0, 0);
-    Pose2d lastTargetPoint = new Pose2d(0,0,0);
-
-    double xError = 0.0;
-    double yError = 0.0;
-    double turnError = 0.0;
 
     public void goToPoint(Pose2d targetPoint) {
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
@@ -377,32 +206,11 @@ public class Drivetrain {
             yPID.resetIntegral();
             turnPID.resetIntegral();
 
+            this.targetPoint = targetPoint;
             lastTargetPoint = targetPoint;
             state = State.DRIVE;
             Log.e("resetting integrals", "");
         }
-
-        double deltaX = (targetPoint.x - localizer.x);
-        double deltaY = (targetPoint.y-localizer.y);
-
-        xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
-        yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
-        turnError = targetPoint.heading-localizer.heading;
-
-        while(Math.abs(turnError) > Math.PI ){
-            turnError -= Math.PI * 2 * Math.signum(turnError);
-        }
-
-        double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
-        double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
-        double turn = turnPID.update(Math.abs(turnError) > headingThreshold/2 ? turnError : 0);
-
-        TelemetryUtil.packet.put("xError", xError);
-        TelemetryUtil.packet.put("yError", yError);
-        TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
-
-        Vector2 move = new Vector2(fwd, strafe);
-        setMoveVector(move, turn);
     }
 
     public static double xThreshold = 1;
@@ -502,10 +310,6 @@ public class Drivetrain {
 
     public void setPoseEstimate(Pose2d pose2d) {
         localizer.setPoseEstimate(pose2d);
-    }
-
-    public boolean isBusy() {
-        return state != State.BRAKE;
     }
 
     public Vector2 lineCircleIntersection(Pose2d start, Pose2d end, Pose2d robot, double radius) {

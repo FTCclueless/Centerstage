@@ -87,22 +87,12 @@ public class Robot {
         Log.e("robot.deposit.checkReady", deposit.checkReady() + "");
     }
 
-    public void followSpline(Spline spline, LinearOpMode opMode) {
-        drivetrain.setCurrentPath(spline);
-        while(drivetrain.isBusy() && opMode.opModeIsActive()) {
-            Log.e("isbusy: ", drivetrain.isBusy() + "");
-            update();
-        }
-    }
-
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose); // need this to start the process so thresholds don't immediately become true
-        while(System.currentTimeMillis() - start <= 5000 && !drivetrain.atPoint()) {
-            drivetrain.goToPoint(pose);
+        while(System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
-        drivetrain.stopAllMotors();
 
         Log.e("go to point x error", (pose.x - drivetrain.localizer.x) + "");
         Log.e("go to point y error", (pose.y - drivetrain.localizer.y) + "");
