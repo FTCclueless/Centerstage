@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -33,17 +34,8 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
     private double actuationHeight = 1.0;
 
-    private boolean alreadyTriggered = false;
-    private int numberOfTimesIntakeBeamBreakTriggered = 0;
-
     double actuationLength = 3.5;
     double actuationAngle = 0.0;
-
-    private double delayToTurnOffIntake = 50; // ms
-    private long startTime = 0; // ms
-    private boolean isAlreadyTriggered = false;
-
-    public boolean isReady = false;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -72,47 +64,18 @@ public class Intake {
     public void update() {
         actuation.setTargetAngle(actuationAngle, 1.0);
 
-        /*if (sensors.isIntakeTriggered() && !alreadyTriggered) {
-            alreadyTriggered = true;
-            if (state == State.ON) {
-                numberOfTimesIntakeBeamBreakTriggered++;
-            } else {
-                numberOfTimesIntakeBeamBreakTriggered--;
-            }
-        }
-        if (!sensors.isIntakeTriggered()) {
-            alreadyTriggered = false;
-        }
-
-        if (numberOfTimesIntakeBeamBreakTriggered > 2) {
-            reverse();
-        }*/
-
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
-                if (System.currentTimeMillis() - start > 500) {
+                if (System.currentTimeMillis() - start > 500) { // don't immediately start the intake until the deposit stalls
                     intake.setTargetPower(intakePower);
                 }
-                /*if (numberOfTimesIntakeBeamBreakTriggered >= 2) {
-                    if (!isAlreadyTriggered) {
-                        isAlreadyTriggered = true;
-                        startTime = System.currentTimeMillis();
-                    }
-                    if (System.currentTimeMillis() - startTime >= delayToTurnOffIntake) {
-                        off();
-                        isReady = true;
-                    }
-                }*/
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
                 break;
             case REVERSED:
                 intake.setTargetPower(-1.0);
-//                if (numberOfTimesIntakeBeamBreakTriggered <= 2) {
-//                    off();
-//                }
                 break;
             case SOFT_REVERSED:
                 intake.setTargetPower(-0.35);
@@ -123,16 +86,11 @@ public class Intake {
     long start;
 
     public void on() {
-        numberOfTimesIntakeBeamBreakTriggered = 0;
         start = System.currentTimeMillis();
-        isReady = false;
         state = State.ON;
     }
 
     public void off() {
-        isReady = true;
-        isAlreadyTriggered = false;
-        numberOfTimesIntakeBeamBreakTriggered = 0;
         state = State.OFF;
     }
 

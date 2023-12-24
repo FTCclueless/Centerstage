@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @Disabled
 @TeleOp
@@ -21,12 +20,12 @@ public class SlideTester extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Slides slides = robot.deposit.slides;
-        robot.deposit.state = Deposit.State.WAIT;
+        robot.deposit.state = Deposit.State.IDLE;
         waitForStart();
 
         while (!isStopRequested()) {
             Globals.START_LOOP();
-            slides.setLength(distance);
+            slides.setTargetLength(distance);
             TelemetryUtil.packet.put("state", robot.deposit.state);
 
             robot.sensors.update();

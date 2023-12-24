@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.EndAffector;
-import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 
 @TeleOp
 public class Reset extends LinearOpMode {
@@ -16,16 +15,14 @@ public class Reset extends LinearOpMode {
         Deposit deposit = robot.deposit;
         EndAffector endAffector = robot.deposit.endAffector;
 
-        robot.deposit.state = Deposit.State.WAIT;
+        robot.deposit.state = Deposit.State.IDLE;
 
         waitForStart();
 
         while (!isStopRequested()) {
-            endAffector.v4Servo.setTargetAngle(Deposit.downPitch, 0.5);
-            endAffector.topTurret.setTargetAngle(Deposit.intakeTopTurret,1.0);
-            endAffector.botTurret.setTargetAngle(Deposit.intakeBotTurret,1.0);
-            endAffector.topServo.setTargetAngle(Deposit.intakeTopServoAngle,1.0);
-            deposit.dunker.intake();
+            endAffector.v4Servo.setTargetAngle(Deposit.v4BarIntakeAngle, 0.5);
+            endAffector.topServo.setTargetAngle(Deposit.topServoIntakeAngle,1.0);
+            deposit.release.hold();
 
             robot.update();
         }

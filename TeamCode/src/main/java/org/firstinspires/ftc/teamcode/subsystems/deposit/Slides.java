@@ -29,7 +29,6 @@ public class Slides {
     public static double kP = 0.11;
     public static double kA = 3;
     public static double kStatic = 0.15;
-    public static double threshold = 2;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
     public static double downPower = -0.4; // JANK
@@ -77,11 +76,11 @@ public class Slides {
         slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1),-1));
     }
 
-    public void setLength(double length) {
+    public void setTargetLength(double length) {
         targetLength = Math.min(length, maxSlidesHeight);
     }
 
-    public boolean isBusy() {
+    public boolean inPosition(double threshold) {
         return Math.abs(targetLength - length) <= threshold;
     }
 

@@ -22,7 +22,7 @@ public class AnalogInputTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Globals.RUNMODE = RunMode.TESTER;
-        robot.deposit.state = Deposit.State.DOWN;
+        robot.deposit.state = Deposit.State.INTAKE;
         AnalogInput encoder = hardwareMap.get(AnalogInput.class, encoderName);
         TelemetryUtil.setup();
 

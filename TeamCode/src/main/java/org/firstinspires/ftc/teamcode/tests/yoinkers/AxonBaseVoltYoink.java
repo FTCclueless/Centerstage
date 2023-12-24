@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
@@ -27,7 +26,7 @@ public class AxonBaseVoltYoink extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
-        robot.deposit.state = Deposit.State.WAIT;
+        robot.deposit.state = Deposit.State.IDLE;
         robot.update();
         robot.deposit.endAffector.v4Servo.setTargetAngle(0,1);
         robot.hardwareQueue.update();

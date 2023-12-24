@@ -60,6 +60,7 @@ public class DoublePreloadAuto extends LinearOpMode {
      */
     public void doInitialization() {
         Globals.RUNMODE = RunMode.AUTO;
+        Globals.NUM_PIXELS = 1;
 
         vision = new Vision(hardwareMap, telemetry, red, true, true);
         robot = new Robot(hardwareMap, vision);
@@ -76,10 +77,6 @@ public class DoublePreloadAuto extends LinearOpMode {
             startPos.heading *= reflect;
             robot.drivetrain.setPoseEstimate(startPos);
         }
-
-        Pose2d targetBoard = AutoPathConstants.targetBoard.clone();
-        targetBoard.y *= reflect;
-        robot.deposit.setTargetBoard(targetBoard);
 
         if (red) {
             robot.droppers.leftDown();
@@ -99,7 +96,7 @@ public class DoublePreloadAuto extends LinearOpMode {
         while (opModeInInit()) {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
-            robot.deposit.dunker.lock();
+            robot.deposit.release.hold();
 
             robot.update();
         }
@@ -202,31 +199,9 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         robot.goToPoint(boardPreload, this);
 
+        robot.depositAt(boardPreloadDeposit.z, boardPreloadDeposit.y);
 
-
-
-
-        robot.deposit.depositAt(boardPreloadDeposit.z, boardPreloadDeposit.y, boardPreloadDeposit.x);
-
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 3000) {
-            robot.update();
-        }
-        robot.deposit.teleopJank();
-        while (robot.deposit.state != Deposit.State.FINISH_DEPOSIT) {
-            robot.update();
-        }
-
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start <= 1500) {
-            robot.update();
-        }
-
-        robot.dunk();
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 1000) {
-            robot.update();
-        }
+        robot.releaseTwo();
     }
 
     /**

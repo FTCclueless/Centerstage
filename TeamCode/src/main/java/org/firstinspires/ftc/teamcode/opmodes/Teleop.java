@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.widget.Button;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,10 +9,8 @@ import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
-import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 @TeleOp
@@ -26,7 +22,7 @@ public class Teleop extends LinearOpMode {
         Hang hang = robot.hang;
 
         Globals.RUNMODE = RunMode.TELEOP;
-        robot.deposit.state = Deposit.State.DOWN;
+        robot.deposit.state = Deposit.State.INTAKE;
 
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
@@ -42,6 +38,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle dpadDown_2 = new ButtonToggle();
         ButtonToggle dpadLeft_2 = new ButtonToggle();
         ButtonToggle dpadRight_2 = new ButtonToggle();
+        ButtonToggle leftTrigger_2 = new ButtonToggle();
         ButtonToggle rightTrigger_2 = new ButtonToggle();
         ButtonToggle rightBumper_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
@@ -49,7 +46,6 @@ public class Teleop extends LinearOpMode {
 
         Vector3 depoPos = new Vector3(15, 0, 10);
 
-        robot.deposit.setTargetBoard(new Pose2d(0,0,0));
         robot.airplane.hold();
         robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
 
@@ -59,28 +55,13 @@ public class Teleop extends LinearOpMode {
 
         while (!isStopRequested()) {
             // adjusting angle of actuation
-            if (rightBump.isToggled(gamepad1.right_bumper)) {
+            if (rightBump.isToggled(gamepad1.right_bumper)) { // TODO: change this to have more adjustment
                 robot.intake.actuationUp();
             } else {
                 robot.intake.actuationDown();
             }
 
-            if (leftBump.isToggled(gamepad1.left_bumper)) {
-                robot.hangActuation.up();
-            } else {
-                robot.hangActuation.down();
-            }
-
-            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) || rightBumper_2.isClicked(gamepad2.right_bumper))
-                robot.deposit.teleopJank();
-
             // driver B adjusting deposit position
-            if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
-                depoPos.y+=3;
-            }
-            if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
-                depoPos.y-=3;
-            }
             if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
                 depoPos.z+=3;
             }
@@ -88,17 +69,17 @@ public class Teleop extends LinearOpMode {
                 depoPos.z-=3;
             }
             depoPos.x -= gamepad2.right_stick_y*0.2;
-            depoPos.y += gamepad2.left_stick_x*0.2;
             depoPos.z -= gamepad2.left_stick_y*0.2;
 
             // trigger deposit
             if (a_2.isClicked(gamepad2.a)) {
+                Globals.NUM_PIXELS = 2;
                 depoPos = new Vector3(15, 0, depoPos.z);
                 depoFlag = true;
             }
 
             if (depoFlag) {
-                robot.deposit.depositAt(depoPos.z, depoPos.y, depoPos.x);
+                robot.deposit.depositAt(depoPos.z, depoPos.x);
             }
 
             TelemetryUtil.packet.put("depoz: ", depoPos.z);
@@ -121,14 +102,17 @@ public class Teleop extends LinearOpMode {
             }
 
             // dunking
-            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.dunker.busy() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
-                robot.deposit.dunk();
+            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+                robot.deposit.releaseOne();
             }
 
-            if (x_2.isClicked(gamepad2.x) && ( robot.deposit.state == Deposit.State.WAIT_DUNK || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)){
-                depoFlag = false;
+            if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+                robot.deposit.releaseTwo();
+            }
+
+            if ((x_2.isClicked(gamepad2.x) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.retract();
-                intake.off();
+                depoFlag = false;
             }
 
             // hanging mechanism
@@ -140,11 +124,15 @@ public class Teleop extends LinearOpMode {
                 hang.off();
             }
 
+            // airplane
             if (gamepad1.dpad_up) {
                 robot.airplane.release();
             }
 
+            // driving
             robot.drivetrain.drive(gamepad1);
+
+            // update robot
             robot.update();
         }
     }

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.utils.RunMode;
 @TeleOp
 @Config
 public class DepositStateTest extends LinearOpMode {
-    public static Deposit.State state = Deposit.State.DOWN;
+    public static Deposit.State state = Deposit.State.INTAKE;
     public static RunMode runmode = RunMode.TELEOP;
     public static boolean update = true;
 

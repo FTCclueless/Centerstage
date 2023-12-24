@@ -19,9 +19,8 @@ import org.firstinspires.ftc.teamcode.utils.RunMode;
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode {
-    public static double height = 10;
-    public static double targetY = 0;
-    public static double xError = 15;
+    public static double targetHeight = 10;
+    public static double targetX = 15;
     public static double heading = 180;
     public static boolean startDeposit = false;
     public static boolean startRetract = false;
@@ -36,12 +35,9 @@ public class DepositTest extends LinearOpMode {
         waitForStart();
 
         robot.drivetrain.setPoseEstimate(new Pose2d(0,0,Math.toRadians(heading)));
-        robot.deposit.setTargetBoard(new Pose2d(0,0,0));
         boolean depo = false;
 
         while (opModeIsActive()) {
-            //robot.intake.on();
-
             if (btx.isClicked(gamepad1.x) || startDeposit) {
                 depo = true;
                 startDeposit = false;
@@ -49,14 +45,14 @@ public class DepositTest extends LinearOpMode {
             }
 
             if (depo) {
-                robot.deposit.depositAt(height, targetY, xError);
+                robot.deposit.depositAt(targetHeight, targetX);
             }
 
             Log.e("gamepady", " " + gamepad1.y);
             if (bty.isClicked(gamepad1.y) || startRetract) {
                 System.out.println("I NEED TO DO SOMETHING");
-                robot.dunk();
-                robot.deposit.state = Deposit.State.START_RETRACT;
+                robot.releaseTwo();
+                robot.deposit.state = Deposit.State.RETRACT;
                 depo = false;
                 startRetract = false;
             }

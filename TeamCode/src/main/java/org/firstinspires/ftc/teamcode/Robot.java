@@ -11,9 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.airplane.Airplane;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
-import org.firstinspires.ftc.teamcode.subsystems.deposit.Dunker;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.hangActuation.HangActuation;
@@ -104,18 +102,23 @@ public class Robot {
     }
 
     public void depositAt(double targetH, double targetY) {
-
         deposit.depositAt(targetH, targetY);
 
-        while (deposit.state != Deposit.State.WAIT_DUNK) {
+        while (deposit.state != Deposit.State.DEPOSIT) {
             update();
         }
     }
 
-    public void dunk() {
-        deposit.dunk();
-        while (deposit.dunker.busy()) {
-            System.out.println("Bomb 2");
+    public void releaseOne() {
+        deposit.releaseOne();
+        while (deposit.state != Deposit.State.RETRACT) {
+            update();
+        }
+    }
+
+    public void releaseTwo() {
+        deposit.releaseTwo();
+        while (deposit.state != Deposit.State.RETRACT) {
             update();
         }
     }

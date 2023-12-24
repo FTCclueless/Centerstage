@@ -1,321 +1,154 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
-import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
-
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
-import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.Pose2d;
-import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 @Config
 public class Deposit {
-    DepositMath depositMath;
     public enum State {
         START_DEPOSIT,
-        MOVE_V4UP,
         FINISH_DEPOSIT,
-        TELEOP_JANK_V4UP,
-        TELEOP_JANK_TILTUP,
-        TELEOP_JANK_TILTDOWN,
-        EXTEND_ROTATE180,
-        WAIT_DUNK,
+        DEPOSIT,
         START_RETRACT,
-        RETRACT_ROTATE180,
-        MOVE_V4DOWN,
-        GODOWN,
-        DOWN,
-        WAIT,
+        RETRACT,
+        INTAKE,
+        IDLE,
     };
     public State state;
 
     public Slides slides;
     public EndAffector endAffector;
-    public Dunker dunker;
+    public Release release;
     HardwareQueue hardwareQueue;
     Robot robot;
     Sensors sensors;
 
-    Pose2d targetBoard;
-    double targetY;
-    double targetH;
+    double targetH = 0.0;
+    double targetX = 0.0;
 
-    double xError = 5;
-    double yError = 5;
-    double headingError = 0;
-    double xOffset = 0;
-    public static double downPitch = -1.10388; // regular down intake pitch for arm
-    public static double transferPitch = -1.2088; //2.0900 stalling pitch for arm
-    public static double slidesV4Thresh = 12;
-    public static double upPitch = 1.38;
-    public static double intakeTopTurret = 0.056;
-    public static double intakeTopServoAngle = 1.115;
-    public static double intakeBotTurret = 3.5; //3.57
-    public static double rotate180TopServoAngle = -0.381;
+    public static double slidesV4Thresh = 3;
 
-    public static double power = 0.9;
+    // v4bar angles
+    public static double v4BarIntakeAngle = -1.10388;
+    public static double v4BarTransferAngle = -1.2088;
+    public static double v4BarDepositAngle = 1.38;
 
-    public static double interpolationDist = 3;
+    // top servo angles (if the top servo is even in the design)
+    public static double topServoIntakeAngle = 1.115;
+    public static double topServoDepositAngle = 0.0;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
         this.robot = robot;
-        depositMath = new DepositMath();
 
-        state = State.DOWN;
+        state = State.INTAKE;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
-        dunker = new Dunker(hardwareMap, hardwareQueue, sensors);
-    }
-
-    public void setTargetBoard(Pose2d targetBoard) {
-        this.targetBoard = targetBoard;
+        release = new Release(hardwareMap, hardwareQueue);
     }
 
     // Call this whenever you want! It can be an updating function!
-    public void depositAt(double targetH, double targetY, double xOffset) {
+    public void depositAt(double targetH, double targetX) {
         this.targetH = targetH;
-        this.targetY = targetY;
-        this.xOffset = xOffset;
+        this.targetX = targetX;
 
-        if (state == State.DOWN)
+        if (state == State.INTAKE) {
             state = State.START_DEPOSIT;
+        }
     }
 
-    public void depositAt(double targetH, double targetY) {
-        this.depositAt(targetH, targetY, 4);
+    public void releaseOne() {
+        release.releaseOne();
     }
 
-    public void resetXOffset() {
-        xOffset = 0;
-    }
-
-    public void dunk() {
-        dunker.dunk();
-        state = State.WAIT_DUNK;
-        /* Deposit this number of pixels and because its one servo we don't need none of that state yucky yucky (I THINK??) */
+    public void releaseTwo() {
+        release.releaseTwo();
     }
 
     public void retract() {
-        state = State.START_RETRACT;
+        state = State.RETRACT;
     }
 
     public boolean checkReady() {
-        return endAffector.checkReady() && !slides.isBusy();
-    }
-
-    public void teleopJank() {
-        if (state == State.FINISH_DEPOSIT) // Remove if something stupid is happening
-            state = State.TELEOP_JANK_V4UP;
+        return endAffector.checkReady() && !slides.inPosition(2);
     }
 
     public void update() {
-        TelemetryUtil.packet.put("depoState", state);
+        TelemetryUtil.packet.put("Deposit State", state);
+
         switch (state) {
-            case START_DEPOSIT: // any adjustments initialize here --Kyle
-                if (Globals.RUNMODE == RunMode.TELEOP) {
-                    dunker.intake();
-                } else {
-                    dunker.intake();
+            case START_DEPOSIT:
+                release.hold();
+
+                if (release.inPosition()) {
+                    slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
                 }
-                if (Globals.RUNMODE == RunMode.TELEOP) {
-                    depositMath.calculate(
-                        xOffset,
-                        0,
-                        0,
-                        targetH, targetY
-                    );
-                } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x + xOffset;
-                    yError = targetBoard.y - ROBOT_POSITION.y;
-                    headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
 
-                    depositMath.calculate(
-                        xError,
-                        yError,
-                        headingError,
-                        targetH, targetY
-                    );
-                }
-                slides.setLength(Math.max(depositMath.slideExtension, slidesV4Thresh));
-
-                Log.e("targetY START", targetY + "");
-
-                if (slides.getLength() > slidesV4Thresh-4)
-                    state = State.MOVE_V4UP;
-
-                break;
-            case MOVE_V4UP:
-                endAffector.v4Servo.setTargetAngle(upPitch,power);
-                if (endAffector.v4Servo.inPosition())
-                    state = State.EXTEND_ROTATE180;
-                break;
-
-            case EXTEND_ROTATE180:
-                endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40/36.0,power);
-                endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw, 1.0);
-                endAffector.topServo.setTargetAngle(rotate180TopServoAngle, 1.0);
-                Log.e("(depositMath.v4BarYaw * 40/36.0)", (depositMath.v4BarYaw * 40/36.0) + "");
-                if (endAffector.botTurret.inPosition()) {
+                if (slides.getLength() > slidesV4Thresh) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
-            case FINISH_DEPOSIT: // Also our update state -- Eric
-                if (Globals.RUNMODE == RunMode.TELEOP) {
-                    depositMath.calculate(
-                            xOffset,
-                            0,
-                            0, //targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI),
-                            targetH, targetY
-                    );
-                } else {
-                    xError = targetBoard.x - ROBOT_POSITION.x + xOffset;
-                    yError = targetBoard.y - ROBOT_POSITION.y;
-                    headingError = targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI);
+            case FINISH_DEPOSIT: // stuck in this state unless someone calls dunk method. In the meantime it will constantly update targetH
+                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,1.0);
+                endAffector.topServo.setTargetAngle(topServoDepositAngle,1.0);
 
-                    TelemetryUtil.packet.put("xError", xError);
-                    TelemetryUtil.packet.put("yError", yError);
-                    TelemetryUtil.packet.put("headingError", headingError);
-
-                    depositMath.calculate(
-                            xError,
-                            yError,
-                            headingError,
-                            targetH, targetY
-                    );
-                    Log.e("targetY END", targetY + "");
-                }
-                TelemetryUtil.packet.put("v4Yaw", depositMath.v4BarYaw);
-
-
-                slides.setLength(depositMath.slideExtension);
-                endAffector.botTurret.setTargetAngle(depositMath.v4BarYaw * 40.0/36,power); //scuffed kinda (gear ratio) --kyle
-                endAffector.v4Servo.setTargetAngle(depositMath.v4BarPitch,power);
-                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch,1.0);
-
-                if (depositMath.v4BarPitch < 0) {
-                    //endAffector.setBotTurret(0);
-                    Log.e("v4bar too low", "E");
+                if (endAffector.v4Servo.getCurrentAngle() > Math.toRadians(90)) { // TODO: Tune this value
+                    slides.setTargetLength(targetH);
                 }
 
-                if (Globals.RUNMODE == RunMode.TELEOP) {
-                    endAffector.topTurret.setTargetAngle(-depositMath.v4BarYaw,1.0);
-                } else {
-                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw,1.0);
+                if (endAffector.v4Servo.inPosition() && slides.inPosition(2)) {
+                    state = State.DEPOSIT;
                 }
                 break;
-
-            case TELEOP_JANK_V4UP:
-                endAffector.v4Servo.setTargetAngle(Math.toRadians(45), 1);
-                if (endAffector.v4Servo.inPosition())
-                    state = State.TELEOP_JANK_TILTUP;
-
-                break;
-
-            case TELEOP_JANK_TILTUP:
-                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch + Math.toRadians(35), 0.4);
-                endAffector.topTurret.setTargetAngle(0, 0.5);
-                if (endAffector.topServo.inPosition() && endAffector.topTurret.inPosition())
-                    state = State.TELEOP_JANK_TILTDOWN;
-                break;
-
-            case TELEOP_JANK_TILTDOWN:
-                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch, 0.6);
-                endAffector.topTurret.setTargetAngle(-depositMath.v4BarPitch, 0.5);
-                if (Globals.RUNMODE == RunMode.AUTO)
-                    endAffector.topTurret.setTargetAngle(targetBoard.heading - AngleUtil.clipAngle(ROBOT_POSITION.heading+Math.PI) - depositMath.v4BarYaw, 0.5);
-                if (endAffector.topServo.inPosition() && endAffector.topTurret.inPosition())
-                    state = State.FINISH_DEPOSIT;
-
-                break;
-
-            case WAIT_DUNK:
-                endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch - Math.toRadians(10), 1);
-                if ( !dunker.busy()) {
-                    if (Globals.RUNMODE == RunMode.AUTO ) {
-                        endAffector.topServo.setTargetAngle(-depositMath.v4BarPitch, 1);
-                        state = State.START_RETRACT;
-                    }
-                    else {
-                        state = State.FINISH_DEPOSIT;
-                    }
+            case DEPOSIT:
+                if (release.readyToRetract()) {
+                    state = State.START_RETRACT;
                 }
                 break;
-
             case START_RETRACT:
-                //endAffector.setBotTurret(0);
-                if (Globals.RUNMODE == RunMode.TELEOP) {
-                    dunker.intake();
-                }
-                else {
-                    dunker.intake();
-                }
-                slides.setLength(slidesV4Thresh);
-                endAffector.botTurret.setTargetAngle(0.0,power);
-                //endAffector.topTurret.setTargetAngle(intakeTopTurret,power);
-                /* move v4bar servo to minimum value before bricking */
+                release.intake();
 
-                if (endAffector.botTurret.inPosition()) {
-                    endAffector.v4Servo.setTargetAngle(upPitch,power);
-                    if (endAffector.v4Servo.inPosition()) {
-                        state = State.RETRACT_ROTATE180;
-                    }
-                }
-                break;
-            case RETRACT_ROTATE180:
-                endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
-                endAffector.topTurret.setTargetAngle(intakeTopTurret,1.0);
-                endAffector.topServo.setTargetAngle(rotate180TopServoAngle, 1.0);
-                if (endAffector.botTurret.inPosition()) {
-                    state = State.MOVE_V4DOWN;
-                }
-                break;
-            case MOVE_V4DOWN:
-                System.out.println("out");
-                endAffector.v4Servo.setTargetAngle(downPitch,power/2);
-                endAffector.topServo.setTargetAngle(intakeTopServoAngle, 1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarIntakeAngle,1.0);
+                endAffector.topServo.setTargetAngle(topServoIntakeAngle, 1.0);
+
+                slides.setTargetLength(slidesV4Thresh + 2);
+
                 if (endAffector.v4Servo.inPosition()) {
-                    state = State.GODOWN;
+                    state = State.RETRACT;
                 }
                 break;
+            case RETRACT:
+                slides.setTargetLength(0.0);
 
-            case GODOWN: // Jank but work currently but don't change
-                dunker.intake();
-                if (dunker.dunker.getCurrentAngle() == dunker.dunker.getTargetAngle()) {
-                    state = State.DOWN;
+                if (slides.inPosition(2)) {
+                    state = State.INTAKE;
                 }
-
-            case DOWN:
-                slides.setLength(0.0);
+                break;
+            case INTAKE:
+                release.intake();
+                slides.setTargetLength(0.0);
 
                 if (robot.intake.state == Intake.State.ON && sensors.getSlidesPos() < 3) {
-                    endAffector.v4Servo.setTargetAngle(transferPitch,power);
+                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,1.0);
                 } else {
-                    endAffector.v4Servo.setTargetAngle(downPitch,power);
+                    endAffector.v4Servo.setTargetAngle(v4BarIntakeAngle,1.0);
                 }
 
-                endAffector.topTurret.setTargetAngle(intakeTopTurret,1.0);
-                endAffector.botTurret.setTargetAngle(intakeBotTurret,power);
-                endAffector.topServo.setTargetAngle(intakeTopServoAngle,1.0);
-                dunker.intake();
+                endAffector.topServo.setTargetAngle(topServoIntakeAngle,1.0);
                 break;
-
-            case WAIT: // We are boring :(
+            case IDLE: // We are boring :(
                 break;
         }
         slides.update();
-        dunker.update();
+        release.update();
 
         TelemetryUtil.packet.put("v4ServoAngle", endAffector.v4Servo.getCurrentAngle());
         TelemetryUtil.packet.put("v4ServoTarget", endAffector.v4Servo.getTargetPosition());

@@ -8,9 +8,6 @@ public class Globals {
     public static double LOOP_TIME = 0.0;
     public static RunMode RUNMODE = RunMode.TESTER;
 
-
-
-
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;
     public static double TRACK_WIDTH = 7.351173256 + 7.00091155; // 13.3750297033534346;
@@ -18,10 +15,12 @@ public class Globals {
     public static double MAX_DRIVETRAIN_SPEED = 75;
     public static double START_HEADING_OFFSET = 0.0;
 
-
     public static Pose2d ROBOT_POSITION =new Pose2d(0,0,0);
     public static Pose2d ROBOT_VELOCITY = new Pose2d(0,0,0);
     public static Pose2d AUTO_ENDING_POSE = new Pose2d(0,0,0);
+
+    // deposit
+    public static int NUM_PIXELS = 0;
 
     // loop time methods
     public static void START_LOOP() {

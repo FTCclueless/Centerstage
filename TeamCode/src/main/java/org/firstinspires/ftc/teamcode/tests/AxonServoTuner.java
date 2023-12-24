@@ -24,7 +24,7 @@ public class AxonServoTuner extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot = new Robot(hardwareMap);
-        robot.deposit.state = Deposit.State.WAIT;
+        robot.deposit.state = Deposit.State.IDLE;
         robot.update();
         robot.deposit.endAffector.v4Servo.setTargetAngle(0,1);
         robot.hardwareQueue.update();
