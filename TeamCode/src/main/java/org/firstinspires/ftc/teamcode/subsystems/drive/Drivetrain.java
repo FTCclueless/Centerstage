@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -30,10 +31,9 @@ import java.util.List;
 public class Drivetrain {
     public enum State {
         DRIVE,
-        BRAKE,
         IDLE
     }
-    public State state = State.BRAKE;
+    public State state = State.IDLE;
 
     public PriorityMotor leftFront, leftRear, rightRear, rightFront;
     private List<PriorityMotor> motors;
@@ -90,11 +90,11 @@ public class Drivetrain {
         if (vision != null) {
             if (vision.tagProcessor != null) {
                 localizer = new Localizer(hardwareMap, sensors,true, true, vision);
-                Log.e("using vision localizer", "erfjwlefwef");
+                Log.e("using vision localizer", "");
             }
         } else {
             localizer = new Localizer(hardwareMap, sensors,false, true, null);
-            Log.e("NOT using vision localizer", "123124r1cs");
+            Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();
     }
@@ -104,10 +104,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
-        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
-        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
-        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
+        leftFront.setMinimumPowerToOvercomeFriction(0.2110266667);
+        leftRear.setMinimumPowerToOvercomeFriction(0.2364266667);
+        rightRear.setMinimumPowerToOvercomeFriction(0.2330933333);
+        rightFront.setMinimumPowerToOvercomeFriction(0.20188);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -117,16 +117,20 @@ public class Drivetrain {
         rightFront.setMinimumPowerToOvercomeFriction(0.0);
     }
 
-    public static PID xPID = new PID(0.085,0.0,0.01);
-    public static PID yPID = new PID(0.15,0.0,0.01);
-    public static PID turnPID = new PID(0.73,0.0,0.001);
-
     Pose2d targetPoint = new Pose2d(0,0,0);
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
     double xError = 0.0;
     double yError = 0.0;
     double turnError = 0.0;
+
+    public static double xSlowdown = 15;
+    public static double ySlowdown = 15;
+    public static double turnSlowdown = Math.toRadians(50);
+
+    public static double kAccelX = 1.0;
+    public static double kAccelY = 0.0;
+    public static double kAccelTurn = 0.5;
 
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
@@ -143,7 +147,7 @@ public class Drivetrain {
         switch (state) {
             case DRIVE:
                 double deltaX = (targetPoint.x - localizer.x);
-                double deltaY = (targetPoint.y-localizer.y);
+                double deltaY = (targetPoint.y - localizer.y);
 
                 xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
                 yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
@@ -153,20 +157,21 @@ public class Drivetrain {
                     turnError -= Math.PI * 2 * Math.signum(turnError);
                 }
 
-                double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
-                double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
-                double turn = turnPID.update(Math.abs(turnError) > headingThreshold/2 ? turnError : 0);
+                double targetForwardPower = Math.min(Math.abs(xError)/xSlowdown,1.0)*Math.signum(xError);
+                double targetStrafePower = Math.min(Math.abs(yError)/ySlowdown,1.0)*Math.signum(yError);
+                double targetTurnPower = Math.min(Math.abs(turnError)/turnSlowdown,1.0)*Math.signum(turnError);
+
+                targetForwardPower *= 12/sensors.getVoltage();
+                targetStrafePower *= 12/sensors.getVoltage();
+                targetTurnPower *= 12/sensors.getVoltage();
+
+                double fwd = Math.abs(xError) > xThreshold/2 ? targetForwardPower + kAccelX*(targetForwardPower - ROBOT_VELOCITY.x/Globals.MAX_X_SPEED) : 0;
+                double strafe = Math.abs(yError) > yThreshold/2 ? targetStrafePower + kAccelY*(targetStrafePower - ROBOT_VELOCITY.y/Globals.MAX_Y_SPEED) : 0;
+                double turn = Math.abs(turnError) > turnThreshold/2 ? targetTurnPower + kAccelTurn*(targetTurnPower - ROBOT_VELOCITY.heading/Globals.MAX_HEADING_SPEED) : 0;
 
                 Vector2 move = new Vector2(fwd, strafe);
                 setMoveVector(move, turn);
 
-                if (atPoint()) {
-                    state = State.BRAKE;
-                }
-                break;
-            case BRAKE:
-                stopAllMotors();
-                state = State.IDLE;
                 break;
             case IDLE:
                 break;
@@ -202,29 +207,24 @@ public class Drivetrain {
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
 
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
-            xPID.resetIntegral();
-            yPID.resetIntegral();
-            turnPID.resetIntegral();
-
             this.targetPoint = targetPoint;
             lastTargetPoint = targetPoint;
             state = State.DRIVE;
-            Log.e("resetting integrals", "");
         }
     }
 
     public static double xThreshold = 1;
     public static double yThreshold = 1;
-    public static double headingThreshold = Math.toRadians(5);
+    public static double turnThreshold = Math.toRadians(5);
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();
         yThreshold = thresholds.getY();
-        headingThreshold = thresholds.getHeading();
+        turnThreshold = thresholds.getHeading();
     }
 
     public boolean atPoint () {
-        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < headingThreshold;
+        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < turnThreshold;
     }
 
     public void setMode(DcMotor.RunMode runMode) {

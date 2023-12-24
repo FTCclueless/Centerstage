@@ -81,8 +81,6 @@ public class Robot {
     private void updateTelemetry() {
         TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
         TelemetryUtil.sendTelemetry();
-
-        Log.e("robot.deposit.checkReady", deposit.checkReady() + "");
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {
@@ -91,10 +89,6 @@ public class Robot {
         while(System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
-
-        Log.e("go to point x error", (pose.x - drivetrain.localizer.x) + "");
-        Log.e("go to point y error", (pose.y - drivetrain.localizer.y) + "");
-        Log.e("go to point heading error", (pose.heading - drivetrain.localizer.heading) + "");
     }
 
     public void goToPoint(double x, double y, double heading, LinearOpMode opMode) {

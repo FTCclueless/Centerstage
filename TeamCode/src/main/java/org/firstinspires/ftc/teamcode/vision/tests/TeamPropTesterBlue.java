@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.vision.tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
+@Disabled
 @TeleOp
 public class TeamPropTesterBlue extends LinearOpMode {
     private Vision vision = new Vision(hardwareMap, telemetry, true, true, false);

@@ -42,9 +42,10 @@ public class Vision {
                 .addProcessor(teamPropDetectionPipeline)
                 .build();
 
+        // waiting for camera to start streaming
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
             Log.e("initializing camera....", "");
-        } // waiting for camera to start streaming
+        }
 
         setCameraSettings();
 
@@ -67,9 +68,10 @@ public class Vision {
                 .addProcessor(tagProcessor)
                 .build();
 
+        // waiting for camera to start streaming
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
             Log.e("initializing camera....", "");
-        } // waiting for camera to start streaming
+        }
 
         setCameraSettings();
 
@@ -94,9 +96,10 @@ public class Vision {
                 .addProcessors(teamPropDetectionPipeline, tagProcessor)
                 .build();
 
+        // waiting for camera to start streaming
         while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {
             Log.e("initializing camera....", "");
-        } // waiting for camera to start streaming
+        }
 
         setCameraSettings();
 

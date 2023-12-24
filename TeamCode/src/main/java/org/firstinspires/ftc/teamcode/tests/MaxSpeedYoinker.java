@@ -15,15 +15,30 @@ public class MaxSpeedYoinker extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
 
+        double maxXSpeed = 0;
+        double maxYSpeed = 0;
+        double maxHeadingSpeed = 0;
+
         waitForStart();
 
-        double maxVel = 0;
         while (opModeIsActive()) {
             robot.drivetrain.drive(gamepad1);
-            Pose2d relVel = robot.drivetrain.localizer.relCurrentVel;
-            double vel = Math.sqrt(Math.pow(relVel.x, 2) + Math.pow(relVel.y, 2));
-            maxVel = Math.max(vel, maxVel);
-            TelemetryUtil.packet.put("Max vel", maxVel);
+            Pose2d velocity = robot.drivetrain.localizer.getPoseVelocity();
+
+            if (velocity.x > maxXSpeed) {
+                maxXSpeed = velocity.x;
+            }
+            if (velocity.y > maxYSpeed) {
+                maxYSpeed = velocity.y;
+            }
+            if (velocity.heading > maxHeadingSpeed) {
+                maxHeadingSpeed = velocity.heading;
+            }
+
+            TelemetryUtil.packet.put("maxXSpeed", maxXSpeed);
+            TelemetryUtil.packet.put("maxYSpeed", maxYSpeed);
+            TelemetryUtil.packet.put("maxHeadingSpeed", maxHeadingSpeed);
+
             robot.update();
         }
     }

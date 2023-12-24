@@ -18,7 +18,6 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 import java.util.ArrayList;
 
-@Disabled
 @Autonomous
 public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode {
 
@@ -45,33 +44,34 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
 
         for (int i = 0; i < 4; i++) {
             localizer.setPoseEstimate(new Pose2d(0,0,0));
-
-            for (double j = 0; j < 1; j += 0.01) {
+            long start = System.currentTimeMillis();
+            for (double j = 0; j < 1; j = (double) (System.currentTimeMillis() - start) / (15000.0)) {
                 Globals.START_LOOP();
-                robot.drivetrain.update();
-                robot.hardwareQueue.update();
+                robot.update();
                 TelemetryUtil.sendTelemetry();
 
                 motors.get(i).setTargetPower(j);
 
                 robotPose = robot.drivetrain.localizer.getPoseEstimate();
-                if (robotPose.x > 0.1 || robotPose.x < -0.1 || robotPose.y > 0.1 || robotPose.y < -0.1 || robotPose.heading > Math.toRadians(1) || robotPose.heading < Math.toRadians(-1)) {
+                if (Math.abs(robotPose.x) > 0.01 || Math.abs(robotPose.y) > 0.01 || Math.abs(robotPose.heading) > Math.toRadians(0.2)) {
                     minPowersToOvercomeFriction[i] = j;
                     break;
                 }
-                Log.e(motors.get(i).name + " ", "currnet power: " + j);
-
                 telemetry.addData(motors.get(i).name + " current power: ", j);
                 telemetry.update();
             }
 
             motors.get(i).setTargetPower(0.0);
-            Thread.sleep(1000);
 
             Log.e(motors.get(i).name + " min power", minPowersToOvercomeFriction[i] + "");
 
             telemetry.addData(motors.get(i).name + " min power: ", minPowersToOvercomeFriction[i]);
             telemetry.update();
+
+            long waitStart = System.currentTimeMillis();
+            while (System.currentTimeMillis() - waitStart < 1000) {
+                robot.update();
+            }
         }
     }
 }

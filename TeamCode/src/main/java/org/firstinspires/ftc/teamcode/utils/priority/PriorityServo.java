@@ -115,10 +115,6 @@ public class PriorityServo extends PriorityDevice{
     public void setTargetAngle(double targetAngle, double power){
         this.power = power;
         this.targetAngle = Math.max(Math.min(targetAngle,maxAng),minAng);
-        Log.e(name, "targetAngle " + targetAngle);
-        TelemetryUtil.packet.put(name + " target angle", targetAngle);
-        TelemetryUtil.packet.put(name + " intermediate target angle", currentIntermediateTargetAngle);
-        TelemetryUtil.packet.put(name + " current angle", currentAngle);
     }
 
     public void updateServoValues() {
@@ -191,7 +187,6 @@ public class PriorityServo extends PriorityDevice{
         currentIntermediateTargetAngle += deltaAngle; // adds the change in pose to the target for the servo
         if (power == 1) {
             currentIntermediateTargetAngle = targetAngle;
-            Log.e("SETTING CURRENT INTERMEDIATE", "WEFWEFEWF");
             if (slowdownDist != 0 && Math.abs(error) > slowdownDist + Math.toRadians(15)) {
                 currentIntermediateTargetAngle = targetAngle-slowdownDist*Math.signum(error); // makes it so that it goes to the end if the power is 1.0 ie no slow downs
                 //currentIntermediateTargetAngle = targetAngle;
