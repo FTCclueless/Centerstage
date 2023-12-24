@@ -108,21 +108,21 @@ public class Sensors {
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
 
-            if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
-                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
-                imuLastUpdateTime = System.currentTimeMillis();
-                imuJustUpdated = true;
-            } else {
-                imuJustUpdated = false;
-            }
+//            if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
+//                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+//                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
+//                imuLastUpdateTime = System.currentTimeMillis();
+//                imuJustUpdated = true;
+//            } else {
+//                imuJustUpdated = false;
+//            }
+//
+//            timeTillNextIMUUpdate = imuUpdateTime - (System.currentTimeMillis() - imuLastUpdateTime);
 
             if (System.currentTimeMillis() - lastVoltageUpdatedTime > voltageUpdateTime) {
                 voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
                 lastVoltageUpdatedTime = System.currentTimeMillis();
             }
-
-            timeTillNextIMUUpdate = imuUpdateTime - (System.currentTimeMillis() - imuLastUpdateTime);
 
             intakeTriggered = intakeBeamBreak.getState();
             depositTriggered = depositBeamBreak.getState();

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.utils.priority;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 
 public class PriorityMotor extends PriorityDevice{
@@ -11,20 +12,23 @@ public class PriorityMotor extends PriorityDevice{
     private double[] multipier;
     public String name;
 
+    Sensors sensors;
+
     private double minPowerToOvercomeFriction = 0.0;
 
-    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale, double multiplier) {
-        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{multiplier});
+    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale, double multiplier, Sensors sensors) {
+        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{multiplier}, sensors);
     }
 
-    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale) {
-        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{1});
+    public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale, Sensors sensors) {
+        this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{1}, sensors);
     }
 
-    public PriorityMotor(DcMotorEx[] motor, String name, double basePriority, double priorityScale, double[] multiplier) {
+    public PriorityMotor(DcMotorEx[] motor, String name, double basePriority, double priorityScale, double[] multiplier, Sensors sensors) {
         super(basePriority, priorityScale, name);
         this.motor = motor;
         this.name = name;
+        this.sensors = sensors;
 
         minPowerToOvercomeFriction = 0.0;
         callLengthMillis = 1.6;
@@ -37,7 +41,7 @@ public class PriorityMotor extends PriorityDevice{
     public void setTargetPower(double power) {
         power = Utils.minMaxClip(power, -1.0, 1.0);
         power *= 1-minPowerToOvercomeFriction;
-        this.power = power + (minPowerToOvercomeFriction * Math.signum(power));
+        this.power = power + (minPowerToOvercomeFriction * (12/sensors.getVoltage()) * Math.signum(power));
         if (power == 0) {
             this.power = 0;
         }

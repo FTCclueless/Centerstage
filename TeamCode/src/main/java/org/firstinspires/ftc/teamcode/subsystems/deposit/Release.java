@@ -17,6 +17,7 @@ public class Release {
     public static double holdAngle = 2.280185;
     public static double dunkOneAngle = 2.280185;
     public static double dunkTwoAngle = 2.280185;
+    public static double fullyCloseAngle = 2.280185;
 
     public static double dunkTime = 500;
     public static double timer = 0;
@@ -33,6 +34,10 @@ public class Release {
                 false,
                 1, 2);
         hardwareQueue.addDevice(release);
+    }
+
+    public void fullyClose() {
+        release.setTargetAngle(fullyCloseAngle, 1);
     }
 
     public void intake() {

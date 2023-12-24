@@ -49,7 +49,7 @@ public class Slides {
             m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
-        slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5, new double[] {-1, -1});
+        slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5, new double[] {-1, -1}, sensors);
         hardwareQueue.addDevice(slidesMotors);
     }
 

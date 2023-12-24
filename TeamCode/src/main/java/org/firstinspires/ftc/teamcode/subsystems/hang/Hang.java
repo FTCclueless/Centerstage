@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.hang;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
@@ -16,8 +17,8 @@ public class Hang {
         OFF
     }
 
-    public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
-        hang = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "hang"), "hang", 1, 2);
+    public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+        hang = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "hang"), "hang", 1, 2, sensors);
 
         hardwareQueue.addDevice(hang);
     }

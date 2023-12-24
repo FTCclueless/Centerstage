@@ -51,23 +51,23 @@ public class Drivetrain {
         leftFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftFront"),
             "leftFront",
-            3, 5
+            3, 5, sensors
         );
 
         leftRear = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftRear"),
             "leftRear",
-            3, 5
+            3, 5, sensors
         );
         rightRear = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "rightRear"),
             "rightRear",
-            3, 5
+            3, 5, sensors
         );
         rightFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "rightFront"),
             "rightFront",
-            3, 5
+            3, 5, sensors
         );
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
@@ -89,11 +89,11 @@ public class Drivetrain {
 
         if (vision != null) {
             if (vision.tagProcessor != null) {
-                localizer = new Localizer(hardwareMap, sensors,true, true, vision);
+                localizer = new Localizer(hardwareMap, sensors,true, false, vision);
                 Log.e("using vision localizer", "");
             }
         } else {
-            localizer = new Localizer(hardwareMap, sensors,false, true, null);
+            localizer = new Localizer(hardwareMap, sensors,false, false, null);
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();
@@ -104,10 +104,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.2110266667);
-        leftRear.setMinimumPowerToOvercomeFriction(0.2364266667);
-        rightRear.setMinimumPowerToOvercomeFriction(0.2330933333);
-        rightFront.setMinimumPowerToOvercomeFriction(0.20188);
+        leftFront.setMinimumPowerToOvercomeFriction(0.1301511535);
+        leftRear.setMinimumPowerToOvercomeFriction(0.1775656324);
+        rightRear.setMinimumPowerToOvercomeFriction(0.2018774861);
+        rightFront.setMinimumPowerToOvercomeFriction(0.1703739061);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -124,13 +124,13 @@ public class Drivetrain {
     double yError = 0.0;
     double turnError = 0.0;
 
-    public static double xSlowdown = 15;
-    public static double ySlowdown = 15;
+    public static double xSlowdown = 10;
+    public static double ySlowdown = 10;
     public static double turnSlowdown = Math.toRadians(50);
 
-    public static double kAccelX = 1.0;
+    public static double kAccelX = 0.5;
     public static double kAccelY = 0.0;
-    public static double kAccelTurn = 0.5;
+    public static double kAccelTurn = 0.25;
 
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
@@ -157,17 +157,13 @@ public class Drivetrain {
                     turnError -= Math.PI * 2 * Math.signum(turnError);
                 }
 
-                double targetForwardPower = Math.min(Math.abs(xError)/xSlowdown,1.0)*Math.signum(xError);
-                double targetStrafePower = Math.min(Math.abs(yError)/ySlowdown,1.0)*Math.signum(yError);
-                double targetTurnPower = Math.min(Math.abs(turnError)/turnSlowdown,1.0)*Math.signum(turnError);
+                double targetForwardPower = Math.min(Math.pow(Math.abs(xError)/xSlowdown, 2),1.0)*Math.signum(xError);
+                double targetStrafePower = Math.min(Math.pow(Math.abs(yError)/ySlowdown, 2),1.0)*Math.signum(yError);
+                double targetTurnPower = Math.min(Math.pow(Math.abs(turnError)/turnSlowdown, 2),1.0)*Math.signum(turnError);
 
-                targetForwardPower *= 12/sensors.getVoltage();
-                targetStrafePower *= 12/sensors.getVoltage();
-                targetTurnPower *= 12/sensors.getVoltage();
-
-                double fwd = Math.abs(xError) > xThreshold/2 ? targetForwardPower + kAccelX*(targetForwardPower - ROBOT_VELOCITY.x/Globals.MAX_X_SPEED) : 0;
-                double strafe = Math.abs(yError) > yThreshold/2 ? targetStrafePower + kAccelY*(targetStrafePower - ROBOT_VELOCITY.y/Globals.MAX_Y_SPEED) : 0;
-                double turn = Math.abs(turnError) > turnThreshold/2 ? targetTurnPower + kAccelTurn*(targetTurnPower - ROBOT_VELOCITY.heading/Globals.MAX_HEADING_SPEED) : 0;
+                double fwd = Math.abs(xError) > xThreshold/2 ? targetForwardPower + kAccelX*(targetForwardPower - ROBOT_VELOCITY.x/(Globals.MAX_X_SPEED*(12/sensors.getVoltage()))) : 0;
+                double strafe = Math.abs(yError) > yThreshold/2 ? targetStrafePower + kAccelY*(targetStrafePower - ROBOT_VELOCITY.y/(Globals.MAX_Y_SPEED*(12/sensors.getVoltage()))) : 0;
+                double turn = Math.abs(turnError) > turnThreshold/2 ? targetTurnPower + kAccelTurn*(targetTurnPower - ROBOT_VELOCITY.heading/(Globals.MAX_HEADING_SPEED*(12/sensors.getVoltage()))) : 0;
 
                 Vector2 move = new Vector2(fwd, strafe);
                 setMoveVector(move, turn);
@@ -213,8 +209,8 @@ public class Drivetrain {
         }
     }
 
-    public static double xThreshold = 1;
-    public static double yThreshold = 1;
+    public static double xThreshold = 1.5;
+    public static double yThreshold = 1.5;
     public static double turnThreshold = Math.toRadians(5);
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {

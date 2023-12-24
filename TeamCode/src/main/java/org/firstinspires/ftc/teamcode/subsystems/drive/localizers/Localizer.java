@@ -63,8 +63,8 @@ public class Localizer {
 
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,4.7430916033),  -1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968),1); // right
+        encoders[0] = new Encoder(new Pose2d(0,4.7430916033 * 0.9906939116 * 0.9973829581),  -1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968 * 0.9906939116 * 0.9973829581),1); // right
         encoders[2] = new Encoder(new Pose2d(-7.1660442092285175, 0),  -1); // back
 
         this.useAprilTag = useAprilTag;

@@ -40,7 +40,7 @@ public class Intake {
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
         this.robot = robot;
-        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2, -1);
+        intake = new PriorityMotor(hardwareMap.get(DcMotorEx.class, "intake"), "intake", 1, 2, -1, sensors);
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
@@ -67,9 +67,7 @@ public class Intake {
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
-                if (System.currentTimeMillis() - start > 500) { // don't immediately start the intake until the deposit stalls
-                    intake.setTargetPower(intakePower);
-                }
+                intake.setTargetPower(intakePower);
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
@@ -83,10 +81,7 @@ public class Intake {
         }
     }
 
-    long start;
-
     public void on() {
-        start = System.currentTimeMillis();
         state = State.ON;
     }
 

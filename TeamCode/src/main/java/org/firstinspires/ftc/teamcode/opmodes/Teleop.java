@@ -27,8 +27,8 @@ public class Teleop extends LinearOpMode {
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
         // DRIVER 1
-        ButtonToggle rightBump = new ButtonToggle();
-        ButtonToggle leftBump = new ButtonToggle();
+        ButtonToggle rightBump_1 = new ButtonToggle();
+        ButtonToggle leftBump_1 = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1 = new ButtonToggle();
@@ -54,12 +54,64 @@ public class Teleop extends LinearOpMode {
         boolean depoFlag = false;
 
         while (!isStopRequested()) {
+            // ------------------- DRIVER 1 CONTROLS -------------------
+
             // adjusting angle of actuation
-            if (rightBump.isToggled(gamepad1.right_bumper)) { // TODO: change this to have more adjustment
+            if (rightBump_1.isToggled(gamepad1.right_bumper)) { // TODO: change this to have more adjustment
                 robot.intake.actuationUp();
             } else {
                 robot.intake.actuationDown();
             }
+
+            // toggle intake on and off
+            if (x_1.isClicked(gamepad1.x)) {
+                if (intake.state == Intake.State.ON || intake.state == Intake.State.REVERSED) {
+                    intake.off();
+                } else if (intake.state == Intake.State.OFF) {
+                    intake.on();
+                }
+            }
+
+            // reverse intake
+            if (b_1.isClicked(gamepad1.b)) {
+                robot.intake.reverse();
+            }
+
+            // hanging mechanism
+            if (gamepad1.y) {
+                hang.on();
+            } else if (gamepad1.a) {
+                hang.reverse();
+            } else {
+                hang.off();
+            }
+
+            // trigger deposit (both)
+            if (leftBump_1.isClicked(gamepad1.left_bumper)) {
+                Globals.NUM_PIXELS = 2;
+                depoPos = new Vector3(15, 0, depoPos.z);
+                depoFlag = true;
+            }
+
+            // release one pixel (both)
+            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+                robot.deposit.releaseOne();
+            }
+
+            // airplane (both)
+            if (gamepad1.dpad_up) {
+                robot.airplane.release();
+            }
+
+            // driving
+            robot.drivetrain.drive(gamepad1);
+
+
+
+
+
+
+            // ------------------- DRIVER 2 CONTROLS -------------------
 
             // driver B adjusting deposit position
             if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
@@ -87,21 +139,7 @@ public class Teleop extends LinearOpMode {
             TelemetryUtil.packet.put("depox", depoPos.x);
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
-            // toggle intake on and off
-            if (x_1.isClicked(gamepad1.x)) {
-                if (intake.state == Intake.State.ON || intake.state == Intake.State.REVERSED) {
-                    intake.off();
-                } else if (intake.state == Intake.State.OFF) {
-                    intake.on();
-                }
-            }
-
-            // reverse intake
-            if (b_1.isClicked(gamepad1.b)) {
-                robot.intake.reverse();
-            }
-
-            // dunking
+            // dunking (both)
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
                 robot.deposit.releaseOne();
             }
@@ -110,27 +148,16 @@ public class Teleop extends LinearOpMode {
                 robot.deposit.releaseTwo();
             }
 
+            // retract
             if ((x_2.isClicked(gamepad2.x) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.retract();
                 depoFlag = false;
             }
 
-            // hanging mechanism
-            if (gamepad1.y) {
-                hang.on();
-            } else if (gamepad1.a) {
-                hang.reverse();
-            } else {
-                hang.off();
-            }
-
-            // airplane
-            if (gamepad1.dpad_up) {
+            // airplane release (both)
+            if (gamepad2.y) {
                 robot.airplane.release();
             }
-
-            // driving
-            robot.drivetrain.drive(gamepad1);
 
             // update robot
             robot.update();

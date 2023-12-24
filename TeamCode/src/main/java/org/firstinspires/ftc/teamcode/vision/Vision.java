@@ -23,6 +23,12 @@ public class Vision {
     public AprilTagProcessor tagProcessor;
 
     public Vision (HardwareMap hardwareMap, Telemetry telemetry, boolean isRed, boolean initTeamProp, boolean initAprilTag) {
+        if (initAprilTag) {
+            Log.e("USING APRIL TAGS", "");
+        } else {
+            Log.e("NOT --- USING APRIL TAGS", "");
+        }
+
         if (initTeamProp && initAprilTag) {
             initTeamPropAndAprilTag(hardwareMap, telemetry, isRed);
         } else if (initAprilTag) {

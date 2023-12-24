@@ -36,7 +36,6 @@ public class Deposit {
 
     // v4bar angles
     public static double v4BarIntakeAngle = -1.10388;
-    public static double v4BarTransferAngle = -1.2088;
     public static double v4BarDepositAngle = 1.38;
 
     // top servo angles (if the top servo is even in the design)
@@ -114,7 +113,7 @@ public class Deposit {
                 }
                 break;
             case START_RETRACT:
-                release.intake();
+                release.fullyClose();
 
                 endAffector.v4Servo.setTargetAngle(v4BarIntakeAngle,1.0);
                 endAffector.topServo.setTargetAngle(topServoIntakeAngle, 1.0);
@@ -136,11 +135,7 @@ public class Deposit {
                 release.intake();
                 slides.setTargetLength(0.0);
 
-                if (robot.intake.state == Intake.State.ON && sensors.getSlidesPos() < 3) {
-                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,1.0);
-                } else {
-                    endAffector.v4Servo.setTargetAngle(v4BarIntakeAngle,1.0);
-                }
+                endAffector.v4Servo.setTargetAngle(v4BarIntakeAngle,1.0);
 
                 endAffector.topServo.setTargetAngle(topServoIntakeAngle,1.0);
                 break;
