@@ -23,24 +23,13 @@ import java.util.ArrayList;
 @Config
 @TeleOp(group = "Test")
 public class ServoTester extends LinearOpMode {
-
-    public static boolean controllerMode = true;
-
-    public static double servoAngle = 0.0;
-    public static int servoNumber = 0;
-
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         HardwareQueue hardwareQueue = robot.hardwareQueue;
 
-//        AnalogInput v4Bar = hardwareMap.get(AnalogInput.class, "V4BarServoEncoder");
-//        AnalogInput botEncoder = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
-//        AnalogInput topEncoder = hardwareMap.get(AnalogInput.class, "topTurretEncoder");
-
         ArrayList<PriorityServo> servos = new ArrayList<>();
 
-        ButtonToggle toggleRightBumper = new ButtonToggle();
         ButtonToggle buttonY = new ButtonToggle();
         ButtonToggle buttonA = new ButtonToggle();
 
@@ -71,60 +60,48 @@ public class ServoTester extends LinearOpMode {
             hardwareQueue.update();
             robot.sensors.update();
 
-            if (toggleRightBumper.isClicked(gamepad1.right_bumper)) {
-                controllerMode = !controllerMode;
+            numLoops ++;
+
+            if (gamepad1.x) {
+                servoPos[servoIndex] += 0.001;
+            }
+            if (gamepad1.b){
+                servoPos[servoIndex] -= 0.001;
+            }
+            servoPos[servoIndex] = Utils.minMaxClip(servoPos[servoIndex], 0.0, 1.0);
+
+            // figuring out time to set servo pos
+            long start = System.nanoTime();
+            servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 1.0);
+            double elapsedTime = (System.nanoTime()-start)/1000000000.0;
+            totalTime += elapsedTime;
+
+            // incrementing / decrementing servoIndex
+            if (buttonY.isClicked(gamepad1.y)) {
+                servoIndex += 1;
             }
 
-            if (controllerMode) {
-                numLoops ++;
-
-                if (gamepad1.x) {
-                    servoPos[servoIndex] += 0.001;
-                }
-                if (gamepad1.b){
-                    servoPos[servoIndex] -= 0.001;
-                }
-                servoPos[servoIndex] = Utils.minMaxClip(servoPos[servoIndex], 0.0, 1.0);
-
-                // figuring out time to set servo pos
-                long start = System.nanoTime();
-                servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 1.0);
-                double elapsedTime = (System.nanoTime()-start)/1000000000.0;
-                totalTime += elapsedTime;
-
-                // incrementing / decrementing servoIndex
-                if (buttonY.isClicked(gamepad1.y)) {
-                    servoIndex += 1;
-                }
-
-                if (buttonA.isClicked(gamepad1.a)) {
-                    servoIndex -= 1;
-                }
-
-                // if the servoIndex exceeds servoSize wrap around
-                servoIndex = Math.abs(servoIndex) % servoSize;
-
-                telemetry.addData("servoName", servos.get(servoIndex).name);
-                telemetry.addData("servoIndex", servoIndex);
-                telemetry.addData("servoPos", servoPos[servoIndex]);
-                telemetry.addData("averageServoTime", totalTime/numLoops);
-                //telemetry.addData("v4Encoder", v4Bar);
-                telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
-                telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
-                if (servos.get(servoIndex) instanceof PriorityServoAxonEnc) {
-                    telemetry.addData("voltage", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderVoltage());
-                    telemetry.addData("angle", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderAngle());
-                }
-
-                TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
-                TelemetryUtil.sendTelemetry();
-            } else {
-                servos.get(servoNumber).setTargetAngle(Math.toRadians(servoAngle), 1.0);
-
-                TelemetryUtil.packet.put("servoAngle", servoAngle);
-                TelemetryUtil.packet.put("servoNumber", servoNumber);
-                TelemetryUtil.sendTelemetry();
+            if (buttonA.isClicked(gamepad1.a)) {
+                servoIndex -= 1;
             }
+
+            // if the servoIndex exceeds servoSize wrap around
+            servoIndex = Math.abs(servoIndex) % servoSize;
+
+            telemetry.addData("servoName", servos.get(servoIndex).name);
+            telemetry.addData("servoIndex", servoIndex);
+            telemetry.addData("servoPos", servoPos[servoIndex]);
+            telemetry.addData("averageServoTime", totalTime/numLoops);
+            //telemetry.addData("v4Encoder", v4Bar);
+            telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
+            telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
+            if (servos.get(servoIndex) instanceof PriorityServoAxonEnc) {
+                telemetry.addData("voltage", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderVoltage());
+                telemetry.addData("angle", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderAngle());
+            }
+
+            TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
+            TelemetryUtil.sendTelemetry();
             telemetry.update();
         }
     }

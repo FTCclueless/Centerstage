@@ -74,6 +74,7 @@ public class Teleop extends LinearOpMode {
 
             // reverse intake
             if (b_1.isClicked(gamepad1.b)) {
+                robot.intake.actuationUp();
                 robot.intake.reverse();
             }
 
@@ -94,7 +95,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // release one pixel (both)
-            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseOne();
             }
 
@@ -140,11 +141,11 @@ public class Teleop extends LinearOpMode {
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
             // dunking (both)
-            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseOne();
             }
 
-            if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.FINISH_DEPOSIT) {
+            if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseTwo();
             }
 

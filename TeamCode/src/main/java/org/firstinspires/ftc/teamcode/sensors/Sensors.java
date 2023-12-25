@@ -58,9 +58,9 @@ public class Sensors {
 //        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
-        analogEncoders[0] = hardwareMap.get(AnalogInput.class, "v4BarServo1Encoder");
-        analogEncoders[1] = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
-        analogVoltages[0] = analogVoltages[1] = 0.0;
+//        analogEncoders[0] = hardwareMap.get(AnalogInput.class, "v4BarServo1Encoder");
+//        analogEncoders[1] = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
+//        analogVoltages[0] = analogVoltages[1] = 0.0;
 
         initHubs(hardwareMap);
     }
@@ -140,9 +140,9 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-            for (int i = 0; i < analogVoltages.length; i++) {
-                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
-            }
+//            for (int i = 0; i < analogVoltages.length; i++) {
+//                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
+//            }
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());

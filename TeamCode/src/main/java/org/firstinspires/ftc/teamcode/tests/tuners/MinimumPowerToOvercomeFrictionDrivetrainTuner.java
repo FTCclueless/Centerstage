@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -21,9 +22,13 @@ import java.util.ArrayList;
 @Autonomous
 public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode {
 
+    double[] sums = new double[4];
+    int iterations = 5;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
+        Sensors sensors = robot.sensors;
         Localizer localizer = robot.drivetrain.localizer;
         HardwareQueue hardwareQueue = robot.hardwareQueue;
 
@@ -43,35 +48,38 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
         waitForStart();
 
         for (int i = 0; i < 4; i++) {
-            localizer.setPoseEstimate(new Pose2d(0,0,0));
-            long start = System.currentTimeMillis();
-            for (double j = 0; j < 1; j = (double) (System.currentTimeMillis() - start) / (15000.0)) {
-                Globals.START_LOOP();
-                robot.update();
-                TelemetryUtil.sendTelemetry();
 
-                motors.get(i).setTargetPower(j);
+            for (int a = 0; a < iterations; a++) {
+                localizer.setPoseEstimate(new Pose2d(0, 0, 0));
+                long start = System.currentTimeMillis();
+                for (double j = 0; j < 1; j = (double) (System.currentTimeMillis() - start) / (15000.0)) {
+                    Globals.START_LOOP();
+                    robot.update();
+                    TelemetryUtil.sendTelemetry();
 
-                robotPose = robot.drivetrain.localizer.getPoseEstimate();
-                if (Math.abs(robotPose.x) > 0.01 || Math.abs(robotPose.y) > 0.01 || Math.abs(robotPose.heading) > Math.toRadians(0.2)) {
-                    minPowersToOvercomeFriction[i] = j;
-                    break;
+                    motors.get(i).setTargetPower(j);
+
+                    robotPose = robot.drivetrain.localizer.getPoseEstimate();
+                    if (Math.abs(robotPose.x) > 0.01 || Math.abs(robotPose.y) > 0.01 || Math.abs(robotPose.heading) > Math.toRadians(0.2)) {
+                        minPowersToOvercomeFriction[i] = j;
+                        break;
+                    }
+                    telemetry.addData(motors.get(i).name + " current power: ", j);
+                    telemetry.update();
                 }
-                telemetry.addData(motors.get(i).name + " current power: ", j);
-                telemetry.update();
+
+                motors.get(i).setTargetPower(0.0);
+
+                sums[i] += minPowersToOvercomeFriction[i] * (12/sensors.getVoltage());
+
+                long waitStart = System.currentTimeMillis();
+                while (System.currentTimeMillis() - waitStart < 1000) {
+                    robot.update();
+                }
             }
 
-            motors.get(i).setTargetPower(0.0);
+            Log.e(motors.get(i).name + " AVERAGE min power with voltage correction", sums[i]/iterations + "");
 
-            Log.e(motors.get(i).name + " min power", minPowersToOvercomeFriction[i] + "");
-
-            telemetry.addData(motors.get(i).name + " min power: ", minPowersToOvercomeFriction[i]);
-            telemetry.update();
-
-            long waitStart = System.currentTimeMillis();
-            while (System.currentTimeMillis() - waitStart < 1000) {
-                robot.update();
-            }
         }
     }
 }

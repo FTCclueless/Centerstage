@@ -147,7 +147,7 @@ public class PriorityServo extends PriorityDevice{
     }
 
     public boolean inPosition(){
-        return Math.abs(targetAngle-currentAngle) < Math.toRadians(15);
+        return Math.abs(targetAngle-currentAngle) < Math.toRadians(0.01);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class PriorityServo extends PriorityDevice{
     }
 
     @Override
-    public void update(){
+    public void update() {
         //Finds the amount of time since the intermediate target variable has been updated
         long currentTime = System.nanoTime();
         double timeSinceLastUpdate = ((double) currentTime - lastUpdateTime)/1.0E9;

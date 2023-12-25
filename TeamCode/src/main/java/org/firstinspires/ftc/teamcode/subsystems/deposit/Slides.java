@@ -31,7 +31,7 @@ public class Slides {
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.0; // JANK
+    public static double downPower = -0.325;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -42,7 +42,7 @@ public class Slides {
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-        if (Globals.RUNMODE == RunMode.AUTO) {
+        if (Globals.RUNMODE != RunMode.TELEOP) {
             m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -66,7 +66,7 @@ public class Slides {
             error = -4;
         }
         if (length <= 5 && targetLength <= 0.6)
-            return downPower;
+            return downPower * (12/sensors.getVoltage());
         return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }
 
@@ -77,7 +77,7 @@ public class Slides {
     }
 
     public void setTargetLength(double length) {
-        targetLength = Math.min(length, maxSlidesHeight);
+        targetLength = Math.max(Math.min(length, maxSlidesHeight),0);
     }
 
     public boolean inPosition(double threshold) {
