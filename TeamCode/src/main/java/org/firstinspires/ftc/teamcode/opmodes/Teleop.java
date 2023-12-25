@@ -57,7 +57,7 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 1 CONTROLS -------------------
 
             // adjusting angle of actuation
-            if (rightBump_1.isToggled(gamepad1.right_bumper)) { // TODO: change this to have more adjustment
+            if (rightBump_1.isToggled(gamepad1.right_bumper) || intake.state == Intake.State.REVERSED) { // TODO: change this to have more adjustment
                 robot.intake.actuationUp();
             } else {
                 robot.intake.actuationDown();
@@ -74,7 +74,6 @@ public class Teleop extends LinearOpMode {
 
             // reverse intake
             if (b_1.isClicked(gamepad1.b)) {
-                robot.intake.actuationUp();
                 robot.intake.reverse();
             }
 
@@ -90,7 +89,6 @@ public class Teleop extends LinearOpMode {
             // trigger deposit (both)
             if (leftBump_1.isClicked(gamepad1.left_bumper)) {
                 Globals.NUM_PIXELS = 2;
-                depoPos = new Vector3(15, 0, depoPos.z);
                 depoFlag = true;
             }
 
@@ -127,7 +125,6 @@ public class Teleop extends LinearOpMode {
             // trigger deposit
             if (a_2.isClicked(gamepad2.a)) {
                 Globals.NUM_PIXELS = 2;
-                depoPos = new Vector3(15, 0, depoPos.z);
                 depoFlag = true;
             }
 

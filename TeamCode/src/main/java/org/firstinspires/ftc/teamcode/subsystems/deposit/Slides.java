@@ -31,7 +31,8 @@ public class Slides {
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.325;
+    public static double downPower = -0.2;
+    public static double forceDownPower = -0.4;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
@@ -40,7 +41,6 @@ public class Slides {
         DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
 
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         if (Globals.RUNMODE != RunMode.TELEOP) {
             m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -66,12 +66,12 @@ public class Slides {
             error = -4;
         }
         if (length <= 5 && targetLength <= 0.6)
-            return downPower * (12/sensors.getVoltage());
+            return (length <= 0.25? 0 : forceDownPower) + downPower * (12/sensors.getVoltage());
         return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }
 
     public void update() {
-        length = sensors.getSlidesPos() * ticksToInches;
+        length = (double) sensors.getSlidesPos() * ticksToInches;
         vel = sensors.getSlidesVelocity() * ticksToInches;
         slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1),-1));
     }

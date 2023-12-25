@@ -94,13 +94,10 @@ public class Deposit {
                 endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.5);
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
 
-                Log.e("slides length", slides.getLength() + "");
-
                 if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
                     release.close();
 
-                    Log.e("System.currentTimeMillis() - beginDepositTime", System.currentTimeMillis() - beginDepositTime + "");
-                    if (System.currentTimeMillis() - beginDepositTime > 125) {
+                    if (System.currentTimeMillis() - beginDepositTime > 225) {
                         slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
                     }
                 } else {
@@ -144,6 +141,8 @@ public class Deposit {
                     else{
                         endAffector.topServo.setTargetAngle(0,1.0);
                     }
+                } else {
+                    slides.setTargetLength(targetH + 3); // TODO: Fix this to make the arm wait for slides to go up then move
                 }
 
                 if (endAffector.v4Servo.inPosition()) {

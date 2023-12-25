@@ -14,9 +14,6 @@ public class EndAffector {
     public final PriorityServo topServo;
     public final Sensors sensors;
 
-    public static double v4MinSlowDownDist = Math.toRadians(45);
-    public static double v4SlowDownPower = 0.25;
-
     public EndAffector(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         Servo[] v4bar = new Servo[] {hardwareMap.get(Servo.class, "V4BarServo1"), hardwareMap.get(Servo.class, "V4BarServo2")};
         v4Servo = new PriorityServo(
@@ -28,8 +25,6 @@ public class EndAffector {
             1,
             0.59699, //0.2609
             false,
-            v4MinSlowDownDist,
-            v4SlowDownPower,
             1,
             2,
             new double[] {-1, 1}
