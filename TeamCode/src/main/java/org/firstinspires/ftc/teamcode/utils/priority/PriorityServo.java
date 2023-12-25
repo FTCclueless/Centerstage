@@ -193,9 +193,9 @@ public class PriorityServo extends PriorityDevice{
             }
         }
 
-        if (Math.abs(error) < Math.toRadians(15)){
-            currentIntermediateTargetAngle = targetAngle;
-        }
+//        if (Math.abs(error) < Math.toRadians(15)){
+//            currentIntermediateTargetAngle = targetAngle;
+//        }
 
         for (int i = 0; i < servo.length; i++) {
             if (multipliers[i] == 1) {
