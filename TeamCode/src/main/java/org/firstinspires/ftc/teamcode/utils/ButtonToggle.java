@@ -18,4 +18,16 @@ public class ButtonToggle {
         }
         return isToggled;
     }
+
+    long startOfButtonHeld;
+    public boolean isHeld(boolean button, double milliseconds) {
+        if (button) {
+            if (System.currentTimeMillis() - startOfButtonHeld > milliseconds) {
+                return true;
+            }
+        } else {
+            startOfButtonHeld = System.currentTimeMillis();
+        }
+        return false;
+    }
 }

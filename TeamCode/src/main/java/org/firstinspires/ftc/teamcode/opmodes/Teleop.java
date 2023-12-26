@@ -31,6 +31,8 @@ public class Teleop extends LinearOpMode {
         ButtonToggle leftBump_1 = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
+        ButtonToggle y_1 = new ButtonToggle();
+        ButtonToggle a_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1 = new ButtonToggle();
 
         // DRIVER 2
@@ -74,22 +76,42 @@ public class Teleop extends LinearOpMode {
 
             // reverse intake
             if (b_1.isClicked(gamepad1.b)) {
-                robot.intake.reverse();
+                if (intake.state == Intake.State.ON || intake.state == Intake.State.OFF) {
+                    intake.reverse();
+                } else if (intake.state == Intake.State.REVERSED) {
+                    intake.off();
+                }
             }
 
-            // hanging mechanism
-            if (gamepad1.y) {
-                hang.on();
-            } else if (gamepad1.a) {
-                hang.reverse();
-            } else {
-                hang.off();
+            // reverse intake but only for a 0.5 secs
+            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && robot.deposit.state == Deposit.State.INTAKE) {
+                robot.intake.reverseForSomeTime(500);
             }
+
+            // hanging mechanism TODO: add in up down hang after hang released
+            //            if (gamepad1.y) {
+            //                hang.on();
+            //            } else if (gamepad1.a) {
+            //                hang.reverse();
+            //            } else {
+            //                hang.off();
+            //            }
 
             // trigger deposit (both)
             if (leftBump_1.isClicked(gamepad1.left_bumper)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
+                if (robot.deposit.state == Deposit.State.DEPOSIT) {
+                    robot.deposit.releaseOne();
+                }
+            }
+
+            // adjust slides height
+            if (y_1.isClicked(gamepad1.y)) {
+                depoPos.z+=3;
+            }
+            if (a_1.isClicked(gamepad2.a)) {
+                depoPos.z-=3;
             }
 
             // release one pixel (both)
@@ -126,6 +148,9 @@ public class Teleop extends LinearOpMode {
             if (a_2.isClicked(gamepad2.a)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
+                if (robot.deposit.state == Deposit.State.DEPOSIT) {
+                    robot.deposit.releaseOne();
+                }
             }
 
             if (depoFlag) {

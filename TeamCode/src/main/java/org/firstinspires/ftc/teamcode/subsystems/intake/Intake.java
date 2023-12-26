@@ -22,7 +22,8 @@ public class Intake {
         ON,
         OFF,
         REVERSED,
-        SOFT_REVERSED
+        SOFT_REVERSED,
+        REVERSE_FOR_TIME
     }
 
     private final PriorityMotor intake;
@@ -78,6 +79,13 @@ public class Intake {
             case SOFT_REVERSED:
                 intake.setTargetPower(-0.35);
                 break;
+            case REVERSE_FOR_TIME:
+                if (System.currentTimeMillis() - reverseForSomeTimeStart < time) {
+                    intake.setTargetPower(-1.0);
+                } else {
+                    state = previousState;
+                }
+                break;
         }
     }
 
@@ -91,6 +99,17 @@ public class Intake {
 
     public void reverse() {
         state = State.REVERSED;
+    }
+
+    long reverseForSomeTimeStart;
+    double time;
+    State previousState;
+    public void reverseForSomeTime(double time) {
+        this.time = time;
+        reverseForSomeTimeStart = System.currentTimeMillis();
+
+        previousState = state;
+        state = State.REVERSE_FOR_TIME;
     }
 
     public void softReverse() {

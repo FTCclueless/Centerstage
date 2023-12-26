@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
@@ -72,6 +73,10 @@ public class Deposit {
         release.releaseOne();
     }
 
+    public void resetPixelCount() {
+        Globals.NUM_PIXELS = 2;
+    }
+
     public void releaseTwo() {
         release.releaseTwo();
     }
@@ -85,6 +90,7 @@ public class Deposit {
     }
 
     long beginDepositTime;
+    long beginRetractTime;
 
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);
@@ -127,26 +133,28 @@ public class Deposit {
 
                 if (release.readyToRetract()) {
                     state = State.START_RETRACT;
+                    beginRetractTime = System.currentTimeMillis();
                 }
                 break;
             case START_RETRACT:
-                release.close();
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.5);
+                if (System.currentTimeMillis() - beginRetractTime > 250) {
+                    release.close();
+                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.5);
 
-                if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
-                    slides.setTargetLength(slidesV4Thresh + 2);
-                    if(endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(90)) {
-                        endAffector.topServo.setTargetAngle(topServoTransferAngle, 1.0);
+                    if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
+                        slides.setTargetLength(slidesV4Thresh + 2);
+                        if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(90)) {
+                            endAffector.topServo.setTargetAngle(topServoTransferAngle, 1.0);
+                        } else {
+                            endAffector.topServo.setTargetAngle(0, 1.0);
+                        }
+                    } else {
+                        slides.setTargetLength(targetH + 3); // TODO: Fix this to make the arm wait for slides to go up then move
                     }
-                    else{
-                        endAffector.topServo.setTargetAngle(0,1.0);
-                    }
-                } else {
-                    slides.setTargetLength(targetH + 3); // TODO: Fix this to make the arm wait for slides to go up then move
-                }
 
-                if (endAffector.v4Servo.inPosition()) {
-                    state = State.RETRACT;
+                    if (endAffector.v4Servo.inPosition()) {
+                        state = State.RETRACT;
+                    }
                 }
                 break;
             case RETRACT:
