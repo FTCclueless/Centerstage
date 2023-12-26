@@ -97,7 +97,7 @@ public class Deposit {
 
         switch (state) {
             case START_DEPOSIT:
-                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.5);
+                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 1.0);
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
 
                 if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
@@ -117,7 +117,7 @@ public class Deposit {
                 break;
             case FINISH_DEPOSIT: // stuck in this state unless someone calls dunk method. In the meantime it will constantly update targetH
                 slides.setTargetLength(targetH);
-                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.5);
+                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,1.0);
                 endAffector.topServo.setTargetAngle(topServoDepositAngle,1.0);
 
                 if (endAffector.v4Servo.getCurrentAngle() > Math.toRadians(90)) { // TODO: Tune this value
@@ -139,7 +139,7 @@ public class Deposit {
             case START_RETRACT:
                 if (System.currentTimeMillis() - beginRetractTime > 250) {
                     release.close();
-                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.5);
+                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 1.0);
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
                         slides.setTargetLength(slidesV4Thresh + 2);
@@ -168,7 +168,7 @@ public class Deposit {
                 release.intake();
                 slides.setTargetLength(0.0);
 
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.5);
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,1.0);
                 endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
                 break;
             case IDLE: // We are boring :(
