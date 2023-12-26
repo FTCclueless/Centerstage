@@ -31,8 +31,8 @@ public class Slides {
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.2;
-    public static double forceDownPower = -0.4;
+    public static double downPower = -0.3;
+    public static double forceDownPower = -0.5;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;

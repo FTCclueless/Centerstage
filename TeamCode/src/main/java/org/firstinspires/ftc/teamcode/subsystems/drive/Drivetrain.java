@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
@@ -30,6 +29,7 @@ import java.util.List;
 @Config
 public class Drivetrain {
     public enum State {
+        GO_TO_POINT,
         DRIVE,
         IDLE
     }
@@ -145,7 +145,7 @@ public class Drivetrain {
         ROBOT_VELOCITY = localizer.getPoseVelocity();
 
         switch (state) {
-            case DRIVE:
+            case GO_TO_POINT:
                 double deltaX = (targetPoint.x - localizer.x);
                 double deltaY = (targetPoint.y - localizer.y);
 
@@ -168,6 +168,8 @@ public class Drivetrain {
                 Vector2 move = new Vector2(fwd, strafe);
                 setMoveVector(move, turn);
 
+                break;
+            case DRIVE:
                 break;
             case IDLE:
                 break;
@@ -205,7 +207,7 @@ public class Drivetrain {
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             this.targetPoint = targetPoint;
             lastTargetPoint = targetPoint;
-            state = State.DRIVE;
+            state = State.GO_TO_POINT;
         }
     }
 
@@ -292,17 +294,9 @@ public class Drivetrain {
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
     }
 
-//public void breakFollowing() {
-//    currentSplineToFollow.points.clear();
-//}
-
     public Pose2d getPoseEstimate() {
         return localizer.getPoseEstimate();
     }
-
-//public void setSpline(Spline spline) {
-//    currentSplineToFollow = spline;
-//}
 
     public void setPoseEstimate(Pose2d pose2d) {
         localizer.setPoseEstimate(pose2d);

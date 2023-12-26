@@ -34,7 +34,7 @@ public class Deposit {
     double targetH = 0.0;
     double targetX = 0.0;
 
-    public static double slidesV4Thresh = 5;
+    public static double slidesV4Thresh = 2.5;
 
     // v4bar angles
     public static double v4BarTransferAngle = -0.29690;
@@ -104,7 +104,7 @@ public class Deposit {
                 if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
                     release.close();
 
-                    if (System.currentTimeMillis() - beginDepositTime > 350) {
+                    if (System.currentTimeMillis() - beginDepositTime > 400) {
                         slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
                     }
                 } else {
@@ -142,7 +142,7 @@ public class Deposit {
                 Log.e("beginRetractTime", beginRetractTime + "");
                 if (System.currentTimeMillis() - beginRetractTime > 100) {
                     release.close();
-                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 1.0);
+                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
                         slides.setTargetLength(slidesV4Thresh + 2);
@@ -171,7 +171,7 @@ public class Deposit {
                 release.intake();
                 slides.setTargetLength(0.0);
 
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.75);
                 endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
                 break;
             case IDLE: // We are boring :(
