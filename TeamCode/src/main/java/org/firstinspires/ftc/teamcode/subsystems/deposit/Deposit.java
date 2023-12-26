@@ -38,12 +38,12 @@ public class Deposit {
 
     // v4bar angles
     public static double v4BarTransferAngle = -0.29690;
-    public static double v4BarGrabAngle = -0.2913000;
+    public static double v4BarGrabAngle = -0.168103;
     public static double v4BarDepositAngle = -2.97538;
 
     // top servo angles
     public static double topServoTransferAngle = -0.834946;
-    public static double topServoGrabAngle = -0.86290085;
+    public static double topServoGrabAngle = -0.79008;
     public static double topServoDepositAngle = 2.101297;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
@@ -82,6 +82,7 @@ public class Deposit {
     }
 
     public void retract() {
+        beginRetractTime = System.currentTimeMillis();
         state = State.START_RETRACT;
     }
 
@@ -97,13 +98,13 @@ public class Deposit {
 
         switch (state) {
             case START_DEPOSIT:
-                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.75);
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
 
                 if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
                     release.close();
 
-                    if (System.currentTimeMillis() - beginDepositTime > 225) {
+                    if (System.currentTimeMillis() - beginDepositTime > 350) {
                         slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
                     }
                 } else {
@@ -117,7 +118,7 @@ public class Deposit {
                 break;
             case FINISH_DEPOSIT: // stuck in this state unless someone calls dunk method. In the meantime it will constantly update targetH
                 slides.setTargetLength(targetH);
-                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.75);
                 endAffector.topServo.setTargetAngle(topServoDepositAngle,1.0);
 
                 if (endAffector.v4Servo.getCurrentAngle() > Math.toRadians(90)) { // TODO: Tune this value
@@ -132,12 +133,14 @@ public class Deposit {
                 slides.setTargetLength(targetH);
 
                 if (release.readyToRetract()) {
-                    state = State.START_RETRACT;
                     beginRetractTime = System.currentTimeMillis();
+                    state = State.START_RETRACT;
                 }
                 break;
             case START_RETRACT:
-                if (System.currentTimeMillis() - beginRetractTime > 250) {
+                Log.e("System.currentTimeMillis()", System.currentTimeMillis() + "");
+                Log.e("beginRetractTime", beginRetractTime + "");
+                if (System.currentTimeMillis() - beginRetractTime > 100) {
                     release.close();
                     endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 1.0);
 

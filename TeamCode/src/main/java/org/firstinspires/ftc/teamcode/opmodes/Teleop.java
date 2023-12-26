@@ -34,6 +34,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle y_1 = new ButtonToggle();
         ButtonToggle a_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1 = new ButtonToggle();
+        ButtonToggle leftTrigger_1_double = new ButtonToggle();
 
         // DRIVER 2
         ButtonToggle dpadUp_2 = new ButtonToggle();
@@ -84,7 +85,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // reverse intake but only for a 0.5 secs
-            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && robot.deposit.state == Deposit.State.INTAKE) {
+            if (leftTrigger_1_double.isClicked(gamepad1.left_trigger > 0.2) && robot.deposit.state == Deposit.State.INTAKE) {
                 robot.intake.reverseForSomeTime(500);
             }
 
@@ -107,11 +108,11 @@ public class Teleop extends LinearOpMode {
             }
 
             // adjust slides height
-            if (y_1.isClicked(gamepad1.y)) {
-                depoPos.z+=3;
+            if (gamepad1.y) {
+                depoPos.z+=0.5;
             }
-            if (a_1.isClicked(gamepad2.a)) {
-                depoPos.z-=3;
+            if (gamepad1.a) {
+                depoPos.z-=0.5;
             }
 
             // release one pixel (both)

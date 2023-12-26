@@ -154,6 +154,7 @@ public class Sensors {
     public void updateTelemetry() {
         TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getImuHeading()));
         TelemetryUtil.packet.put("Memory Usage", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1.0e6);
+        TelemetryUtil.packet.put("voltage", voltage);
     }
 
     public int[] getOdometry() {

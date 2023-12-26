@@ -63,6 +63,8 @@ public class Intake {
     double maxHeightAtParallel = 2.4;
 
     public void update() {
+        TelemetryUtil.packet.put("Intake State", state);
+
         actuation.setTargetAngle(actuationAngle, 1.0);
 
         // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
@@ -108,7 +110,9 @@ public class Intake {
         this.time = time;
         reverseForSomeTimeStart = System.currentTimeMillis();
 
-        previousState = state;
+        if (state != State.REVERSE_FOR_TIME) {
+            previousState = state;
+        }
         state = State.REVERSE_FOR_TIME;
     }
 

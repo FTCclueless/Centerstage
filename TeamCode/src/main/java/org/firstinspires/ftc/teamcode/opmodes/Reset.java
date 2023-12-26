@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.EndAffector;
 import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 
 @TeleOp
@@ -24,6 +25,7 @@ public class Reset extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
+            robot.drivetrain.setPoseEstimate(new Pose2d(0,0,0));
             endAffector.v4Servo.setTargetAngle(Deposit.v4BarTransferAngle, 0.5);
             endAffector.topServo.setTargetAngle(Deposit.topServoTransferAngle,1.0);
             deposit.release.close();
