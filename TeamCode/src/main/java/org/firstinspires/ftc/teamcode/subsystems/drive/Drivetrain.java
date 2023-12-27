@@ -107,14 +107,14 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-//        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
-//        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
-//        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
-//        rightFront.setMinimumPowerToOvercomeFriction(0.22428003736833285);
-        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
-        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
-        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
-        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
+        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
+        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
+        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
+        rightFront.setMinimumPowerToOvercomeFriction(0.22428003736833285);
+//        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
+//        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
+//        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
+//        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -239,9 +239,9 @@ public class Drivetrain {
     }
 
     public void PIDF() {
-        double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
-        double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
-        double turn = turnPID.update(Math.abs(turnError) > Math.toRadians(turnThreshold)/2 ? turnError : 0);
+        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update( xError) + 0.2 * Math.signum(xError) : 0;
+        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError) + 0.2 * Math.signum(yError) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2 ? turnPID.update(turnError) + 0.2 * Math.signum(turnError) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
@@ -292,7 +292,7 @@ public class Drivetrain {
 
     public static double xThreshold = 1;
     public static double yThreshold = 1;
-    public static double turnThreshold = 3;
+    public static double turnThreshold = 1.5;
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();

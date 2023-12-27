@@ -37,14 +37,15 @@ public class Deposit {
     public static double slidesV4Thresh = 2.5;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.29690;
-    public static double v4BarGrabAngle = -0.168103;
+    public static double v4BarTransferAngle = -0.151;
+    public static double v4BarGrabAngle = -0.08405188;
     public static double v4BarDepositAngle = -2.97538;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.834946;
-    public static double topServoGrabAngle = -0.79008;
+    public static double topServoTransferAngle = -0.818;
+    public static double topServoGrabAngle = -0.8461222;
     public static double topServoDepositAngle = 2.101297;
+    public static double topServoRetractAngle = 2.6336256;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
@@ -102,10 +103,11 @@ public class Deposit {
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
 
                 if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
-                    release.close();
-
-                    if (System.currentTimeMillis() - beginDepositTime > 400) {
-                        slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
+                    if (System.currentTimeMillis() - beginDepositTime > 250) {
+                        release.close();
+                        if (System.currentTimeMillis() - beginDepositTime > 500) {
+                            slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
+                        }
                     }
                 } else {
                     beginDepositTime = System.currentTimeMillis();
@@ -140,7 +142,8 @@ public class Deposit {
             case START_RETRACT:
                 Log.e("System.currentTimeMillis()", System.currentTimeMillis() + "");
                 Log.e("beginRetractTime", beginRetractTime + "");
-                if (System.currentTimeMillis() - beginRetractTime > 100) {
+                endAffector.topServo.setTargetAngle(topServoRetractAngle, 1.0);
+                if (System.currentTimeMillis() - beginRetractTime > 200) {
                     release.close();
                     endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
 
