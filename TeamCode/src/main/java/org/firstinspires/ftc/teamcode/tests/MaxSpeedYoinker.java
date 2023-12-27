@@ -13,7 +13,6 @@ public class MaxSpeedYoinker extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-
         double maxXSpeed = 0;
         double maxYSpeed = 0;
         double maxHeadingSpeed = 0;
