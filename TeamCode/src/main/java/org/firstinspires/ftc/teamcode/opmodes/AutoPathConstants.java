@@ -29,7 +29,7 @@ public class AutoPathConstants {
     // TODO RENAME THEY R NOT RIGHT
     public static Pose2d groundPreloadLeftOffset =     new Pose2d(4.15, 26.5, 0);
 
-    public static Pose2d groundPreloadCenterOffset =   new Pose2d(6, 29.5, 0);
+    public static Pose2d groundPreloadCenterOffset =   new Pose2d(6, 30.25, 0);
 
     public static Pose2d groundPreloadRightOffset =    new Pose2d(18, 26.5, 0);
 
@@ -38,16 +38,12 @@ public class AutoPathConstants {
     public static Pose2d blueGroundPreloadLeftOffset =    new Pose2d(18, 26.5, 0);
 
     public static double groundPreloadStrafeOffset =   6.75;
+
     // Initial deposit. Should be in front of the red side board
     public static Pose2d boardPreload =                new Pose2d(46, -36, Math.PI);
-    public static Vector3 boardPreloadLeftDeposit =    new Vector3(0.47, 4.5, -5.5);
-    public static Vector3 boardPreloadCenterDeposit =  new Vector3(0.45, 0, -5);
-    public static Vector3 boardPreloadRightDeposit =  new Vector3(0.75, -3, 1);
 
-
-    public static Vector3 blueBoardPreloadLeftDeposit =    new Vector3(0.5, 2, -4.5);
-    public static Vector3 blueBoardPreloadCenterDeposit =  new Vector3(0.5, -2, -4.8);
-    public static Vector3 blueBoardPreloadRightDeposit =  new Vector3(0.7, -4, 1.5);
+    // deposit
+    public static Vector3 boardPreloadDeposit =    new Vector3(5, 0, 6);
 
     // First intake if we are on the bottom side of field. Should be the rightmost intake stack (from current origin)
     public static Pose2d initialIntake =               new Pose2d(-58, -36, Math.PI);

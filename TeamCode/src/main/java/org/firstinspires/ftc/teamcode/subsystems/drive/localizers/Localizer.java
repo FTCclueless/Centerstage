@@ -98,8 +98,8 @@ public class Localizer {
         Globals.START_HEADING_OFFSET = pose2d.getHeading();
     }
 
-    public Pose2d getPoseVelocity() {
-        return new Pose2d(currentVel.x, currentVel.y, currentVel.heading);
+    public Pose2d getRelativePoseVelocity() {
+        return new Pose2d(relCurrentVel.x, relCurrentVel.y, relCurrentVel.heading);
     }
 
     double weight;
@@ -266,6 +266,10 @@ public class Localizer {
         TelemetryUtil.packet.put("x", x);
         TelemetryUtil.packet.put("y", y);
         TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
+
+        TelemetryUtil.packet.put("x speed", relCurrentVel.x);
+        TelemetryUtil.packet.put("y speed", relCurrentVel.y);
+        TelemetryUtil.packet.put("turn speed (deg)", Math.toDegrees(relCurrentVel.heading));
 
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());

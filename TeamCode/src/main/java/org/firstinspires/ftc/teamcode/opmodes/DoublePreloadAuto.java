@@ -78,11 +78,11 @@ public class DoublePreloadAuto extends LinearOpMode {
         }
 
         if (red) {
-            robot.droppers.leftDown();
-            robot.droppers.rightRelease();
-        } else {
             robot.droppers.rightDown();
             robot.droppers.leftRelease();
+        } else {
+            robot.droppers.leftDown();
+            robot.droppers.rightRelease();
         }
 
         robot.hangActuation.up();
@@ -127,27 +127,20 @@ public class DoublePreloadAuto extends LinearOpMode {
                 groundPreloadPosition.x += (red ? AutoPathConstants.groundPreloadLeftOffset.x : AutoPathConstants.blueGroundPreloadRightOffset.x);
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadLeftOffset.y * reflect;
                 groundPreloadPosition.heading += (red ? AutoPathConstants.groundPreloadLeftOffset.heading : AutoPathConstants.blueGroundPreloadLeftOffset.heading);
-                boardPreloadDeposit = AutoPathConstants.boardPreloadLeftDeposit.clone();
-                if (!red)
-                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadRightDeposit.clone();
                 break;
             case CENTER:
                 groundPreloadPosition.x += AutoPathConstants.groundPreloadCenterOffset.x;
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadCenterOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadCenterOffset.heading;
-                boardPreloadDeposit = AutoPathConstants.boardPreloadCenterDeposit.clone();
-                if (!red)
-                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadCenterDeposit.clone();
                 break;
             case RIGHT:
                 groundPreloadPosition.x += (red ? AutoPathConstants.groundPreloadRightOffset.x : AutoPathConstants.blueGroundPreloadLeftOffset.x);
                 groundPreloadPosition.y += AutoPathConstants.groundPreloadRightOffset.y * reflect;
                 groundPreloadPosition.heading += AutoPathConstants.groundPreloadRightOffset.heading;
-                boardPreloadDeposit = AutoPathConstants.boardPreloadRightDeposit.clone();
-                if (!red)
-                    boardPreloadDeposit = AutoPathConstants.blueBoardPreloadLeftDeposit.clone();
                 break;
         }
+
+        boardPreloadDeposit = AutoPathConstants.boardPreloadDeposit.clone();
 
         if (!red && teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
             Log.e("good", "e");
@@ -164,9 +157,9 @@ public class DoublePreloadAuto extends LinearOpMode {
 
         start = System.currentTimeMillis();
         if (red) {
-            robot.droppers.leftRelease();
-        } else {
             robot.droppers.rightRelease();
+        } else {
+            robot.droppers.leftRelease();
         }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT && !red) {

@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
@@ -31,6 +32,8 @@ public class Drivetrain {
     public enum State {
         GO_TO_POINT,
         DRIVE,
+        BRAKE,
+        WAIT_AT_POINT,
         IDLE
     }
     public State state = State.IDLE;
@@ -104,10 +107,14 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
-        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
-        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
-        rightFront.setMinimumPowerToOvercomeFriction(0.22428003736833285);
+//        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
+//        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
+//        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
+//        rightFront.setMinimumPowerToOvercomeFriction(0.22428003736833285);
+        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
+        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
+        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
+        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -124,13 +131,33 @@ public class Drivetrain {
     double yError = 0.0;
     double turnError = 0.0;
 
-    public static double xSlowdown = 10;
-    public static double ySlowdown = 10;
-    public static double turnSlowdown = Math.toRadians(50);
+    public static double xSlowdown = 20;
+    public static double ySlowdown = 20;
+    public static double turnSlowdown = 60;
 
-    public static double kAccelX = 0.5;
+    public static double kAccelX = 0.0;
     public static double kAccelY = 0.0;
-    public static double kAccelTurn = 0.25;
+    public static double kAccelTurn = 0.0;
+
+    public static double xBrakingDistanceThreshold = 5;
+    public static double xBrakingSpeedThreshold = 20;
+    public static double xBrakingPower = -0.22;
+
+    public static double yBrakingDistanceThreshold = 5;
+    public static double yBrakingSpeedThreshold = 16;
+    public static double yBrakingPower = -0.1;
+
+    public static double turnBrakingAngleThreshold = 20; // in degrees
+    public static double turnBrakingSpeedThreshold = 135; // in degrees
+    public static double turnBrakingPower = -0.15;
+
+    double targetForwardPower = 0;
+    double targetStrafePower = 0;
+    double targetTurnPower = 0;
+
+    public static PID xPID = new PID(0.085,0.0,0.01);
+    public static PID yPID = new PID(0.15,0.0,0.01);
+    public static PID turnPID = new PID(0.4,0.0,0.0);
 
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
@@ -138,46 +165,94 @@ public class Drivetrain {
         }
 
         updateLocalizer();
+        calculateErrors();
         updateTelemetry();
 
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
-        ROBOT_VELOCITY = localizer.getPoseVelocity();
+        ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
 
         switch (state) {
             case GO_TO_POINT:
-                double deltaX = (targetPoint.x - localizer.x);
-                double deltaY = (targetPoint.y - localizer.y);
-
-                xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
-                yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
-                turnError = targetPoint.heading-localizer.heading;
-
-                while(Math.abs(turnError) > Math.PI ){
-                    turnError -= Math.PI * 2 * Math.signum(turnError);
-                }
-
-                double targetForwardPower = Math.min(Math.pow(Math.abs(xError)/xSlowdown, 2),1.0)*Math.signum(xError);
-                double targetStrafePower = Math.min(Math.pow(Math.abs(yError)/ySlowdown, 2),1.0)*Math.signum(yError);
-                double targetTurnPower = Math.min(Math.pow(Math.abs(turnError)/turnSlowdown, 2),1.0)*Math.signum(turnError);
-
-                double fwd = Math.abs(xError) > xThreshold/2 ? targetForwardPower + kAccelX*(targetForwardPower - ROBOT_VELOCITY.x/(Globals.MAX_X_SPEED*(12/sensors.getVoltage()))) : 0;
-                double strafe = Math.abs(yError) > yThreshold/2 ? targetStrafePower + kAccelY*(targetStrafePower - ROBOT_VELOCITY.y/(Globals.MAX_Y_SPEED*(12/sensors.getVoltage()))) : 0;
-                double turn = Math.abs(turnError) > turnThreshold/2 ? targetTurnPower + kAccelTurn*(targetTurnPower - ROBOT_VELOCITY.heading/(Globals.MAX_HEADING_SPEED*(12/sensors.getVoltage()))) : 0;
-
-                Vector2 move = new Vector2(fwd, strafe);
-                setMoveVector(move, turn);
-
+                PIDF();
                 break;
             case DRIVE:
+                break;
+            case BRAKE:
+                stopAllMotors();
+                state = State.WAIT_AT_POINT;
+                break;
+            case WAIT_AT_POINT:
+                if (!atPoint()) {
+                    state = State.GO_TO_POINT;
+                }
                 break;
             case IDLE:
                 break;
         }
     }
 
+    public void calculateErrors() {
+        double deltaX = (targetPoint.x - localizer.x);
+        double deltaY = (targetPoint.y - localizer.y);
+
+        xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
+        yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
+        turnError = targetPoint.heading-localizer.heading;
+
+        while(Math.abs(turnError) > Math.PI ){
+            turnError -= Math.PI * 2 * Math.signum(turnError);
+        }
+    }
+
+    public void feedforward() {
+        targetForwardPower = Math.min(Math.pow(Math.abs(xError)/xSlowdown, 2),1.0)*Math.signum(xError);
+        targetStrafePower = Math.min(Math.pow(Math.abs(yError)/ySlowdown, 0.5),1.0)*Math.signum(yError);
+        targetTurnPower = Math.min(Math.pow(Math.abs(turnError)/Math.toRadians(turnSlowdown), 2),1.0)*Math.signum(turnError);
+
+        double fwd = Math.abs(xError) > xThreshold/2 ? targetForwardPower + kAccelX*(targetForwardPower - ROBOT_VELOCITY.x/(Globals.MAX_X_SPEED*(12/sensors.getVoltage()))) : 0;
+        double strafe = Math.abs(yError) > yThreshold/2 ? targetStrafePower + kAccelY*(targetStrafePower - ROBOT_VELOCITY.y/(Globals.MAX_Y_SPEED*(12/sensors.getVoltage()))) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold/2) ? targetTurnPower + kAccelTurn*(targetTurnPower - ROBOT_VELOCITY.heading/(Globals.MAX_HEADING_SPEED*(12/sensors.getVoltage()))) : 0;
+
+        setMinPowersToOvercomeFriction();
+
+        // electronic braking (turn off min power to overcome friction if we are braking)
+        if (Math.abs(xError) < xBrakingDistanceThreshold && Math.abs(ROBOT_VELOCITY.x) > xBrakingSpeedThreshold) {
+            fwd = xBrakingPower * Math.signum(xError);
+            resetMinPowersToOvercomeFriction();
+        }
+//        if (Math.abs(yError) < yBrakingDistanceThreshold && Math.abs(ROBOT_VELOCITY.y) > yBrakingSpeedThreshold) {
+//            strafe = yBrakingPower * Math.signum(yError);
+//            resetMinPowersToOvercomeFriction();
+//        }
+        if (Math.abs(turnError) < Math.toRadians(turnBrakingAngleThreshold) && Math.abs(ROBOT_VELOCITY.heading) > Math.toRadians(turnBrakingSpeedThreshold)) {
+            turn = turnBrakingPower * Math.signum(turnError);
+            resetMinPowersToOvercomeFriction();
+        }
+
+        Vector2 move = new Vector2(fwd, strafe);
+        setMoveVector(move, turn);
+
+        if (atPoint()) {
+            state = State.BRAKE;
+        }
+    }
+
+    public void PIDF() {
+        double fwd = xPID.update(Math.abs(xError) > xThreshold/2 ? xError : 0);
+        double strafe = yPID.update(Math.abs(yError) > yThreshold/2 ? yError : 0);
+        double turn = turnPID.update(Math.abs(turnError) > Math.toRadians(turnThreshold)/2 ? turnError : 0);
+
+        Vector2 move = new Vector2(fwd, strafe);
+        setMoveVector(move, turn);
+
+        if (atPoint()) {
+            state = State.BRAKE;
+        }
+    }
+
     public boolean isBusy() {
-        return state != State.IDLE;
+        return state != State.WAIT_AT_POINT;
     }
 
     public void stopAllMotors() {
@@ -198,6 +273,10 @@ public class Drivetrain {
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
         TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
+
+        TelemetryUtil.packet.put("xTargetSpeed", targetForwardPower * Globals.MAX_X_SPEED);
+        TelemetryUtil.packet.put("yTargetSpeed", targetStrafePower * Globals.MAX_Y_SPEED);
+        TelemetryUtil.packet.put("turnTargetSpeed (deg)", targetTurnPower * Math.toDegrees(Globals.MAX_HEADING_SPEED));
     }
 
     public void goToPoint(Pose2d targetPoint) {
@@ -211,9 +290,9 @@ public class Drivetrain {
         }
     }
 
-    public static double xThreshold = 1.5;
-    public static double yThreshold = 1.5;
-    public static double turnThreshold = Math.toRadians(5);
+    public static double xThreshold = 1;
+    public static double yThreshold = 1;
+    public static double turnThreshold = 3;
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();
@@ -222,7 +301,7 @@ public class Drivetrain {
     }
 
     public boolean atPoint () {
-        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < turnThreshold;
+        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(turnThreshold);
     }
 
     public void setMode(DcMotor.RunMode runMode) {
@@ -254,12 +333,14 @@ public class Drivetrain {
         }
     }
 
+    double strafeCorrectionFactor = 0.5/0.575;
+
     public void setMoveVector(Vector2 moveVector, double turn) {
         double[] powers = {
-            moveVector.x - turn - moveVector.y,
+            moveVector.x - turn - moveVector.y * strafeCorrectionFactor,
             moveVector.x - turn + moveVector.y,
             moveVector.x + turn - moveVector.y,
-            moveVector.x + turn + moveVector.y
+            moveVector.x + turn + moveVector.y * strafeCorrectionFactor
         };
         normalizeArray(powers);
 
@@ -285,10 +366,10 @@ public class Drivetrain {
         double turn = smoothControls(gamepad.right_stick_x);
 
         double[] powers = {
-            forward + turn + strafe,
+            forward + turn + strafe * strafeCorrectionFactor,
             forward + turn - strafe,
             forward - turn + strafe,
-            forward - turn - strafe
+            forward - turn - strafe * strafeCorrectionFactor
         };
         normalizeArray(powers);
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);

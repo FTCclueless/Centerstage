@@ -6,15 +6,13 @@
             <goBILDA5202SeriesMotor name="slidesMotor1" port="1" />
             <goBILDA5202SeriesMotor name="intake" port="2" />
             <goBILDA5202SeriesMotor name="hang" port="3" />
-            <Servo name="topTurret" port="0" />
-            <Servo name="dunker" port="1" />
+            <Servo name="release" port="1" />
             <Servo name="topServo" port="2" />
             <Servo name="V4BarServo1" port="3" />
             <Servo name="V4BarServo2" port="4" />
-            <Servo name="bottomTurret" port="5" />
-            <AnalogInput name="analogInput0" port="0" />
+            <AnalogInput name="v4BarServo1Encoder" port="0" />
             <AnalogInput name="analogInput1" port="1" />
-            <AnalogInput name="analogInput2" port="2" />
+            <AnalogInput name="bottomTurretEncoder" port="2" />
             <AnalogInput name="analogInput3" port="3" />
             <DigitalDevice name="intakeBeamBreak" port="0" />
             <DigitalDevice name="depositBeamBreak" port="1" />
