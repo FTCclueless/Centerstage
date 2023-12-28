@@ -32,8 +32,10 @@ public class ServoTester extends LinearOpMode {
 
         ButtonToggle buttonY = new ButtonToggle();
         ButtonToggle buttonA = new ButtonToggle();
+        ButtonToggle left_bumper = new ButtonToggle();
 
         int servoSize = 0;
+        boolean intakeOn = false;
 
         // getting number of servos we have;
         for (PriorityDevice device : hardwareQueue.devices) {
@@ -87,6 +89,15 @@ public class ServoTester extends LinearOpMode {
 
             // if the servoIndex exceeds servoSize wrap around
             servoIndex = Math.abs(servoIndex) % servoSize;
+
+            if (left_bumper.isClicked(gamepad1.left_bumper)) {
+                if (intakeOn) {
+                    robot.intake.intake.setTargetPower(0.0);
+                } else {
+                    robot.intake.intake.setTargetPower(1.0);
+                }
+                intakeOn = !intakeOn;
+            }
 
             telemetry.addData("servoName", servos.get(servoIndex).name);
             telemetry.addData("servoIndex", servoIndex);

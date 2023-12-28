@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
-@Disabled
 @TeleOp
 public class EncoderPoseTuner extends LinearOpMode {
     @Override

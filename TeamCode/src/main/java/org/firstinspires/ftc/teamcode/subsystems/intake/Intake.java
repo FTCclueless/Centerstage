@@ -26,17 +26,16 @@ public class Intake {
         REVERSE_FOR_TIME
     }
 
-    private final PriorityMotor intake;
+    public final PriorityMotor intake;
     public PriorityServo actuation;
     public State state = State.OFF;
     private final Sensors sensors;
     private final Robot robot;
 
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
-    private double actuationHeight = 1.0;
 
     double actuationLength = 3.5;
-    double actuationAngle = 0.0;
+    double[] actuationAngles = new double[] {1.665, 0.0, 0.0, 0.0, 3.1728};
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -60,14 +59,9 @@ public class Intake {
         hardwareQueue.addDevice(actuation);
     }
 
-    double maxHeightAtParallel = 2.4;
-
     public void update() {
         TelemetryUtil.packet.put("Intake State", state);
 
-        actuation.setTargetAngle(actuationAngle, 1.0);
-
-        // TODO: Might need to have a delay bc pixels may not have reached transfer - Huddy kim apparently
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
@@ -120,19 +114,23 @@ public class Intake {
         state = State.SOFT_REVERSED;
     }
 
-    public void actuationDown () {
-        actuationAngle = 1.378;
+    public void actuationFullyDown() {
+        actuation.setTargetAngle(actuationAngles[0],1.0);
     }
 
-    public void actuationUp () {
-        actuationAngle = 3.1728;
+    public void actuationFullyUp() {
+        actuation.setTargetAngle(actuationAngles[4], 1.0);
     }
 
-    public void actuationSinglePixel () {
-        actuationAngle = 28;
+    public void setActuationAngle(double angle, double power) { // 0 index based
+        actuation.setTargetAngle(angle, power);
     }
 
     public double getIntakeActuationOffset() {
         return Math.cos(actuation.getCurrentAngle()) * actuationLength;
+    }
+
+    public boolean actuationUp() {
+        return actuation.getCurrentAngle() == actuationAngles[4];
     }
 }

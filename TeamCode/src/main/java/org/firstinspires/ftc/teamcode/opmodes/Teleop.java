@@ -60,10 +60,17 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 1 CONTROLS -------------------
 
             // adjusting angle of actuation
-            if (rightBump_1.isToggled(gamepad1.right_bumper) || intake.state == Intake.State.REVERSED) { // TODO: change this to have more adjustment
-                robot.intake.actuationUp();
-            } else {
-                robot.intake.actuationDown();
+            if (rightBump_1.isClicked(gamepad1.right_bumper)) {
+                if (intake.actuationUp()) {
+                    robot.intake.actuationFullyDown();
+                } else {
+                    robot.intake.actuationFullyUp();
+                }
+            }
+
+            // lift actuation if we are reversing intake
+            if (intake.state == Intake.State.REVERSED || intake.state == Intake.State.REVERSE_FOR_TIME) {
+                robot.intake.actuationFullyUp();
             }
 
             // toggle intake on and off
@@ -146,7 +153,7 @@ public class Teleop extends LinearOpMode {
             depoPos.z -= gamepad2.left_stick_y*0.2;
 
             // trigger deposit
-            if (a_2.isClicked(gamepad2.a)) {
+            if (rightBumper_2.isClicked(gamepad2.right_bumper)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
                 if (robot.deposit.state == Deposit.State.DEPOSIT) {
@@ -181,6 +188,15 @@ public class Teleop extends LinearOpMode {
             // airplane release (both)
             if (gamepad2.y) {
                 robot.airplane.release();
+            }
+
+            // adjusting actuation angle
+            if (gamepad2.y) {
+                intake.setActuationAngle(intake.actuation.getCurrentAngle() + Math.toRadians(4), 1.0);
+            }
+
+            if (gamepad2.a) {
+                intake.setActuationAngle(intake.actuation.getCurrentAngle() - Math.toRadians(4), 1.0);
             }
 
             // update robot

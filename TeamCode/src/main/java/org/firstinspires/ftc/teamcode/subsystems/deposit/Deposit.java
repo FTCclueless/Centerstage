@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 
 @Config
@@ -37,13 +38,13 @@ public class Deposit {
     public static double slidesV4Thresh = 2.5;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.151;
-    public static double v4BarGrabAngle = -0.08405188;
+    public static double v4BarTransferAngle = -0.29137;
+    public static double v4BarGrabAngle = -0.1512933;
     public static double v4BarDepositAngle = -2.97538;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.818;
-    public static double topServoGrabAngle = -0.8461222;
+    public static double topServoTransferAngle = -0.99181222;
+    public static double topServoGrabAngle = -0.9806;
     public static double topServoDepositAngle = 2.101297;
     public static double topServoRetractAngle = 2.6336256;
 
@@ -57,6 +58,11 @@ public class Deposit {
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         release = new Release(hardwareMap, hardwareQueue);
+    }
+
+
+    public void depositAt(Vector3 vector3) {
+        depositAt(vector3.z, vector3.x);
     }
 
     // Call this whenever you want! It can be an updating function!

@@ -22,6 +22,10 @@ public class HardwareQueue {
     }
 
     public void update() {
+        for (PriorityDevice device: devices) {
+            device.resetUpdateBoolean();
+        }
+
         double bestDevice;
         double loopTime = GET_LOOP_TIME(); // finds loopTime in seconds
         int numUpdates = 0;

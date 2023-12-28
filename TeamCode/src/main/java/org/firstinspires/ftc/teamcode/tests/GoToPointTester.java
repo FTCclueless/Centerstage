@@ -24,7 +24,7 @@ public class GoToPointTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
-            robot.goToPoint(new Pose2d(x, y, Math.toRadians(h)),this);
+            robot.goToPoint(new Pose2d(x, y, Math.toRadians(h)),this, true);
             robot.update();
         }
     }

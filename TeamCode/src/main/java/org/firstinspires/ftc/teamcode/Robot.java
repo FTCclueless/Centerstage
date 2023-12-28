@@ -83,20 +83,20 @@ public class Robot {
         TelemetryUtil.sendTelemetry();
     }
 
-    public void goToPoint(Pose2d pose, LinearOpMode opMode) {
+    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment) {
         long start = System.currentTimeMillis();
-        drivetrain.goToPoint(pose); // need this to start the process so thresholds don't immediately become true
-        while(System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        drivetrain.goToPoint(pose, finalAdjustment); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
     }
 
-    public void goToPoint(double x, double y, double heading, LinearOpMode opMode) {
-        this.goToPoint(new Pose2d(x, y, heading), opMode);
+    public void goToPoint(double x, double y, double heading, LinearOpMode opMode, boolean finalAdjustment) {
+        this.goToPoint(new Pose2d(x, y, heading), opMode, finalAdjustment);
     }
 
-    public void depositAt(double targetH, double targetY) {
-        deposit.depositAt(targetH, targetY);
+    public void depositAt(double targetH, double targetX) {
+        deposit.depositAt(targetH, targetX);
 
         while (deposit.state != Deposit.State.DEPOSIT) {
             update();
@@ -112,7 +112,7 @@ public class Robot {
 
     public void releaseTwo() {
         deposit.releaseTwo();
-        while (deposit.state != Deposit.State.RETRACT) {
+        while (deposit.state != Deposit.State.START_RETRACT) {
             update();
         }
     }

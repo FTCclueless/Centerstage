@@ -152,6 +152,10 @@ public class PriorityServo extends PriorityDevice{
 
     @Override
     public double getPriority(double timeRemaining) {
+        if (isUpdated) {
+            return 0;
+        }
+
         updateServoValues();
 
         if (timeRemaining * 1000.0 <= callLengthMillis/2.0) {
