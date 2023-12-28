@@ -171,6 +171,15 @@ public class Teleop extends LinearOpMode {
             TelemetryUtil.packet.put("depox", depoPos.x);
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
+            // back pickup
+//            if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
+//                robot.deposit.backPickupSetup();
+//            }
+//
+//            if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
+//                robot.deposit.backPickup();
+//            }
+
             // dunking (both)
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseOne();

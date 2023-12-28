@@ -21,6 +21,9 @@ public class Deposit {
         START_RETRACT,
         RETRACT,
         INTAKE,
+        BACK_PICKUP_SETUP,
+        BACK_PICKUP,
+        BACK_PICKUP_DEPOSIT,
         IDLE,
     };
     public State state;
@@ -48,6 +51,16 @@ public class Deposit {
     public static double topServoDepositAngle = 2.101297;
     public static double topServoRetractAngle = 2.6336256;
 
+    // back pickup
+    public static double v4BarBackPickupAngle = 0.0;
+    public static double topServoBackPickupAngle = 0.0;
+    public static double slidesBackPickupHeight = 0.0;
+    public static double slidesBackPickupHeightDown = 0.0;
+
+    // back pickup deposit
+    public static double v4BarBackPickupDepositAngle = 0.0;
+    public static double topServoBackPickupDepositAngle = 0.0;
+
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
@@ -59,7 +72,6 @@ public class Deposit {
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         release = new Release(hardwareMap, hardwareQueue);
     }
-
 
     public void depositAt(Vector3 vector3) {
         depositAt(vector3.z, vector3.x);
@@ -93,12 +105,24 @@ public class Deposit {
         state = State.START_RETRACT;
     }
 
+    public void backPickupSetup() {
+        beginBackPickupSetupTime = System.currentTimeMillis();
+        state = State.BACK_PICKUP_SETUP;
+    }
+
+    public void backPickup() {
+        beginBackPickupTime = System.currentTimeMillis();
+        state = State.BACK_PICKUP;
+    }
+
     public boolean checkReady() {
         return endAffector.checkReady() && !slides.inPosition(2);
     }
 
     long beginDepositTime;
     long beginRetractTime;
+    long beginBackPickupSetupTime;
+    long beginBackPickupTime;
 
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);
@@ -182,6 +206,40 @@ public class Deposit {
 
                 endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.75);
                 endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
+                break;
+            case BACK_PICKUP_SETUP:
+                slides.setTargetLength(Math.max(slidesBackPickupHeight, slidesV4Thresh + 2));
+                if (slides.getLength() > slidesV4Thresh) {
+                    endAffector.v4Servo.setTargetAngle(v4BarBackPickupAngle, 1.0);
+                    endAffector.topServo.setTargetAngle(topServoBackPickupAngle, 1.0);
+                    if (System.currentTimeMillis() - beginBackPickupSetupTime > 300) {
+                        slides.setTargetLength(slidesBackPickupHeight);
+                    }
+                } else {
+                    beginBackPickupSetupTime = System.currentTimeMillis();
+                }
+                break;
+            case BACK_PICKUP:
+                slides.setTargetLength(slidesBackPickupHeightDown);
+                Globals.NUM_PIXELS = 1;
+                if (slides.inPosition(0.5)) {
+                    release.close();
+                    if (System.currentTimeMillis() - beginBackPickupSetupTime > 500) {
+                        state = State.BACK_PICKUP_DEPOSIT;
+                    }
+                } else {
+                    beginBackPickupTime = System.currentTimeMillis();
+                }
+                break;
+            case BACK_PICKUP_DEPOSIT:
+                slides.setTargetLength(targetH);
+                endAffector.v4Servo.setTargetAngle(v4BarBackPickupDepositAngle, 1.0);
+                endAffector.topServo.setTargetAngle(topServoBackPickupDepositAngle, 1.0);
+
+                if (release.readyToRetract()) {
+                    beginRetractTime = System.currentTimeMillis();
+                    state = State.START_RETRACT;
+                }
                 break;
             case IDLE: // We are boring :(
                 break;
