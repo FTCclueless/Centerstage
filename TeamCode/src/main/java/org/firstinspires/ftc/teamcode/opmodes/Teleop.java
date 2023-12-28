@@ -50,6 +50,7 @@ public class Teleop extends LinearOpMode {
         Vector3 depoPos = new Vector3(15, 0, 10);
 
         robot.airplane.hold();
+        robot.droppers.retractBoth();
         robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
 
         waitForStart();

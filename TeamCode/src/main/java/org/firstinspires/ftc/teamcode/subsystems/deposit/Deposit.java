@@ -149,7 +149,7 @@ public class Deposit {
                 Log.e("System.currentTimeMillis()", System.currentTimeMillis() + "");
                 Log.e("beginRetractTime", beginRetractTime + "");
                 endAffector.topServo.setTargetAngle(topServoRetractAngle, 1.0);
-                if (System.currentTimeMillis() - beginRetractTime > 200) {
+                if (System.currentTimeMillis() - beginRetractTime > 50) {
                     release.close();
                     endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
 

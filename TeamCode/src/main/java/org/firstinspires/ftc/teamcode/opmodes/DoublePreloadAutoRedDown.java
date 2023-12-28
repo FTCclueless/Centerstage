@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
-@Autonomous(name = "RED Double Preload Auto Up")
-public class DoublePreloadAutoRedUp extends LinearOpMode {
+@Autonomous(name = "RED Double Preload Auto Down")
+public class DoublePreloadAutoRedDown extends LinearOpMode {
     private Vision vision;
     protected TeamPropDetectionPipeline.TeamPropLocation teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
     protected Robot robot;
@@ -30,6 +30,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
             waitForStart();
 
             doGroundPreload();
+            navigateToBoard();
             doBoardPreload();
 
             park();
@@ -56,10 +57,10 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, true, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(12, -65, -Math.PI / 2));
+        robot.drivetrain.setPoseEstimate(new Pose2d(-36, -65, -Math.PI / 2));
 
-        robot.droppers.rightDown();
-        robot.droppers.leftRelease();
+        robot.droppers.leftDown();
+        robot.droppers.rightRelease();
 
         robot.hangActuation.up();
         robot.airplane.hold();
@@ -92,40 +93,54 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(12, -48, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -31, Math.PI);
+                groundPreloadPosition = new Pose2d(-48, -36.5, -Math.PI/2);
+                boardPreload =          new Pose2d(47, -31, Math.PI);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(12, -36.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -37.5, Math.PI);
+                groundPreloadPosition = new Pose2d(-36, -36.5, -Math.PI/2);
+                boardPreload =          new Pose2d(47, -37.5, Math.PI);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(25, -36.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -43, Math.PI);
+                groundPreloadPosition = new Pose2d(-36, -48, -Math.PI/2);
+                boardPreload =          new Pose2d(47, -43, Math.PI);
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this, false, false);
 
-        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(8, -35, -Math.PI/4), this, false, false);
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
+            robot.goToPoint(new Pose2d(-32, -35, 5*Math.PI/4), this, false, false);
         }
 
         start = System.currentTimeMillis();
-        robot.droppers.rightRelease();
+        robot.droppers.leftRelease();
 
         while (System.currentTimeMillis() - start < 100) {
             robot.update();
         }
 
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
+            robot.goToPoint(new Pose2d(-36, -41, Math.PI), this, false, false); // intermediate point
+        }
+    }
+
+    /**
+     * Navigates under stage door
+     * If center we route around the ground preload pixel
+     */
+    public void navigateToBoard() {
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
+            robot.goToPoint(new Pose2d(-48, -36.5, Math.PI), this, false, false);
+            robot.goToPoint(new Pose2d(-48, -12, Math.PI), this, false, false);
+        } else {
+            robot.goToPoint(new Pose2d(-36, -12, Math.PI), this, false, false);
+        }
+        robot.goToPoint(new Pose2d(22, -12, Math.PI), this, false, false);
+
         deposit = new Vector3(5, 0, 6);
         robot.deposit.depositAt(deposit); // async call to deposit
 
-        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(24, -38, Math.PI), this, false, false);
-        }
-
-        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false); // intermediate point
+        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
     }
 
     /**
@@ -146,8 +161,8 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
      * Assumes that it is in the parking line row
      */
     public void park() {
-        robot.goToPoint(new Pose2d(42, -60, Math.PI), this); // intermediate parking
-        robot.goToPoint(new Pose2d(58, -60, Math.PI), this, false, true); // parking
+        robot.goToPoint(new Pose2d(42, -12, Math.PI), this, false, false); // intermediate parking
+        robot.goToPoint(new Pose2d(58, -12, Math.PI), this, false, true); // parking
 
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 750) {

@@ -268,7 +268,7 @@ public class Drivetrain {
     }
 
     public static PID xPID = new PID(0.085,0.0,0.01);
-    public static PID yPID = new PID(0.15,0.0,0.015);
+    public static PID yPID = new PID(0.1575,0.0,0.015);
     public static PID turnPID = new PID(0.6,0.0,0.025);
 
     public void PIDF() {
@@ -294,7 +294,7 @@ public class Drivetrain {
     }
 
     public boolean isBusy() {
-        return state != State.WAIT_AT_POINT;
+        return state != State.WAIT_AT_POINT && state != State.IDLE;
     }
 
     public void stopAllMotors() {
@@ -322,8 +322,10 @@ public class Drivetrain {
     }
 
     boolean finalAdjustment = false;
-    public void goToPoint(Pose2d targetPoint, boolean finalAdjustment) {
+    boolean stop = true;
+    public void goToPoint(Pose2d targetPoint, boolean finalAdjustment, boolean stop) {
         this.finalAdjustment = finalAdjustment;
+        this.stop = stop;
 
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
@@ -357,7 +359,14 @@ public class Drivetrain {
     }
 
     public boolean atPoint () {
-        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < (finalAdjustment && state != State.GO_TO_POINT ? Math.toRadians(finalTurnThreshold) : Math.toRadians(turnThreshold));
+        if (finalAdjustment && state != State.GO_TO_POINT) {
+            return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(finalTurnThreshold);
+        }
+        if (!stop) {
+            return Math.abs(xError) < xThreshold*3 && Math.abs(yError) < yThreshold*3 && Math.abs(turnError) < Math.toRadians(turnThreshold)*3;
+        }
+
+        return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(turnThreshold);
     }
 
     public void setMode(DcMotor.RunMode runMode) {

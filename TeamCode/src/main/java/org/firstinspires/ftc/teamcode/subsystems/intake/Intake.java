@@ -35,7 +35,7 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {1.665, 0.0, 0.0, 0.0, 3.1728};
+    double[] actuationAngles = new double[] {-0.2405, -0.013875, 0.148, 0.296, 0.44401};
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -48,7 +48,7 @@ public class Intake {
                 1.0,
                 0.0,
                 1.0,
-                0.131,
+                0.068,
                 false,
                 1.0,
                 1.0

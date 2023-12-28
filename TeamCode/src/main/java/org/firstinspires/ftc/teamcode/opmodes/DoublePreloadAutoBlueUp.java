@@ -104,10 +104,10 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 break;
         }
 
-        robot.goToPoint(groundPreloadPosition, this, false);
+        robot.goToPoint(groundPreloadPosition, this);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
-            robot.goToPoint(new Pose2d(10, -32, Math.PI/2), this, false);
+            robot.goToPoint(new Pose2d(10, -32, Math.PI/2), this);
         }
 
         start = System.currentTimeMillis();
@@ -129,7 +129,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
 
         robot.deposit.depositAt(deposit); // async call to deposit
 
-        robot.goToPoint(boardPreload, this, true);
+        robot.goToPoint(boardPreload, this, true, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
@@ -140,8 +140,8 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
      * Assumes that it is in the parking line row
      */
     public void park() {
-        robot.goToPoint(new Pose2d(42, 60, Math.PI), this, false); // intermediate parking
-        robot.goToPoint(new Pose2d(58, 60, Math.PI), this, false); // parking
+        robot.goToPoint(new Pose2d(42, 60, Math.PI), this, false, false); // intermediate parking
+        robot.goToPoint(new Pose2d(58, 60, Math.PI), this); // parking
 
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 750) {
