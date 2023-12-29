@@ -15,10 +15,10 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Release {
     public PriorityServo release;
 
-    public static double transferAngle = -0.4763;
-    public static double closeAngle = 0.06724;
-    public static double dunkOneAngle = -0.1849;
-    public static double dunkTwoAngle = -0.57715;
+    public static double transferAngle = 1.13750;
+    public static double closeAngle = 1.849141;
+    public static double dunkOneAngle = 1.4512;
+    public static double dunkTwoAngle = 1.13750;
 
     public static double dunkTime = 500;
     public static double timer = 0;
@@ -27,7 +27,7 @@ public class Release {
 
     public Release(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         release = new PriorityServo(hardwareMap.get(Servo.class, "release"), "release",
-                PriorityServo.ServoType.AXON_MINI,
+                PriorityServo.ServoType.PRO_MODELER,
                 1,
                 0,
                 1,
