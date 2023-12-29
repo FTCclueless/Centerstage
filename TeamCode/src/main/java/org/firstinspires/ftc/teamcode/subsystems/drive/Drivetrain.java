@@ -272,9 +272,9 @@ public class Drivetrain {
     public static PID turnPID = new PID(0.6,0.0,0.025);
 
     public void PIDF() {
-        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update( xError) + 0.05 * Math.signum(xError) : 0;
-        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError) + 0.05 * Math.signum(yError) : 0;
-        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2 || fwd != 0 || strafe != 0 ? turnPID.update(turnError) : 0;
+        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -1.0, 1.0) + 0.05 * Math.signum(xError) : 0;
+        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -1.0, 1.0) + 0.05 * Math.signum(yError) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2 || fwd != 0 || strafe != 0 ? turnPID.update(turnError, -1.0, 1.0) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
@@ -285,7 +285,7 @@ public class Drivetrain {
     public void finalAdjustment() {
         double fwd = 0;
         double strafe = 0;
-        double turn = Math.abs(turnError) > Math.toRadians(finalTurnThreshold)/2 ? finalTurnPID.update(turnError) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(finalTurnThreshold)/2 ? finalTurnPID.update(turnError, -1.0, 1.0) : 0;
 
         setLowerMinPowersToOvercomeFriction();
 
