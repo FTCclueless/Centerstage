@@ -143,11 +143,6 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
         robot.goToPoint(new Pose2d(42, 60, Math.PI), this, false, false); // intermediate parking
         robot.goToPoint(new Pose2d(58, 60, Math.PI), this); // parking
 
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 750) {
-            robot.update();
-        }
-
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
     }
 }

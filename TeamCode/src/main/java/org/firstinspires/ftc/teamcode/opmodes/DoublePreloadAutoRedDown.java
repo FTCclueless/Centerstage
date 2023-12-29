@@ -170,11 +170,6 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         robot.goToPoint(new Pose2d(42, -12, Math.PI), this, false, false); // intermediate parking
         robot.goToPoint(new Pose2d(58, -12, Math.PI), this, false, true); // parking
 
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 750) {
-            robot.update();
-        }
-
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
     }
 }
