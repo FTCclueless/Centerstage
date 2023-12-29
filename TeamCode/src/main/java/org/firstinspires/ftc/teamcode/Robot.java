@@ -18,6 +18,7 @@ import org.firstinspires.ftc.teamcode.subsystems.hangActuation.HangActuation;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 
@@ -81,6 +82,18 @@ public class Robot {
     private void updateTelemetry() {
         TelemetryUtil.packet.put("Loop Time", GET_LOOP_TIME());
         TelemetryUtil.sendTelemetry();
+    }
+
+    public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xDistanceThreshold) {
+        long start = System.currentTimeMillis();
+        Pose2d initialPose = drivetrain.getPoseEstimate();
+        drivetrain.goToPoint(pose, finalAdjustment, stop); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+            if (Math.abs(initialPose.x-drivetrain.localizer.getPoseEstimate().x) > xDistanceThreshold) {
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        }
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
