@@ -269,7 +269,7 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.085,0.0,0.01);
     public static PID yPID = new PID(0.1575,0.0,0.015);
-    public static PID turnPID = new PID(0.6,0.0,0.025);
+    public static PID turnPID = new PID(0.55,0.0,0.01);
 
     public void PIDF() {
         double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -1.0, 1.0) + 0.05 * Math.signum(xError) : 0;
