@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -31,11 +32,12 @@ public class Intake {
     public State state = State.OFF;
     private final Sensors sensors;
     private final Robot robot;
+    public static double intakeCurrent;
 
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {-0.2405, -0.013875, 0.148, 0.296, 0.44401};
+    double[] actuationAngles = new double[] {-0.314, -0.013875, 0.148, 0.296, 0.44401};
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -65,6 +67,7 @@ public class Intake {
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
+                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.AMPS);
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
@@ -122,6 +125,10 @@ public class Intake {
         actuation.setTargetAngle(actuationAngles[4], 1.0);
     }
 
+    public void setActuationHeight (int pixel) {
+        actuation.setTargetAngle(actuationAngles[pixel], 1.0);
+    }
+
     public void setActuationAngle(double angle, double power) { // 0 index based
         actuation.setTargetAngle(angle, power);
     }
@@ -130,7 +137,7 @@ public class Intake {
         return Math.cos(actuation.getCurrentAngle()) * actuationLength;
     }
 
-    public boolean actuationUp() {
+    public boolean isActuationUp() {
         return actuation.getCurrentAngle() == actuationAngles[4];
     }
 }

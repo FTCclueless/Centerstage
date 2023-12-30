@@ -90,7 +90,6 @@ public class Deposit {
         if (state == State.INTAKE) {
             state = State.GRAB;
             beginGrabTime = System.currentTimeMillis();
-
             startDeposit = true;
         }
         else if (state == State.GRAB) {
@@ -129,10 +128,11 @@ public class Deposit {
         return endAffector.checkReady() && !slides.inPosition(2);
     }
 
+    long beginDepositTime;
+    long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
     long beginBackPickupSetupTime;
     long beginBackPickupTime;
-    long beginGrabTime = System.currentTimeMillis();
 
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);
@@ -151,20 +151,24 @@ public class Deposit {
                 }
                 break;
             case GRAB:
-                release.close();
                 endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.75);
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
+                release.preGrab();
 
                 if (robot.intake.state == Intake.State.ON && !startDeposit) {
                     state = State.INTAKE;
                 }
 
                 if (startDeposit && System.currentTimeMillis() - beginGrabTime > 250) {
+                    beginDepositTime = System.currentTimeMillis();
                     state = State.START_DEPOSIT;
                 }
                 break;
             case START_DEPOSIT:
-                slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
+                release.close();
+                if (System.currentTimeMillis() - beginDepositTime > 150) {
+                    slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
+                }
 
                 if (slides.getLength() > slidesV4Thresh) {
                     state = State.FINISH_DEPOSIT;

@@ -269,12 +269,12 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.085,0.0,0.01);
     public static PID yPID = new PID(0.1575,0.0,0.015);
-    public static PID turnPID = new PID(0.55,0.0,0.01);
+    public static PID turnPID = new PID(0.4,0.0,0.01);
 
     public void PIDF() {
         double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -1.0, 1.0) + 0.05 * Math.signum(xError) : 0;
         double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -1.0, 1.0) + 0.05 * Math.signum(yError) : 0;
-        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2 || fwd != 0 || strafe != 0 ? turnPID.update(turnError, -1.0, 1.0) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2? turnPID.update(turnError, -1.0, 1.0) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);

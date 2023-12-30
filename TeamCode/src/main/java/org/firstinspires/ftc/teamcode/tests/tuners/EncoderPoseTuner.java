@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode.tests.tuners;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.utils.Encoder;
-import org.firstinspires.ftc.teamcode.utils.Pose2d;
 
+@Disabled
 @TeleOp
 public class EncoderPoseTuner extends LinearOpMode {
     @Override

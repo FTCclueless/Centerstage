@@ -84,12 +84,11 @@ public class Robot {
         TelemetryUtil.sendTelemetry();
     }
 
-    public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xDistanceThreshold) {
+    public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
         long start = System.currentTimeMillis();
-        Pose2d initialPose = drivetrain.getPoseEstimate();
         drivetrain.goToPoint(pose, finalAdjustment, stop); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
-            if (Math.abs(initialPose.x-drivetrain.localizer.getPoseEstimate().x) > xDistanceThreshold) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
             update();

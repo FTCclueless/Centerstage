@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
-@Autonomous(name = "RED Double Preload Auto Down")
+@Autonomous(name = "RED Cycle Auto Down")
 public class CycleAutoRedDown extends LinearOpMode {
     private Vision vision;
     protected TeamPropDetectionPipeline.TeamPropLocation teamPropLocation = TeamPropDetectionPipeline.TeamPropLocation.CENTER;
@@ -23,6 +23,8 @@ public class CycleAutoRedDown extends LinearOpMode {
     private Vector3 deposit = null;
     private Pose2d boardPreload = null;
 
+    private int numCycles = 2;
+
     @Override
     public void runOpMode() throws InterruptedException {
         try {
@@ -30,8 +32,17 @@ public class CycleAutoRedDown extends LinearOpMode {
             waitForStart();
 
             doGroundPreload();
+            navigateAroundGroundPreload();
+            intakeStackInitial();
             navigateToBoard();
             doBoardPreload();
+
+            for (int i = 0; i < numCycles; i++) {
+                navigateBackToStack();
+                intakeStack();
+                navigateToBoard();
+                depositOnBoard();
+            }
 
             park();
         } catch (Error e) {
@@ -65,6 +76,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.hangActuation.up();
         robot.airplane.hold();
 
+        robot.deposit.release.preGrab();
+
         vision.enableTeamProp();
         vision.disableAprilTag();
 
@@ -93,7 +106,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-48, -39, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-48, -40.5, -Math.PI/2);
                 boardPreload =          new Pose2d(50, -31, Math.PI);
                 break;
             case CENTER:
@@ -112,45 +125,42 @@ public class CycleAutoRedDown extends LinearOpMode {
             robot.goToPoint(new Pose2d(-34.5, -35, 5*Math.PI/4), this, false, false);
         }
 
-        start = System.currentTimeMillis();
         robot.droppers.leftRelease();
 
-        while (System.currentTimeMillis() - start < 100) {
-            robot.update();
-        }
-    }
-
-    public void intakeStack() {
-
+        pause(100);
     }
 
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
      */
-    double xDistanceThreshold = 40;
-    public void navigateToBoard() {
+    public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-60, -39, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-60, -12, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-60, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 52;
+                robot.goToPoint(new Pose2d(-57, -39, -Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-57, -12, -Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-57, -12, Math.PI), this, false, false);
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-52, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 42;
                 break;
             case RIGHT:
                 robot.goToPoint(new Pose2d(-37.5, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 32;
                 break;
         }
+    }
 
+    public void navigateToBoard() {
         deposit = new Vector3(5, 0, 6);
-        robot.goToPointWithDeposit(new Pose2d(28, -12, Math.PI), this, false, false, deposit, xDistanceThreshold);
+        robot.intake.reverse();
+        robot.goToPointWithDeposit(new Pose2d(28, -12, Math.PI), this, false, false, deposit, 0);
+        robot.intake.off();
+    }
 
-//        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
+    public void navigateBackToStack() {
+        robot.goToPoint(new Pose2d(28, -12, Math.PI), this, false, false);
+        robot.intake.on();
+        robot.intake.setActuationHeight(pixelIndex);
     }
 
     /**
@@ -167,6 +177,37 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.releaseTwo();
     }
 
+    public void depositOnBoard() {
+        robot.goToPoint(new Pose2d(50, -31, Math.PI), this, true, true);
+
+        robot.depositAt(deposit.z, deposit.x); // sync call to deposit
+
+        robot.releaseTwo();
+    }
+
+    Pose2d intakePose = new Pose2d(-58, -12, Math.PI);
+
+    int pixelIndex = 4; // 0 index based
+    public void intakeStackInitial() {
+        robot.goToPoint(intakePose, this, true, true);
+        robot.intake.setActuationHeight(pixelIndex);
+        robot.intake.on();
+        pixelIndex--;
+        pause(750);
+        Globals.NUM_PIXELS = 2;
+    }
+
+    public void intakeStack() {
+        robot.goToPoint(intakePose, this, true, true);
+        pause(750);
+        pixelIndex--;
+        robot.intake.setActuationHeight(pixelIndex);
+        pause(750);
+        pixelIndex--;
+        deposit = new Vector3(5, 0, 12);
+        Globals.NUM_PIXELS = 2;
+    }
+
     /**
      * Assumes that it is in the parking line row
      */
@@ -175,5 +216,12 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.goToPoint(new Pose2d(58, -12, Math.PI), this, false, true); // parking
 
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
+    }
+
+    public void pause (double milliseconds) {
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < milliseconds && opModeIsActive()) {
+            robot.update();
+        }
     }
 }

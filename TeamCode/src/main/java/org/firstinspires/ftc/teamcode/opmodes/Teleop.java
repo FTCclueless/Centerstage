@@ -62,7 +62,7 @@ public class Teleop extends LinearOpMode {
 
             // adjusting angle of actuation
             if (rightBump_1.isClicked(gamepad1.right_bumper)) {
-                if (intake.actuationUp()) {
+                if (intake.isActuationUp()) {
                     robot.intake.actuationFullyDown();
                 } else {
                     robot.intake.actuationFullyUp();
