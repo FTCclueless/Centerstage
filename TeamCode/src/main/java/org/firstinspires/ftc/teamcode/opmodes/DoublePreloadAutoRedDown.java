@@ -93,23 +93,23 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-48, -36.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -31, Math.PI);
+                groundPreloadPosition = new Pose2d(-48, -39, -Math.PI/2);
+                boardPreload =          new Pose2d(50, -31, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -35.5, Math.PI);
+                boardPreload =          new Pose2d(50, -35.5, Math.PI);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -43, Math.PI);
+                boardPreload =          new Pose2d(50, -43, Math.PI);
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this, false, false);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
-            robot.goToPoint(new Pose2d(-32, -35, 5*Math.PI/4), this, false, false);
+            robot.goToPoint(new Pose2d(-34.5, -35, 5*Math.PI/4), this, false, false);
         }
 
         start = System.currentTimeMillis();
@@ -128,7 +128,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
     public void navigateToBoard() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-60, -36, -Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-60, -39, -Math.PI/2), this, false, false);
                 robot.goToPoint(new Pose2d(-60, -12, -Math.PI/2), this, false, false);
                 robot.goToPoint(new Pose2d(-60, -12, Math.PI), this, false, false);
                 xDistanceThreshold = 52;
@@ -146,7 +146,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         deposit = new Vector3(5, 0, 6);
         robot.goToPointWithDeposit(new Pose2d(28, -12, Math.PI), this, false, false, deposit, xDistanceThreshold);
 
-        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
+//        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
     }
 
     /**

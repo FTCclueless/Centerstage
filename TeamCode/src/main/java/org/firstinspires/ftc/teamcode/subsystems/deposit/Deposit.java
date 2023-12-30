@@ -7,7 +7,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
+import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -21,6 +24,7 @@ public class Deposit {
         START_RETRACT,
         RETRACT,
         INTAKE,
+        GRAB,
         BACK_PICKUP_SETUP,
         BACK_PICKUP,
         BACK_PICKUP_DEPOSIT,
@@ -66,7 +70,7 @@ public class Deposit {
         this.sensors = sensors;
         this.robot = robot;
 
-        state = State.INTAKE;
+        state = State.GRAB;
 
         slides = new Slides(hardwareMap, hardwareQueue, sensors);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
@@ -77,14 +81,20 @@ public class Deposit {
         depositAt(vector3.z, vector3.x);
     }
 
+    boolean startDeposit = false;
     // Call this whenever you want! It can be an updating function!
     public void depositAt(double targetH, double targetX) {
         this.targetH = Math.max(Math.min(targetH, Slides.maxSlidesHeight),0);
         this.targetX = targetX;
 
         if (state == State.INTAKE) {
-            state = State.START_DEPOSIT;
-            beginDepositTime = System.currentTimeMillis();
+            state = State.GRAB;
+            beginGrabTime = System.currentTimeMillis();
+
+            startDeposit = true;
+        }
+        else if (state == State.GRAB) {
+            startDeposit = true;
         }
     }
 
@@ -119,43 +129,52 @@ public class Deposit {
         return endAffector.checkReady() && !slides.inPosition(2);
     }
 
-    long beginDepositTime;
     long beginRetractTime;
     long beginBackPickupSetupTime;
     long beginBackPickupTime;
+    long beginGrabTime = System.currentTimeMillis();
 
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);
 
         switch (state) {
-            case START_DEPOSIT:
+            case INTAKE:
+                release.intake();
+                slides.setTargetLength(0.0);
+
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.75);
+                endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
+
+                if (robot.intake.state != Intake.State.ON) { // check if intake is off
+                    beginGrabTime = System.currentTimeMillis();
+                    state = State.GRAB;
+                }
+                break;
+            case GRAB:
+                release.close();
                 endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.75);
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
 
-                if (endAffector.v4Servo.inPosition() && endAffector.topServo.inPosition()) {
-                    if (System.currentTimeMillis() - beginDepositTime > 250) {
-                        release.close();
-                        if (System.currentTimeMillis() - beginDepositTime > 500) {
-                            slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
-                        }
-                    }
-                } else {
-                    beginDepositTime = System.currentTimeMillis();
-                    slides.setTargetLength(0.0);
+                if (robot.intake.state == Intake.State.ON && !startDeposit) {
+                    state = State.INTAKE;
                 }
+
+                if (startDeposit && System.currentTimeMillis() - beginGrabTime > 250) {
+                    state = State.START_DEPOSIT;
+                }
+                break;
+            case START_DEPOSIT:
+                slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
 
                 if (slides.getLength() > slidesV4Thresh) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
             case FINISH_DEPOSIT: // stuck in this state unless someone calls dunk method. In the meantime it will constantly update targetH
+                startDeposit = false;
                 slides.setTargetLength(targetH);
                 endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.75);
                 endAffector.topServo.setTargetAngle(topServoDepositAngle,1.0);
-
-                if (endAffector.v4Servo.getCurrentAngle() > Math.toRadians(90)) { // TODO: Tune this value
-                    slides.setTargetLength(targetH);
-                }
 
                 if (endAffector.v4Servo.inPosition() && slides.inPosition(2)) {
                     state = State.DEPOSIT;
@@ -199,13 +218,6 @@ public class Deposit {
                 if (slides.inPosition(2)) {
                     state = State.INTAKE;
                 }
-                break;
-            case INTAKE:
-                release.intake();
-                slides.setTargetLength(0.0);
-
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.75);
-                endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
                 break;
             case BACK_PICKUP_SETUP:
                 slides.setTargetLength(Math.max(slidesBackPickupHeight, slidesV4Thresh + 2));
