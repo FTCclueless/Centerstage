@@ -56,7 +56,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, true, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(12, -65, -Math.PI / 2));
+        robot.drivetrain.setPoseEstimate(new Pose2d(12, -65, -Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
 
         robot.droppers.rightDown();
         robot.droppers.leftRelease();

@@ -50,6 +50,8 @@ public class Release {
         release.setTargetAngle(preGrabAngle, 1);
     }
 
+    public boolean isBusy() {return busy;}
+
     public void releaseOne() {
         Log.e("Globals.NUM_PIXELS", Globals.NUM_PIXELS + "");
         Log.e("busy?", busy + "");

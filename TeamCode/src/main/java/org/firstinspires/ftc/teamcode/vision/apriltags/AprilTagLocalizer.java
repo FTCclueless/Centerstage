@@ -80,7 +80,7 @@ public class AprilTagLocalizer {
     }
 
     public double getDistance(AprilTagDetection tag) {
-        if (tag != null) {
+        if (tag.ftcPose != null) {
             return Math.sqrt(Math.pow(tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,2) + Math.pow(tag.ftcPose.x, 2));
         }
         return 0.0;

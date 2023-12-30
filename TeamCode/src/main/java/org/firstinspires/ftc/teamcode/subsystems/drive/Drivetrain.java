@@ -123,10 +123,10 @@ public class Drivetrain {
     }
 
     public void setLowerMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.2933028305179981/2.5);
-        leftRear.setMinimumPowerToOvercomeFriction(0.34301851543941514/2.5);
-        rightRear.setMinimumPowerToOvercomeFriction(0.35201662929607813/2.5);
-        rightFront.setMinimumPowerToOvercomeFriction(0.345230427428854/2.5);
+        leftFront.setMinimumPowerToOvercomeFriction(0.2933028305179981/2);
+        leftRear.setMinimumPowerToOvercomeFriction(0.34301851543941514/2);
+        rightRear.setMinimumPowerToOvercomeFriction(0.35201662929607813/2);
+        rightFront.setMinimumPowerToOvercomeFriction(0.345230427428854/2);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -200,7 +200,7 @@ public class Drivetrain {
             case FINAL_ADJUSTMENT:
                 finalAdjustment();
 
-                if (turnError < Math.toRadians(finalTurnThreshold)) {
+                if (Math.abs(turnError) < Math.toRadians(finalTurnThreshold)) {
                     if (System.currentTimeMillis() - perfectHeadingTimeStart > 150) {
                         state = State.BRAKE;
                     }
@@ -269,23 +269,25 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.085,0.0,0.01);
     public static PID yPID = new PID(0.1575,0.0,0.015);
-    public static PID turnPID = new PID(0.4,0.0,0.01);
+    public static PID turnPID = new PID(0.5,0.0,0.01);
 
     public void PIDF() {
-        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -1.0, 1.0) + 0.05 * Math.signum(xError) : 0;
-        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -1.0, 1.0) + 0.05 * Math.signum(yError) : 0;
-        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2? turnPID.update(turnError, -1.0, 1.0) : 0;
+        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -maxPower, maxPower) + 0.05 * Math.signum(xError) : 0;
+        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -maxPower, maxPower) + 0.05 * Math.signum(yError) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
     }
 
-    public static PID finalTurnPID = new PID(0.1, 0.0,0.0);
+    public static PID finalXPID = new PID(0.1, 0.0,0.0);
+    public static PID finalYPID = new PID(0.1, 0.0,0.0);
+    public static PID finalTurnPID = new PID(0.075, 0.0,0.0);
 
     public void finalAdjustment() {
-        double fwd = 0;
-        double strafe = 0;
-        double turn = Math.abs(turnError) > Math.toRadians(finalTurnThreshold)/2 ? finalTurnPID.update(turnError, -1.0, 1.0) : 0;
+        double fwd = Math.abs(xError) > finalXThreshold/2 ? finalXPID.update(xError, -maxPower, maxPower) : 0;
+        double strafe = Math.abs(yError) > finalYThreshold/2 ? finalYPID.update(yError, -maxPower, maxPower) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(finalTurnThreshold)/2 ? finalTurnPID.update(turnError, -maxPower, maxPower) : 0;
 
         setLowerMinPowersToOvercomeFriction();
 
@@ -323,9 +325,11 @@ public class Drivetrain {
 
     boolean finalAdjustment = false;
     boolean stop = true;
-    public void goToPoint(Pose2d targetPoint, boolean finalAdjustment, boolean stop) {
+    double maxPower = 1.0;
+    public void goToPoint(Pose2d targetPoint, boolean finalAdjustment, boolean stop, double maxPower) {
         this.finalAdjustment = finalAdjustment;
         this.stop = stop;
+        this.maxPower = Math.abs(maxPower);
 
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
@@ -343,6 +347,9 @@ public class Drivetrain {
     public static double xThreshold = 1;
     public static double yThreshold = 1;
     public static double turnThreshold = 5;
+
+    public static double finalXThreshold = 0.5;
+    public static double finalYThreshold = 0.5;
     public static double finalTurnThreshold = 1;
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {

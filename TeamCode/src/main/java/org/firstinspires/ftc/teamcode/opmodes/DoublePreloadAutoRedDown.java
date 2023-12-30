@@ -144,7 +144,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         }
 
         deposit = new Vector3(5, 0, 6);
-        robot.goToPointWithDeposit(new Pose2d(28, -12, Math.PI), this, false, false, deposit, xDistanceThreshold);
+        robot.goToPointWithDepositAndIntake(new Pose2d(28, -12, Math.PI), this, false, false, deposit, xDistanceThreshold);
 
 //        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
     }

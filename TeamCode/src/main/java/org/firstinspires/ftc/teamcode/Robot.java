@@ -84,20 +84,9 @@ public class Robot {
         TelemetryUtil.sendTelemetry();
     }
 
-    public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
+    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
         long start = System.currentTimeMillis();
-        drivetrain.goToPoint(pose, finalAdjustment, stop); // need this to start the process so thresholds don't immediately become true
-        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
-                deposit.depositAt(depositVector3); // async call to deposit
-            }
-            update();
-        }
-    }
-
-    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
-        long start = System.currentTimeMillis();
-        drivetrain.goToPoint(pose, finalAdjustment, stop); // need this to start the process so thresholds don't immediately become true
+        drivetrain.goToPoint(pose, finalAdjustment, stop, maxPower); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
@@ -107,28 +96,44 @@ public class Robot {
         goToPoint(pose, opMode, false, true);
     }
 
-    public void goToPoint(double x, double y, double heading, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
-        this.goToPoint(new Pose2d(x, y, heading), opMode, finalAdjustment, stop);
+    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
+        goToPoint(pose, opMode, finalAdjustment, stop, 1.0);
+    }
+
+    public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
+        long start = System.currentTimeMillis();
+        drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                intake.reverse();
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        }
     }
 
     public void depositAt(double targetH, double targetX) {
         deposit.depositAt(targetH, targetX);
 
-        while (deposit.state != Deposit.State.DEPOSIT) {
+        while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(2.5)) {
             update();
         }
     }
 
     public void releaseOne() {
         deposit.releaseOne();
-        while (deposit.state != Deposit.State.RETRACT) {
+        while (deposit.release.isBusy()) {
             update();
         }
     }
 
     public void releaseTwo() {
-        deposit.releaseTwo();
-        while (deposit.state != Deposit.State.START_RETRACT) {
+        deposit.releaseOne();
+        while (deposit.release.isBusy()) {
+            update();
+        }
+        deposit.releaseOne();
+        while (deposit.release.isBusy()) {
             update();
         }
     }

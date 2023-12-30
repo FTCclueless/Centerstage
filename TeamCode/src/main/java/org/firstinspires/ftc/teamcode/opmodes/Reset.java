@@ -28,7 +28,7 @@ public class Reset extends LinearOpMode {
             robot.drivetrain.setPoseEstimate(new Pose2d(0,0,0));
             endAffector.v4Servo.setTargetAngle(Deposit.v4BarTransferAngle, 0.5);
             endAffector.topServo.setTargetAngle(Deposit.topServoTransferAngle,1.0);
-            deposit.release.close();
+            deposit.release.preGrab();
 
             robot.update();
         }
