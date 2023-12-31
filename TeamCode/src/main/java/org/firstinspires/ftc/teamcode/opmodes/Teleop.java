@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,6 +13,7 @@ import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 @TeleOp
@@ -46,7 +49,9 @@ public class Teleop extends LinearOpMode {
         ButtonToggle rightBumper_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle x_2 = new ButtonToggle();
+        ButtonToggle y_2 = new ButtonToggle();
 
+        int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
 
         robot.airplane.hold();
@@ -196,17 +201,21 @@ public class Teleop extends LinearOpMode {
             }
 
             // airplane release (both)
-            if (gamepad2.y) {
+            if (gamepad2.b) {
                 robot.airplane.release();
             }
 
             // adjusting actuation angle
-            if (gamepad2.y) {
-                intake.setActuationAngle(intake.actuation.getCurrentAngle() + Math.toRadians(4), 1.0);
+            if (y_2.isClicked(gamepad2.y)) {
+                pixelIndex++;
+                pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
+                intake.setActuationHeight(pixelIndex);
             }
 
-            if (gamepad2.a) {
-                intake.setActuationAngle(intake.actuation.getCurrentAngle() - Math.toRadians(4), 1.0);
+            if (a_2.isClicked(gamepad2.a)) {
+                pixelIndex--;
+                pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
+                intake.setActuationHeight(pixelIndex);
             }
 
             // update robot

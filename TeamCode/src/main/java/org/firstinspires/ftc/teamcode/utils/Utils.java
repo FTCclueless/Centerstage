@@ -7,6 +7,10 @@ public class Utils {
         return Math.min(Math.max(min, value), max);
     }
 
+    public static int minMaxClipInt(double value, double min, double max) {
+        return (int) Math.min(Math.max(min, value), max);
+    }
+
     public static double headingClip(double value) {
         while(value >= 2*Math.PI) {
             value -= 2*Math.PI;
