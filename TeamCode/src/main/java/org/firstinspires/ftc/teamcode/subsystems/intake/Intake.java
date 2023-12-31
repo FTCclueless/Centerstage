@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems.intake;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -10,9 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
-import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
-import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
@@ -37,7 +33,8 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.3376339, 0.157254, 0.0185, -0.09712, -0.21738};
+    double[] actuationAngles = new double[] {0.7862708, 0.624391, 0.494888, 0.3561344, 0.23125};
+    double actuationFullyUpAngle = -0.314508;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -122,7 +119,7 @@ public class Intake {
     }
 
     public void actuationFullyUp() {
-        actuation.setTargetAngle(actuationAngles[4], 1.0);
+        actuation.setTargetAngle(actuationFullyUpAngle, 1.0);
     }
 
     public void setActuationHeight (int pixel) {
@@ -138,6 +135,6 @@ public class Intake {
     }
 
     public boolean isActuationUp() {
-        return actuation.getCurrentAngle() == actuationAngles[4];
+        return actuation.getCurrentAngle() == actuationFullyUpAngle;
     }
 }

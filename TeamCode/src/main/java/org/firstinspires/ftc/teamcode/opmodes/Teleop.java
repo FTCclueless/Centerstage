@@ -218,6 +218,9 @@ public class Teleop extends LinearOpMode {
                 intake.setActuationHeight(pixelIndex);
             }
 
+            telemetry.addData("Pixel Height", pixelIndex+1);
+            telemetry.update();
+
             // update robot
             robot.update();
         }
