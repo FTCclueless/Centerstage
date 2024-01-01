@@ -3,38 +3,36 @@ package org.firstinspires.ftc.teamcode.sensors;
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.BNO055Util;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.lynx.LynxVoltageSensor;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
-
-import java.util.ArrayList;
 
 public class Sensors {
     private LynxModule controlHub, expansionHub;
     private final HardwareQueue hardwareQueue;
     private final HardwareMap hardwareMap;
+    private Robot robot;
 
     //private IMU imu;
     private int[] odometry = new int[] {0,0,0};
 //    private final DigitalChannel magnetSensor;
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
+    private HuskyLens huskyLens;
+
 
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
@@ -48,24 +46,27 @@ public class Sensors {
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
+    HuskyLens.Block[] huskyLensBlocks;
 
     public static double voltageK = 0.3;
 
-    public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
+    public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Robot robot) {
         this.hardwareMap = hardwareMap;
         this.hardwareQueue = hardwareQueue;
+        this.robot = robot;
 
 //        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
+        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
 //        analogEncoders[0] = hardwareMap.get(AnalogInput.class, "v4BarServo1Encoder");
 //        analogEncoders[1] = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
 //        analogVoltages[0] = analogVoltages[1] = 0.0;
 
-        initHubs(hardwareMap);
+        initSensors(hardwareMap);
     }
 
-    private void initHubs(HardwareMap hardwareMap) {
+    private void initSensors(HardwareMap hardwareMap) {
         try {
             controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
             controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -84,6 +85,7 @@ public class Sensors {
             imu.resetYaw();
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+            huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
         } catch (Exception e) {
             throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
         }
@@ -102,8 +104,12 @@ public class Sensors {
     private double voltageUpdateTime = 5000;
     long lastVoltageUpdatedTime = System.currentTimeMillis();
 
+    private double huskyUpdateTime = 100;
+    long lastHuskyLensUpdatedTime = System.currentTimeMillis();
+    public boolean huskyJustUpdated = false;
+
     private void updateControlHub() {
-        try {
+//        try {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
@@ -130,12 +136,20 @@ public class Sensors {
 
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
-        }
-        catch (Exception e) {
-            Log.e("******* Error due to ", e.getClass().getName());
-            e.printStackTrace();
-            Log.e("******* fail", "control hub failed");
-        }
+
+            if (System.currentTimeMillis() - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
+                huskyLensBlocks = huskyLens.blocks();
+                lastHuskyLensUpdatedTime = System.currentTimeMillis();
+                huskyJustUpdated = true;
+            } else {
+                huskyJustUpdated = false;
+            }
+//        }
+//        catch (Exception e) {
+//            Log.e("******* Error due to ", e.getClass().getName());
+//            e.printStackTrace();
+//            Log.e("******* fail", "control hub failed");
+//        }
     }
 
     private void updateExpansionHub() {
@@ -185,6 +199,10 @@ public class Sensors {
     }
 
     public double getVoltage() { return voltage; }
+
+    public HuskyLens.Block[] getHuskyLensBlocks() {
+        return huskyLensBlocks;
+    }
 
     public double getNormalizedIMUHeading() {
         return getImuHeading() - (numRotations*(2*Math.PI));

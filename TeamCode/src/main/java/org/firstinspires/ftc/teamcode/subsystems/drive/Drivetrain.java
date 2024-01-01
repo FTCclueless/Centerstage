@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -33,6 +34,8 @@ public class Drivetrain {
         GO_TO_POINT,
         DRIVE,
         FINAL_ADJUSTMENT,
+        ALIGN_WITH_STACK,
+        ALIGN_WITH_STACK_FINAL_ADJUSTMENT,
         BRAKE,
         WAIT_AT_POINT,
         IDLE
@@ -169,6 +172,8 @@ public class Drivetrain {
 
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
+    HuskyLens.Block[] huskyLensBlocks;
+
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
             return;
@@ -206,6 +211,38 @@ public class Drivetrain {
                     }
                 } else {
                     perfectHeadingTimeStart = System.currentTimeMillis();
+                }
+                break;
+            case ALIGN_WITH_STACK:
+                huskyLensBlocks = sensors.getHuskyLensBlocks();
+                if (sensors.huskyJustUpdated && huskyLensBlocks != null) {
+                    if (huskyLensBlocks.length > 0) {
+                        updateStackLocation(huskyLensBlocks);
+                    }
+                }
+                targetPoint = new Pose2d(stackPose.x + intakeOffset, stackPose.y, Math.PI);
+
+                PIDF();
+
+                if (atPointThresholds(1.0, 1.0, 5)) {
+                    state = State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT;
+                }
+
+                TelemetryUtil.packet.put("Stack Pose y", stackPose.y);
+                break;
+            case ALIGN_WITH_STACK_FINAL_ADJUSTMENT:
+                huskyLensBlocks = sensors.getHuskyLensBlocks();
+                if (sensors.huskyJustUpdated && huskyLensBlocks != null) {
+                    if (huskyLensBlocks.length > 0) {
+                        updateStackLocation(huskyLensBlocks);
+                    }
+                }
+                targetPoint = new Pose2d(stackPose.x + intakeOffset, stackPose.y, Math.PI);
+
+                finalAdjustment();
+
+                if (atPointThresholds(0.5, 0.5, 5)) {
+                    state = State.BRAKE;
                 }
                 break;
             case BRAKE:
@@ -295,6 +332,36 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
+    Pose2d stackPose = new Pose2d(-70.5, -12);
+    double intakeOffset = 0.0;
+
+    public void startStackAlignment(Pose2d stackPose, double intakeOffset) {
+        this.stackPose = stackPose;
+        this.intakeOffset = intakeOffset;
+        state = State.ALIGN_WITH_STACK;
+    }
+
+    private void updateStackLocation(HuskyLens.Block[] blocks) {
+        HuskyLens.Block biggerBlock = blocks[0];
+        for (HuskyLens.Block block : blocks) {
+            if (block.width*block.height > biggerBlock.width*biggerBlock.height) {
+                biggerBlock = block;
+            }
+        }
+
+        Log.e("biggerBlock.x", biggerBlock.x + "");
+
+        double pixelStackError = 160-biggerBlock.x;
+        double inchesPerPixel = inchesPerPixel(biggerBlock.y);
+        double inchesStackError = inchesPerPixel * pixelStackError;
+
+        stackPose = new Pose2d(-70.5, ROBOT_POSITION.y-inchesStackError*Math.cos(ROBOT_POSITION.heading));
+    }
+
+    public double inchesPerPixel(double y) {
+        return y*0.0004048471726 - 0.1019934877;
+    }
+
     public boolean isBusy() {
         return state != State.WAIT_AT_POINT && state != State.IDLE;
     }
@@ -374,6 +441,10 @@ public class Drivetrain {
         }
 
         return Math.abs(xError) < xThreshold && Math.abs(yError) < yThreshold && Math.abs(turnError) < Math.toRadians(turnThreshold);
+    }
+
+    public boolean atPointThresholds (double xThresh, double yThresh, double headingThresh) {
+        return Math.abs(xError) < xThresh && Math.abs(yError) < yThresh && Math.abs(turnError) < Math.toRadians(headingThresh);
     }
 
     public void setMode(DcMotor.RunMode runMode) {

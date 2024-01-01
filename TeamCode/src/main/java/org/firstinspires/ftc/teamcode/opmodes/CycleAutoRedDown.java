@@ -105,7 +105,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36, -44, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -29, Math.PI);
+                boardPreload =          new Pose2d(48, -27.5, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
@@ -172,9 +172,9 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     int pixelIndex = 4; // 0 index based
     public void intakeStackInitial() {
-        intakePose = new Pose2d(-58.5, -12, Math.PI);
+        intakePose = new Pose2d(-58, -12, Math.PI);
         robot.intake.on();
-        robot.goToPoint(intakePose, this, true, true, 0.1);
+        robot.alignWithStack(this, new Pose2d(-70.5, -12), 13.5);
         pixelIndex--;
         pause(300);
         Globals.NUM_PIXELS = 2;
@@ -182,16 +182,16 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void intakeStack() {
-        intakePose = new Pose2d(-59, -12, Math.PI);
+        intakePose = new Pose2d(-58, -12, Math.PI);
         deposit = new Vector3(5, 0, 18);
-        robot.goToPoint(intakePose, this, true, true, 0.1);
+        robot.alignWithStack(this, new Pose2d(-70.5, -12), 12);
         pause(300);
         pixelIndex--;
         robot.intake.setActuationHeight(pixelIndex);
         pause(300);
         pixelIndex--;
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 10+(4-pixelIndex));
+        deposit = new Vector3(5, 0, 9+(4-pixelIndex));
     }
 
     /**
@@ -201,13 +201,13 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.goToPoint(boardPreload, this, true, true);
+        robot.goToPoint(boardPreload, this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         robot.releaseOne();
 
-        deposit = new Vector3(5, 0, 12);
+        deposit = new Vector3(5, 0, 14);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         robot.releaseOne();

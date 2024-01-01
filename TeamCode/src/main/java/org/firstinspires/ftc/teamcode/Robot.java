@@ -43,7 +43,7 @@ public class Robot {
         hardwareQueue = new HardwareQueue();
         this.vision = vision;
 
-        sensors = new Sensors(hardwareMap, hardwareQueue);
+        sensors = new Sensors(hardwareMap, hardwareQueue, this);
 
         if (vision != null) {
             drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors, vision);
@@ -112,10 +112,17 @@ public class Robot {
         }
     }
 
+    public void alignWithStack(LinearOpMode opMode, Pose2d stackPose, double intakeOffset) {
+        drivetrain.startStackAlignment(stackPose, intakeOffset);
+        while (opMode.opModeIsActive() && drivetrain.isBusy()) {
+            update();
+        }
+    }
+
     public void depositAt(double targetH, double targetX) {
         deposit.depositAt(targetH, targetX);
-
-        while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(2.5)) {
+        update();
+        while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(1.5)) {
             update();
         }
     }
