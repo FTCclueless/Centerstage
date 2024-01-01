@@ -10,7 +10,9 @@ import com.qualcomm.hardware.bosch.BHI260IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 // TODO: Get to cookin in teleop -- Eric
 public class Localizer {
     Sensors sensors;
+    Drivetrain drivetrain;
 
     public Encoder[] encoders;
     long lastTime = System.nanoTime();
@@ -57,9 +60,10 @@ public class Localizer {
     double maxVel = 0.0;
 
 
-    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision) {
+    public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
         this.sensors = sensors;
         this.useAprilTag = useAprilTag;
+        this.drivetrain = drivetrain;
 
         encoders = new Encoder[3];
 
@@ -160,6 +164,9 @@ public class Localizer {
             }
         }
 
+        mergeUltrasonics();
+
+
         x = odoX;
         y = odoY;
         heading = odoHeading;
@@ -196,6 +203,56 @@ public class Localizer {
 
         headingDif -= headingErrAdd;
         odoHeading += headingErrAdd;
+    }
+
+    double leftDist = 0.0;
+    double rightDist = 0.0;
+
+    double leftXOffset = 7.0;
+    double leftYOffset = 4.75;
+    double rightXOffset = 7.0;
+    double rightYOffset = -4.75;
+
+    public void mergeUltrasonics() {
+        leftDist = sensors.getDistLeft();
+        rightDist = sensors.getDistRight();
+
+        double x_sign = Math.abs(Utils.headingClip(heading)) < Math.toRadians(90) ? 1 : -1;
+        double y_sign = Math.signum(Utils.headingClip(heading));
+
+        Pose2d relativeWallLocationLeft = new Pose2d(leftXOffset + leftDist, leftYOffset);
+        Pose2d globalWallLocationLeft = new Pose2d(
+                odoX + Math.cos(heading)*relativeWallLocationLeft.x - Math.sin(heading)*relativeWallLocationLeft.y,
+                odoY + Math.sin(heading)*relativeWallLocationLeft.x + Math.cos(heading)*relativeWallLocationLeft.y
+        );
+
+        Pose2d relativeWallLocationRight = new Pose2d(rightXOffset + rightDist, rightYOffset);
+        Pose2d globalWallLocationRight = new Pose2d(
+                odoX + Math.cos(heading)*relativeWallLocationRight.x - Math.sin(heading)*relativeWallLocationRight.y,
+                odoY + Math.sin(heading)*relativeWallLocationRight.x + Math.cos(heading)*relativeWallLocationRight.y
+        );
+
+        if (drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK) { // actually merging localization
+            if (Math.abs(globalWallLocationLeft.x - 72 * x_sign) < 4) {
+                odoX += (72 * x_sign - globalWallLocationLeft.x) * 0.1;
+            }
+            if (Math.abs(globalWallLocationLeft.y - 72 * y_sign) < 4) {
+                odoY += (72 * y_sign - globalWallLocationLeft.y) * 0.1;
+            }
+
+            if (Math.abs(globalWallLocationRight.x - 72 * x_sign) < 4) {
+                odoX += (72 * x_sign - globalWallLocationRight.x) * 0.1;
+            }
+            if (Math.abs(globalWallLocationRight.y - 72 * y_sign) < 4) {
+                odoY += (72 * y_sign - globalWallLocationRight.y) * 0.1;
+            }
+        }
+
+        TelemetryUtil.packet.fieldOverlay().setStroke("green");
+        TelemetryUtil.packet.fieldOverlay().strokeCircle(globalWallLocationLeft.x, globalWallLocationLeft.y, 1);
+
+        TelemetryUtil.packet.fieldOverlay().setStroke("blue");
+        TelemetryUtil.packet.fieldOverlay().strokeCircle(globalWallLocationRight.x, globalWallLocationRight.y, 1);
     }
 
     public void updatePowerVector(double[] p){

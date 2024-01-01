@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 import java.util.ArrayList;
 
+@Disabled
 @Autonomous
 public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode {
 

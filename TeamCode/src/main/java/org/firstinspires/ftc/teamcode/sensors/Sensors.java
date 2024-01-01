@@ -32,16 +32,17 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
     private HuskyLens huskyLens;
-
+    private final AnalogInput distLeft, distRight;
 
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
-    public final AnalogInput[] analogEncoders = new AnalogInput[2];
+    private final AnalogInput[] analogEncoders = new AnalogInput[2];
     public double[] analogVoltages = new double[analogEncoders.length];
-    public double voltage;
+    private double voltage;
+    private double distLeftVal, distRightVal;
 
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -55,13 +56,11 @@ public class Sensors {
         this.hardwareQueue = hardwareQueue;
         this.robot = robot;
 
-//        magnetSensor = hardwareMap.get(DigitalChannel.class, "magnetSensor");
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-//        analogEncoders[0] = hardwareMap.get(AnalogInput.class, "v4BarServo1Encoder");
-//        analogEncoders[1] = hardwareMap.get(AnalogInput.class, "bottomTurretEncoder");
-//        analogVoltages[0] = analogVoltages[1] = 0.0;
+        distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
+        distRight = hardwareMap.get(AnalogInput.class, "distRight");
 
         initSensors(hardwareMap);
     }
@@ -132,10 +131,12 @@ public class Sensors {
 
             intakeTriggered = intakeBeamBreak.getState();
             depositTriggered = depositBeamBreak.getState();
-//            slidesDown = magnetSensor.getState();
 
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
+
+            distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
+            distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
             if (System.currentTimeMillis() - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
                 huskyLensBlocks = huskyLens.blocks();
@@ -199,6 +200,10 @@ public class Sensors {
     }
 
     public double getVoltage() { return voltage; }
+
+    public double getDistLeft() { return distLeftVal; }
+
+    public double getDistRight() { return distRightVal; }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;

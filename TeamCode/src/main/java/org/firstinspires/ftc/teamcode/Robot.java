@@ -112,8 +112,8 @@ public class Robot {
         }
     }
 
-    public void alignWithStack(LinearOpMode opMode, Pose2d stackPose, double intakeOffset) {
-        drivetrain.startStackAlignment(stackPose, intakeOffset);
+    public void alignWithStack(LinearOpMode opMode, Pose2d stackPose, double intakeOffset, double maxPower) {
+        drivetrain.startStackAlignment(stackPose, intakeOffset, maxPower);
         while (opMode.opModeIsActive() && drivetrain.isBusy()) {
             update();
         }
@@ -122,13 +122,14 @@ public class Robot {
     public void depositAt(double targetH, double targetX) {
         deposit.depositAt(targetH, targetX);
         update();
-        while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(1.5)) {
+        while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(1.0)) {
             update();
         }
     }
 
     public void releaseOne() {
         deposit.releaseOne();
+        update();
         while (deposit.release.isBusy()) {
             update();
         }
@@ -136,9 +137,11 @@ public class Robot {
 
     public void releaseTwo() {
         deposit.releaseOne();
+        update();
         while (deposit.release.isBusy()) {
             update();
         }
+        update();
         deposit.releaseOne();
         while (deposit.release.isBusy()) {
             update();

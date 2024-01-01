@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -96,11 +97,11 @@ public class Drivetrain {
 
         if (vision != null) {
             if (vision.tagProcessor != null) {
-                localizer = new Localizer(hardwareMap, sensors,true, false, vision);
+                localizer = new Localizer(hardwareMap, sensors,true, false, vision, this);
                 Log.e("using vision localizer", "");
             }
         } else {
-            localizer = new Localizer(hardwareMap, sensors,false, false, null);
+            localizer = new Localizer(hardwareMap, sensors,false, false, null, this);
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();
@@ -335,9 +336,10 @@ public class Drivetrain {
     Pose2d stackPose = new Pose2d(-70.5, -12);
     double intakeOffset = 0.0;
 
-    public void startStackAlignment(Pose2d stackPose, double intakeOffset) {
+    public void startStackAlignment(Pose2d stackPose, double intakeOffset, double maxPower) {
         this.stackPose = stackPose;
         this.intakeOffset = intakeOffset;
+        this.maxPower = maxPower;
         state = State.ALIGN_WITH_STACK;
     }
 
@@ -348,8 +350,6 @@ public class Drivetrain {
                 biggerBlock = block;
             }
         }
-
-        Log.e("biggerBlock.x", biggerBlock.x + "");
 
         double pixelStackError = 160-biggerBlock.x;
         double inchesPerPixel = inchesPerPixel(biggerBlock.y);
@@ -372,6 +372,12 @@ public class Drivetrain {
         }
     }
 
+    public void forceStopAllMotors() {
+        for (PriorityMotor motor : motors) {
+            motor.motor[0].setPower(0);
+        }
+    }
+
     public void updateLocalizer() {
         localizer.updateEncoders(sensors.getOdometry());
         localizer.update();
@@ -388,6 +394,9 @@ public class Drivetrain {
         TelemetryUtil.packet.put("xTargetSpeed", targetForwardPower * Globals.MAX_X_SPEED);
         TelemetryUtil.packet.put("yTargetSpeed", targetStrafePower * Globals.MAX_Y_SPEED);
         TelemetryUtil.packet.put("turnTargetSpeed (deg)", targetTurnPower * Math.toDegrees(Globals.MAX_HEADING_SPEED));
+
+        TelemetryUtil.packet.fieldOverlay().setStroke("red");
+        TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
     }
 
     boolean finalAdjustment = false;
@@ -397,9 +406,6 @@ public class Drivetrain {
         this.finalAdjustment = finalAdjustment;
         this.stop = stop;
         this.maxPower = Math.abs(maxPower);
-
-        TelemetryUtil.packet.fieldOverlay().setStroke("red");
-        TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
 
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             this.targetPoint = targetPoint;
@@ -417,7 +423,7 @@ public class Drivetrain {
 
     public static double finalXThreshold = 0.5;
     public static double finalYThreshold = 0.5;
-    public static double finalTurnThreshold = 1;
+    public static double finalTurnThreshold = 2.5;
 
     public void setBreakFollowingThresholds(Pose2d thresholds) {
         xThreshold = thresholds.getX();

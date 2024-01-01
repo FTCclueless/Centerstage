@@ -27,7 +27,10 @@
             <Servo name="rightDropper" port="3" />
             <Servo name="leftDropper" port="4" />
             <Servo name="hangActuation" port="5" />
+            <AnalogInput name="distRight" port="0" />
+            <AnalogInput name="distLeft" port="3" />
             <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
+            <HuskyLens name="huskylens" port="0" bus="1" />
         </LynxModule>
     </LynxUsbDevice>
     <Webcam name="Webcam 1" serialNumber="SN0001" />

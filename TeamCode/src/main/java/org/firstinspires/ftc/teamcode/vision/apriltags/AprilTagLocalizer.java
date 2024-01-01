@@ -67,8 +67,6 @@ public class AprilTagLocalizer {
 
             poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
 
-            Log.e("found tag", closestTag.metadata.name + "");
-
             TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.x);
             TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.y);
             TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
