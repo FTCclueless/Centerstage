@@ -16,7 +16,7 @@ public class Release {
     public PriorityServo release;
 
     public static double transferAngle = -1.10098;
-    public static double preGrabAngle = -0.8073888;
+    public static double preGrabAngle = -0.88;
     public static double closeAngle = -0.55049238;
     public static double dunkOneAngle = -0.8073888;
     public static double dunkTwoAngle = -1.10098;

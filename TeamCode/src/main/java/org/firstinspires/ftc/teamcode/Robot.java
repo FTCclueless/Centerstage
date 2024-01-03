@@ -14,7 +14,6 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
-import org.firstinspires.ftc.teamcode.subsystems.hangActuation.HangActuation;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -32,7 +31,6 @@ public class Robot {
     public final Airplane airplane;
     public final Hang hang;
     public final Droppers droppers;
-    public final HangActuation hangActuation;
     public final Vision vision;
 
     public Robot(HardwareMap hardwareMap) {
@@ -56,7 +54,6 @@ public class Robot {
         airplane = new Airplane(hardwareMap, hardwareQueue);
         hang = new Hang(hardwareMap, hardwareQueue, sensors);
         droppers = new Droppers(hardwareMap, hardwareQueue);
-        hangActuation = new HangActuation(hardwareMap, hardwareQueue);
 
         TelemetryUtil.setup();
     }

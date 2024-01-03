@@ -61,7 +61,6 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         robot.droppers.rightDown();
         robot.droppers.leftRelease();
 
-        robot.hangActuation.up();
         robot.airplane.hold();
 
         vision.enableTeamProp();
