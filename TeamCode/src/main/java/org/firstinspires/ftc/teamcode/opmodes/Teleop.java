@@ -115,7 +115,7 @@ public class Teleop extends LinearOpMode {
 
             // hang arms
             if (left_dpad_1.isClicked(gamepad1.dpad_left)) {
-                robot.hang.nextArmState();
+                robot.hang.nextHangState();
             }
 
             // hanging mechanism
@@ -218,7 +218,7 @@ public class Teleop extends LinearOpMode {
 
             // hang arms
             if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
-                robot.hang.nextArmState();
+                robot.hang.nextHangState();
             }
 
             // hanging mechanism

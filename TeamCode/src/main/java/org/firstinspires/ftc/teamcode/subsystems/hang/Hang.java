@@ -14,7 +14,7 @@ public class Hang {
     private final PriorityServo leftArm;
     private final PriorityServo rightArm;
 
-    private State state = State.OFF;
+    private int state = 0;
     double leftDownAngle = 0.0;
     double leftHalfwayAngle = 0.0;
     double leftUpAngle = 0.0;
@@ -22,14 +22,6 @@ public class Hang {
     double rightDownAngle = 0.0;
     double rightHalfwayAngle = 0.0;
     double rightUpAngle = 0.0;
-
-    private boolean doingHang = false;
-
-    enum State {
-        ON,
-        REVERSE,
-        OFF
-    }
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         CRServo leftHang = hardwareMap.get(CRServo.class, "leftHang");
@@ -65,71 +57,74 @@ public class Hang {
         hardwareQueue.addDevice(rightArm);
     }
 
-    public void update() {
-        switch (state) {
-            case ON:
-                hang.setTargetPower(1.0);
-                break;
-            case REVERSE:
-                hang.setTargetPower(-1.0);
-                break;
-            case OFF:
-                hang.setTargetPower(0.0);
-                break;
+    boolean isReversing = false;
+    long startReverse = System.currentTimeMillis();
+    public void nextHangState() {
+        if (state == 0) { // we are in arms down
+            state++;
+            isReversing = true;
+            startReverse = System.currentTimeMillis();
+        }
+        if (!isReversing) {
+            state++;
+        }
+
+        if (state > 4) {
+            state = 0;
         }
     }
 
+    public void update() {
+        switch (state) {
+            case 0: // arms down
+                armsDown();
+                break;
+            case 1: // reverse hang
+                if (System.currentTimeMillis() - startReverse > 500) {
+                    isReversing = false;
+                    state = 2;
+                } else {
+                    reverse();
+                }
+                break;
+            case 2: // reversed
+                break;
+            case 3: // arms halfway
+                armsHalfway();
+                break;
+            case 4: // arms up
+                armsUp();
+                break;
+        }
+    }
     public void on() {
-        state = State.ON;
+        hang.setTargetPower(1.0);
     }
 
     public void reverse() {
-        state = State.REVERSE;
+        hang.setTargetPower(-1.0);
     }
 
     public void off() {
-        state = State.OFF;
+        hang.setTargetPower(0.0);
     }
 
     public boolean doingHang() {
-        return doingHang;
+        return state > 0;
     }
 
     private void armsDown() {
-        doingHang = false;
         leftArm.setTargetAngle(leftDownAngle,1.0);
         rightArm.setTargetAngle(rightDownAngle, 1.0);
     }
 
     private void armsHalfway() {
-        doingHang = true;
         leftArm.setTargetAngle(leftHalfwayAngle,1.0);
         rightArm.setTargetAngle(rightHalfwayAngle, 1.0);
     }
 
     private void armsUp() {
-        doingHang = true;
         leftArm.setTargetAngle(leftUpAngle,1.0);
         rightArm.setTargetAngle(rightUpAngle, 1.0);
-    }
-
-    int armIndex = 0;
-    public void nextArmState() {
-        armIndex++;
-        if (armIndex > 2) {
-            armIndex = 0;
-        }
-
-        switch (armIndex) {
-            case 0:
-                armsDown();
-                break;
-            case 1:
-                armsHalfway();
-                break;
-            case 2:
-                armsUp();
-                break;
-        }
     }
 }
