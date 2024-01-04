@@ -24,7 +24,7 @@ public class HangTester extends LinearOpMode {
         robot.update();
 
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 2500) {
+        while (System.currentTimeMillis() - start < 10000) {
             robot.update();
         }
 

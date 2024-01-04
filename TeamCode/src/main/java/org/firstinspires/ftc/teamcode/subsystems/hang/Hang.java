@@ -60,16 +60,13 @@ public class Hang {
         hardwareQueue.addDevice(rightArm);
     }
 
-    boolean isReversing = false;
     boolean alreadyReversed = false;
     long startReverse = System.currentTimeMillis();
     public void nextHangState() {
-        if (state == 0) { // we are in arms down
-            state++;
-            isReversing = true;
+        if (state == 0 || state == 2) { // we are in arms down/halfway rest points
             startReverse = System.currentTimeMillis();
         }
-        if (!isReversing) {
+        if (state != 1 && state != 3) { // currently reversing states
             state++;
         }
 
@@ -80,34 +77,44 @@ public class Hang {
 
     public void update() {
         switch (state) {
-            case 0: // arms down
+            case 0: // arms down rest point
                 armsDown();
                 break;
-            case 1: // reverse hang
+            case 1: // reverse hang + arms halfway
                 if (alreadyReversed) {
-                    state = 3;
+                    state = 2;
                 }
-                if (System.currentTimeMillis() - startReverse > 2500) {
-                    isReversing = false;
+                if (System.currentTimeMillis() - startReverse > 850) {
                     state = 2;
                     off();
                 } else {
+                    armsHalfway(0.15);
                     reverse();
                 }
                 break;
-            case 2: // reversed
+            case 2: // arms halfway rest point
                 off();
-                isReversing = false;
-                alreadyReversed = true;
+                if (!alreadyReversed) {
+                    armsHalfway(0.15);
+                } else {
+                    armsHalfway(1.0);
+                }
                 break;
-            case 3: // arms halfway
-                isReversing = false;
-                alreadyReversed = true;
-                off();
-                armsHalfway();
+            case 3: // reverse hang + arms up
+                if (alreadyReversed) {
+                    state = 4;
+                }
+                if (System.currentTimeMillis() - startReverse > 850) {
+                    state = 4;
+                    off();
+                } else {
+                    armsUp(0.15);
+                    reverse();
+                }
                 break;
-            case 4: // arms up
-                armsUp();
+            case 4: // arms up now and ready to hang
+                armsUp(0.15);
+                alreadyReversed = true;
                 break;
         }
     }
@@ -132,13 +139,13 @@ public class Hang {
         rightArm.setTargetAngle(rightDownAngle, 1.0);
     }
 
-    private void armsHalfway() {
-        leftArm.setTargetAngle(leftHalfwayAngle,1.0);
-        rightArm.setTargetAngle(rightHalfwayAngle, 1.0);
+    private void armsHalfway(double power) {
+        leftArm.setTargetAngle(leftHalfwayAngle,power);
+        rightArm.setTargetAngle(rightHalfwayAngle, power);
     }
 
-    private void armsUp() {
-        leftArm.setTargetAngle(leftUpAngle,1.0);
-        rightArm.setTargetAngle(rightUpAngle, 1.0);
+    private void armsUp(double power) {
+        leftArm.setTargetAngle(leftUpAngle,power);
+        rightArm.setTargetAngle(rightUpAngle, power);
     }
 }
