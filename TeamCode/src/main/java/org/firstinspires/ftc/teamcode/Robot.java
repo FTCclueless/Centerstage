@@ -52,7 +52,7 @@ public class Robot {
         deposit = new Deposit(hardwareMap, hardwareQueue, sensors, this);
         intake = new Intake(hardwareMap, hardwareQueue, sensors, this);
         airplane = new Airplane(hardwareMap, hardwareQueue);
-        hang = new Hang(hardwareMap, hardwareQueue, sensors);
+        hang = new Hang(hardwareMap, hardwareQueue);
         droppers = new Droppers(hardwareMap, hardwareQueue);
 
         TelemetryUtil.setup();

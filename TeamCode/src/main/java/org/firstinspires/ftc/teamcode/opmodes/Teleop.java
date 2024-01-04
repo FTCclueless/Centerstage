@@ -30,14 +30,15 @@ public class Teleop extends LinearOpMode {
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
         // DRIVER 1
-        ButtonToggle rightBump_1 = new ButtonToggle();
-        ButtonToggle leftBump_1 = new ButtonToggle();
+        ButtonToggle rightBumper_1 = new ButtonToggle();
+        ButtonToggle leftBumper_1 = new ButtonToggle();
         ButtonToggle x_1 = new ButtonToggle();
         ButtonToggle b_1 = new ButtonToggle();
         ButtonToggle y_1 = new ButtonToggle();
         ButtonToggle a_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1_double = new ButtonToggle();
+        ButtonToggle left_dpad_1 = new ButtonToggle();
 
         // DRIVER 2
         ButtonToggle dpadUp_2 = new ButtonToggle();
@@ -46,6 +47,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle dpadRight_2 = new ButtonToggle();
         ButtonToggle leftTrigger_2 = new ButtonToggle();
         ButtonToggle rightTrigger_2 = new ButtonToggle();
+        ButtonToggle leftBumper_2 = new ButtonToggle();
         ButtonToggle rightBumper_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle x_2 = new ButtonToggle();
@@ -66,7 +68,7 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 1 CONTROLS -------------------
 
             // adjusting angle of actuation
-            if (rightBump_1.isClicked(gamepad1.right_bumper)) {
+            if (rightBumper_1.isClicked(gamepad1.right_bumper)) {
                 if (intake.isActuationUp()) {
                     robot.intake.actuationFullyDown();
                 } else {
@@ -102,17 +104,8 @@ public class Teleop extends LinearOpMode {
                 robot.intake.reverseForSomeTime(500);
             }
 
-            // hanging mechanism TODO: add in up down hang after hang released
-            //            if (gamepad1.y) {
-            //                hang.on();
-            //            } else if (gamepad1.a) {
-            //                hang.reverse();
-            //            } else {
-            //                hang.off();
-            //            }
-
             // trigger deposit (both)
-            if (leftBump_1.isClicked(gamepad1.left_bumper)) {
+            if (leftBumper_1.isClicked(gamepad1.left_bumper)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
                 if (robot.deposit.state == Deposit.State.DEPOSIT) {
@@ -120,11 +113,25 @@ public class Teleop extends LinearOpMode {
                 }
             }
 
+            // hang arms
+            if (left_dpad_1.isClicked(gamepad1.dpad_left)) {
+                robot.hang.nextArmState();
+            }
+
+            // hanging mechanism
+            if (gamepad1.y && robot.hang.doingHang()) {
+                hang.on();
+            } else if (gamepad1.a && robot.hang.doingHang()) {
+                hang.reverse();
+            } else {
+                hang.off();
+            }
+
             // adjust slides height
-            if (gamepad1.y) {
+            if (gamepad1.y && !robot.hang.doingHang()) {
                 depoPos.z+=0.5;
             }
-            if (gamepad1.a) {
+            if (gamepad1.a && !robot.hang.doingHang()) {
                 depoPos.z-=0.5;
             }
 
@@ -176,15 +183,6 @@ public class Teleop extends LinearOpMode {
             TelemetryUtil.packet.put("depox", depoPos.x);
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
-            // back pickup
-//            if (dpadLeft_2.isClicked(gamepad2.dpad_left)) {
-//                robot.deposit.backPickupSetup();
-//            }
-//
-//            if (dpadRight_2.isClicked(gamepad2.dpad_right)) {
-//                robot.deposit.backPickup();
-//            }
-
             // dunking (both)
             if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseOne();
@@ -206,16 +204,30 @@ public class Teleop extends LinearOpMode {
             }
 
             // adjusting actuation angle
-            if (y_2.isClicked(gamepad2.y)) {
+            if (y_2.isClicked(gamepad2.y) && !hang.doingHang()) {
                 pixelIndex++;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
             }
 
-            if (a_2.isClicked(gamepad2.a)) {
+            if (a_2.isClicked(gamepad2.a) && !hang.doingHang()) {
                 pixelIndex--;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
+            }
+
+            // hang arms
+            if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
+                robot.hang.nextArmState();
+            }
+
+            // hanging mechanism
+            if (gamepad2.y && robot.hang.doingHang()) {
+                hang.on();
+            } else if (gamepad2.a && robot.hang.doingHang()) {
+                hang.reverse();
+            } else {
+                hang.off();
             }
 
             telemetry.addData("Pixel Height", pixelIndex+1);
