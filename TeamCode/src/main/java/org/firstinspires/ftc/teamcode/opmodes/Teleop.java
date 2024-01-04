@@ -121,10 +121,9 @@ public class Teleop extends LinearOpMode {
             // hanging mechanism
             if (gamepad1.y && robot.hang.doingHang()) {
                 hang.on();
-            } else if (gamepad1.a && robot.hang.doingHang()) {
+            }
+            if (gamepad1.a && robot.hang.doingHang()) {
                 hang.reverse();
-            } else {
-                hang.off();
             }
 
             // adjust slides height
@@ -224,10 +223,9 @@ public class Teleop extends LinearOpMode {
             // hanging mechanism
             if (gamepad2.y && robot.hang.doingHang()) {
                 hang.on();
-            } else if (gamepad2.a && robot.hang.doingHang()) {
+            }
+            if (gamepad2.a && robot.hang.doingHang()) {
                 hang.reverse();
-            } else {
-                hang.off();
             }
 
             telemetry.addData("Pixel Height", pixelIndex+1);
