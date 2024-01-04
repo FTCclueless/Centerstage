@@ -119,11 +119,14 @@ public class Teleop extends LinearOpMode {
             }
 
             // hanging mechanism
-            if (gamepad1.y && robot.hang.doingHang()) {
-                hang.on();
-            }
-            if (gamepad1.a && robot.hang.doingHang()) {
-                hang.reverse();
+            if (robot.hang.doingHang()) {
+                if (gamepad1.y || gamepad2.y) {
+                    hang.on();
+                } else if (gamepad1.a || gamepad2.a) {
+                    hang.reverse();
+                } else {
+                    hang.off();
+                }
             }
 
             // adjust slides height
@@ -218,14 +221,6 @@ public class Teleop extends LinearOpMode {
             // hang arms
             if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
                 robot.hang.nextHangState();
-            }
-
-            // hanging mechanism
-            if (gamepad2.y && robot.hang.doingHang()) {
-                hang.on();
-            }
-            if (gamepad2.a && robot.hang.doingHang()) {
-                hang.reverse();
             }
 
             telemetry.addData("Pixel Height", pixelIndex+1);

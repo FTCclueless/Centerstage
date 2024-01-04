@@ -14,8 +14,8 @@ public class Airplane {
     private final PriorityServo airplane;
 
     // TODO: Figure out right angle
-    private double holdAngle = 4.678;
-    private double releaseAngle = 1.64;
+    private double holdAngle = 5.603;
+    private double releaseAngle = 5.603;
 
     private State state = State.HOLD;
 

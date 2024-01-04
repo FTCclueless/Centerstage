@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.hang;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -15,13 +17,14 @@ public class Hang {
     private final PriorityServo rightArm;
 
     private int state = 0;
-    double leftDownAngle = 0.0;
-    double leftHalfwayAngle = 0.0;
-    double leftUpAngle = 0.0;
 
-    double rightDownAngle = 0.0;
-    double rightHalfwayAngle = 0.0;
-    double rightUpAngle = 0.0;
+    double leftDownAngle = 0.73965;
+    double leftHalfwayAngle = 1.4849;
+    double leftUpAngle = 2.31983;
+
+    double rightDownAngle = -1.159915;
+    double rightHalfwayAngle = -0.397845;
+    double rightUpAngle = 0.42586;
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         CRServo leftHang = hardwareMap.get(CRServo.class, "leftHang");
@@ -58,6 +61,7 @@ public class Hang {
     }
 
     boolean isReversing = false;
+    boolean alreadyReversed = false;
     long startReverse = System.currentTimeMillis();
     public void nextHangState() {
         if (state == 0) { // we are in arms down
@@ -80,16 +84,26 @@ public class Hang {
                 armsDown();
                 break;
             case 1: // reverse hang
-                if (System.currentTimeMillis() - startReverse > 500) {
+                if (alreadyReversed) {
+                    state = 3;
+                }
+                if (System.currentTimeMillis() - startReverse > 2500) {
                     isReversing = false;
                     state = 2;
+                    off();
                 } else {
                     reverse();
                 }
                 break;
             case 2: // reversed
+                off();
+                isReversing = false;
+                alreadyReversed = true;
                 break;
             case 3: // arms halfway
+                isReversing = false;
+                alreadyReversed = true;
+                off();
                 armsHalfway();
                 break;
             case 4: // arms up
@@ -110,7 +124,7 @@ public class Hang {
     }
 
     public boolean doingHang() {
-        return state > 0;
+        return state == 4;
     }
 
     private void armsDown() {
