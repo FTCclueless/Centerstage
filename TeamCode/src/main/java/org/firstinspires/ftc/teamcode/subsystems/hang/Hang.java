@@ -80,40 +80,19 @@ public class Hang {
             case 0: // arms down rest point
                 armsDown();
                 break;
-            case 1: // reverse hang + arms halfway
-                if (alreadyReversed) {
-                    state = 2;
-                }
-                if (System.currentTimeMillis() - startReverse > 850) {
-                    state = 2;
-                    off();
-                } else {
-                    armsHalfway(0.15);
-                    reverse();
-                }
+            case 1: // arms halfway
+                state = 2;
+                armsHalfway(1.0);
                 break;
             case 2: // arms halfway rest point
-                off();
-                if (!alreadyReversed) {
-                    armsHalfway(0.15);
-                } else {
-                    armsHalfway(1.0);
-                }
+                armsHalfway(1.0);
                 break;
-            case 3: // reverse hang + arms up
-                if (alreadyReversed) {
-                    state = 4;
-                }
-                if (System.currentTimeMillis() - startReverse > 850) {
-                    state = 4;
-                    off();
-                } else {
-                    armsUp(0.15);
-                    reverse();
-                }
+            case 3: // arms up
+                state = 4;
+                armsUp(0.75);
+                reverse();
                 break;
             case 4: // arms up now and ready to hang
-                armsUp(0.15);
                 alreadyReversed = true;
                 break;
         }
