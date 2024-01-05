@@ -91,29 +91,38 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(12, -45, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -28, Math.PI);
+                groundPreloadPosition = new Pose2d(12, -48, -Math.PI/2);
+                boardPreload =          new Pose2d(48, -30, Math.PI);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(12, -33.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -34.5, Math.PI);
+                groundPreloadPosition = new Pose2d(12, -35.5, -Math.PI/2);
+                boardPreload =          new Pose2d(48, -36, Math.PI);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(25, -33.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -40, Math.PI);
+                groundPreloadPosition = new Pose2d(25, -34, -Math.PI/2);
+                boardPreload =          new Pose2d(48, -41, Math.PI);
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this, false, false);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(6, -34, -Math.toRadians(30)), this, false, false);
+            robot.goToPoint(new Pose2d(7.5, -35, -Math.toRadians(50)), this, false, false);
         }
 
-        start = System.currentTimeMillis();
         robot.droppers.rightRelease();
-
         pause(100);
+
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
+            robot.goToPoint(new Pose2d(15, -40, -Math.PI/2), this, false, false);
+            robot.goToPoint(new Pose2d(15, -40, Math.PI), this, false, false);
+        }
+
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
+            robot.goToPoint(new Pose2d(25, -40, -Math.PI/2), this, false, false);
+            robot.goToPoint(new Pose2d(25, -40, Math.PI), this, false, false);
+        }
+
 
         deposit = new Vector3(5, 0, 6);
         robot.deposit.depositAt(deposit); // async call to deposit

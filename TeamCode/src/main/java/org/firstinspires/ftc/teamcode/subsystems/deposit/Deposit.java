@@ -46,12 +46,12 @@ public class Deposit {
 
     // v4bar angles
     public static double v4BarTransferAngle = -0.29137;
-    public static double v4BarGrabAngle = -0.0392242;
+    public static double v4BarGrabAngle = -0.13448;
     public static double v4BarDepositAngle = -2.97538;
 
     // top servo angles
     public static double topServoTransferAngle = -0.99181222;
-    public static double topServoGrabAngle = -0.94698;
+    public static double topServoGrabAngle = -0.93017;
     public static double topServoDepositAngle = 2.101297;
     public static double topServoRetractAngle = 2.6336256;
 
@@ -193,12 +193,10 @@ public class Deposit {
                 }
                 break;
             case START_RETRACT:
-                Log.e("System.currentTimeMillis()", System.currentTimeMillis() + "");
-                Log.e("beginRetractTime", beginRetractTime + "");
-                endAffector.topServo.setTargetAngle(topServoRetractAngle, 1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
+                    endAffector.topServo.setTargetAngle(topServoRetractAngle, 1.0);
                     release.close();
-                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
                         slides.setTargetLength(slidesV4Thresh + 2);
