@@ -33,6 +33,7 @@ public class Sensors {
     private final DigitalChannel depositBeamBreak;
     private HuskyLens huskyLens;
     private final AnalogInput distLeft, distRight;
+    private final DigitalChannel limitSwitch1, limitSwitch2;
 
     private int slidesEncoder = 0;
     private double slidesVelocity = 0;
@@ -48,6 +49,7 @@ public class Sensors {
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
     HuskyLens.Block[] huskyLensBlocks;
+    private long limitTime = System.currentTimeMillis();
 
     public static double voltageK = 0.3;
 
@@ -61,6 +63,9 @@ public class Sensors {
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
         distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
         distRight = hardwareMap.get(AnalogInput.class, "distRight");
+
+        limitSwitch1 = hardwareMap.get(DigitalChannel.class, "limitSwitch1");
+        limitSwitch2 = hardwareMap.get(DigitalChannel.class, "limitSwitch2");
 
         initSensors(hardwareMap);
     }
@@ -138,6 +143,10 @@ public class Sensors {
             distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
             distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
+            if (limitSwitch1.getState() || limitSwitch2.getState()) {
+                limitTime = System.currentTimeMillis();
+            }
+
             if (System.currentTimeMillis() - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
                 huskyLensBlocks = huskyLens.blocks();
                 lastHuskyLensUpdatedTime = System.currentTimeMillis();
@@ -204,6 +213,10 @@ public class Sensors {
     public double getDistLeft() { return distLeftVal; }
 
     public double getDistRight() { return distRightVal; }
+
+    public boolean getLimit() {
+        return (System.currentTimeMillis() - limitTime < 100);
+    }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;
