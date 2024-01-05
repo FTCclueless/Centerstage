@@ -42,7 +42,7 @@ public class Deposit {
     double targetH = 0.0;
     double targetX = 0.0;
 
-    public static double slidesV4Thresh = 2.5;
+    public static double slidesV4Thresh = 5.0;
 
     // v4bar angles
     public static double v4BarTransferAngle = -0.29137;
