@@ -177,7 +177,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.on();
         robot.alignWithStack(this, new Pose2d(-70.5, -12), actuationDistances[pixelIndex], 0.25);
         pixelIndex--;
-        pause(150);
+        pause(200);
         Globals.NUM_PIXELS = 2;
         deposit = new Vector3(5, 0, 8.5);
     }
@@ -220,7 +220,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.goToPoint(new Pose2d(49, -31, Math.PI), this, false, true);
+        robot.goToPoint(new Pose2d(48, -31, Math.PI), this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
