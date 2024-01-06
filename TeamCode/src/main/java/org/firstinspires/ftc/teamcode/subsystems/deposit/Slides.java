@@ -26,12 +26,12 @@ public class Slides {
     public static double maxSlidesHeight = 28.3465;
     private double targetLength = 0;
     public static double maxVel = 1.6528571428571428;
-    public static double kP = 0.11;
+    public static double kP = 0.15; // used to be 0.11
     public static double kA = 3;
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.1;
+    public static double downPower = -0.25;
     public static double forceDownPower = -0.5;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
@@ -65,7 +65,7 @@ public class Slides {
         if (targetLength <= 0.6) {
             error = -4;
         }
-        if (length <= 5 && targetLength <= 0.6)
+        if (length <= Globals.slidesV4Thresh+2 && targetLength <= 0.6)
             return (length <= 0.25? 0 : forceDownPower) + downPower * (12/sensors.getVoltage());
         return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }

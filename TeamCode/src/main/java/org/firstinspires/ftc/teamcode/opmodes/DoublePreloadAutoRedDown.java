@@ -57,7 +57,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, true, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(-36, -65, -Math.PI / 2));
+        robot.drivetrain.setPoseEstimate(new Pose2d(-36, -62, -Math.PI / 2));
 
         robot.droppers.leftDown();
         robot.droppers.rightRelease();
@@ -70,7 +70,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         while (opModeInInit() && !isStopRequested()) {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
-            robot.deposit.release.close();
+            robot.deposit.release.preGrab();
 
             robot.update();
         }
@@ -92,16 +92,16 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-48, -39, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -31, Math.PI);
+                groundPreloadPosition = new Pose2d(-36, -44, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -27.5, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -35.5, Math.PI);
+                boardPreload =          new Pose2d(49, -35.5, Math.PI);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -43, Math.PI);
+                boardPreload =          new Pose2d(49, -42, Math.PI);
                 break;
         }
 
@@ -111,41 +111,36 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             robot.goToPoint(new Pose2d(-34.5, -35, 5*Math.PI/4), this, false, false);
         }
 
-        start = System.currentTimeMillis();
+        if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
+            robot.goToPoint(new Pose2d(-44, -36, Math.toRadians(-50)), this, false, false);
+        }
+
         robot.droppers.leftRelease();
 
-        while (System.currentTimeMillis() - start < 100) {
-            robot.update();
-        }
+        pause(100);
     }
 
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
      */
-    double xDistanceThreshold = 40;
     public void navigateToBoard() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-60, -39, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-60, -12, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-60, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 52;
+                robot.goToPoint(new Pose2d(-38, -35, -Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-36, -10, -Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-36, -10, Math.PI), this, false, false);
                 break;
             case CENTER:
-                robot.goToPoint(new Pose2d(-52, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 42;
+                robot.goToPoint(new Pose2d(-52, -10, Math.PI), this, false, false);
                 break;
             case RIGHT:
-                robot.goToPoint(new Pose2d(-37.5, -12, Math.PI), this, false, false);
-                xDistanceThreshold = 32;
+                robot.goToPoint(new Pose2d(-37.5, -10, Math.PI), this, false, false);
                 break;
         }
 
         deposit = new Vector3(5, 0, 6);
-        robot.goToPointWithDepositAndIntake(new Pose2d(28, -12, Math.PI), this, false, false, deposit, xDistanceThreshold);
-
-//        robot.goToPoint(new Pose2d(42, -36, Math.PI), this, false, false);
+        robot.goToPointWithDeposit(new Pose2d(28, -10, Math.PI), this, false, false, deposit,0);
     }
 
     /**
@@ -166,9 +161,16 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
      * Assumes that it is in the parking line row
      */
     public void park() {
-        robot.goToPoint(new Pose2d(42, -12, Math.PI), this, false, false); // intermediate parking
-        robot.goToPoint(new Pose2d(58, -12, Math.PI), this, false, true); // parking
+        robot.goToPoint(new Pose2d(42, -9, Math.PI), this, false, false); // intermediate parking
+        robot.goToPoint(new Pose2d(58, -9, Math.PI), this, false, true); // parking
 
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
+    }
+
+    public void pause (double milliseconds) {
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < milliseconds && opModeIsActive()) {
+            robot.update();
+        }
     }
 }

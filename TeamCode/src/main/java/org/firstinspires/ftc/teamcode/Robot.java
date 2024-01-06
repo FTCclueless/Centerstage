@@ -84,6 +84,7 @@ public class Robot {
     public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, maxPower); // need this to start the process so thresholds don't immediately become true
+        update(); // mauybe remove?
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
@@ -95,6 +96,17 @@ public class Robot {
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
         goToPoint(pose, opMode, finalAdjustment, stop, 1.0);
+    }
+
+    public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
+        long start = System.currentTimeMillis();
+        drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        }
     }
 
     public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
@@ -120,6 +132,7 @@ public class Robot {
         deposit.depositAt(targetH, targetX);
         update();
         while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(1.0)) {
+            Log.e("in while", "deposit at loop");
             update();
         }
     }

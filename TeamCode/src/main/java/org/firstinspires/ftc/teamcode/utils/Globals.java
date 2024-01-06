@@ -23,6 +23,8 @@ public class Globals {
 
     // deposit
     public static int NUM_PIXELS = 0;
+    public static double slidesV4Thresh = 5.0;
+
 
     // loop time methods
     public static void START_LOOP() {

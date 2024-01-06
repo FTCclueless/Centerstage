@@ -42,8 +42,6 @@ public class Deposit {
     double targetH = 0.0;
     double targetX = 0.0;
 
-    public static double slidesV4Thresh = 5.0;
-
     // v4bar angles
     public static double v4BarTransferAngle = -0.29137;
     public static double v4BarGrabAngle = -0.0392242;
@@ -167,14 +165,14 @@ public class Deposit {
             case START_DEPOSIT:
                 release.close();
                 if (System.currentTimeMillis() - beginDepositTime > 150) {
-                    slides.setTargetLength(Math.max(targetH, slidesV4Thresh + 2));
+                    slides.setTargetLength(Math.max(targetH, Globals.slidesV4Thresh + 2));
                 }
 
-                if (slides.getLength() > slidesV4Thresh) {
+                if (slides.getLength() > Globals.slidesV4Thresh) {
                     state = State.FINISH_DEPOSIT;
                 }
                 break;
-            case FINISH_DEPOSIT: // stuck in this state unless someone calls dunk method. In the meantime it will constantly update targetH
+            case FINISH_DEPOSIT:
                 startDeposit = false;
                 slides.setTargetLength(targetH);
                 endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.75);
@@ -201,7 +199,7 @@ public class Deposit {
                     endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
-                        slides.setTargetLength(slidesV4Thresh + 2);
+                        slides.setTargetLength(Globals.slidesV4Thresh + 2);
                         if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(90)) {
                             endAffector.topServo.setTargetAngle(topServoTransferAngle, 1.0);
                         } else {
@@ -224,8 +222,8 @@ public class Deposit {
                 }
                 break;
             case BACK_PICKUP_SETUP:
-                slides.setTargetLength(Math.max(slidesBackPickupHeight, slidesV4Thresh + 2));
-                if (slides.getLength() > slidesV4Thresh) {
+                slides.setTargetLength(Math.max(slidesBackPickupHeight, Globals.slidesV4Thresh + 2));
+                if (slides.getLength() > Globals.slidesV4Thresh) {
                     endAffector.v4Servo.setTargetAngle(v4BarBackPickupAngle, 1.0);
                     endAffector.topServo.setTargetAngle(topServoBackPickupAngle, 1.0);
                     if (System.currentTimeMillis() - beginBackPickupSetupTime > 300) {

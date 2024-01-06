@@ -104,15 +104,15 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36, -44, -Math.PI/2);
-                boardPreload =          new Pose2d(48.5, -27.5, Math.PI);
+                boardPreload =          new Pose2d(49, -27.5, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
-                boardPreload =          new Pose2d(48.5, -35.5, Math.PI);
+                boardPreload =          new Pose2d(49, -35.5, Math.PI);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.5, -42, Math.PI);
+                boardPreload =          new Pose2d(49, -42, Math.PI);
                 break;
         }
 
@@ -220,7 +220,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.goToPoint(new Pose2d(48.5, -31, Math.PI), this, false, true);
+        robot.goToPoint(new Pose2d(49, -31, Math.PI), this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
