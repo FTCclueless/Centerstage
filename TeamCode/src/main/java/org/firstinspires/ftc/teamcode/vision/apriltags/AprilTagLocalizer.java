@@ -46,10 +46,15 @@ public class AprilTagLocalizer {
                 closestTag = tags.get(0);
 
                 for (AprilTagDetection tag : tags) {
-                    if (getDistance(tag) < closetDistance) {
+                    double dist = getDistance(tag);
+                    if (closetDistance == -1 || (dist != -1 && dist < closetDistance)) {
                         closetDistance = getDistance(tag);
                         closestTag = tag;
                     }
+                }
+
+                if (closetDistance == -1){
+                    return null;
                 }
 
                 Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
@@ -82,10 +87,10 @@ public class AprilTagLocalizer {
     }
 
     public double getDistance(AprilTagDetection tag) {
-        if (tag.ftcPose != null) {
+        if (tag.ftcPose != null && tag.metadata.fieldPosition.get(0) > 0) {
             return Math.sqrt(Math.pow(tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,2) + Math.pow(tag.ftcPose.x, 2));
         }
-        return 0.0;
+        return -1;
     }
 
     public void updateTelemetry(Telemetry telemetry) {

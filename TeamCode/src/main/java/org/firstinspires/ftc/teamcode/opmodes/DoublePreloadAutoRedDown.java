@@ -93,26 +93,26 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36, -44, -Math.PI/2);
-                boardPreload =          new Pose2d(47, -30, Math.PI);
+                boardPreload =          new Pose2d(49, -30, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
-                boardPreload =          new Pose2d(47, -35.5, Math.PI);
+                boardPreload =          new Pose2d(49, -35.5, Math.PI);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(47, -42, Math.PI);
+                boardPreload =          new Pose2d(49, -42, Math.PI);
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this, false, false);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
-            robot.goToPoint(new Pose2d(-34.5, -35, 5*Math.PI/4), this, false, false);
+            robot.goToPoint(new Pose2d(-34.5, -35, 5*Math.PI/4), this, false, true);
         }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(-44, -36, Math.toRadians(-50)), this, false, false);
+            robot.goToPoint(new Pose2d(-44, -36, Math.toRadians(-50)), this, false, true); //TODO Check if true is good
         }
 
         robot.droppers.leftRelease();
