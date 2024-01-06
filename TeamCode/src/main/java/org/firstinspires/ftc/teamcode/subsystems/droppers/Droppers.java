@@ -12,7 +12,7 @@ public class Droppers {
     public static double leftDownAngle = 3.9868;
     public static double leftReleaseAngle = 3.316212;
 
-    public static double rightDownAngle = 1.2164;
+    public static double rightDownAngle = 1.2025;
     public static double rightReleaseAngle = 1.8685;
 
     public enum STATE {
