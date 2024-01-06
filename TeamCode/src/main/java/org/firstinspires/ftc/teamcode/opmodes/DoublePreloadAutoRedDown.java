@@ -93,7 +93,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36, -44, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -27.5, Math.PI);
+                boardPreload =          new Pose2d(49, -30, Math.PI);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36, -38.75, -Math.PI/2);
@@ -139,7 +139,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
                 break;
         }
 
-        deposit = new Vector3(5, 0, 6);
+        deposit = new Vector3(5, 0, 8.5);
         robot.goToPointWithDeposit(new Pose2d(28, -10, Math.PI), this, false, false, deposit,0);
     }
 

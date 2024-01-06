@@ -95,12 +95,12 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 boardPreload =          new Pose2d(48, -30, Math.PI);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(12, -35.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(12, -34.5, -Math.PI/2);
                 boardPreload =          new Pose2d(48, -36, Math.PI);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(25, -34, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -41, Math.PI);
+                boardPreload =          new Pose2d(48, -42.5, Math.PI);
                 break;
         }
 
@@ -124,7 +124,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         }
 
 
-        deposit = new Vector3(5, 0, 6);
+        deposit = new Vector3(5, 0, 8.5);
         robot.deposit.depositAt(deposit); // async call to deposit
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {

@@ -179,7 +179,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         pixelIndex--;
         pause(150);
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 8);
+        deposit = new Vector3(5, 0, 8.5);
     }
 
     public void intakeStack() {
