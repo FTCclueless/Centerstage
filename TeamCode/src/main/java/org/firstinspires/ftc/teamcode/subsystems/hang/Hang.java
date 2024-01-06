@@ -18,13 +18,13 @@ public class Hang {
 
     private int state = 0;
 
-    double leftDownAngle = 0.73965;
-    double leftHalfwayAngle = 1.4849;
-    double leftUpAngle = 2.31983;
+    double leftDownAngle = 1.09267;
+    double leftHalfwayAngle = 1.681;
+    double leftUpAngle = 2.65043;
 
-    double rightDownAngle = -1.159915;
-    double rightHalfwayAngle = -0.397845;
-    double rightUpAngle = 0.42586;
+    double rightDownAngle = 0.4258;
+    double rightHalfwayAngle = 1.1487;
+    double rightUpAngle = 1.9444;
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         CRServo leftHang = hardwareMap.get(CRServo.class, "leftHang");
