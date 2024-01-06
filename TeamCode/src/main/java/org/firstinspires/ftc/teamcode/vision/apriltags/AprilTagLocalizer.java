@@ -27,7 +27,7 @@ public class AprilTagLocalizer {
         this.tagProcessor = vision.tagProcessor;
     }
 
-    Pose2d cameraOffset = new Pose2d(-6.5, 0.0, Math.toRadians(180));
+    Pose2d cameraOffset = new Pose2d(-7.5, 0.0, Math.toRadians(180));
 
     double robotXFromTag = 0;
     double robotYFromTag = 0;
@@ -38,41 +38,45 @@ public class AprilTagLocalizer {
     AprilTagDetection closestTag;
 
     public Pose2d update(double inputHeading) {
-        if (tagProcessor.getDetections().size() > 0) {
-            tags = tagProcessor.getDetections();
+        try {
+            if (tagProcessor.getDetections().size() > 0) {
+                tags = tagProcessor.getDetections();
 
-            closetDistance = getDistance(tags.get(0));
-            closestTag = tags.get(0);
+                closetDistance = getDistance(tags.get(0));
+                closestTag = tags.get(0);
 
-            for (AprilTagDetection tag : tags) {
-                if (getDistance(tag) < closetDistance) {
-                    closetDistance = getDistance(tag);
-                    closestTag = tag;
+                for (AprilTagDetection tag : tags) {
+                    if (getDistance(tag) < closetDistance) {
+                        closetDistance = getDistance(tag);
+                        closestTag = tag;
+                    }
                 }
+
+                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
+
+                Pose2d correctedTagData = new Pose2d(
+                        closestTag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * closestTag.ftcPose.z,
+                        closestTag.ftcPose.x);
+
+                Pose2d relativeTagPosition = new Pose2d(
+                        correctedTagData.x * Math.cos(cameraOffset.heading) - correctedTagData.y * Math.sin(cameraOffset.heading) + cameraOffset.x,
+                        correctedTagData.x * Math.sin(cameraOffset.heading) + correctedTagData.y * Math.cos(cameraOffset.heading) + cameraOffset.y);
+
+                // applying a rotation matrix for converting from relative robot to global using the odo heading
+                robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
+                robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
+
+                poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
+
+                TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.x);
+                TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.y);
+                TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
+                TelemetryUtil.packet.put("robotYFromTag", robotYFromTag);
+
+                return poseEstimate;
             }
-
-            Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
-
-            Pose2d correctedTagData = new Pose2d(
-                    closestTag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*closestTag.ftcPose.z,
-                    closestTag.ftcPose.x);
-
-            Pose2d relativeTagPosition = new Pose2d(
-                    correctedTagData.x*Math.cos(cameraOffset.heading) - correctedTagData.y*Math.sin(cameraOffset.heading) + cameraOffset.x,
-                    correctedTagData.x*Math.sin(cameraOffset.heading) + correctedTagData.y*Math.cos(cameraOffset.heading) + cameraOffset.y);
-
-            // applying a rotation matrix for converting from relative robot to global using the odo heading
-            robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
-            robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
-
-            poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
-
-            TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.x);
-            TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.y);
-            TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
-            TelemetryUtil.packet.put("robotYFromTag", robotYFromTag);
-
-            return poseEstimate;
+        } catch (Error e) {
+            Log.e("---------VISION ERROR---------", e + "");
         }
         return null;
     }
