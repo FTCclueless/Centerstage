@@ -43,12 +43,12 @@ public class Deposit {
     double targetX = 0.0;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.29137;
+    public static double v4BarTransferAngle = -0.134484;
     public static double v4BarGrabAngle = 0.0168104;
     public static double v4BarDepositAngle = -2.97538;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.99181222;
+    public static double topServoTransferAngle = -0.84612229;
     public static double topServoGrabAngle = -0.879743;
     public static double topServoDepositAngle = 2.101297;
     public static double topServoRetractAngle = 2.6336256;
