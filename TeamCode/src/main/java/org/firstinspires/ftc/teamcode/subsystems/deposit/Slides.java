@@ -31,7 +31,7 @@ public class Slides {
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.25;
+    public static double downPower = -0.15;
     public static double forceDownPower = -0.5;
 
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
@@ -43,6 +43,7 @@ public class Slides {
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if (Globals.RUNMODE != RunMode.TELEOP) {
+            Log.e("RESETTTING", "RESTETING SLIDES");
             m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -60,6 +61,7 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
 
+        TelemetryUtil.packet.put("length", length);
         TelemetryUtil.packet.put("slidesError", error);
 
         if (targetLength <= 0.6) {

@@ -35,8 +35,8 @@ public class Sensors {
     private final AnalogInput distLeft, distRight;
     private final DigitalChannel limitSwitch1, limitSwitch2;
 
-    private int slidesEncoder = 0;
-    private double slidesVelocity = 0;
+    private int slidesEncoder;
+    private double slidesVelocity;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;

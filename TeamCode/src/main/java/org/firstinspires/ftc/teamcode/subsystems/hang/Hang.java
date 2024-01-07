@@ -19,12 +19,12 @@ public class Hang {
     private int state = 0;
 
     double leftDownAngle = 1.09267;
-    double leftHalfwayAngle = 1.681;
-    double leftUpAngle = 2.65043;
+    double leftHalfwayAngle = 2.039659;
+    double leftUpAngle = 2.71767;
 
     double rightDownAngle = 0.4258;
-    double rightHalfwayAngle = 1.1487;
-    double rightUpAngle = 1.9444;
+    double rightHalfwayAngle = 1.406468;
+    double rightUpAngle = 2.10129;
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         CRServo leftHang = hardwareMap.get(CRServo.class, "leftHang");
@@ -78,21 +78,42 @@ public class Hang {
     public void update() {
         switch (state) {
             case 0: // arms down rest point
-                armsDown();
+                armsDown(0.75);
                 break;
-            case 1: // arms halfway
-                state = 2;
-                armsHalfway(1.0);
+            case 1: // reverse hang + arms halfway
+                if (alreadyReversed) {
+                    state = 2;
+                }
+                if (System.currentTimeMillis() - startReverse > 722.5) {
+                    state = 2;
+                    off();
+                } else {
+                    armsHalfway(0.264);
+                    reverse();
+                }
                 break;
             case 2: // arms halfway rest point
-                armsHalfway(1.0);
+                off();
+                if (!alreadyReversed) {
+                    armsHalfway(0.264);
+                } else {
+                    armsHalfway(0.75);
+                }
                 break;
-            case 3: // arms up
-                state = 4;
-                armsUp(0.75);
-                reverse();
+            case 3: // reverse hang + arms up
+                if (alreadyReversed) {
+                    state = 4;
+                }
+                if (System.currentTimeMillis() - startReverse > 722.5) {
+                    state = 4;
+                    off();
+                } else {
+                    armsUp(0.2);
+                    reverse();
+                }
                 break;
             case 4: // arms up now and ready to hang
+                armsUp(0.2);
                 alreadyReversed = true;
                 break;
         }
@@ -113,9 +134,9 @@ public class Hang {
         return state == 4;
     }
 
-    private void armsDown() {
-        leftArm.setTargetAngle(leftDownAngle,1.0);
-        rightArm.setTargetAngle(rightDownAngle, 1.0);
+    private void armsDown(double power) {
+        leftArm.setTargetAngle(leftDownAngle,power);
+        rightArm.setTargetAngle(rightDownAngle, power);
     }
 
     private void armsHalfway(double power) {

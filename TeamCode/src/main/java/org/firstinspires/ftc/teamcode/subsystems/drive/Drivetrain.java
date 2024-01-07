@@ -333,7 +333,7 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    Pose2d stackPose = new Pose2d(-70.5, -12);
+    public Pose2d stackPose = new Pose2d(-70.5, -12);
     double intakeOffset = 0.0;
 
     public void startStackAlignment(Pose2d stackPose, double intakeOffset, double maxPower) {

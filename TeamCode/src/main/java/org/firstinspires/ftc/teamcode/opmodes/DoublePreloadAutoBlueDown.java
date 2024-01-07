@@ -141,6 +141,7 @@ public class DoublePreloadAutoBlueDown extends LinearOpMode {
 
         deposit = new Vector3(5, 0, 8.5);
         robot.goToPointWithDeposit(new Pose2d(28, 10, Math.PI), this, false, false, deposit,0);
+        pause(10000);
     }
 
     /**

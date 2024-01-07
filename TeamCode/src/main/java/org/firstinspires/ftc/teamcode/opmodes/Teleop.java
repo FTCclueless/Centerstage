@@ -20,12 +20,12 @@ import org.firstinspires.ftc.teamcode.utils.Vector3;
 public class Teleop extends LinearOpMode {
     @Override
     public void runOpMode() {
+        Globals.RUNMODE = RunMode.TELEOP; // Runmode must be set before you create new instances of robot
+
         Robot robot = new Robot(hardwareMap);
         Intake intake = robot.intake;
         Hang hang = robot.hang;
 
-        Globals.RUNMODE = RunMode.TELEOP;
-        robot.deposit.state = Deposit.State.INTAKE;
 
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
@@ -59,6 +59,13 @@ public class Teleop extends LinearOpMode {
         robot.airplane.hold();
         robot.droppers.retractBoth();
         robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
+        robot.intake.setActuationHeight(0);
+        robot.deposit.retract();
+
+        while (opModeInInit())
+        {
+            robot.update();
+        }
 
         waitForStart();
 

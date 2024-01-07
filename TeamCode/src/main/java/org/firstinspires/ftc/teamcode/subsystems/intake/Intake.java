@@ -33,7 +33,7 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.6984, 0.5087, 0.3376, 0.21738, 0.08325};
+    double[] actuationAngles = new double[] {0.62901, 0.47176, 0.365384, 0.231256, 0.13412};
     double actuationFullyUpAngle = -0.314508;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
@@ -122,8 +122,8 @@ public class Intake {
         actuation.setTargetAngle(actuationFullyUpAngle, 1.0);
     }
 
-    public void setActuationHeight (int pixel) {
-        actuation.setTargetAngle(actuationAngles[pixel], 1.0);
+    public void setActuationHeight (int pixelIndex) {
+        actuation.setTargetAngle(actuationAngles[pixelIndex], 1.0);
     }
 
     public void setActuationAngle(double angle, double power) { // 0 index based

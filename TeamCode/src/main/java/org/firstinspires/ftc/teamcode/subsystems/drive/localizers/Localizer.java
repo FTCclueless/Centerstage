@@ -209,9 +209,9 @@ public class Localizer {
     double rightDist = 0.0;
 
     double leftXOffset = 7.0;
-    double leftYOffset = 4.75;
+    double leftYOffset = 2.75;
     double rightXOffset = 7.0;
-    double rightYOffset = -4.75;
+    double rightYOffset = -2.75;
 
     public void mergeUltrasonics() {
         leftDist = sensors.getDistLeft();

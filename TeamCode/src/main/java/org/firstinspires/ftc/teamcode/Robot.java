@@ -61,6 +61,7 @@ public class Robot {
     public void update() {
         START_LOOP();
         updateSubsystems();
+        //hi, hud
         updateTelemetry();
     }
 
