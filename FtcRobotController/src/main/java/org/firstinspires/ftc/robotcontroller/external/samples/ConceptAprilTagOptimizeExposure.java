@@ -62,9 +62,7 @@ import java.util.concurrent.TimeUnit;
  * Use Android Studio to Copy this Class, and Paste it into the TeamCode/src/main/java/org/firstinspires/ftc/teamcode folder.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
-@Disabled
 @TeleOp(name="Optimize AprilTag Exposure", group = "Concept")
-//@Disabled
 public class ConceptAprilTagOptimizeExposure extends LinearOpMode
 {
     private VisionPortal visionPortal = null;        // Used to manage the video source.
@@ -136,10 +134,10 @@ public class ConceptAprilTagOptimizeExposure extends LinearOpMode
             }
 
             // look for clicks to change the gain
-            if (thisGainUp && !lastGainUp) {
+            if (thisGainUp) {
                 myGain = Range.clip(myGain + 1, minGain, maxGain );
                 setManualExposure(myExposure, myGain);
-            } else if (thisGainDn && !lastGainDn) {
+            } else if (thisGainDn) {
                 myGain = Range.clip(myGain - 1, minGain, maxGain );
                 setManualExposure(myExposure, myGain);
             }

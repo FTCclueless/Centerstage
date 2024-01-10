@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.vision;
 import android.util.Log;
 import android.util.Size;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -22,12 +23,17 @@ public class Vision {
     public TeamPropDetectionPipeline teamPropDetectionPipeline;
     public AprilTagProcessor tagProcessor;
 
+    int cameraWidth = 640;
+    int cameraHeight = 360;
+
     public Vision (HardwareMap hardwareMap, Telemetry telemetry, boolean isRed, boolean initTeamProp, boolean initAprilTag) {
         if (initAprilTag) {
             Log.e("USING APRIL TAGS", "");
         } else {
             Log.e("NOT --- USING APRIL TAGS", "");
         }
+
+        initAprilTagCrashProtection(hardwareMap, telemetry);
 
         if (initTeamProp && initAprilTag) {
             initTeamPropAndAprilTag(hardwareMap, telemetry, isRed);
@@ -38,12 +44,22 @@ public class Vision {
         }
     }
 
+    public void initAprilTagCrashProtection(HardwareMap hardwareMap, Telemetry telemetry) {
+        initAprilTag(hardwareMap);
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 2000) {
+            telemetry.addData("Initializing", "please wait for crash protection to finish.");
+            telemetry.update();
+        }
+        visionPortal.close();
+    }
+
     public void initTeamProp(HardwareMap hardwareMap, Telemetry telemetry, boolean isRed) {
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, isRed);
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(cameraWidth, cameraHeight))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .addProcessor(teamPropDetectionPipeline)
                 .build();
@@ -53,7 +69,7 @@ public class Vision {
             Log.e("initializing camera....", "");
         }
 
-        setCameraSettings();
+        setCameraSettings(9,255);
 
         visionPortal.setProcessorEnabled(teamPropDetectionPipeline, true);
     }
@@ -64,13 +80,12 @@ public class Vision {
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
-                .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
                 .build();
 
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(cameraWidth, cameraHeight))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .addProcessors(tagProcessor)
                 .build();
@@ -80,7 +95,7 @@ public class Vision {
             Log.e("initializing camera....", "");
         }
 
-        setCameraSettings();
+        setCameraSettings(9,255);
 
         visionPortal.setProcessorEnabled(tagProcessor, true);
     }
@@ -91,14 +106,13 @@ public class Vision {
                 .setDrawCubeProjection(true)
                 .setDrawTagID(true)
                 .setDrawTagOutline(true)
-                .setLensIntrinsics(385.451, 385.451, 306.64, 240.025)
                 .build();
 
         teamPropDetectionPipeline = new TeamPropDetectionPipeline(telemetry, isRed);
 
         visionPortal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default
-                .setCameraResolution(new Size(640, 480))
+                .setCameraResolution(new Size(cameraWidth, cameraHeight))
                 .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .addProcessors(teamPropDetectionPipeline, tagProcessor)
                 .build();
@@ -108,39 +122,21 @@ public class Vision {
             Log.e("initializing camera....", "");
         }
 
-        setCameraSettings();
+        setCameraSettings(9,255);
 
         visionPortal.setProcessorEnabled(tagProcessor, true);
         visionPortal.setProcessorEnabled(teamPropDetectionPipeline, true);
     }
 
-    public void initDualCamera(HardwareMap hardwareMap, VisionProcessor pipeline) {
-        visionPortal = new VisionPortal.Builder()
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1")) // the camera on your robot is named "Webcam 1" by default
-                .setCameraResolution(new Size(640, 480))
-                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
-                .addProcessor(pipeline)
-                .build();
-
-        while (visionPortal.getCameraState() != VisionPortal.CameraState.STREAMING) {} // waiting for camera to start streaming
-
-        setCameraSettings();
-    }
-
-    public void setCameraSettings() {
+    public void setCameraSettings(int exposureVal, int gainVal) {
         ExposureControl exposure = visionPortal.getCameraControl(ExposureControl.class);
         exposure.setMode(ExposureControl.Mode.Manual);
-        exposure.setExposure(5, TimeUnit.MILLISECONDS);
+        exposure.setExposure(exposureVal, TimeUnit.MILLISECONDS);
 
         Log.e("exposure supported", exposure.isExposureSupported() + "");
 
         GainControl gain = visionPortal.getCameraControl(GainControl.class);
-        gain.setGain(0);
-
-        WhiteBalanceControl whiteBalanceControl = visionPortal.getCameraControl(WhiteBalanceControl.class);
-        whiteBalanceControl.setWhiteBalanceTemperature(whiteBalanceControl.getMinWhiteBalanceTemperature());
-
-        Log.e("min white balance", whiteBalanceControl.getMinWhiteBalanceTemperature() + "");
+        gain.setGain(gainVal);
     }
 
     public void start () {
@@ -152,6 +148,7 @@ public class Vision {
     }
 
     public void enableAprilTag () {
+        setCameraSettings(2,255);
         visionPortal.setProcessorEnabled(tagProcessor, true);
     }
 

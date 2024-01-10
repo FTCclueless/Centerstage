@@ -8,16 +8,13 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
 
-@Disabled
 @TeleOp
 public class TeamPropTesterRed extends LinearOpMode {
-    private Vision vision = new Vision(hardwareMap, telemetry, true, true, false);
-    private TeamPropDetectionPipeline teamPropDetectionPipeline;
-    Robot robot;
-
     @Override
     public void runOpMode() throws InterruptedException {
-        robot = new Robot(hardwareMap, vision);
+        Vision vision = new Vision(hardwareMap, telemetry, true, true, false);
+        TeamPropDetectionPipeline teamPropDetectionPipeline;
+        Robot robot = new Robot(hardwareMap, vision);
 
         teamPropDetectionPipeline = vision.teamPropDetectionPipeline;
 

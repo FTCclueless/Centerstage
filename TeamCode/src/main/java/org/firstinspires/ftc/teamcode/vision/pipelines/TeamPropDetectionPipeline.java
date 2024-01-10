@@ -16,14 +16,11 @@ import org.opencv.imgproc.Imgproc;
 
 public class TeamPropDetectionPipeline implements VisionProcessor {
 
-    int width = 640;
-    int height = 480;
-
     static int YCRCB_CHANNEL_IDX = 1;
 
-    Rect leftRegion = new Rect(85,285,95,25);
-    Rect centerRegion = new Rect(235,285,160,25);
-    Rect rightRegion = new Rect(435,285,85,25);
+    Rect leftRegion = new Rect(30,210,95,25);
+    Rect centerRegion = new Rect(235,210,160,25);
+    Rect rightRegion = new Rect(490,210,85,25);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();
@@ -63,10 +60,6 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     @Override
     public Object processFrame(Mat input, long captureTimeNanos) {
-
-        // flip camera stream because neil is a monkey
-        Core.flip(input,input,-1);
-
         // converting color space to YCRCB
         Imgproc.cvtColor(input, cbMat, Imgproc.COLOR_RGB2YCrCb);
         Core.extractChannel(cbMat, cbMat, YCRCB_CHANNEL_IDX);

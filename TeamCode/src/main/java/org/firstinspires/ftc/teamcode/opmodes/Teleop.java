@@ -119,10 +119,10 @@ public class Teleop extends LinearOpMode {
             }
 
             // hanging mechanism
-            if ((gamepad1.y || gamepad2.dpad_up) && !robot.deposit.isDepositing()) {
+            if ((gamepad1.y || gamepad2.y) && !robot.deposit.isDepositing()) {
                 hang.on();
                 robot.intake.actuationFullyUp();
-            } else if ((gamepad1.a || gamepad2.dpad_down) && !robot.deposit.isDepositing()) {
+            } else if ((gamepad1.a || gamepad2.a) && !robot.deposit.isDepositing()) {
                 hang.reverse();
                 robot.intake.actuationFullyUp();
             } else {
@@ -158,12 +158,6 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 2 CONTROLS -------------------
 
             // driver B adjusting deposit position
-            if (gamepad2.dpad_up && robot.deposit.isDepositing()) {
-                depoPos.z+=0.5;
-            }
-            if (gamepad2.dpad_down && robot.deposit.isDepositing()) {
-                depoPos.z-=0.5;
-            }
             depoPos.x -= gamepad2.right_stick_y*0.35;
             depoPos.z -= gamepad2.left_stick_y*0.35;
 
@@ -206,13 +200,13 @@ public class Teleop extends LinearOpMode {
             }
 
             // adjusting actuation angle
-            if (y_2.isClicked(gamepad2.y)) {
+            if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
                 pixelIndex++;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
             }
 
-            if (a_2.isClicked(gamepad2.a)) {
+            if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
                 pixelIndex--;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
