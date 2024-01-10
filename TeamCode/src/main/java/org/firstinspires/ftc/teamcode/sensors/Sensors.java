@@ -89,7 +89,7 @@ public class Sensors {
             imu.resetYaw();
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-            huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
+            huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_TRACKING);
         } catch (Exception e) {
             throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
         }

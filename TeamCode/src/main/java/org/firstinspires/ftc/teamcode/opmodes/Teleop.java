@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Log;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -120,27 +118,22 @@ public class Teleop extends LinearOpMode {
                 }
             }
 
-            // hang arms
-            if (left_dpad_1.isClicked(gamepad1.dpad_left)) {
-                robot.hang.nextHangState();
-            }
-
             // hanging mechanism
-            if (robot.hang.doingHang()) {
-                if (gamepad1.y || gamepad2.y) {
-                    hang.on();
-                } else if (gamepad1.a || gamepad2.a) {
-                    hang.reverse();
-                } else {
-                    hang.off();
-                }
+            if ((gamepad1.y || gamepad2.dpad_up) && !robot.deposit.isDepositing()) {
+                hang.on();
+                robot.intake.actuationFullyUp();
+            } else if ((gamepad1.a || gamepad2.dpad_down) && !robot.deposit.isDepositing()) {
+                hang.reverse();
+                robot.intake.actuationFullyUp();
+            } else {
+                hang.off();
             }
 
             // adjust slides height
-            if (gamepad1.y && !robot.hang.doingHang()) {
+            if (gamepad1.y && robot.deposit.isDepositing()) {
                 depoPos.z+=0.5;
             }
-            if (gamepad1.a && !robot.hang.doingHang()) {
+            if (gamepad1.a && robot.deposit.isDepositing()) {
                 depoPos.z-=0.5;
             }
 
@@ -150,7 +143,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // airplane (both)
-            if (gamepad1.dpad_up) {
+            if (gamepad1.dpad_up && gamepad1.right_trigger > 0.2) {
                 robot.airplane.release();
             }
 
@@ -165,14 +158,14 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 2 CONTROLS -------------------
 
             // driver B adjusting deposit position
-            if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
-                depoPos.z+=3;
+            if (gamepad2.dpad_up && robot.deposit.isDepositing()) {
+                depoPos.z+=0.5;
             }
-            if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
-                depoPos.z-=3;
+            if (gamepad2.dpad_down && robot.deposit.isDepositing()) {
+                depoPos.z-=0.5;
             }
-            depoPos.x -= gamepad2.right_stick_y*0.2;
-            depoPos.z -= gamepad2.left_stick_y*0.2;
+            depoPos.x -= gamepad2.right_stick_y*0.35;
+            depoPos.z -= gamepad2.left_stick_y*0.35;
 
             // trigger deposit
             if (rightBumper_2.isClicked(gamepad2.right_bumper)) {
@@ -208,26 +201,21 @@ public class Teleop extends LinearOpMode {
             }
 
             // airplane release (both)
-            if (gamepad2.b) {
+            if (gamepad2.b && gamepad2.left_trigger > 0.2) {
                 robot.airplane.release();
             }
 
             // adjusting actuation angle
-            if (y_2.isClicked(gamepad2.y) && !hang.doingHang()) {
+            if (y_2.isClicked(gamepad2.y)) {
                 pixelIndex++;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
             }
 
-            if (a_2.isClicked(gamepad2.a) && !hang.doingHang()) {
+            if (a_2.isClicked(gamepad2.a)) {
                 pixelIndex--;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
-            }
-
-            // hang arms
-            if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
-                robot.hang.nextHangState();
             }
 
             telemetry.addData("Pixel Height", pixelIndex+1);
