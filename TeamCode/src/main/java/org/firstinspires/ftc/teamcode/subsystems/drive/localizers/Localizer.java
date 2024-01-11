@@ -233,18 +233,18 @@ public class Localizer {
         );
 
         if (drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK) { // actually merging localization
-            if (Math.abs(globalWallLocationLeft.x - 72 * x_sign) < 4) {
-                odoX += (72 * x_sign - globalWallLocationLeft.x) * 0.1;
+            if (Math.abs(globalWallLocationLeft.x - 70.5 * x_sign) < 4) {
+                odoX += (70.5 * x_sign - globalWallLocationLeft.x) * 0.1;
             }
-            if (Math.abs(globalWallLocationLeft.y - 72 * y_sign) < 4) {
-                odoY += (72 * y_sign - globalWallLocationLeft.y) * 0.1;
+            if (Math.abs(globalWallLocationLeft.y - 70.5 * y_sign) < 4) {
+                odoY += (70.5 * y_sign - globalWallLocationLeft.y) * 0.1;
             }
 
-            if (Math.abs(globalWallLocationRight.x - 72 * x_sign) < 4) {
-                odoX += (72 * x_sign - globalWallLocationRight.x) * 0.1;
+            if (Math.abs(globalWallLocationRight.x - 70.5 * x_sign) < 4) {
+                odoX += (70.5 * x_sign - globalWallLocationRight.x) * 0.1;
             }
-            if (Math.abs(globalWallLocationRight.y - 72 * y_sign) < 4) {
-                odoY += (72 * y_sign - globalWallLocationRight.y) * 0.1;
+            if (Math.abs(globalWallLocationRight.y - 70.5 * y_sign) < 4) {
+                odoY += (70.5 * y_sign - globalWallLocationRight.y) * 0.1;
             }
         }
 
