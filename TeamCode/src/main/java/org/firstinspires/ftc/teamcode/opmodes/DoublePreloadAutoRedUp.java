@@ -56,7 +56,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, true, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(12, -62, -Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
+        robot.drivetrain.setPoseEstimate(new Pose2d(11.804, -60.5, -Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
 
         robot.droppers.rightDown();
         robot.droppers.leftRelease();
@@ -91,36 +91,36 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(12, -48, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -30, Math.PI);
+                groundPreloadPosition = new Pose2d(11.8, -46.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -29.41, Math.PI);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(12, -35.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -36, Math.PI);
+                groundPreloadPosition = new Pose2d(11.8, -34, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -35.41, Math.PI);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(25, -35, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -42, Math.PI);
+                groundPreloadPosition = new Pose2d(24.8, -33.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -41.41, Math.PI);
                 break;
         }
 
         robot.goToPoint(groundPreloadPosition, this, false, false);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(7.5, -35, -Math.toRadians(50)), this, false, false);
+            robot.goToPoint(new Pose2d(7.3, -33.5, -Math.toRadians(50)), this, false, false);
         }
 
         robot.droppers.rightRelease();
         pause(100);
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.CENTER) {
-            robot.goToPoint(new Pose2d(15, -40, -Math.PI/2), this, false, false);
-            robot.goToPoint(new Pose2d(15, -40, Math.PI), this, false, false);
+            robot.goToPoint(new Pose2d(15, -38.5, -Math.PI/2), this, false, false);
+            robot.goToPoint(new Pose2d(15, -38.5, Math.PI), this, false, false);
         }
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
-            robot.goToPoint(new Pose2d(25, -40, -Math.PI/2), this, false, false);
-            robot.goToPoint(new Pose2d(25, -40, Math.PI), this, false, false);
+            robot.goToPoint(new Pose2d(25, -38.5, -Math.PI/2), this, false, false);
+            robot.goToPoint(new Pose2d(25, -38.5, Math.PI), this, false, false);
         }
 
 
@@ -128,10 +128,10 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         robot.deposit.depositAt(deposit); // async call to deposit
 
         if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-            robot.goToPoint(new Pose2d(24, -35, Math.PI), this, false, false);
+            robot.goToPoint(new Pose2d(24, -32.5, Math.PI), this, false, false);
         }
 
-        robot.goToPoint(new Pose2d(42, -33, Math.PI), this, false, false); // intermediate point
+        robot.goToPoint(new Pose2d(42, -31.5, Math.PI), this, false, false); // intermediate point
     }
 
     /**

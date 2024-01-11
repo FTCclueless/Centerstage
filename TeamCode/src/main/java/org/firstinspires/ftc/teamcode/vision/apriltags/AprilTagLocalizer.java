@@ -68,8 +68,7 @@ public class AprilTagLocalizer {
                     return null;
                 }
 
-//                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
-                Vector3 globalTagPosition = aprilTagPoses.get(closestTag.metadata.name);
+                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
 
                 Pose2d correctedTagData = new Pose2d(
                         closestTag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * -closestTag.ftcPose.z,
