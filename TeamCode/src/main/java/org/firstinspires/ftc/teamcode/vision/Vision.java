@@ -42,6 +42,9 @@ public class Vision {
         } else {
             initTeamProp(hardwareMap, telemetry, isRed);
         }
+
+        telemetry.addData("Finished", "initializing");
+        telemetry.update();
     }
 
     public void initAprilTagCrashProtection(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -95,7 +98,7 @@ public class Vision {
             Log.e("initializing camera....", "");
         }
 
-        setCameraSettings(9,255);
+        setCameraSettings(2,255);
 
         visionPortal.setProcessorEnabled(tagProcessor, true);
     }

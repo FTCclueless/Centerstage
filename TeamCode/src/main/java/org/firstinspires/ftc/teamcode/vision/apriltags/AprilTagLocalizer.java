@@ -17,17 +17,28 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AprilTagLocalizer {
     private AprilTagProcessor tagProcessor;
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
+    Map<String, Vector3> aprilTagPoses = new HashMap<String, Vector3>();;
 
     public AprilTagLocalizer(Vision vision) {
         this.tagProcessor = vision.tagProcessor;
+
+        aprilTagPoses.put("RedAllianceLeft", new Vector3(61.75,-30,4));
+        aprilTagPoses.put("RedAllianceCenter", new Vector3(61.75,-36,4));
+        aprilTagPoses.put("RedAllianceRight", new Vector3(61.75,-42,4));
+
+        aprilTagPoses.put("BlueAllianceLeft", new Vector3(61.75,30,4));
+        aprilTagPoses.put("BlueAllianceCenter", new Vector3(61.75,36,4));
+        aprilTagPoses.put("BlueAllianceRight", new Vector3(61.75,42,4));
     }
 
-    Pose2d cameraOffset = new Pose2d(-7.5, 0.0, Math.toRadians(180));
+    Pose2d cameraOffset = new Pose2d(-6.69, 0.0, Math.toRadians(180));
 
     double robotXFromTag = 0;
     double robotYFromTag = 0;
@@ -57,11 +68,12 @@ public class AprilTagLocalizer {
                     return null;
                 }
 
-                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
+//                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
+                Vector3 globalTagPosition = aprilTagPoses.get(closestTag.metadata.name);
 
                 Pose2d correctedTagData = new Pose2d(
-                        closestTag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * closestTag.ftcPose.z,
-                        closestTag.ftcPose.x);
+                        closestTag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * -closestTag.ftcPose.z,
+                        -closestTag.ftcPose.x);
 
                 Pose2d relativeTagPosition = new Pose2d(
                         correctedTagData.x * Math.cos(cameraOffset.heading) - correctedTagData.y * Math.sin(cameraOffset.heading) + cameraOffset.x,
