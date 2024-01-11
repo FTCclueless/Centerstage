@@ -33,9 +33,9 @@ public class AprilTagLocalizer {
         aprilTagPoses.put("RedAllianceCenter", new Vector3(61.75,-36,4));
         aprilTagPoses.put("RedAllianceRight", new Vector3(61.75,-42,4));
 
-        aprilTagPoses.put("BlueAllianceLeft", new Vector3(61.75,30,4));
+        aprilTagPoses.put("BlueAllianceLeft", new Vector3(61.75,42,4));
         aprilTagPoses.put("BlueAllianceCenter", new Vector3(61.75,36,4));
-        aprilTagPoses.put("BlueAllianceRight", new Vector3(61.75,42,4));
+        aprilTagPoses.put("BlueAllianceRight", new Vector3(61.75,30,4));
     }
 
     Pose2d cameraOffset = new Pose2d(-6.69, 0.0, Math.toRadians(180));
