@@ -130,7 +130,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         robot.droppers.rightRelease();
         pause(100);
 
-        deposit = new Vector3(5, 0, 7);
+        deposit = new Vector3(5, 0, 6);
         robot.deposit.depositAt(deposit); // async call to deposit
     }
 

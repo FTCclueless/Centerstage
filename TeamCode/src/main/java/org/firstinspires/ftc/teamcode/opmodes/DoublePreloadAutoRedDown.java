@@ -117,7 +117,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
         robot.droppers.leftRelease();
 
-        pause(100);
+        pause(150);
     }
 
     /**
@@ -139,7 +139,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
                 break;
         }
 
-        deposit = new Vector3(5, 0, 8.5);
+        deposit = new Vector3(5, 0, 7);
         robot.goToPointWithDeposit(new Pose2d(28, -8.5, Math.PI), this, false, false, deposit,0);
         pause(10000);
     }
