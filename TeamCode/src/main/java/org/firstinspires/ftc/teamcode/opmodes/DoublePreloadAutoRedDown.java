@@ -77,6 +77,8 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         Log.e("team prop location", teamPropLocation + "");
         vision.disableTeamProp();
         vision.enableAprilTag();
+
+        robot.intake.actuationFullyUp();
     }
 
     /**
