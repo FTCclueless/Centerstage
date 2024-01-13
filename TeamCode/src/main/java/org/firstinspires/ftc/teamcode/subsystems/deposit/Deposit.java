@@ -44,13 +44,13 @@ public class Deposit {
 
     // v4bar angles
     public static double v4BarTransferAngle = -0.201724;
-    public static double v4BarGrabAngle = 0.04482767;
-    public static double v4BarDepositAngle = -2.97538;
+    public static double v4BarGrabAngle = -0.14568993131;
+    public static double v4BarDepositAngle = -3.05885;
 
     // top servo angles
     public static double topServoTransferAngle = -0.8405188;
-    public static double topServoGrabAngle = -0.829311;
-    public static double topServoDepositAngle = 2.101297;
+    public static double topServoGrabAngle = -0.96939838;
+    public static double topServoDepositAngle = 2.06207;
     public static double topServoRetractAngle = 2.6336256;
 
     // back pickup
@@ -136,6 +136,9 @@ public class Deposit {
     long beginBackPickupSetupTime;
     long beginBackPickupTime;
 
+    double v4ServoPower = 0.55;
+    double topServoPower = 1.0;
+
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);
 
@@ -144,8 +147,8 @@ public class Deposit {
                 release.intake();
                 slides.setTargetLength(0.0);
 
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,0.75);
-                endAffector.topServo.setTargetAngle(topServoTransferAngle,1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,v4ServoPower);
+                endAffector.topServo.setTargetAngle(topServoTransferAngle,topServoPower);
 
                 if (robot.intake.state != Intake.State.ON) { // check if intake is off
                     beginGrabTime = System.currentTimeMillis();
@@ -153,8 +156,8 @@ public class Deposit {
                 }
                 break;
             case GRAB:
-                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, 0.75);
-                endAffector.topServo.setTargetAngle(topServoGrabAngle, 1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, v4ServoPower);
+                endAffector.topServo.setTargetAngle(topServoGrabAngle, topServoPower);
                 release.preGrab();
 
                 if (robot.intake.state == Intake.State.ON && !startDeposit) {
@@ -179,8 +182,8 @@ public class Deposit {
             case FINISH_DEPOSIT:
                 startDeposit = false;
                 slides.setTargetLength(targetH);
-                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.75);
-                endAffector.topServo.setTargetAngle(topServoDepositAngle,1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
+                endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
 
                 if (endAffector.v4Servo.inPosition() && slides.inPosition(2)) {
                     state = State.DEPOSIT;
@@ -195,17 +198,17 @@ public class Deposit {
                 }
                 break;
             case START_RETRACT:
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, 0.75);
+                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
-                    endAffector.topServo.setTargetAngle(topServoRetractAngle, 1.0);
+                    endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
                     release.close();
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
                         slides.setTargetLength(Globals.slidesV4Thresh + 2);
                         if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(90)) {
-                            endAffector.topServo.setTargetAngle(topServoTransferAngle, 1.0);
+                            endAffector.topServo.setTargetAngle(topServoTransferAngle, topServoPower);
                         } else {
-                            endAffector.topServo.setTargetAngle(0, 1.0);
+                            endAffector.topServo.setTargetAngle(0, topServoPower);
                         }
                     } else {
                         slides.setTargetLength(targetH + 3); // TODO: Fix this to make the arm wait for slides to go up then move
@@ -226,8 +229,8 @@ public class Deposit {
             case BACK_PICKUP_SETUP:
                 slides.setTargetLength(Math.max(slidesBackPickupHeight, Globals.slidesV4Thresh + 2));
                 if (slides.getLength() > Globals.slidesV4Thresh) {
-                    endAffector.v4Servo.setTargetAngle(v4BarBackPickupAngle, 1.0);
-                    endAffector.topServo.setTargetAngle(topServoBackPickupAngle, 1.0);
+                    endAffector.v4Servo.setTargetAngle(v4BarBackPickupAngle, v4ServoPower);
+                    endAffector.topServo.setTargetAngle(topServoBackPickupAngle, topServoPower);
                     if (System.currentTimeMillis() - beginBackPickupSetupTime > 300) {
                         slides.setTargetLength(slidesBackPickupHeight);
                     }
@@ -249,8 +252,8 @@ public class Deposit {
                 break;
             case BACK_PICKUP_DEPOSIT:
                 slides.setTargetLength(targetH);
-                endAffector.v4Servo.setTargetAngle(v4BarBackPickupDepositAngle, 1.0);
-                endAffector.topServo.setTargetAngle(topServoBackPickupDepositAngle, 1.0);
+                endAffector.v4Servo.setTargetAngle(v4BarBackPickupDepositAngle, v4ServoPower);
+                endAffector.topServo.setTargetAngle(topServoBackPickupDepositAngle, topServoPower);
 
                 if (release.readyToRetract()) {
                     beginRetractTime = System.currentTimeMillis();

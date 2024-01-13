@@ -94,10 +94,10 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(11.8, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -29.41, Math.PI);
+                boardPreload =          new Pose2d(51.5, -27.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(7.3, -33.5, -Math.toRadians(50)), this, false, false);
+                robot.goToPoint(new Pose2d(6.8, -33.5, -Math.toRadians(45)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
@@ -105,7 +105,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(11.8, -34, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -35.41, Math.PI);
+                boardPreload =          new Pose2d(51.5, -36.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -116,10 +116,10 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -41.41, Math.PI);
+                boardPreload =          new Pose2d(51.5, -41.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(20, -33.5, -Math.toRadians(130)), this, false, false);
+                robot.goToPoint(new Pose2d(20, -33.5, -Math.toRadians(135)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
@@ -130,9 +130,9 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
 
     public void releaseAndTriggerDeposit() {
         robot.droppers.rightRelease();
-        pause(100);
+        pause(150);
 
-        deposit = new Vector3(5, 0, 6);
+        deposit = new Vector3(5, 0, 7);
         robot.deposit.depositAt(deposit); // async call to deposit
     }
 
@@ -158,6 +158,8 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         robot.goToPoint(new Pose2d(58, -60, Math.PI), this, false, true); // parking
 
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
+
+        pause (500);
     }
 
     public void pause (double milliseconds) {

@@ -9,11 +9,11 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Droppers {
     public PriorityServo leftDropper, rightDropper;
 
-    public static double leftDownAngle = 3.9868;
-    public static double leftReleaseAngle = 3.316212;
+    public static double leftDownAngle = 0.004625;
+    public static double leftReleaseAngle = -0.34225;
 
-    public static double rightDownAngle = 1.2025;
-    public static double rightReleaseAngle = 1.8685;
+    public static double rightDownAngle = 0;
+    public static double rightReleaseAngle = 0.268257;
 
     public enum STATE {
         IDLE,
@@ -27,7 +27,7 @@ public class Droppers {
                 1,
                 0,
                 1,
-                0,
+                0.874,
                 false,
                 1, 2);
         rightDropper = new PriorityServo(hardwareMap.get(Servo.class, "rightDropper"), "rightDropper",
@@ -35,7 +35,7 @@ public class Droppers {
                 1,
                 0,
                 1,
-                0,
+                0.249,
                 false,
                 1, 2);
         hardwareQueue.addDevice(leftDropper);
@@ -47,7 +47,7 @@ public class Droppers {
     }
 
     public void leftRelease() {
-        leftDropper.setTargetAngle(leftReleaseAngle, 0.25);
+        leftDropper.setTargetAngle(leftReleaseAngle, 0.05);
     }
 
     public void rightDown() {
@@ -55,7 +55,7 @@ public class Droppers {
     }
 
     public void rightRelease() {
-        rightDropper.setTargetAngle(rightReleaseAngle, 0.25);
+        rightDropper.setTargetAngle(rightReleaseAngle, 0.05);
     }
 
     public void retractBoth() {
