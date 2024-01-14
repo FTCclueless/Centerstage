@@ -167,13 +167,10 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.goToPoint(rightInFrontOfStackPose, this, false, true);
     }
 
-    Pose2d intakePose = new Pose2d(-57.28, -13, Math.PI);
-
     int pixelIndex = 4; // 0 index based
     double[] actuationDistances = new double[] {13, 13, 13, 13, 13}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
-        intakePose = new Pose2d(-56.79, -13, Math.PI);
         robot.intake.on();
         robot.alignWithStack(this, new Pose2d(-69.03, -11.75), actuationDistances[pixelIndex], 0.25);
         pixelIndex--;
@@ -183,7 +180,6 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void intakeStack() {
-        intakePose = new Pose2d(-56.79, -13, Math.PI);
         deposit = new Vector3(5, 0, 18);
         robot.alignWithStack(this, robot.drivetrain.stackPose, actuationDistances[pixelIndex], 0.25);
         pause(300);
@@ -215,7 +211,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         pause(300);
- 
+
         robot.releaseOne();
     }
 
