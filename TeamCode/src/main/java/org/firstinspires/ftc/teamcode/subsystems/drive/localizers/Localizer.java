@@ -187,7 +187,9 @@ public class Localizer {
                 // resetting odo with april tag data
                 odoX += errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
                 odoY += errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
-                odoHeading += errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
+                if (maxVel < 3) {
+                    odoHeading += errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
+                }
             }
         }
 
