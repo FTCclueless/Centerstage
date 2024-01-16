@@ -160,8 +160,10 @@ public class Localizer {
                 weight/=5;
 
                 // resetting odo with april tag data
-                odoX += errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
-                odoY += errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
+                if (maxVel < 15) {
+                    odoX += errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
+                    odoY += errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
+                }
                 if (maxVel < 3) {
                     odoHeading += errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }

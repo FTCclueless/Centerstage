@@ -133,7 +133,6 @@ public class Robot {
         deposit.depositAt(targetH, targetX);
         update();
         while (deposit.state != Deposit.State.DEPOSIT && !deposit.slides.inPosition(1.0)) {
-            Log.e("in while", "deposit at loop");
             update();
         }
     }
