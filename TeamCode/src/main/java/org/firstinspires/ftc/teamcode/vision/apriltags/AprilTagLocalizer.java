@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.vision.apriltags;
 
 
+import android.nfc.Tag;
 import android.util.Log;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,61 +33,68 @@ public class AprilTagLocalizer {
 
     Pose2d cameraOffset = new Pose2d(-6.69, 0.0, Math.toRadians(180));
 
-    double robotXFromTag = 0;
-    double robotYFromTag = 0;
+    ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
+    Pose2d poseEstimate;
 
-    Pose2d poseEstimate = new Pose2d(0,0,0);
-
-    double closetDistance = 0.0;
-    AprilTagDetection closestTag;
-
-    public Pose2d update(double inputHeading) {
+    public Pose2dWithTime update(double inputHeading) {
         try {
             if (tagProcessor.getDetections().size() > 0) {
                 tags = tagProcessor.getDetections();
-
-                closetDistance = getDistance(tags.get(0));
-                closestTag = tags.get(0);
+                tagEstimates.clear();
+                double totalDist = 0.0;
+                poseEstimate = new Pose2d(0,0,0);
+                Pose2dWithTime tagEstimate = null;
 
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
-                    if (closetDistance == -1 || (dist != -1 && dist < closetDistance)) {
-                        closetDistance = getDistance(tag);
-                        closestTag = tag;
+                    if (dist != -1) {
+                        tagEstimate = getAprilTagEstimate(tag, inputHeading);
+                        tagEstimates.add(new TagEstimate(tagEstimate.pose, dist));
+                        totalDist += dist;
                     }
                 }
 
-                if (closetDistance == -1){
+                if (tagEstimates.size() == 0) {
                     return null;
                 }
 
-                Vector3 globalTagPosition = convertVectorFToPose3d(closestTag.metadata.fieldPosition);
+                for (TagEstimate estimate : tagEstimates) {
+                    double weight = estimate.dist/totalDist;
+                    poseEstimate.x += estimate.pose.x * weight;
+                    poseEstimate.y += estimate.pose.y * weight;
+                    poseEstimate.heading += estimate.pose.heading * weight;
+                }
 
-                Pose2d correctedTagData = new Pose2d(
-                        closestTag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * -closestTag.ftcPose.z,
-                        -closestTag.ftcPose.x);
-
-                Pose2d relativeTagPosition = new Pose2d(
-                        correctedTagData.x * Math.cos(cameraOffset.heading) - correctedTagData.y * Math.sin(cameraOffset.heading) + cameraOffset.x,
-                        correctedTagData.x * Math.sin(cameraOffset.heading) + correctedTagData.y * Math.cos(cameraOffset.heading) + cameraOffset.y);
-
-                // applying a rotation matrix for converting from relative robot to global using the odo heading
-                robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
-                robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
-
-                poseEstimate = new Pose2d(robotXFromTag, robotYFromTag, inputHeading);
-
-                TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.x);
-                TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.y);
-                TelemetryUtil.packet.put("robotXFromTag", robotXFromTag);
-                TelemetryUtil.packet.put("robotYFromTag", robotYFromTag);
-
-                return poseEstimate;
+                return new Pose2dWithTime(poseEstimate, tagEstimate.time);
             }
         } catch (Error e) {
             Log.e("---------VISION ERROR---------", e + "");
         }
         return null;
+    }
+
+    public Pose2dWithTime getAprilTagEstimate(AprilTagDetection tag, double inputHeading) {
+        Vector3 globalTagPosition = convertVectorFToPose3d(tag.metadata.fieldPosition);
+
+//        Pose2d correctedTagData = new Pose2d(
+//                tag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * -tag.ftcPose.z,
+//                -tag.ftcPose.x);
+
+        Pose2d correctedTagData = new Pose2d(
+                tag.ftcPose.y,
+                -tag.ftcPose.x);
+
+        Pose2d relativeTagPosition = new Pose2d(
+                correctedTagData.x * Math.cos(cameraOffset.heading) - correctedTagData.y * Math.sin(cameraOffset.heading) + cameraOffset.x,
+                correctedTagData.x * Math.sin(cameraOffset.heading) + correctedTagData.y * Math.cos(cameraOffset.heading) + cameraOffset.y);
+
+        // applying a rotation matrix for converting from relative robot to global using the odo heading
+        double robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
+        double robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
+
+        Pose2d tagEstimate = new Pose2d(robotXFromTag, robotYFromTag, -Math.toRadians(tag.ftcPose.yaw) + Math.toRadians(180));
+
+        return new Pose2dWithTime(tagEstimate, tag.frameAcquisitionNanoTime);
     }
 
     public double getDistance(AprilTagDetection tag) {
@@ -118,3 +127,14 @@ public class AprilTagLocalizer {
         return new Vector3(vectorF.get(0), vectorF.get(1), vectorF.get(2));
     }
 }
+
+class TagEstimate {
+    Pose2d pose;
+    Double dist;
+
+    public TagEstimate (Pose2d pose, double dist) {
+        this.pose = pose;
+        this.dist = dist;
+    }
+}
+

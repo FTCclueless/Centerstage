@@ -355,7 +355,7 @@ public class Drivetrain {
         double inchesPerPixel = inchesPerPixel(biggerBlock.y);
         double inchesStackError = inchesPerPixel * pixelStackError;
 
-        stackPose = new Pose2d(-70.5, ROBOT_POSITION.y-inchesStackError*Math.cos(ROBOT_POSITION.heading));
+        stackPose = new Pose2d(-69.03, ROBOT_POSITION.y-inchesStackError*Math.cos(ROBOT_POSITION.heading));
     }
 
     public double inchesPerPixel(double y) {
@@ -385,15 +385,10 @@ public class Drivetrain {
 
     public void updateTelemetry () {
         TelemetryUtil.packet.put("Drivetrain State", state);
-        TelemetryUtil.packet.put("drivetrain at point", atPoint());
 
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
         TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
-
-        TelemetryUtil.packet.put("xTargetSpeed", targetForwardPower * Globals.MAX_X_SPEED);
-        TelemetryUtil.packet.put("yTargetSpeed", targetStrafePower * Globals.MAX_Y_SPEED);
-        TelemetryUtil.packet.put("turnTargetSpeed (deg)", targetTurnPower * Math.toDegrees(Globals.MAX_HEADING_SPEED));
 
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
@@ -490,12 +485,6 @@ public class Drivetrain {
             moveVector.x + turn + moveVector.y
         };
         normalizeArray(powers);
-
-        TelemetryUtil.packet.put("leftFront", powers[0]);
-        TelemetryUtil.packet.put("leftRear", powers[1]);
-        TelemetryUtil.packet.put("rightRear", powers[2]);
-        TelemetryUtil.packet.put("rightFront", powers[3]);
-
         setMotorPowers(powers[0], powers[1], powers[2], powers[3]);
     }
 

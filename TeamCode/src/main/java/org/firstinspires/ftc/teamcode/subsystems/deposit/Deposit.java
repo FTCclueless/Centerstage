@@ -265,8 +265,5 @@ public class Deposit {
         }
         slides.update();
         release.update();
-
-        TelemetryUtil.packet.put("v4ServoAngle", endAffector.v4Servo.getCurrentAngle());
-        TelemetryUtil.packet.put("v4ServoTarget", endAffector.v4Servo.getTargetPosition());
     }
 }

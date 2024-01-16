@@ -61,7 +61,6 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
 
-        TelemetryUtil.packet.put("length", length);
         TelemetryUtil.packet.put("slidesError", error);
 
         if (targetLength <= 0.6) {

@@ -23,6 +23,7 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
+import org.firstinspires.ftc.teamcode.vision.apriltags.Pose2dWithTime;
 
 import java.util.ArrayList;
 
@@ -51,6 +52,7 @@ public class Localizer {
     ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
     ArrayList<Double> loopTimes = new ArrayList<Double>();
+    ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
     public boolean useAprilTag;
     public boolean useIMU;
@@ -149,18 +151,54 @@ public class Localizer {
             updateHeadingWithIMU(sensors.getImuHeading());
         }
 
-        if (useAprilTag) {
-            Pose2d aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
+        if (useAprilTag && nanoTimes.size() > 1) {
+            Pose2dWithTime aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
 
+            int indexOfDesiredNanoTime = 0;
             if (aprilTagPose != null) {
+                for (long time : nanoTimes) {
+                    if (time > aprilTagPose.time) {
+                        indexOfDesiredNanoTime++;
+                    } else {
+                        break;
+                    }
+                }
+
+                indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
+
+                Pose2d pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
+                Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
+
+                Pose2d errorInPastPoses = new Pose2d(
+                        pastTimeRobotPose.x-pastTimeRobotPose2.x,
+                        pastTimeRobotPose.y-pastTimeRobotPose2.y,
+                        Utils.headingClip(pastTimeRobotPose.heading-pastTimeRobotPose2.heading)
+                );
+
+                double timeWeight = (double) (aprilTagPose.time - nanoTimes.get(indexOfDesiredNanoTime)) /
+                        (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime-1)) - nanoTimes.get(indexOfDesiredNanoTime));
+
+                Pose2d interpolatedPastPose = new Pose2d(
+                    pastTimeRobotPose.x + errorInPastPoses.x * timeWeight,
+                    pastTimeRobotPose.y + errorInPastPoses.y * timeWeight,
+                    pastTimeRobotPose.heading + errorInPastPoses.heading * timeWeight
+                );
+
+                Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
+                        aprilTagPose.pose.x - interpolatedPastPose.x,
+                        aprilTagPose.pose.y - interpolatedPastPose.y,
+                        Utils.headingClip(aprilTagPose.pose.heading - interpolatedPastPose.heading)
+                );
+
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
                 weight = Math.max(1/Math.max(maxVel,10), minAprilTagWeight); // as speed increases we should decrease weight of april tags
                 weight/=5;
 
                 // resetting odo with april tag data
-                odoX = kalmanFilter(odoX, aprilTagPose.x, weight);
-                odoY = kalmanFilter(odoY, aprilTagPose.y, weight);
+                odoX += errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
+                odoY += errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
+                odoHeading += errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
             }
         }
 
@@ -174,6 +212,7 @@ public class Localizer {
         currentPose = new Pose2d(x, y, heading);
 
         loopTimes.add(0,loopTime);
+        nanoTimes.add(0, System.nanoTime());
         poseHistory.add(0,currentPose);
 
 //        Log.e("x", x + "");
@@ -301,6 +340,7 @@ public class Localizer {
         }
         while (lastIndex + 1 < loopTimes.size()){
             loopTimes.remove(loopTimes.size() - 1);
+            nanoTimes.remove(nanoTimes.size() - 1);
             relHistory.remove(relHistory.size() - 1);
             poseHistory.remove(poseHistory.size() - 1);
         }
