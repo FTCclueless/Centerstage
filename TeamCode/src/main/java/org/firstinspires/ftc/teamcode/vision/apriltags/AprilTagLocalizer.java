@@ -44,7 +44,6 @@ public class AprilTagLocalizer {
                 tagEstimates.clear();
                 double totalDist = 0.0;
                 poseEstimate = new Pose2d(0,0,0);
-                Pose2d tagEstimate = null;
 
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
@@ -53,7 +52,7 @@ public class AprilTagLocalizer {
                             localizer.findPastInterpolatedPose(tag.frameAcquisitionNanoTime);
                         }
 
-                        tagEstimate = getAprilTagEstimate(tag, localizer.interpolatedPastPose.heading);
+                        Pose2d tagEstimate = getAprilTagEstimate(tag, localizer.interpolatedPastPose.heading);
                         tagEstimates.add(new TagEstimate(tagEstimate, dist));
                         totalDist += dist;
                     }
