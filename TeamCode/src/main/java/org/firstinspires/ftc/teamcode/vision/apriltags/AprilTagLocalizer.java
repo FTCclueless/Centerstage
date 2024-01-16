@@ -37,20 +37,24 @@ public class AprilTagLocalizer {
     ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
     Pose2d poseEstimate;
 
-    public Pose2dWithTime update(Localizer localizer) {
+    public Pose2d update(Localizer localizer) {
         try {
             if (tagProcessor.getDetections().size() > 0) {
                 tags = tagProcessor.getDetections();
                 tagEstimates.clear();
                 double totalDist = 0.0;
                 poseEstimate = new Pose2d(0,0,0);
-                Pose2dWithTime tagEstimate = null;
+                Pose2d tagEstimate = null;
 
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
                     if (dist != -1) {
+                        if (tagEstimates.size() == 0) {
+                            localizer.findPastInterpolatedPose(tag.frameAcquisitionNanoTime);
+                        }
+
                         tagEstimate = getAprilTagEstimate(tag, localizer.interpolatedPastPose.heading);
-                        tagEstimates.add(new TagEstimate(tagEstimate.pose, dist));
+                        tagEstimates.add(new TagEstimate(tagEstimate, dist));
                         totalDist += dist;
                     }
                 }
@@ -66,7 +70,7 @@ public class AprilTagLocalizer {
                     poseEstimate.heading += estimate.pose.heading * weight;
                 }
 
-                return new Pose2dWithTime(poseEstimate, tagEstimate.time);
+                return poseEstimate;
             }
         } catch (Error e) {
             Log.e("---------VISION ERROR---------", e + "");
@@ -74,7 +78,7 @@ public class AprilTagLocalizer {
         return null;
     }
 
-    public Pose2dWithTime getAprilTagEstimate(AprilTagDetection tag, double inputHeading) {
+    public Pose2d getAprilTagEstimate(AprilTagDetection tag, double inputHeading) {
         Vector3 globalTagPosition = convertVectorFToPose3d(tag.metadata.fieldPosition);
 
 //        Pose2d correctedTagData = new Pose2d(
@@ -95,7 +99,7 @@ public class AprilTagLocalizer {
 
         Pose2d tagEstimate = new Pose2d(robotXFromTag, robotYFromTag, -Math.toRadians(tag.ftcPose.yaw) + Math.toRadians(180));
 
-        return new Pose2dWithTime(tagEstimate, tag.frameAcquisitionNanoTime);
+        return tagEstimate;
     }
 
     public double getDistance(AprilTagDetection tag) {

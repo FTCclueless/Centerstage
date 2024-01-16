@@ -2,18 +2,12 @@ package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -23,7 +17,6 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
-import org.firstinspires.ftc.teamcode.vision.apriltags.Pose2dWithTime;
 
 import java.util.ArrayList;
 
@@ -152,15 +145,13 @@ public class Localizer {
         }
 
         if (useAprilTag && nanoTimes.size() > 1) {
-            Pose2dWithTime aprilTagPose = aprilTagLocalizer.update(this); // update april tags
+            Pose2d aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
             if (aprilTagPose != null) {
-                findPastPoses(aprilTagPose.time);
-
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
-                        aprilTagPose.pose.x - interpolatedPastPose.x,
-                        aprilTagPose.pose.y - interpolatedPastPose.y,
-                        Utils.headingClip(aprilTagPose.pose.heading - interpolatedPastPose.heading)
+                        aprilTagPose.x - interpolatedPastPose.x,
+                        aprilTagPose.y - interpolatedPastPose.y,
+                        Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading)
                 );
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
@@ -199,7 +190,7 @@ public class Localizer {
 
     public Pose2d interpolatedPastPose;
 
-    public void findPastPoses(long aprilTagPoseTime) {
+    public void findPastInterpolatedPose(long aprilTagPoseTime) {
         int indexOfDesiredNanoTime = 0;
 
         for (long time : nanoTimes) {
