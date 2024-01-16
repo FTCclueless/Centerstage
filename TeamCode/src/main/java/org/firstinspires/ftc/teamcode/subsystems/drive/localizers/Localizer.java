@@ -146,7 +146,7 @@ public class Localizer {
         if (useAprilTag && nanoTimes.size() > 5) {
             Pose2d aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
-            if (aprilTagPose != null) {
+            if (aprilTagPose != null && !aprilTagPose.isNaN()) {
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
                         aprilTagPose.x - interpolatedPastPose.x,
                         aprilTagPose.y - interpolatedPastPose.y,

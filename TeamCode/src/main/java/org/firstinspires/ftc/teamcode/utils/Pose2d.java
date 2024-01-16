@@ -17,6 +17,10 @@ public class Pose2d implements Cloneable {
         this.heading = heading;
     }
 
+    public boolean isNaN(){
+        return Double.isNaN(x) || Double.isNaN(y) || Double.isNaN(heading);
+    }
+
     public double getX(){ return x; }
     public double getY(){
         return y;
