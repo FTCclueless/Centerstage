@@ -152,22 +152,11 @@ public class Localizer {
         }
 
         if (useAprilTag && nanoTimes.size() > 1) {
-            Pose2dWithTime aprilTagPose = aprilTagLocalizer.update(odoHeading); // update april tags
+            Pose2dWithTime aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
-            int indexOfDesiredNanoTime = 0;
             if (aprilTagPose != null) {
-                for (long time : nanoTimes) {
-                    if (time > aprilTagPose.time) {
-                        indexOfDesiredNanoTime++;
-                    } else {
-                        break;
-                    }
-                }
 
-                indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
-
-                Pose2d pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
-                Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
+                findPastPoses(aprilTagPose);
 
                 Pose2d errorInPastPoses = new Pose2d(
                         pastTimeRobotPose.x-pastTimeRobotPose2.x,
@@ -220,6 +209,27 @@ public class Localizer {
 
         updateVelocity();
         updateField();
+    }
+
+    public Pose2d pastTimeRobotPose;
+    Pose2d pastTimeRobotPose2;
+    int indexOfDesiredNanoTime = 0;
+
+    public void findPastPoses(Pose2dWithTime aprilTagPose) {
+        indexOfDesiredNanoTime = 0;
+
+        for (long time : nanoTimes) {
+            if (time > aprilTagPose.time) {
+                indexOfDesiredNanoTime++;
+            } else {
+                break;
+            }
+        }
+
+        indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
+
+        pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
+        pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
     }
 
     double headingDif = 0.0;

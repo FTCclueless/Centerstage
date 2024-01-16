@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -36,7 +37,7 @@ public class AprilTagLocalizer {
     ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
     Pose2d poseEstimate;
 
-    public Pose2dWithTime update(double inputHeading) {
+    public Pose2dWithTime update(Localizer localizer) {
         try {
             if (tagProcessor.getDetections().size() > 0) {
                 tags = tagProcessor.getDetections();
@@ -48,7 +49,7 @@ public class AprilTagLocalizer {
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
                     if (dist != -1) {
-                        tagEstimate = getAprilTagEstimate(tag, inputHeading);
+                        tagEstimate = getAprilTagEstimate(tag, localizer.pastTimeRobotPose.heading);
                         tagEstimates.add(new TagEstimate(tagEstimate.pose, dist));
                         totalDist += dist;
                     }
