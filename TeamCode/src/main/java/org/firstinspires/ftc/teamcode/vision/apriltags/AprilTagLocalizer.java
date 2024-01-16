@@ -35,19 +35,17 @@ public class AprilTagLocalizer {
     Pose2d cameraOffset = new Pose2d(-6.69, 0.0, Math.toRadians(180));
 
     ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
-    Pose2d poseEstimate;
 
     public Pose2d update(Localizer localizer) {
         try {
-            if (tagProcessor.getDetections().size() > 0) {
-                tags = tagProcessor.getDetections();
+            tags = tagProcessor.getDetections();
+            if (tags.size() > 0) {
                 tagEstimates.clear();
                 double totalDist = 0.0;
-                poseEstimate = new Pose2d(0,0,0);
 
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
-                    if (dist != -1) {
+                    if (dist > 0) {
                         if (tagEstimates.size() == 0) {
                             localizer.findPastInterpolatedPose(tag.frameAcquisitionNanoTime);
                         }
@@ -62,13 +60,13 @@ public class AprilTagLocalizer {
                     return null;
                 }
 
+                Pose2d poseEstimate = new Pose2d(0,0,0);
                 for (TagEstimate estimate : tagEstimates) {
                     double weight = estimate.dist/totalDist;
                     poseEstimate.x += estimate.pose.x * weight;
                     poseEstimate.y += estimate.pose.y * weight;
                     poseEstimate.heading += estimate.pose.heading * weight;
                 }
-
                 return poseEstimate;
             }
         } catch (Error e) {
@@ -114,13 +112,9 @@ public class AprilTagLocalizer {
         telemetry.update();
     }
 
-    public void updateField() {
+    public void updateField(Pose2d estimate) {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
-    }
-
-    public Pose2d getPoseEstimate() {
-        return poseEstimate;
+        DashboardUtil.drawRobot(fieldOverlay, estimate);
     }
 
     public boolean detectedTag () {

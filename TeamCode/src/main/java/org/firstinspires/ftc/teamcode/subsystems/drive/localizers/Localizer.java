@@ -44,7 +44,6 @@ public class Localizer {
 
     ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
-    ArrayList<Double> loopTimes = new ArrayList<Double>();
     ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
     public boolean useAprilTag;
@@ -106,7 +105,7 @@ public class Localizer {
     public void update() {
         // TODO: Remove calculation for TeleOp -- Eric
         long currentTime = System.nanoTime();
-        double loopTime = (currentTime-lastTime)/1000000000.0;
+        double loopTime = (double)(currentTime-lastTime)/1.0E9;
         lastTime = currentTime;
 
         double deltaLeft = encoders[0].getDelta();
@@ -144,7 +143,7 @@ public class Localizer {
             updateHeadingWithIMU(sensors.getImuHeading());
         }
 
-        if (useAprilTag && nanoTimes.size() > 1) {
+        if (useAprilTag && nanoTimes.size() > 5) {
             Pose2d aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
             if (aprilTagPose != null) {
@@ -179,7 +178,6 @@ public class Localizer {
 
         currentPose = new Pose2d(x, y, heading);
 
-        loopTimes.add(0,loopTime);
         nanoTimes.add(0, System.nanoTime());
         poseHistory.add(0,currentPose);
 
@@ -209,9 +207,9 @@ public class Localizer {
         Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
 
         Pose2d errorInPastPoses = new Pose2d(
-                pastTimeRobotPose.x-pastTimeRobotPose2.x,
-                pastTimeRobotPose.y-pastTimeRobotPose2.y,
-                Utils.headingClip(pastTimeRobotPose.heading-pastTimeRobotPose2.heading)
+                pastTimeRobotPose2.x-pastTimeRobotPose.x,
+                pastTimeRobotPose2.y-pastTimeRobotPose.y,
+                Utils.headingClip(pastTimeRobotPose2.heading-pastTimeRobotPose.heading)
         );
 
         double timeWeight = (double) (aprilTagPoseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
@@ -309,16 +307,17 @@ public class Localizer {
     }
 
     public void updateVelocity() {
-        double targetVelTimeEstimate = 0.2;
+        double targetVelTimeEstimate = 0.35;
         double actualVelTime = 0;
         double relDeltaXTotal = 0;
         double relDeltaYTotal = 0;
         double totalTime = 0;
         int lastIndex = 0;
-        for (int i = 0; i < loopTimes.size(); i++){
-            totalTime += loopTimes.get(i);
+        long start = nanoTimes.size() != 0 ? nanoTimes.get(0) : 0;
+        for (int i = 0; i < nanoTimes.size(); i++){
+            totalTime = (double)(start - nanoTimes.get(i)) / 1.0E9;
             if (totalTime <= targetVelTimeEstimate){
-                actualVelTime += loopTimes.get(i);
+                actualVelTime = totalTime;
                 relDeltaXTotal += relHistory.get(i).getX();
                 relDeltaYTotal += relHistory.get(i).getY();
                 lastIndex = i;
@@ -340,8 +339,7 @@ public class Localizer {
             currentVel = new Pose2d(0, 0, 0);
             relCurrentVel = new Pose2d(0, 0, 0);
         }
-        while (lastIndex + 1 < loopTimes.size()){
-            loopTimes.remove(loopTimes.size() - 1);
+        while (lastIndex + 1 < nanoTimes.size()){
             nanoTimes.remove(nanoTimes.size() - 1);
             relHistory.remove(relHistory.size() - 1);
             poseHistory.remove(poseHistory.size() - 1);
