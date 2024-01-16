@@ -49,7 +49,7 @@ public class AprilTagLocalizer {
                 for (AprilTagDetection tag : tags) {
                     double dist = getDistance(tag);
                     if (dist != -1) {
-                        tagEstimate = getAprilTagEstimate(tag, localizer.pastTimeRobotPose.heading);
+                        tagEstimate = getAprilTagEstimate(tag, localizer.interpolatedPastPose.heading);
                         tagEstimates.add(new TagEstimate(tagEstimate.pose, dist));
                         totalDist += dist;
                     }

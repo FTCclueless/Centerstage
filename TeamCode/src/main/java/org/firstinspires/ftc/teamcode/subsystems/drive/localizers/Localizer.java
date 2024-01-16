@@ -155,23 +155,7 @@ public class Localizer {
             Pose2dWithTime aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
             if (aprilTagPose != null) {
-
-                findPastPoses(aprilTagPose);
-
-                Pose2d errorInPastPoses = new Pose2d(
-                        pastTimeRobotPose.x-pastTimeRobotPose2.x,
-                        pastTimeRobotPose.y-pastTimeRobotPose2.y,
-                        Utils.headingClip(pastTimeRobotPose.heading-pastTimeRobotPose2.heading)
-                );
-
-                double timeWeight = (double) (aprilTagPose.time - nanoTimes.get(indexOfDesiredNanoTime)) /
-                        (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime-1)) - nanoTimes.get(indexOfDesiredNanoTime));
-
-                Pose2d interpolatedPastPose = new Pose2d(
-                    pastTimeRobotPose.x + errorInPastPoses.x * timeWeight,
-                    pastTimeRobotPose.y + errorInPastPoses.y * timeWeight,
-                    pastTimeRobotPose.heading + errorInPastPoses.heading * timeWeight
-                );
+                findPastPoses(aprilTagPose.time);
 
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
                         aprilTagPose.pose.x - interpolatedPastPose.x,
@@ -213,15 +197,13 @@ public class Localizer {
         updateField();
     }
 
-    public Pose2d pastTimeRobotPose;
-    Pose2d pastTimeRobotPose2;
-    int indexOfDesiredNanoTime = 0;
+    public Pose2d interpolatedPastPose;
 
-    public void findPastPoses(Pose2dWithTime aprilTagPose) {
-        indexOfDesiredNanoTime = 0;
+    public void findPastPoses(long aprilTagPoseTime) {
+        int indexOfDesiredNanoTime = 0;
 
         for (long time : nanoTimes) {
-            if (time > aprilTagPose.time) {
+            if (time > aprilTagPoseTime) {
                 indexOfDesiredNanoTime++;
             } else {
                 break;
@@ -230,8 +212,23 @@ public class Localizer {
 
         indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
 
-        pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
-        pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
+        Pose2d pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
+        Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
+
+        Pose2d errorInPastPoses = new Pose2d(
+                pastTimeRobotPose.x-pastTimeRobotPose2.x,
+                pastTimeRobotPose.y-pastTimeRobotPose2.y,
+                Utils.headingClip(pastTimeRobotPose.heading-pastTimeRobotPose2.heading)
+        );
+
+        double timeWeight = (double) (aprilTagPoseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
+                (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime-1)) - nanoTimes.get(indexOfDesiredNanoTime));
+
+        interpolatedPastPose = new Pose2d(
+                pastTimeRobotPose.x + errorInPastPoses.x * timeWeight,
+                pastTimeRobotPose.y + errorInPastPoses.y * timeWeight,
+                pastTimeRobotPose.heading + errorInPastPoses.heading * timeWeight
+        );
     }
 
     double headingDif = 0.0;
