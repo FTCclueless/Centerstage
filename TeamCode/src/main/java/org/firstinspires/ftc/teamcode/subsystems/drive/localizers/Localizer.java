@@ -161,13 +161,20 @@ public class Localizer {
                 weight/=5;
 
                 // resetting odo with april tag data
+                Pose2d changeInPosition = new Pose2d(0,0,0);
                 if (maxVel < 15) {
-                    odoX += errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
-                    odoY += errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
+                    changeInPosition.x = errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
+                    changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
                 }
                 if (maxVel < 3) {
-                    odoHeading += errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
+                    changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }
+                for (Pose2d pose : poseHistory){
+                    pose.add(changeInPosition);
+                }
+                odoX += changeInPosition.x;
+                odoY += changeInPosition.y;
+                odoHeading += changeInPosition.heading;
             }
         }
 
