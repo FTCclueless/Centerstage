@@ -149,6 +149,10 @@ public class Localizer {
             Pose2d aprilTagPose = aprilTagLocalizer.update(this); // update april tags
 
             if (aprilTagPose != null && !aprilTagPose.isNaN()) {
+                Log.e("aprilTagPose.heading (deg)", Math.toDegrees(aprilTagPose.heading) + "");
+                Log.e("interpolatedPastPose.heading (deg)", Math.toDegrees(interpolatedPastPose.heading) + "");
+                Log.e("Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading) (deg)",Math.toDegrees(Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading)) + "");
+
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
                         aprilTagPose.x - interpolatedPastPose.x,
                         aprilTagPose.y - interpolatedPastPose.y,
@@ -166,12 +170,15 @@ public class Localizer {
                     changeInPosition.x = errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
                     changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
                 }
-                if (maxVel < 3) {
+                if (maxVel < 3 && Math.abs(relCurrentVel.heading) < Math.toRadians(30)) {
+                    Log.e("errorBetweenInterpolatedPastPoseAndAprilTag.heading (deg)", Math.toDegrees(errorBetweenInterpolatedPastPoseAndAprilTag.heading) + "");
+                    Log.e("weight", weight + "");
                     changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }
                 for (Pose2d pose : poseHistory){
                     pose.add(changeInPosition);
                 }
+                Log.e("changeInPosition.heading (deg)", Math.toDegrees(changeInPosition.heading) + "");
                 odoX += changeInPosition.x;
                 odoY += changeInPosition.y;
                 odoHeading += changeInPosition.heading;
@@ -212,25 +219,27 @@ public class Localizer {
 
         indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
 
-        Log.e("indexOfDesiredNanoTime", indexOfDesiredNanoTime + "");
-
         Pose2d pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
         Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
 
-        Pose2d errorInPastPoses = new Pose2d(
-                pastTimeRobotPose2.x-pastTimeRobotPose.x,
-                pastTimeRobotPose2.y-pastTimeRobotPose.y,
-                Utils.headingClip(pastTimeRobotPose2.heading-pastTimeRobotPose.heading)
-        );
+        if (indexOfDesiredNanoTime != 0) {
+            Pose2d errorInPastPoses = new Pose2d(
+                    pastTimeRobotPose2.x - pastTimeRobotPose.x,
+                    pastTimeRobotPose2.y - pastTimeRobotPose.y,
+                    Utils.headingClip(pastTimeRobotPose2.heading - pastTimeRobotPose.heading)
+            );
 
-        double timeWeight = (double) (aprilTagPoseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
-                (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime-1)) - nanoTimes.get(indexOfDesiredNanoTime));
+            double timeWeight = (double) (aprilTagPoseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
+                    (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime - 1)) - nanoTimes.get(indexOfDesiredNanoTime));
 
-        interpolatedPastPose = new Pose2d(
-                pastTimeRobotPose.x + errorInPastPoses.x * timeWeight,
-                pastTimeRobotPose.y + errorInPastPoses.y * timeWeight,
-                pastTimeRobotPose.heading + errorInPastPoses.heading * timeWeight
-        );
+            interpolatedPastPose = new Pose2d(
+                    pastTimeRobotPose.x + errorInPastPoses.x * timeWeight,
+                    pastTimeRobotPose.y + errorInPastPoses.y * timeWeight,
+                    pastTimeRobotPose.heading + errorInPastPoses.heading * timeWeight
+            );
+        } else {
+            interpolatedPastPose = pastTimeRobotPose;
+        }
     }
 
     double headingDif = 0.0;

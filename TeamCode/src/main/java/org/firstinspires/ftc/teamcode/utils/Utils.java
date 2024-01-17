@@ -12,10 +12,10 @@ public class Utils {
     }
 
     public static double headingClip(double value) {
-        while(value >= 2*Math.PI) {
+        while(value >= Math.PI) {
             value -= 2*Math.PI;
         }
-        while(value <= -2*Math.PI) {
+        while(value <= -Math.PI) {
             value += 2*Math.PI;
         }
         return value;

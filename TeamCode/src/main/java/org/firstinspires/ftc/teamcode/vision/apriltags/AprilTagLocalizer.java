@@ -37,7 +37,7 @@ public class AprilTagLocalizer {
     ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
 
     public Pose2d update(Localizer localizer) {
-        try {
+//        try {
             tags = tagProcessor.getDetections();
             if (tags.size() > 0) {
                 tagEstimates.clear();
@@ -69,9 +69,9 @@ public class AprilTagLocalizer {
                 }
                 return poseEstimate;
             }
-        } catch (Error e) {
-            Log.e("---------VISION ERROR---------", e + "");
-        }
+//        } catch (Error e) {
+//            Log.e("---------VISION ERROR---------", e + "");
+//        }
         return null;
     }
 

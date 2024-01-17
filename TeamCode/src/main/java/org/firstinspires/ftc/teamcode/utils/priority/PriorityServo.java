@@ -209,6 +209,7 @@ public class PriorityServo extends PriorityDevice{
             }
         }
 
+        isUpdated = true;
         lastUpdateTime = currentTime;
     }
 
