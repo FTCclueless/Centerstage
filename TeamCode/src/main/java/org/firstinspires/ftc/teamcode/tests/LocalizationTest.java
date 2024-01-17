@@ -15,7 +15,7 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
-        robot.drivetrain.setPoseEstimate(new Pose2d(11.804, -60.5, -Math.PI / 2));
+        robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, -60.5, 0));
         Globals.RUNMODE = RunMode.TESTER;
 
         waitForStart();
