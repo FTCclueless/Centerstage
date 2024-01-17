@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -202,6 +204,8 @@ public class Localizer {
         }
 
         indexOfDesiredNanoTime = Math.min(indexOfDesiredNanoTime, nanoTimes.size()-1);
+
+        Log.e("indexOfDesiredNanoTime", indexOfDesiredNanoTime + "");
 
         Pose2d pastTimeRobotPose = poseHistory.get(indexOfDesiredNanoTime).clone();
         Pose2d pastTimeRobotPose2 = poseHistory.get(Math.max(0, indexOfDesiredNanoTime-1)).clone();
