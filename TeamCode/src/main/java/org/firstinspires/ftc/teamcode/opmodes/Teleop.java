@@ -49,6 +49,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle rightBumper_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle x_2 = new ButtonToggle();
+        ButtonToggle b_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
         int pixelIndex = 0;
@@ -200,7 +201,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // retract
-            if (robot.deposit.release.readyToRetract() && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
+            if ((b_2.isClicked(gamepad2.b) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.retract();
                 depoFlag = false;
             }
