@@ -36,6 +36,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle y_1 = new ButtonToggle();
         ButtonToggle a_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1 = new ButtonToggle();
+        ButtonToggle rightTrigger_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1_double = new ButtonToggle();
         ButtonToggle left_dpad_1 = new ButtonToggle();
 
@@ -148,6 +149,11 @@ public class Teleop extends LinearOpMode {
             // release one pixel (both)
             if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseOne();
+            }
+
+            // release two pixels
+            if (rightTrigger_1.isClicked(gamepad1.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
+                robot.deposit.releaseTwo();
             }
 
             // airplane (both)
