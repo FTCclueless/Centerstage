@@ -96,7 +96,7 @@ public class Intake {
                 }
                 break;
             case UNSTALL:
-                reverseForSomeTime(1000);
+                reverseForSomeTime(750);
                 stallState = StallState.CHECK;
                 break;
         }
