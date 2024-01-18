@@ -54,6 +54,7 @@ public class Deposit {
     public static double v4BarReadjustAngle = -3.34520892;
     public static double topServoReadjustAngle = -0.04482767;
 
+    // old readjustment values
 //    public static double v4BarReadjustAngle = -2.75124228;
 //    public static double topServoReadjustAngle = 0.5435355;
 
