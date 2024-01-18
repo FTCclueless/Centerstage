@@ -23,7 +23,7 @@ public class Slides {
     public double vel;
     private final Sensors sensors;
     public static double ticksToInches = 0.04132142857142857;
-    public static double maxSlidesHeight = 28.3465;
+    public static double maxSlidesHeight = 27.891;
     private double targetLength = 0;
     public static double maxVel = 1.6528571428571428;
     public static double kP = 0.15; // used to be 0.11
