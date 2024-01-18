@@ -9,29 +9,43 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityCRServo;
 
 public class Hang {
-    private final PriorityCRServo hang;
+    private final PriorityCRServo leftServo;
+    private final PriorityCRServo rightServo;
 
     public Hang(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         CRServo leftHang = hardwareMap.get(CRServo.class, "leftHang");
         CRServo rightHang = hardwareMap.get(CRServo.class, "rightHang");
         leftHang.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        hang = new PriorityCRServo(new CRServo[]{leftHang, rightHang}, "hang", 1, 2);
+        leftServo = new PriorityCRServo(new CRServo[]{leftHang}, "leftHang", 1, 2);
+        rightServo = new PriorityCRServo(new CRServo[]{rightHang}, "rightHang", 1, 2);
 
-        hardwareQueue.addDevice(hang);
+        hardwareQueue.addDevice(leftServo);
+        hardwareQueue.addDevice(rightServo);
     }
 
     public void update() {}
 
     public void on() {
-        hang.setTargetPower(-1.0);
+        leftServo.setTargetPower(-1.0);
+        rightServo.setTargetPower(-1.0);
     }
 
     public void reverse() {
-        hang.setTargetPower(1.0);
+        leftServo.setTargetPower(1.0);
+        rightServo.setTargetPower(1.0);
     }
 
     public void off() {
-        hang.setTargetPower(0.0);
+        leftServo.setTargetPower(0.0);
+        rightServo.setTargetPower(0.0);
+    }
+
+    public void leftReverse() {
+        leftServo.setTargetPower(1.0);
+    }
+
+    public void rightReverse() {
+        rightServo.setTargetPower(1.0);
     }
 }

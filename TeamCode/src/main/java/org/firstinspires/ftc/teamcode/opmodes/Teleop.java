@@ -125,6 +125,12 @@ public class Teleop extends LinearOpMode {
             } else if ((gamepad1.a || gamepad2.a) && !robot.deposit.isDepositing()) {
                 hang.reverse();
                 robot.intake.actuationFullyUp();
+            } else if (gamepad2.dpad_right && !robot.deposit.isDepositing()) {
+                hang.rightReverse();
+                robot.intake.actuationFullyUp();
+            } else if (gamepad2.dpad_left && !robot.deposit.isDepositing()) {
+                hang.leftReverse();
+                robot.intake.actuationFullyUp();
             } else {
                 hang.off();
             }
@@ -188,8 +194,13 @@ public class Teleop extends LinearOpMode {
                 robot.deposit.releaseTwo();
             }
 
+            // pixel adjustment toggle
+            if (x_2.isClicked(gamepad2.x) && robot.deposit.state == Deposit.State.DEPOSIT)  {
+                robot.deposit.togglePixelAdjustmentMode();
+            }
+
             // retract
-            if ((x_2.isClicked(gamepad2.x) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
+            if (robot.deposit.release.readyToRetract() && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.retract();
                 depoFlag = false;
             }

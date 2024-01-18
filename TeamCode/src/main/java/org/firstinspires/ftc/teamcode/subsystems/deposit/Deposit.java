@@ -25,9 +25,6 @@ public class Deposit {
         RETRACT,
         INTAKE,
         GRAB,
-        BACK_PICKUP_SETUP,
-        BACK_PICKUP,
-        BACK_PICKUP_DEPOSIT,
         IDLE,
     };
     public State state;
@@ -53,15 +50,12 @@ public class Deposit {
     public static double topServoDepositAngle = 2.06207;
     public static double topServoRetractAngle = 2.6336256;
 
-    // back pickup
-    public static double v4BarBackPickupAngle = 0.0;
-    public static double topServoBackPickupAngle = 0.0;
-    public static double slidesBackPickupHeight = 0.0;
-    public static double slidesBackPickupHeightDown = 0.0;
+    // pixel readjustment mode
+    public static double v4BarReadjustAngle = -3.34520892;
+    public static double topServoReadjustAngle = -0.04482767;
 
-    // back pickup deposit
-    public static double v4BarBackPickupDepositAngle = 0.0;
-    public static double topServoBackPickupDepositAngle = 0.0;
+//    public static double v4BarReadjustAngle = -2.75124228;
+//    public static double topServoReadjustAngle = 0.5435355;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
@@ -116,16 +110,6 @@ public class Deposit {
         state = State.START_RETRACT;
     }
 
-    public void backPickupSetup() {
-        beginBackPickupSetupTime = System.currentTimeMillis();
-        state = State.BACK_PICKUP_SETUP;
-    }
-
-    public void backPickup() {
-        beginBackPickupTime = System.currentTimeMillis();
-        state = State.BACK_PICKUP;
-    }
-
     public boolean checkReady() {
         return endAffector.checkReady() && !slides.inPosition(2);
     }
@@ -133,8 +117,6 @@ public class Deposit {
     long beginDepositTime;
     long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
-    long beginBackPickupSetupTime;
-    long beginBackPickupTime;
 
     double v4ServoPower = 0.55;
     double topServoPower = 1.0;
@@ -192,12 +174,21 @@ public class Deposit {
             case DEPOSIT:
                 slides.setTargetLength(targetH);
 
+                if (inPixelAdjustmentMode) {
+                    endAffector.v4Servo.setTargetAngle(v4BarReadjustAngle,v4ServoPower);
+                    endAffector.topServo.setTargetAngle(topServoReadjustAngle,topServoPower);
+                } else {
+                    endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
+                    endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
+                }
+
                 if (release.readyToRetract()) {
                     beginRetractTime = System.currentTimeMillis();
                     state = State.START_RETRACT;
                 }
                 break;
             case START_RETRACT:
+                inPixelAdjustmentMode = false;
                 endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
                     endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
@@ -226,44 +217,16 @@ public class Deposit {
                     state = State.INTAKE;
                 }
                 break;
-            case BACK_PICKUP_SETUP:
-                slides.setTargetLength(Math.max(slidesBackPickupHeight, Globals.slidesV4Thresh + 2));
-                if (slides.getLength() > Globals.slidesV4Thresh) {
-                    endAffector.v4Servo.setTargetAngle(v4BarBackPickupAngle, v4ServoPower);
-                    endAffector.topServo.setTargetAngle(topServoBackPickupAngle, topServoPower);
-                    if (System.currentTimeMillis() - beginBackPickupSetupTime > 300) {
-                        slides.setTargetLength(slidesBackPickupHeight);
-                    }
-                } else {
-                    beginBackPickupSetupTime = System.currentTimeMillis();
-                }
-                break;
-            case BACK_PICKUP:
-                slides.setTargetLength(slidesBackPickupHeightDown);
-                Globals.NUM_PIXELS = 1;
-                if (slides.inPosition(0.5)) {
-                    release.close();
-                    if (System.currentTimeMillis() - beginBackPickupSetupTime > 500) {
-                        state = State.BACK_PICKUP_DEPOSIT;
-                    }
-                } else {
-                    beginBackPickupTime = System.currentTimeMillis();
-                }
-                break;
-            case BACK_PICKUP_DEPOSIT:
-                slides.setTargetLength(targetH);
-                endAffector.v4Servo.setTargetAngle(v4BarBackPickupDepositAngle, v4ServoPower);
-                endAffector.topServo.setTargetAngle(topServoBackPickupDepositAngle, topServoPower);
-
-                if (release.readyToRetract()) {
-                    beginRetractTime = System.currentTimeMillis();
-                    state = State.START_RETRACT;
-                }
-                break;
             case IDLE: // We are boring :(
                 break;
         }
         slides.update();
         release.update();
+    }
+
+    boolean inPixelAdjustmentMode = false;
+
+    public void togglePixelAdjustmentMode() {
+        inPixelAdjustmentMode = !inPixelAdjustmentMode;
     }
 }
