@@ -71,15 +71,10 @@ public class Release {
         }
     }
 
+    boolean releasingTwo = false;
     public void releaseTwo() {
-        release.setTargetAngle(dunkTwoAngle, 1);
-        Globals.NUM_PIXELS = 0;
-
-        if (!busy) {
-            dunkTime = 500;
-            timer = System.currentTimeMillis();
-            busy = true;
-        }
+        releaseOne();
+        releasingTwo = true;
     }
 
     public boolean readyToRetract() {
@@ -89,7 +84,12 @@ public class Release {
     public void update() {
         if (System.currentTimeMillis() - timer >= dunkTime) {
             busy = false;
+            if (releasingTwo) {
+                releaseOne();
+                releasingTwo = false;
+            }
         }
+
         if (Globals.NUM_PIXELS == 1 && !busy) {
             close();
         }
