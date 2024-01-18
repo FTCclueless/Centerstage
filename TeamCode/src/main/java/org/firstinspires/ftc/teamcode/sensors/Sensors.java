@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
@@ -44,6 +45,7 @@ public class Sensors {
     public double[] analogVoltages = new double[analogEncoders.length];
     private double voltage;
     private double distLeftVal, distRightVal;
+    private double intakeCurrent;
 
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -117,6 +119,7 @@ public class Sensors {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
+            intakeCurrent = ((PriorityMotor) hardwareQueue.getDevice("intake")).motor[0].getCurrent(CurrentUnit.MILLIAMPS);
 
 //            if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
 //                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
@@ -232,6 +235,10 @@ public class Sensors {
             numRotations += Math.signum(previousAngle);
         }
         previousAngle = angle;
+    }
+
+    public double getIntakeCurrent() {
+        return intakeCurrent;
     }
 }
 

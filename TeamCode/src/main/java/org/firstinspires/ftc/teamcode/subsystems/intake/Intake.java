@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
+import java.util.ArrayList;
+
 @Config
 public class Intake {
     public enum State {
@@ -58,8 +60,46 @@ public class Intake {
         hardwareQueue.addDevice(actuation);
     }
 
+    private ArrayList<Double> pastCurrents = new ArrayList<>();
+
+    double intakeDebounce;
+    double stallStart;
+    public static double stallThresh = 4500;
+    State holdState = null;
+
+    enum StallState {
+        CHECK,
+        CONFIRM,
+        UNSTALL
+    }
+    StallState stallState = StallState.CHECK;
+
     public void update() {
         TelemetryUtil.packet.put("Intake State", state);
+        switch (stallState) {
+            case CHECK:
+                intakeDebounce = System.currentTimeMillis();
+                if (sensors.getIntakeCurrent() > stallThresh) {
+                    stallStart = System.currentTimeMillis();
+                    stallState = StallState.CONFIRM;
+                }
+                break;
+            case CONFIRM:
+                if (System.currentTimeMillis() - intakeDebounce > 100) {
+                    stallState = StallState.CHECK;
+                }
+                if (sensors.getIntakeCurrent() > stallThresh) {
+                    intakeDebounce = System.currentTimeMillis();
+                }
+                if (System.currentTimeMillis() - stallStart > 250) {
+                    stallState = StallState.UNSTALL;
+                }
+                break;
+            case UNSTALL:
+                reverseForSomeTime(1000);
+                stallState = StallState.CHECK;
+                break;
+        }
 
         switch (state) {
             case ON:
