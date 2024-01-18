@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 @Config
 public class Slides {
     private final PriorityMotor slidesMotors;
-    private double length;
+    public double length;
     public double vel;
     private final Sensors sensors;
     public static double ticksToInches = 0.04132142857142857;
@@ -74,7 +74,9 @@ public class Slides {
     public void update() {
         length = (double) sensors.getSlidesPos() * ticksToInches;
         vel = sensors.getSlidesVelocity() * ticksToInches;
-        slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1),-1));
+        if (!(Globals.RUNMODE == RunMode.TESTER)) {
+            slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
+        }
     }
 
     public void setTargetLength(double length) {

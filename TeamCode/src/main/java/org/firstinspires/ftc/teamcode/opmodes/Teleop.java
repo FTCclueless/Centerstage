@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
+import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.ButtonToggle;
@@ -169,7 +170,7 @@ public class Teleop extends LinearOpMode {
             depoPos.z -= gamepad2.left_stick_y*0.35;
 
             // trigger deposit
-            if (rightBumper_2.isClicked(gamepad2.right_bumper)) {
+            if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
                 if (robot.deposit.state == Deposit.State.DEPOSIT) {
@@ -178,6 +179,7 @@ public class Teleop extends LinearOpMode {
             }
 
             if (depoFlag) {
+                depoPos.z = Math.max(Math.min(depoPos.z, Slides.maxSlidesHeight),0);
                 robot.deposit.depositAt(depoPos.z, depoPos.x);
             }
 
@@ -194,7 +196,6 @@ public class Teleop extends LinearOpMode {
             if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 robot.deposit.releaseTwo();
             }
-
             // pixel adjustment toggle
             if (x_2.isClicked(gamepad2.x) && robot.deposit.state == Deposit.State.DEPOSIT)  {
                 robot.deposit.togglePixelAdjustmentMode();

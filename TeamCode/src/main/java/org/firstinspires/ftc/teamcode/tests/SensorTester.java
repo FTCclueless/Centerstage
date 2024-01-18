@@ -14,10 +14,10 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 public class SensorTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
+        Globals.RUNMODE = RunMode.TESTER;
+
         Robot robot = new Robot(hardwareMap);
         Sensors sensors = robot.sensors;
-
-        Globals.RUNMODE = RunMode.TESTER;
 
         waitForStart();
 
@@ -29,6 +29,7 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("backOdo", sensors.getOdometry()[2]);
 
             telemetry.addData("slides encoder", sensors.getSlidesPos());
+            telemetry.addData("slides length", robot.deposit.slides.length);
 
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
             telemetry.addData("deposit_triggered", sensors.isDepositTriggered());
