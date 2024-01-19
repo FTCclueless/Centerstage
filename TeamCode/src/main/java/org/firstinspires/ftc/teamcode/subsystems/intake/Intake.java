@@ -13,11 +13,9 @@ import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
-import java.util.ArrayList;
-
 @Config
 public class Intake {
-    public enum State {
+    public enum IntakeMotorState {
         ON,
         OFF,
         REVERSED,
@@ -27,7 +25,7 @@ public class Intake {
 
     public final PriorityMotor intake;
     public PriorityServo actuation;
-    public State state = State.OFF;
+    public IntakeMotorState intakeMotorState = IntakeMotorState.OFF;
     private final Sensors sensors;
     private final Robot robot;
     public static double intakeCurrent;
@@ -37,6 +35,19 @@ public class Intake {
     double actuationLength = 3.5;
     double[] actuationAngles = new double[] {0.62901, 0.47176, 0.365384, 0.231256, 0.13412};
     double actuationFullyUpAngle = -0.314508;
+
+    // stall checking variables
+    double intakeDebounce;
+    double stallStart;
+    double intakeCheck;
+    public static double stallThresh = 4500;
+
+    enum IntakeStallState {
+        CHECK,
+        CONFIRM,
+        UNSTALL
+    }
+    IntakeStallState intakeStallState = IntakeStallState.CHECK;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -55,59 +66,18 @@ public class Intake {
                 1.0
         );
 
-        this.state = State.OFF;
+        this.intakeMotorState = IntakeMotorState.OFF;
         hardwareQueue.addDevice(intake);
         hardwareQueue.addDevice(actuation);
+
+        intakeCheck = System.currentTimeMillis();
     }
-
-    private ArrayList<Double> pastCurrents = new ArrayList<>();
-
-    double intakeDebounce;
-    double stallStart;
-    double intakeCheck;
-    public static double stallThresh = 4500;
-    State holdState = null;
-
-    enum StallState {
-        CHECK,
-        CONFIRM,
-        UNSTALL
-    }
-    StallState stallState = StallState.CHECK;
 
     public void update() {
-        TelemetryUtil.packet.put("Intake State", state);
-        switch (stallState) {
-            case CHECK:
-                intakeDebounce = System.currentTimeMillis();
-                if (System.currentTimeMillis() - intakeCheck > 150) {
-                    intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
-                    intakeCheck = System.currentTimeMillis();
-                }
-                if (intakeCurrent > stallThresh) {
-                    stallStart = System.currentTimeMillis();
-                    stallState = StallState.CONFIRM;
-                }
-                break;
-            case CONFIRM:
-                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
-                if (System.currentTimeMillis() - intakeDebounce > 100) {
-                    stallState = StallState.CHECK;
-                }
-                if (intakeCurrent > stallThresh) {
-                    intakeDebounce = System.currentTimeMillis();
-                }
-                if (System.currentTimeMillis() - stallStart > 250) {
-                    stallState = StallState.UNSTALL;
-                }
-                break;
-            case UNSTALL:
-                reverseForSomeTime(750);
-                stallState = StallState.CHECK;
-                break;
-        }
+        TelemetryUtil.packet.put("Intake Motor State", intakeMotorState);
+        TelemetryUtil.packet.put("Intake Stall State", intakeStallState);
 
-        switch (state) {
+        switch (intakeMotorState) {
             case ON:
                 intake.setTargetPower(intakePower);
                 break;
@@ -124,39 +94,76 @@ public class Intake {
                 if (System.currentTimeMillis() - reverseForSomeTimeStart < time) {
                     intake.setTargetPower(-1.0);
                 } else {
-                    state = previousState;
+                    intakeMotorState = previousState;
                 }
+                break;
+        }
+
+        switch (intakeStallState) {
+            case CHECK:
+                if (intakeMotorState != IntakeMotorState.ON) {
+                    intakeCheck = System.currentTimeMillis();
+                }
+
+                if (System.currentTimeMillis() - intakeCheck > 150) {
+                    intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+                    intakeCheck = System.currentTimeMillis();
+                    intakeDebounce = System.currentTimeMillis();
+                    if (intakeCurrent > stallThresh) {
+                        stallStart = System.currentTimeMillis();
+                        intakeStallState = IntakeStallState.CONFIRM;
+                    }
+                }
+                break;
+            case CONFIRM:
+                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+
+                if (intakeCurrent > stallThresh) {
+                    intakeDebounce = System.currentTimeMillis();
+                }
+                if (System.currentTimeMillis() - intakeDebounce > 100) {
+                    intakeCheck = System.currentTimeMillis();
+                    intakeStallState = IntakeStallState.CHECK;
+                }
+                if (System.currentTimeMillis() - stallStart > 250) {
+                    intakeCheck = System.currentTimeMillis();
+                    intakeStallState = IntakeStallState.UNSTALL;
+                }
+                break;
+            case UNSTALL:
+                reverseForSomeTime(750);
+                intakeStallState = IntakeStallState.CHECK;
                 break;
         }
     }
 
     public void on() {
-        state = State.ON;
+        intakeMotorState = IntakeMotorState.ON;
     }
 
     public void off() {
-        state = State.OFF;
+        intakeMotorState = IntakeMotorState.OFF;
     }
 
     public void reverse() {
-        state = State.REVERSED;
+        intakeMotorState = IntakeMotorState.REVERSED;
     }
 
     long reverseForSomeTimeStart;
     double time;
-    State previousState;
+    IntakeMotorState previousState;
     public void reverseForSomeTime(double time) {
         this.time = time;
         reverseForSomeTimeStart = System.currentTimeMillis();
 
-        if (state != State.REVERSE_FOR_TIME) {
-            previousState = state;
+        if (intakeMotorState != IntakeMotorState.REVERSE_FOR_TIME) {
+            previousState = intakeMotorState;
         }
-        state = State.REVERSE_FOR_TIME;
+        intakeMotorState = IntakeMotorState.REVERSE_FOR_TIME;
     }
 
     public void softReverse() {
-        state = State.SOFT_REVERSED;
+        intakeMotorState = IntakeMotorState.SOFT_REVERSED;
     }
 
     public void actuationFullyDown() {

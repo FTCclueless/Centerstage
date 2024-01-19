@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.subsystems.deposit;
 
-import android.util.Log;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
-import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -133,7 +129,7 @@ public class Deposit {
                 endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,v4ServoPower);
                 endAffector.topServo.setTargetAngle(topServoTransferAngle,topServoPower);
 
-                if (robot.intake.state != Intake.State.ON) { // check if intake is off
+                if (robot.intake.intakeMotorState != Intake.IntakeMotorState.ON) { // check if intake is off
                     beginGrabTime = System.currentTimeMillis();
                     state = State.GRAB;
                 }
@@ -143,7 +139,7 @@ public class Deposit {
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, topServoPower);
                 release.preGrab();
 
-                if (robot.intake.state == Intake.State.ON && !startDeposit) {
+                if (robot.intake.intakeMotorState == Intake.IntakeMotorState.ON && !startDeposit) {
                     state = State.INTAKE;
                 }
 
