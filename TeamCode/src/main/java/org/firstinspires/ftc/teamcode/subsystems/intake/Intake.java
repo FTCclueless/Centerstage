@@ -105,7 +105,7 @@ public class Intake {
                     intakeCheck = System.currentTimeMillis();
                 }
 
-                if (intakeDebounce - intakeCheck > 150) {
+                if (System.currentTimeMillis() - intakeCheck > 150) {
                     intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
                     intakeCheck = System.currentTimeMillis();
                     intakeDebounce = System.currentTimeMillis();
@@ -125,7 +125,7 @@ public class Intake {
                     intakeCheck = System.currentTimeMillis();
                     intakeStallState = IntakeStallState.CHECK;
                 }
-                if (System.currentTimeMillis() - stallStart > 250) {
+                if (intakeDebounce - stallStart > 250) {
                     intakeCheck = System.currentTimeMillis();
                     intakeStallState = IntakeStallState.UNSTALL;
                 }
