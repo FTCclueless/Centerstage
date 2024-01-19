@@ -64,6 +64,7 @@ public class Intake {
 
     double intakeDebounce;
     double stallStart;
+    double intakeCheck;
     public static double stallThresh = 4500;
     State holdState = null;
 
@@ -79,16 +80,21 @@ public class Intake {
         switch (stallState) {
             case CHECK:
                 intakeDebounce = System.currentTimeMillis();
-                if (sensors.getIntakeCurrent() > stallThresh) {
+                if (System.currentTimeMillis() - intakeCheck > 150) {
+                    intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+                    intakeCheck = System.currentTimeMillis();
+                }
+                if (intakeCurrent > stallThresh) {
                     stallStart = System.currentTimeMillis();
                     stallState = StallState.CONFIRM;
                 }
                 break;
             case CONFIRM:
+                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
                 if (System.currentTimeMillis() - intakeDebounce > 100) {
                     stallState = StallState.CHECK;
                 }
-                if (sensors.getIntakeCurrent() > stallThresh) {
+                if (intakeCurrent > stallThresh) {
                     intakeDebounce = System.currentTimeMillis();
                 }
                 if (System.currentTimeMillis() - stallStart > 250) {
@@ -104,7 +110,6 @@ public class Intake {
         switch (state) {
             case ON:
                 intake.setTargetPower(intakePower);
-                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.AMPS);
                 break;
             case OFF:
                 intake.setTargetPower(0.0);
