@@ -131,7 +131,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         pause(150);
     }
-    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -11.7, Math.PI);
+    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -12.5, Math.PI);
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
@@ -156,19 +156,19 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void navigateToBoard() {
-        robot.goToPointWithDepositAndIntake(new Pose2d(28, -11.5, Math.PI), this, false, false, deposit, 0);
+        robot.goToPointWithDepositAndIntake(new Pose2d(32, -12.5, Math.PI), this, false, false, deposit, 0);
         robot.intake.off();
     }
 
     public void navigateBackToStack() {
-        robot.goToPoint(new Pose2d(27.41, -11.5, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(27.41, -12.5, Math.toRadians(150)), this, false, false);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex);
         robot.goToPoint(rightInFrontOfStackPose, this, false, true);
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] actuationDistances = new double[] {13, 13, 13, 13, 13}; // 1 <-- 5 pixels
+    double[] actuationDistances = new double[] {12.25, 13, 13, 13, 13}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         robot.intake.on();
@@ -216,7 +216,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.goToPoint(new Pose2d(50.25, -30.3, Math.PI), this, false, true);
+        robot.goToPoint(new Pose2d(50.25, -27.75, Math.PI), this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
