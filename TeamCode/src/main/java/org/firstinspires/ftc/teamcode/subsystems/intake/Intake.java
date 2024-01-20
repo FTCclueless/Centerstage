@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.REVColorSensorV3;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -170,15 +171,18 @@ public class Intake {
             case CONFIRM:
                 // Super polling
                 double dist = colorSensorV3.readPS();
-                if (confirmtionLoops++ >= desiredConfirmtionLoops) {
-                    pixelCheckState = PixelCheckState.GO_REVERSE;
-                    goReverseStart = System.currentTimeMillis();
-                }
 
                 if (dist < pixelTouchingDist)
                     pixelCheckState = PixelCheckState.CHECK;
+
+                if (confirmtionLoops++ >= desiredConfirmtionLoops) {
+                    confirmtionLoops = 0;
+                    pixelCheckState = PixelCheckState.GO_REVERSE;
+                    goReverseStart = System.currentTimeMillis();
+                }
                 break;
             case GO_REVERSE:
+                Globals.NUM_PIXELS = 2;
                 // Wait a bit then reverse for some time
                 if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {
                     // Jankly set the previous state so reverseForSomeTime will turn the intake off
