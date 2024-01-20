@@ -129,7 +129,7 @@ public class Deposit {
                 endAffector.v4Servo.setTargetAngle(v4BarTransferAngle,v4ServoPower);
                 endAffector.topServo.setTargetAngle(topServoTransferAngle,topServoPower);
 
-                if (robot.intake.intakeMotorState != Intake.IntakeMotorState.ON) { // check if intake is off
+                if (robot.intake.motorState != Intake.MotorState.ON) { // check if intake is off
                     beginGrabTime = System.currentTimeMillis();
                     state = State.GRAB;
                 }
@@ -139,7 +139,7 @@ public class Deposit {
                 endAffector.topServo.setTargetAngle(topServoGrabAngle, topServoPower);
                 release.preGrab();
 
-                if (robot.intake.intakeMotorState == Intake.IntakeMotorState.ON && !startDeposit) {
+                if (robot.intake.motorState == Intake.MotorState.ON && !startDeposit) {
                     state = State.INTAKE;
                 }
 

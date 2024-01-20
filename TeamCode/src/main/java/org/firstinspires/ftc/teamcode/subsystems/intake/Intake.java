@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.REVColorSensorV3;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -15,7 +16,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 @Config
 public class Intake {
-    public enum IntakeMotorState {
+    public enum MotorState {
         ON,
         OFF,
         REVERSED,
@@ -25,7 +26,7 @@ public class Intake {
 
     public final PriorityMotor intake;
     public PriorityServo actuation;
-    public IntakeMotorState intakeMotorState = IntakeMotorState.OFF;
+    public MotorState motorState = MotorState.OFF;
     private final Sensors sensors;
     private final Robot robot;
     public static double intakeCurrent;
@@ -41,13 +42,29 @@ public class Intake {
     double stallStart;
     double intakeCheck;
     public static double stallThresh = 4500;
+    public final REVColorSensorV3 colorSensorV3;
 
-    enum IntakeStallState {
+    enum StallState {
         CHECK,
         CONFIRM,
         UNSTALL
     }
-    IntakeStallState intakeStallState = IntakeStallState.CHECK;
+
+    StallState stallState = StallState.CHECK;
+
+    enum PixelCheckState {
+        CHECK,
+        CONFIRM,
+        GO_REVERSE
+    }
+    private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
+    private long lastProxPoll = System.currentTimeMillis();
+    public static double pixelTouchingDist = 0;
+    private double confirmtionLoops = 0;
+    public static double desiredConfirmtionLoops = 5;
+    private long goReverseStart = 0;
+    public static double goReverseDelay = 300;
+
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -65,8 +82,13 @@ public class Intake {
                 1.0,
                 1.0
         );
+        colorSensorV3 = hardwareMap.get(REVColorSensorV3.class, "intakeColorSensor");
+        REVColorSensorV3.ControlRequest req = new REVColorSensorV3.ControlRequest()
+            .enableFlag(REVColorSensorV3.ControlFlag.PROX_SENSOR_ENABLED);
+        colorSensorV3.sendControlRequest(req);
+        colorSensorV3.configurePS(REVColorSensorV3.PSResolution.EIGHT, REVColorSensorV3.PSMeasureRate.m6p25s);
 
-        this.intakeMotorState = IntakeMotorState.OFF;
+        this.motorState = MotorState.OFF;
         hardwareQueue.addDevice(intake);
         hardwareQueue.addDevice(actuation);
 
@@ -74,10 +96,10 @@ public class Intake {
     }
 
     public void update() {
-        TelemetryUtil.packet.put("Intake Motor State", intakeMotorState);
-        TelemetryUtil.packet.put("Intake Stall State", intakeStallState);
+        TelemetryUtil.packet.put("Intake Motor State", motorState);
+        TelemetryUtil.packet.put("Intake Stall State", stallState);
 
-        switch (intakeMotorState) {
+        switch (motorState) {
             case ON:
                 intake.setTargetPower(intakePower);
                 break;
@@ -94,14 +116,14 @@ public class Intake {
                 if (System.currentTimeMillis() - reverseForSomeTimeStart < time) {
                     intake.setTargetPower(-1.0);
                 } else {
-                    intakeMotorState = previousState;
+                    motorState = previousState;
                 }
                 break;
         }
 
-        switch (intakeStallState) {
+        switch (stallState) {
             case CHECK:
-                if (intakeMotorState != IntakeMotorState.ON) {
+                if (motorState != MotorState.ON) {
                     intakeCheck = System.currentTimeMillis();
                 }
 
@@ -111,7 +133,7 @@ public class Intake {
                     intakeDebounce = System.currentTimeMillis();
                     if (intakeCurrent > stallThresh) {
                         stallStart = System.currentTimeMillis();
-                        intakeStallState = IntakeStallState.CONFIRM;
+                        stallState = StallState.CONFIRM;
                     }
                 }
                 break;
@@ -123,47 +145,79 @@ public class Intake {
                 }
                 if (System.currentTimeMillis() - intakeDebounce > 100) {
                     intakeCheck = System.currentTimeMillis();
-                    intakeStallState = IntakeStallState.CHECK;
+                    stallState = StallState.CHECK;
                 }
                 if (intakeDebounce - stallStart > 250) {
                     intakeCheck = System.currentTimeMillis();
-                    intakeStallState = IntakeStallState.UNSTALL;
+                    stallState = StallState.UNSTALL;
                 }
                 break;
             case UNSTALL:
                 reverseForSomeTime(750);
-                intakeStallState = IntakeStallState.CHECK;
+                stallState = StallState.CHECK;
+                break;
+        }
+
+        switch (pixelCheckState) {
+            case CHECK:
+                if (motorState == MotorState.ON && System.currentTimeMillis() - lastProxPoll > 100) {
+                    double dist = colorSensorV3.readPS();
+                    if (dist >= pixelTouchingDist)
+                        pixelCheckState = PixelCheckState.CONFIRM;
+                    lastProxPoll = System.currentTimeMillis();
+                }
+                break;
+            case CONFIRM:
+                // Super polling
+                double dist = colorSensorV3.readPS();
+                if (confirmtionLoops++ >= desiredConfirmtionLoops) {
+                    pixelCheckState = PixelCheckState.GO_REVERSE;
+                    goReverseStart = System.currentTimeMillis();
+                }
+
+                if (dist < pixelTouchingDist)
+                    pixelCheckState = PixelCheckState.CHECK;
+                break;
+            case GO_REVERSE:
+                // Wait a bit then reverse for some time
+                if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {
+                    // Jankly set the previous state so reverseForSomeTime will turn the intake off
+                    motorState = MotorState.OFF;
+                    reverseForSomeTime(750);
+                    pixelCheckState = PixelCheckState.CHECK;
+                }
+
                 break;
         }
     }
 
     public void on() {
-        intakeMotorState = IntakeMotorState.ON;
+        motorState = MotorState.ON;
     }
 
     public void off() {
-        intakeMotorState = IntakeMotorState.OFF;
+        motorState = MotorState.OFF;
     }
 
     public void reverse() {
-        intakeMotorState = IntakeMotorState.REVERSED;
+        motorState = MotorState.REVERSED;
     }
 
     long reverseForSomeTimeStart;
     double time;
-    IntakeMotorState previousState;
+    MotorState previousState;
     public void reverseForSomeTime(double time) {
         this.time = time;
         reverseForSomeTimeStart = System.currentTimeMillis();
 
-        if (intakeMotorState != IntakeMotorState.REVERSE_FOR_TIME) {
-            previousState = intakeMotorState;
+        if (motorState != MotorState.REVERSE_FOR_TIME) {
+            previousState = motorState;
         }
-        intakeMotorState = IntakeMotorState.REVERSE_FOR_TIME;
+        motorState = MotorState.REVERSE_FOR_TIME;
     }
 
     public void softReverse() {
-        intakeMotorState = IntakeMotorState.SOFT_REVERSED;
+        motorState = MotorState.SOFT_REVERSED;
     }
 
     public void actuationFullyDown() {

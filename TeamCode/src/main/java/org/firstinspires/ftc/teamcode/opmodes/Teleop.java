@@ -85,24 +85,24 @@ public class Teleop extends LinearOpMode {
             }
 
             // lift actuation if we are reversing intake
-            if (intake.intakeMotorState == Intake.IntakeMotorState.REVERSED || intake.intakeMotorState == Intake.IntakeMotorState.REVERSE_FOR_TIME) {
+            if (intake.motorState == Intake.MotorState.REVERSED || intake.motorState == Intake.MotorState.REVERSE_FOR_TIME) {
                 robot.intake.actuationFullyUp();
             }
 
             // toggle intake on and off
             if (x_1.isClicked(gamepad1.x)) {
-                if (intake.intakeMotorState == Intake.IntakeMotorState.ON || intake.intakeMotorState == Intake.IntakeMotorState.REVERSED) {
+                if (intake.motorState == Intake.MotorState.ON || intake.motorState == Intake.MotorState.REVERSED) {
                     intake.off();
-                } else if (intake.intakeMotorState == Intake.IntakeMotorState.OFF) {
+                } else if (intake.motorState == Intake.MotorState.OFF) {
                     intake.on();
                 }
             }
 
             // reverse intake
             if (b_1.isClicked(gamepad1.b)) {
-                if (intake.intakeMotorState == Intake.IntakeMotorState.ON || intake.intakeMotorState == Intake.IntakeMotorState.OFF) {
+                if (intake.motorState == Intake.MotorState.ON || intake.motorState == Intake.MotorState.OFF) {
                     intake.reverse();
-                } else if (intake.intakeMotorState == Intake.IntakeMotorState.REVERSED) {
+                } else if (intake.motorState == Intake.MotorState.REVERSED) {
                     intake.off();
                 }
             }
