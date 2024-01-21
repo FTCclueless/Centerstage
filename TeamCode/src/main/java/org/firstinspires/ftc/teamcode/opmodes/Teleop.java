@@ -51,7 +51,6 @@ public class Teleop extends LinearOpMode {
         ButtonToggle rightBumper_2 = new ButtonToggle();
         ButtonToggle a_2 = new ButtonToggle();
         ButtonToggle x_2 = new ButtonToggle();
-        ButtonToggle b_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
         int pixelIndex = 0;
@@ -71,8 +70,12 @@ public class Teleop extends LinearOpMode {
         waitForStart();
 
         boolean depoFlag = false;
+        double driver2SlidesAdjustmentConstant = 0.35; // make sure to change lines 176
 
         while (!isStopRequested()) {
+            // update robot
+            robot.update();
+
             // ------------------- DRIVER 1 CONTROLS -------------------
 
             // adjusting angle of actuation
@@ -172,8 +175,15 @@ public class Teleop extends LinearOpMode {
             // ------------------- DRIVER 2 CONTROLS -------------------
 
             // driver B adjusting deposit position
-            depoPos.x -= gamepad2.right_stick_y*0.35;
-            depoPos.z -= gamepad2.left_stick_y*0.35;
+
+            if (robot.deposit.inPixelAdjustmentMode) {
+                driver2SlidesAdjustmentConstant = 0.175;
+            } else {
+                driver2SlidesAdjustmentConstant = 0.35;
+            }
+
+            depoPos.x -= gamepad2.right_stick_y*driver2SlidesAdjustmentConstant;
+            depoPos.z -= gamepad2.left_stick_y*driver2SlidesAdjustmentConstant;
 
             // trigger deposit
             if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
@@ -208,7 +218,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // retract
-            if ((b_2.isClicked(gamepad2.b) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
+            if ((rightBumper_2.isClicked(gamepad2.right_bumper) || robot.deposit.release.readyToRetract()) && (robot.deposit.state == Deposit.State.DEPOSIT || robot.deposit.state == Deposit.State.FINISH_DEPOSIT)) {
                 robot.deposit.retract();
                 depoFlag = false;
             }
@@ -233,9 +243,6 @@ public class Teleop extends LinearOpMode {
 
             telemetry.addData("Pixel Height", pixelIndex+1);
             telemetry.update();
-
-            // update robot
-            robot.update();
         }
     }
 }

@@ -36,19 +36,19 @@ public class Deposit {
     double targetX = 0.0;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.201724;
-    public static double v4BarGrabAngle = -0.14568993131;
-    public static double v4BarDepositAngle = -3.05885;
+    public static double v4BarTransferAngle = -0.2633625;
+    public static double v4BarGrabAngle = -0.04482767;
+    public static double v4BarDepositAngle = -3.2724194;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.8405188;
-    public static double topServoGrabAngle = -0.96939838;
-    public static double topServoDepositAngle = 2.06207;
-    public static double topServoRetractAngle = 2.6336256;
+    public static double topServoTransferAngle = -0.87974304;
+    public static double topServoGrabAngle = -0.9637949;
+    public static double topServoDepositAngle = 2.06767633;
+    public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode
-    public static double v4BarReadjustAngle = -3.34520892;
-    public static double topServoReadjustAngle = -0.04482767;
+    public static double v4BarReadjustAngle = -3.96724883;
+    public static double topServoReadjustAngle = -0.94138109;
 
     // old readjustment values
 //    public static double v4BarReadjustAngle = -2.75124228;
@@ -99,7 +99,7 @@ public class Deposit {
     }
 
     public boolean isDepositing() {
-        return state == State.DEPOSIT;
+        return state == State.DEPOSIT || state == State.START_DEPOSIT || state == State.FINISH_DEPOSIT;
     }
 
     public void retract() {
@@ -115,7 +115,7 @@ public class Deposit {
     long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
 
-    double v4ServoPower = 0.55;
+    double v4ServoPower = 1.0;
     double topServoPower = 1.0;
 
     public void update() {
@@ -172,11 +172,17 @@ public class Deposit {
                 slides.setTargetLength(targetH);
 
                 if (inPixelAdjustmentMode) {
-                    endAffector.v4Servo.setTargetAngle(v4BarReadjustAngle,v4ServoPower);
-                    endAffector.topServo.setTargetAngle(topServoReadjustAngle,topServoPower);
+                    alreadySwitched = true;
+                    endAffector.v4Servo.setTargetAngle(v4BarReadjustAngle,0.65);
+                    endAffector.topServo.setTargetAngle(topServoReadjustAngle,0.65);
                 } else {
-                    endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
-                    endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
+                    if (alreadySwitched) {
+                        endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.65);
+                        endAffector.topServo.setTargetAngle(topServoDepositAngle,0.65);
+                    } else {
+                        endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
+                        endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
+                    }
                 }
 
                 if (release.readyToRetract()) {
@@ -186,6 +192,7 @@ public class Deposit {
                 break;
             case START_RETRACT:
                 inPixelAdjustmentMode = false;
+                alreadySwitched = false;
                 endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
                     endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
@@ -221,7 +228,8 @@ public class Deposit {
         release.update();
     }
 
-    boolean inPixelAdjustmentMode = false;
+    public boolean inPixelAdjustmentMode = false;
+    boolean alreadySwitched = false;
 
     public void togglePixelAdjustmentMode() {
         inPixelAdjustmentMode = !inPixelAdjustmentMode;

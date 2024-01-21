@@ -74,7 +74,7 @@ public class Intake {
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
-                PriorityServo.ServoType.TORQUE,
+                PriorityServo.ServoType.AXON_MINI,
                 1.0,
                 0.0,
                 1.0,

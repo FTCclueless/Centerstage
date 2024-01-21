@@ -90,9 +90,9 @@ public class Release {
             }
         }
 
-        if (Globals.NUM_PIXELS == 1 && !busy) {
-            close();
-        }
+//        if (Globals.NUM_PIXELS == 1 && !busy) {
+//            close();
+//        }
     }
 
     public boolean inPosition() {
