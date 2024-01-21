@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems.intake;
 
+import android.util.Log;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -30,13 +32,14 @@ public class Intake {
     public MotorState motorState = MotorState.OFF;
     private final Sensors sensors;
     private final Robot robot;
-    public static double intakeCurrent;
+    public double intakeCurrent = 0;
+    public double dist = 0;
 
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.62901, 0.47176, 0.365384, 0.231256, 0.13412};
-    double actuationFullyUpAngle = -0.314508;
+    double[] actuationAngles = new double[] {0.62901, 0.47176, 0.365384, 0.231256, 0.14568993}; // 1 pixel --> 5 pixle
+    double actuationFullyUpAngle = -1.417675;
 
     // stall checking variables
     double intakeDebounce;
@@ -60,12 +63,11 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 261;
+    public static int pixelTouchingDist = 270;
     private double confirmtionLoops = 0;
-    public static double desiredConfirmtionLoops = 2;
+    public static double desiredConfirmtionLoops = 10;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
-
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -78,7 +80,7 @@ public class Intake {
                 1.0,
                 0.0,
                 1.0,
-                0.068,
+                0.402,
                 false,
                 1.0,
                 1.0
@@ -99,6 +101,10 @@ public class Intake {
     public void update() {
         TelemetryUtil.packet.put("Intake Motor State", motorState);
         TelemetryUtil.packet.put("Intake Stall State", stallState);
+        TelemetryUtil.packet.put("Intake Pixel Check State", pixelCheckState);
+
+        TelemetryUtil.packet.put("Intake Current", intakeCurrent);
+        TelemetryUtil.packet.put("Intake Pixel Color Sensor Dist", dist);
 
         switch (motorState) {
             case ON:
@@ -154,6 +160,7 @@ public class Intake {
                 }
                 break;
             case UNSTALL:
+                Log.e("JAM REVERSE FALLBACK", "-----");
                 reverseForSomeTime(750);
                 stallState = StallState.CHECK;
                 break;
@@ -162,7 +169,7 @@ public class Intake {
         switch (pixelCheckState) {
             case CHECK:
                 if (motorState == MotorState.ON && System.currentTimeMillis() - lastProxPoll > 100) {
-                    double dist = colorSensorV3.readPS();
+                    dist = colorSensorV3.readPS();
                     if (dist >= pixelTouchingDist)
                         pixelCheckState = PixelCheckState.CONFIRM;
                     lastProxPoll = System.currentTimeMillis();
@@ -170,7 +177,7 @@ public class Intake {
                 break;
             case CONFIRM:
                 // Super polling
-                double dist = colorSensorV3.readPS();
+                dist = colorSensorV3.readPS();
 
                 if (dist < pixelTouchingDist)
                     pixelCheckState = PixelCheckState.CHECK;
@@ -182,6 +189,7 @@ public class Intake {
                 }
                 break;
             case GO_REVERSE:
+                Log.e("PIXEL REVERSE FALLBACK", "-----");
                 Globals.NUM_PIXELS = 2;
                 // Wait a bit then reverse for some time
                 if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {
