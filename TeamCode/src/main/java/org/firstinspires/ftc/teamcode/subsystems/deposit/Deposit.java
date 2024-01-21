@@ -47,8 +47,8 @@ public class Deposit {
     public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode
-    public static double v4BarReadjustAngle = -3.96724883;
-    public static double topServoReadjustAngle = -0.94138109;
+    public static double v4BarReadjustAngle = -3.0090574;
+    public static double topServoReadjustAngle = 2.2245731819;
 
     // old readjustment values
 //    public static double v4BarReadjustAngle = -2.75124228;
