@@ -101,7 +101,7 @@ public class AprilTagLocalizer {
 
     public double getDistance(AprilTagDetection tag) {
         if (tag.ftcPose != null && tag.metadata.fieldPosition.get(0) > 0) {
-            double dist = Math.sqrt(Math.pow(tag.ftcPose.y*Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60))*tag.ftcPose.z,2) + Math.pow(tag.ftcPose.x, 2));
+            double dist = Math.sqrt(Math.pow(tag.ftcPose.y,2) + Math.pow(tag.ftcPose.x, 2));
             if (dist > 48)
                 return -1;
             return dist;
