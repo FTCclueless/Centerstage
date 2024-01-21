@@ -60,11 +60,11 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static double pixelTouchingDist = 0;
+    public static int pixelTouchingDist = 261;
     private double confirmtionLoops = 0;
-    public static double desiredConfirmtionLoops = 5;
+    public static double desiredConfirmtionLoops = 2;
     private long goReverseStart = 0;
-    public static double goReverseDelay = 300;
+    public static double goReverseDelay = 350;
 
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {

@@ -23,7 +23,7 @@ public class REVColorSensorV3Test extends LinearOpMode {
 
         while (opModeIsActive()) {
             long start = System.currentTimeMillis();
-            double val = colorSensorV3.readPS();
+            int val = colorSensorV3.readPS();
             long end = System.currentTimeMillis();
             TelemetryUtil.packet.put("proximity", val);
             TelemetryUtil.packet.put("time", end - start);

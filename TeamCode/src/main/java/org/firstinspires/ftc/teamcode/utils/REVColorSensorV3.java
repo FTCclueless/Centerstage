@@ -279,20 +279,21 @@ public class REVColorSensorV3 extends I2cDeviceSynchDevice<I2cDeviceSynch> {
 
     /**
      * Read proximity sensor raw data
-     * @return Distance in IN
+     * @return Distance RAW
      */
-    public double readPS() {
+    public int readPS() {
         int bitsRead = (int) Math.ceil(psDepth / 8.0);
+        RobotLog.ww(tag, "bitsRead: " + bitsRead);
         byte[] data = deviceClient.read(Register.PS_DATA_0.value, bitsRead);
+        byte[] padded = new byte[2];
+        Arrays.fill(padded, (byte) 1);
+        System.arraycopy(data, 0, padded, 0, data.length);
+        RobotLog.ww(tag, "data: " + Arrays.toString(padded));
         if (bitsRead > 1){ // We read the overflow bit oh no!
-            data[1] &= 0b11110111; // Chop if off
+            padded[1] &= 0b11110111; // Chop if off
             RobotLog.ww(tag, "readPS recieved a bit overflow");
         }
-        int raw = TypeConversion.unsignedShortToInt(TypeConversion.byteArrayToShort(data, ByteOrder.LITTLE_ENDIAN));
-
-        // This part is shamelessly stolen from rev in order to convert raw to inch
-        raw = raw <= 26.980 ? 6 : raw;
-        return Math.min(Math.pow((raw - 26.980) / 325.961, -0.75934), 6);
+        return TypeConversion.byteArrayToShort(padded, ByteOrder.LITTLE_ENDIAN);
     }
 
     private int readLSValueRaw(Register reg) {
