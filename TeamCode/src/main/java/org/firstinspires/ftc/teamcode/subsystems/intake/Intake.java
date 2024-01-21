@@ -64,8 +64,8 @@ public class Intake {
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 270;
-    private double confirmtionLoops = 0;
-    public static double desiredConfirmtionLoops = 10;
+    private double confirmationLoops = 0;
+    public static double desiredConfirmationLoops = 10;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
 
@@ -168,6 +168,8 @@ public class Intake {
 
         switch (pixelCheckState) {
             case CHECK:
+                confirmationLoops = 0;
+
                 if (motorState == MotorState.ON && System.currentTimeMillis() - lastProxPoll > 100) {
                     dist = colorSensorV3.readPS();
                     if (dist >= pixelTouchingDist)
@@ -182,8 +184,8 @@ public class Intake {
                 if (dist < pixelTouchingDist)
                     pixelCheckState = PixelCheckState.CHECK;
 
-                if (confirmtionLoops++ >= desiredConfirmtionLoops) {
-                    confirmtionLoops = 0;
+                if (confirmationLoops++ >= desiredConfirmationLoops) {
+                    confirmationLoops = 0;
                     pixelCheckState = PixelCheckState.GO_REVERSE;
                     goReverseStart = System.currentTimeMillis();
                 }
