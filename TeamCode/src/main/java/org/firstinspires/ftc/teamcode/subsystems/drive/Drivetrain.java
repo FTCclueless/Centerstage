@@ -193,7 +193,7 @@ public class Drivetrain {
             double radiusToPath;
             do {
                 radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
-                if (lastRadius > radiusToPath){
+                if (lastRadius > radiusToPath || lastRadius < pathRadius/3.0){
                     break;
                 }
                 lastRadius = radiusToPath;
