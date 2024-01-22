@@ -44,6 +44,8 @@ public class MotorTester extends LinearOpMode {
         waitForStart();
 
         while (!isStopRequested()) {
+            robot.drivetrain.resetMinPowersToOvercomeFriction();
+
             if (buttonY.isClicked(gamepad1.y)) {
                 motors.get(motorIndex).setTargetPower(0.0);
                 motorIndex++;
