@@ -334,9 +334,10 @@ public class Drivetrain {
     public static PID turnPID = new PID(0.5,0.0,0.01);
 
     public void PIDF() {
+        double turnAdjustThreshold = (Math.abs(xError) > xThreshold/2 || Math.abs(yError) > yThreshold/2) ? turnThreshold/3.0 : turnThreshold;
         double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -maxPower, maxPower) + 0.05 * Math.signum(xError) : 0;
         double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -maxPower, maxPower) + 0.05 * Math.signum(yError) : 0;
-        double turn = Math.abs(turnError) > Math.toRadians(turnThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(turnAdjustThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
