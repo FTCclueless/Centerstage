@@ -173,20 +173,44 @@ public class Drivetrain {
 
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
+    Spline path = null;
+    int pathIndex = 0;
+    int pathRadius = 15;
+
     HuskyLens.Block[] huskyLensBlocks;
 
     public void update() {
         if (!DRIVETRAIN_ENABLED) {
             return;
         }
-
         updateLocalizer();
-        calculateErrors();
-        updateTelemetry();
-
         Pose2d estimate = localizer.getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
         ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
+
+        if (path != null){
+            double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
+            double radiusToPath;
+            do {
+                radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
+                if (lastRadius > radiusToPath){
+                    break;
+                }
+                lastRadius = radiusToPath;
+                pathIndex ++;
+            } while(radiusToPath < pathRadius || pathIndex == path.poses.size());
+            SplinePose2d pathTarget = path.poses.get(Math.min(path.poses.size()-1,pathIndex));
+            targetPoint = pathTarget.clone();
+            targetPoint.heading += pathTarget.reversed ? Math.toRadians(180) : 0;
+            if (pathIndex == path.poses.size()){
+                path = null;
+            }
+        }
+
+        calculateErrors();
+        updateTelemetry();
+
+
 
         switch (state) {
             case GO_TO_POINT:
