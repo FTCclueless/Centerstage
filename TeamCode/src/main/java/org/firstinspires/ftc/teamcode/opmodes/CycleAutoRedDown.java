@@ -131,7 +131,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         pause(150);
     }
-    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -11.5, Math.PI);
+    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -10.5, Math.PI);
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
@@ -172,7 +172,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     public void intakeStackInitial() {
         robot.intake.on();
-        robot.alignWithStack(this, new Pose2d(-69.03, -11.5), actuationDistances[pixelIndex], 0.25);
+        robot.alignWithStack(this, new Pose2d(-69.03, -10.5), actuationDistances[pixelIndex], 0.25);
         pixelIndex--;
         pause(300);
         Globals.NUM_PIXELS = 2;
