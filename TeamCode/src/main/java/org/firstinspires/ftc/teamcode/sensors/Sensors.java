@@ -50,6 +50,7 @@ public class Sensors {
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
+    public boolean useIMU = false;
     HuskyLens.Block[] huskyLensBlocks;
     private long limitTime = System.currentTimeMillis();
 
@@ -120,20 +121,19 @@ public class Sensors {
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
 
-//            if (System.currentTimeMillis() - imuLastUpdateTime >= imuUpdateTime) {
-//                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-//                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
-//                imuLastUpdateTime = System.currentTimeMillis();
-//                imuJustUpdated = true;
-//            } else {
-//                imuJustUpdated = false;
-//            }
-//
-//            timeTillNextIMUUpdate = imuUpdateTime - (System.currentTimeMillis() - imuLastUpdateTime);
+            imuJustUpdated = false;
+            long currTime = System.currentTimeMillis();
+            if (useIMU && currTime - imuLastUpdateTime >= imuUpdateTime) {
+                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
+                imuLastUpdateTime = currTime;
+                imuJustUpdated = true;
+            }
+            timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
-            if (System.currentTimeMillis() - lastVoltageUpdatedTime > voltageUpdateTime) {
+            if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
                 voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-                lastVoltageUpdatedTime = System.currentTimeMillis();
+                lastVoltageUpdatedTime = currTime;
             }
 
             intakeTriggered = intakeBeamBreak.getState();
@@ -146,12 +146,12 @@ public class Sensors {
             distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
             if (limitSwitch1.getState() || limitSwitch2.getState()) {
-                limitTime = System.currentTimeMillis();
+                limitTime = currTime;
             }
 
-            if (System.currentTimeMillis() - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
+            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
                 huskyLensBlocks = huskyLens.blocks();
-                lastHuskyLensUpdatedTime = System.currentTimeMillis();
+                lastHuskyLensUpdatedTime = currTime;
                 huskyJustUpdated = true;
             } else {
                 huskyJustUpdated = false;

@@ -49,7 +49,6 @@ public class Localizer {
     ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
     public boolean useAprilTag;
-    public boolean useIMU;
 
     AprilTagLocalizer aprilTagLocalizer;
     double minAprilTagWeight = 1/40;
@@ -72,7 +71,7 @@ public class Localizer {
 //        encoders[2] = new Encoder(new Pose2d(-6.022134808388673, 0),  -1); // back (7.1660442092285175)
 
         this.useAprilTag = useAprilTag;
-        this.useIMU = useIMU;
+        this.sensors.useIMU = useIMU;
 
         if (useAprilTag) {
             aprilTagLocalizer = new AprilTagLocalizer(vision);
@@ -145,7 +144,7 @@ public class Localizer {
 
         odoHeading += deltaHeading;
 
-        if (useIMU) {
+        if (this.sensors.useIMU) {
             updateHeadingWithIMU(sensors.getImuHeading());
         }
 
@@ -186,6 +185,7 @@ public class Localizer {
                 odoX += changeInPosition.x;
                 odoY += changeInPosition.y;
                 odoHeading += changeInPosition.heading;
+                headingDif -= changeInPosition.heading;
             }
         }
 
@@ -251,15 +251,13 @@ public class Localizer {
     public void updateHeadingWithIMU(double imuHeading) {
         if (sensors.imuJustUpdated) {
             headingDif += imuHeading-(currentPose.getHeading()+headingDif);
-            while (headingDif > Math.toRadians(180)){
-                headingDif -= Math.toRadians(360);
-            }
-            while (headingDif < Math.toRadians(-180)){
-                headingDif += Math.toRadians(360);
-            }
+            headingDif = Utils.headingClip(headingDif);
         }
-        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1e3)/GET_LOOP_TIME();
+        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1.0e3)/GET_LOOP_TIME();
         if (percentHeadingDif > 1){
+            percentHeadingDif = 1;
+        }
+        else if (percentHeadingDif <= 0){
             percentHeadingDif = 1;
         }
         double headingErrAdd = headingDif * (1/percentHeadingDif);
