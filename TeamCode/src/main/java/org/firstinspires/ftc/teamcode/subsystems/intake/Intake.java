@@ -38,7 +38,7 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.4034490405, 0.3362075, 0.2297418, 0.06163804, -0.084051883}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {0.30258678, 0.21853489, 0.06163804, -0.0336207533, -0.162500308}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.417675;
 
     // stall checking variables
@@ -63,9 +63,9 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 270;
+    public static int pixelTouchingDist = 275;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 10;
+    public static double desiredConfirmationLoops = 15;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
 

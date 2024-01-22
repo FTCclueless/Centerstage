@@ -106,7 +106,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-35.411, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50.25, -30.25, Math.PI);
+                boardPreload =          new Pose2d(49.75, -30.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -114,13 +114,13 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -37.25, -Math.PI/2);
-                boardPreload =          new Pose2d(50.25, -36.25, Math.PI);
+                boardPreload =          new Pose2d(49.75, -36.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-35.411, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50.25, -41.41, Math.PI);
+                boardPreload =          new Pose2d(49.75, -41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -131,7 +131,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         pause(150);
     }
-    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -12.5, Math.PI);
+    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -11.5, Math.PI);
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
@@ -168,11 +168,11 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] actuationDistances = new double[] {12.25, 13, 13, 13, 13}; // 1 <-- 5 pixels
+    double[] actuationDistances = new double[] {12.75, 12.75, 12.75, 12.75, 12.75}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         robot.intake.on();
-        robot.alignWithStack(this, new Pose2d(-69.03, -11.75), actuationDistances[pixelIndex], 0.25);
+        robot.alignWithStack(this, new Pose2d(-69.03, -11.5), actuationDistances[pixelIndex], 0.25);
         pixelIndex--;
         pause(300);
         Globals.NUM_PIXELS = 2;
@@ -216,7 +216,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.goToPoint(new Pose2d(50.25, -27.75, Math.PI), this, false, true);
+        robot.goToPoint(new Pose2d(49.75, -27.75, Math.PI), this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

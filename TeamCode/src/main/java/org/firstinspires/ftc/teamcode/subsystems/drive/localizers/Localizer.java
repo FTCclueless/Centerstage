@@ -271,10 +271,13 @@ public class Localizer {
     double leftDist = 0.0;
     double rightDist = 0.0;
 
-    double leftXOffset = 7.0;
-    double leftYOffset = 2.75;
-    double rightXOffset = 7.0;
-    double rightYOffset = -2.75;
+    double leftXOffset = 7;
+    double leftYOffset = 2.625;
+    double rightXOffset = 7;
+    double rightYOffset = -2.625;
+
+    double lastLeftDist = 0.0;
+    double lastRightDist = 0.0;
 
     public void mergeUltrasonics() {
         leftDist = sensors.getDistLeft();
@@ -295,7 +298,7 @@ public class Localizer {
                 odoY + Math.sin(heading)*relativeWallLocationRight.x + Math.cos(heading)*relativeWallLocationRight.y
         );
 
-        if (drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK) { // actually merging localization
+        if (drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK && leftDist != lastLeftDist && rightDist != lastRightDist) { // actually merging localization
             if (Math.abs(globalWallLocationLeft.x - 70.5 * x_sign) < 4) {
                 odoX += (70.5 * x_sign - globalWallLocationLeft.x) * 0.1;
             }
@@ -310,6 +313,9 @@ public class Localizer {
                 odoY += (70.5 * y_sign - globalWallLocationRight.y) * 0.1;
             }
         }
+
+        lastLeftDist = leftDist;
+        lastRightDist = rightDist;
 
         TelemetryUtil.packet.fieldOverlay().setStroke("green");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(globalWallLocationLeft.x, globalWallLocationLeft.y, 1);
