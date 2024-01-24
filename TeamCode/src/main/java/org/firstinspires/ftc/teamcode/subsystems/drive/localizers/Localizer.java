@@ -74,7 +74,7 @@ public class Localizer {
         this.sensors.useIMU = useIMU;
 
         if (useAprilTag) {
-            aprilTagLocalizer = new AprilTagLocalizer(vision);
+            aprilTagLocalizer = new AprilTagLocalizer(vision, this);
         }
     }
 
@@ -149,7 +149,7 @@ public class Localizer {
         }
 
         if (useAprilTag && nanoTimes.size() > 5) {
-            Pose2d aprilTagPose = aprilTagLocalizer.update(this); // update april tags
+            Pose2d aprilTagPose = aprilTagLocalizer.update(); // update april tags
 
             if (aprilTagPose != null && !aprilTagPose.isNaN()) {
                 Log.e("aprilTagPose.heading (deg)", Math.toDegrees(aprilTagPose.heading) + "");
@@ -189,8 +189,7 @@ public class Localizer {
             }
         }
 
-        mergeUltrasonics();
-
+//        mergeUltrasonics();
 
         x = odoX;
         y = odoY;
@@ -269,9 +268,9 @@ public class Localizer {
     double leftDist = 0.0;
     double rightDist = 0.0;
 
-    double leftXOffset = 7;
+    double leftXOffset = 5.5;
     double leftYOffset = 2.625;
-    double rightXOffset = 7;
+    double rightXOffset = 5.5;
     double rightYOffset = -2.625;
 
     double lastLeftDist = 0.0;
@@ -296,7 +295,7 @@ public class Localizer {
                 odoY + Math.sin(heading)*relativeWallLocationRight.x + Math.cos(heading)*relativeWallLocationRight.y
         );
 
-        if (drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK && leftDist != lastLeftDist && rightDist != lastRightDist) { // actually merging localization
+        if (Globals.mergeUltrasonics && leftDist != lastLeftDist && rightDist != lastRightDist) { // actually merging localization
             if (Math.abs(globalWallLocationLeft.x - 70.5 * x_sign) < 4) {
                 odoX += (70.5 * x_sign - globalWallLocationLeft.x) * 0.1;
             }

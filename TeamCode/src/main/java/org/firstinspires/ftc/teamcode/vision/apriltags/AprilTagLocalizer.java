@@ -25,18 +25,20 @@ import java.util.Map;
 
 public class AprilTagLocalizer {
     private AprilTagProcessor tagProcessor;
+    private Localizer localizer;
 
     private ArrayList<AprilTagDetection> tags = new ArrayList<AprilTagDetection>();
 
-    public AprilTagLocalizer(Vision vision) {
+    public AprilTagLocalizer(Vision vision, Localizer localizer) {
         this.tagProcessor = vision.tagProcessor;
+        this.localizer = localizer;
     }
 
     Pose2d cameraOffset = new Pose2d(-6.69, 0.0, Math.toRadians(180));
 
     ArrayList<TagEstimate> tagEstimates = new ArrayList<TagEstimate>();
 
-    public Pose2d update(Localizer localizer) {
+    public Pose2d update() {
 //        try {
             tags = tagProcessor.getDetections();
             if (tags.size() > 0) {
@@ -102,7 +104,7 @@ public class AprilTagLocalizer {
     public double getDistance(AprilTagDetection tag) {
         if (tag.ftcPose != null && tag.metadata.fieldPosition.get(0) > 0) {
             double dist = Math.sqrt(Math.pow(tag.ftcPose.y,2) + Math.pow(tag.ftcPose.x, 2));
-            if (dist > 48)
+            if (dist > 48 || localizer.x < 0)
                 return -1;
             return dist;
         }

@@ -210,8 +210,6 @@ public class Drivetrain {
         calculateErrors();
         updateTelemetry();
 
-
-
         switch (state) {
             case GO_TO_POINT:
                 setMinPowersToOvercomeFriction();

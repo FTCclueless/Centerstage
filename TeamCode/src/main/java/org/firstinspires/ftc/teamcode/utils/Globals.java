@@ -25,6 +25,8 @@ public class Globals {
     public static int NUM_PIXELS = 0;
     public static double slidesV4Thresh = 5.0;
 
+    // auto
+    public static boolean mergeUltrasonics = false;
 
     // loop time methods
     public static void START_LOOP() {

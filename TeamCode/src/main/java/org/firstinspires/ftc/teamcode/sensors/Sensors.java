@@ -64,6 +64,10 @@ public class Sensors {
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
         huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+        if (!huskyLens.knock())
+            Log.e("HuskyLens", "Failed to init! BAD BAD!");
+        else
+            Log.e("HuskyLens", "Init successfully");
         distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
         distRight = hardwareMap.get(AnalogInput.class, "distRight");
 
