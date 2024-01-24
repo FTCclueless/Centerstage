@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -93,15 +94,16 @@ public class Robot {
         }
     }
 
-    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
+    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
         drivetrain.setMaxPower(maxPower);
 
         Spline path = new Spline(drivetrain.getPoseEstimate(), 3);
-        double angle = Math.atan2(pose.y - Globals.ROBOT_POSITION.y, pose.x - Globals.ROBOT_POSITION.x);
-        path.setReversed(Math.abs(Globals.ROBOT_POSITION.heading - angle) >= Math.PI);
+        double angle = AngleUtil.clipAngle(Math.atan2(pose.y - Globals.ROBOT_POSITION.y, pose.x - Globals.ROBOT_POSITION.x));
+        path.setReversed(isReversed);
+
         path.addPoint(pose);
 
         drivetrain.setPath(path);
@@ -113,12 +115,12 @@ public class Robot {
         } while (opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    public void splineToPoint(Pose2d pose, LinearOpMode opmode) {
-        splineToPoint(pose, opmode, false, true);
+    public void splineToPoint(Pose2d pose, LinearOpMode opmode, boolean isReversed) {
+        splineToPoint(pose, opmode, false, true, isReversed);
     }
 
-    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
-        splineToPoint(pose, opMode, finalAdjustment, stop, 1.0);
+    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, boolean isReversed) {
+        splineToPoint(pose, opMode, finalAdjustment, stop, 1.0, isReversed);
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode) {

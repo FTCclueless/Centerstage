@@ -190,11 +190,10 @@ public class Drivetrain {
 
         if (path != null){
             double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
-            double radiusToPath = 0;
-            while (radiusToPath < pathRadius || pathIndex == path.poses.size()) {
+            double radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
+            while (radiusToPath < pathRadius && pathIndex != path.poses.size()) {
                 radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
-                if (lastRadius > radiusToPath && radiusToPath < pathRadius/3.0){
-                    Log.e("plug", "pluh");
+                if (lastRadius > radiusToPath && radiusToPath > pathRadius/3.0){
                     break;
                 }
                 lastRadius = radiusToPath;
