@@ -190,21 +190,25 @@ public class Drivetrain {
 
         if (path != null){
             double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
-            double radiusToPath;
-            do {
+            double radiusToPath = 0;
+            while (radiusToPath < pathRadius || pathIndex == path.poses.size()) {
                 radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
-                if (lastRadius > radiusToPath || lastRadius < pathRadius/3.0){
+                if (lastRadius > radiusToPath && radiusToPath < pathRadius/3.0){
+                    Log.e("plug", "pluh");
                     break;
                 }
                 lastRadius = radiusToPath;
                 pathIndex ++;
-            } while(radiusToPath < pathRadius || pathIndex == path.poses.size());
+            }
             SplinePose2d pathTarget = path.poses.get(Math.min(path.poses.size()-1,pathIndex));
             targetPoint = pathTarget.clone();
             targetPoint.heading += pathTarget.reversed ? Math.toRadians(180) : 0;
             if (pathIndex == path.poses.size()){
                 path = null;
+            } else {
+                targetPoint.heading = Math.atan2(targetPoint.y - ROBOT_POSITION.y, targetPoint.x - ROBOT_POSITION.x);
             }
+            targetPoint.heading += pathTarget.reversed ? Math.PI : 0;
         }
 
         calculateErrors();
@@ -433,6 +437,26 @@ public class Drivetrain {
 
             state = State.GO_TO_POINT;
         }
+    }
+
+    public void setFinalAdjustment(boolean finalAdjustment) {
+        this.finalAdjustment = finalAdjustment;
+    }
+
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
+
+    public void setMaxPower(double maxPower) {
+        this.maxPower = Math.abs(maxPower);
+    }
+
+    public void setPath(Spline path) {
+        this.path = path;
+    }
+
+    public Spline getPath() {
+        return path;
     }
 
     public static double xThreshold = 1;
