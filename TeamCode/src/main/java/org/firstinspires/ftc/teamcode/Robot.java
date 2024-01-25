@@ -95,16 +95,17 @@ public class Robot {
     }
 
     public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
+        Pose2d clonedPose = pose.clone();
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
         drivetrain.setMaxPower(maxPower);
 
         Spline path = new Spline(drivetrain.getPoseEstimate(), 3);
-        double angle = AngleUtil.clipAngle(Math.atan2(pose.y - Globals.ROBOT_POSITION.y, pose.x - Globals.ROBOT_POSITION.x));
+        double angle = AngleUtil.clipAngle(Math.atan2(clonedPose.y - Globals.ROBOT_POSITION.y, clonedPose.x - Globals.ROBOT_POSITION.x));
         path.setReversed(isReversed);
 
-        path.addPoint(pose);
+        path.addPoint(clonedPose);
 
         drivetrain.setPath(path);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;

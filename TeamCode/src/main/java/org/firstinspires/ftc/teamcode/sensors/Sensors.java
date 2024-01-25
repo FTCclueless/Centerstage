@@ -50,7 +50,7 @@ public class Sensors {
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
-    public boolean useIMU = false;
+    public boolean useIMU = true;
     HuskyLens.Block[] huskyLensBlocks;
     private long limitTime = System.currentTimeMillis();
 

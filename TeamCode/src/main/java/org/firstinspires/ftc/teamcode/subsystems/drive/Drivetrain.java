@@ -201,9 +201,9 @@ public class Drivetrain {
             }
             SplinePose2d pathTarget = path.poses.get(Math.min(path.poses.size()-1,pathIndex));
             targetPoint = pathTarget.clone();
-            targetPoint.heading += pathTarget.reversed ? Math.toRadians(180) : 0;
             if (pathIndex == path.poses.size()){
                 path = null;
+                pathIndex = 0;
             } else {
                 targetPoint.heading = Math.atan2(targetPoint.y - ROBOT_POSITION.y, targetPoint.x - ROBOT_POSITION.x);
             }

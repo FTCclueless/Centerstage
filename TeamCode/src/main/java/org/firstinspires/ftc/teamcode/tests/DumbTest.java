@@ -15,5 +15,6 @@ public class DumbTest extends LinearOpMode {
         waitForStart();
 
         robot.splineToPoint(new Pose2d(-25, -25, Math.PI / 2), this, false);
+        robot.splineToPoint(new Pose2d(0, 0, 0), this, true);
     }
 }

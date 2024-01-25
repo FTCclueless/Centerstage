@@ -139,20 +139,20 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true);
-                robot.goToPoint(new Pose2d(-34.0, -11.5, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-34.0, -11.5, Math.PI), this, false, false);
+                robot.splineToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true, false);
+                robot.splineToPoint(new Pose2d(-34.0, -11.5, -Math.PI/2), this, false, false, false);
+                robot.splineToPoint(new Pose2d(-34.0, -11.5, Math.PI), this, false, false, false);
                 break;
             case CENTER:
-                robot.goToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false);
+                robot.splineToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, false);
                 break;
             case RIGHT:
-                robot.goToPoint(new Pose2d(-37, -11.5, Math.PI), this, false, false);
+                robot.splineToPoint(new Pose2d(-37, -11.5, Math.PI), this, false, false, false);
                 break;
         }
 
         robot.intake.setActuationHeight(pixelIndex);
-        robot.splineToPoint(rightInFrontOfStackPose, this, false, true, true);
+        robot.splineToPoint(rightInFrontOfStackPose, this, false, true, false);
     }
 
     public void navigateToBoard() {

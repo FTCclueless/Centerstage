@@ -55,6 +55,10 @@ public class Spline {
     }
 
     public Spline addPoint(Pose2d p) {
+        if (reversed) {
+            p.heading += Math.PI;
+        }
+
         // https://www.desmos.com/calculator/yi3jovk0hp
         Pose2d point = new Pose2d(0,0,0);
 
@@ -135,6 +139,9 @@ public class Spline {
      * @return
      */
     public Spline setReversed(boolean reversed) {
+        if (reversed) {
+            poses.get(poses.size() - 1).heading += Math.PI;
+        }
         this.reversed = reversed;
         return this;
     }
