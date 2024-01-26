@@ -50,7 +50,7 @@ public class Sensors {
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
-    public boolean useIMU = true;
+    public boolean useIMU; // don't change the value here. Change in drivetrain.
     HuskyLens.Block[] huskyLensBlocks;
     private long limitTime = System.currentTimeMillis();
 
@@ -120,7 +120,7 @@ public class Sensors {
     public boolean huskyJustUpdated = false;
 
     private void updateControlHub() {
-//        try {
+        try {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
@@ -133,6 +133,7 @@ public class Sensors {
                 imuLastUpdateTime = currTime;
                 imuJustUpdated = true;
             }
+
             timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
             if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
@@ -160,12 +161,12 @@ public class Sensors {
             } else {
                 huskyJustUpdated = false;
             }
-//        }
-//        catch (Exception e) {
-//            Log.e("******* Error due to ", e.getClass().getName());
-//            e.printStackTrace();
-//            Log.e("******* fail", "control hub failed");
-//        }
+        }
+        catch (Exception e) {
+            Log.e("******* Error due to ", e.getClass().getName());
+            e.printStackTrace();
+            Log.e("******* fail", "control hub failed");
+        }
     }
 
     private void updateExpansionHub() {
