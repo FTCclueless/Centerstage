@@ -35,10 +35,6 @@ public class Localizer {
     public double y = 0;
     public double heading = 0;
 
-    public double odoX = 0;
-    public double odoY = 0;
-    public double odoHeading = 0;
-
     public Pose2d currentPose = new Pose2d(0,0,0);
     public Pose2d currentVel = new Pose2d(0,0,0);
     public Pose2d relCurrentVel = new Pose2d(0,0,0);
@@ -85,9 +81,9 @@ public class Localizer {
     }
 
     public void setPose(double x, double y, double h) {
-        this.odoX = x;
-        this.odoY = y;
-        this.odoHeading += h - this.odoHeading;
+        this.x = x;
+        this.y = y;
+        this.heading += h - this.heading;
         currentPose = new Pose2d(x, y, h);
     }
 
@@ -139,10 +135,10 @@ public class Localizer {
             relDeltaX = Math.sin(deltaHeading) * r1 - (1.0 - Math.cos(deltaHeading)) * r2;
             relDeltaY = (1.0 - Math.cos(deltaHeading)) * r1 + Math.sin(deltaHeading) * r2;
         }
-        odoX += relDeltaX * Math.cos(odoHeading) - relDeltaY * Math.sin(odoHeading);
-        odoY += relDeltaY * Math.cos(odoHeading) + relDeltaX * Math.sin(odoHeading);
+        x += relDeltaX * Math.cos(heading) - relDeltaY * Math.sin(heading);
+        y += relDeltaY * Math.cos(heading) + relDeltaX * Math.sin(heading);
 
-        odoHeading += deltaHeading;
+        heading += deltaHeading;
 
         if (this.sensors.useIMU) {
             updateHeadingWithIMU(sensors.getImuHeading());
@@ -182,18 +178,14 @@ public class Localizer {
                     pose.add(changeInPosition);
                 }
                 Log.e("changeInPosition.heading (deg)", Math.toDegrees(changeInPosition.heading) + "");
-                odoX += changeInPosition.x;
-                odoY += changeInPosition.y;
-                odoHeading += changeInPosition.heading;
+                x += changeInPosition.x;
+                y += changeInPosition.y;
+                heading += changeInPosition.heading;
                 headingDif -= changeInPosition.heading;
             }
         }
 
 //        mergeUltrasonics();
-
-        x = odoX;
-        y = odoY;
-        heading = odoHeading;
 
         currentPose = new Pose2d(x, y, heading);
 
@@ -262,7 +254,7 @@ public class Localizer {
         double headingErrAdd = headingDif * (1/percentHeadingDif);
 
         headingDif -= headingErrAdd;
-        odoHeading += headingErrAdd;
+        heading += headingErrAdd;
     }
 
     double leftDist = 0.0;
@@ -285,29 +277,29 @@ public class Localizer {
 
         Pose2d relativeWallLocationLeft = new Pose2d(leftXOffset + leftDist, leftYOffset);
         Pose2d globalWallLocationLeft = new Pose2d(
-                odoX + Math.cos(heading)*relativeWallLocationLeft.x - Math.sin(heading)*relativeWallLocationLeft.y,
-                odoY + Math.sin(heading)*relativeWallLocationLeft.x + Math.cos(heading)*relativeWallLocationLeft.y
+                x + Math.cos(heading)*relativeWallLocationLeft.x - Math.sin(heading)*relativeWallLocationLeft.y,
+                y + Math.sin(heading)*relativeWallLocationLeft.x + Math.cos(heading)*relativeWallLocationLeft.y
         );
 
         Pose2d relativeWallLocationRight = new Pose2d(rightXOffset + rightDist, rightYOffset);
         Pose2d globalWallLocationRight = new Pose2d(
-                odoX + Math.cos(heading)*relativeWallLocationRight.x - Math.sin(heading)*relativeWallLocationRight.y,
-                odoY + Math.sin(heading)*relativeWallLocationRight.x + Math.cos(heading)*relativeWallLocationRight.y
+                x + Math.cos(heading)*relativeWallLocationRight.x - Math.sin(heading)*relativeWallLocationRight.y,
+                y + Math.sin(heading)*relativeWallLocationRight.x + Math.cos(heading)*relativeWallLocationRight.y
         );
 
         if (Globals.mergeUltrasonics && leftDist != lastLeftDist && rightDist != lastRightDist) { // actually merging localization
             if (Math.abs(globalWallLocationLeft.x - 70.5 * x_sign) < 4) {
-                odoX += (70.5 * x_sign - globalWallLocationLeft.x) * 0.1;
+                x += (70.5 * x_sign - globalWallLocationLeft.x) * 0.1;
             }
             if (Math.abs(globalWallLocationLeft.y - 70.5 * y_sign) < 4) {
-                odoY += (70.5 * y_sign - globalWallLocationLeft.y) * 0.1;
+                y += (70.5 * y_sign - globalWallLocationLeft.y) * 0.1;
             }
 
             if (Math.abs(globalWallLocationRight.x - 70.5 * x_sign) < 4) {
-                odoX += (70.5 * x_sign - globalWallLocationRight.x) * 0.1;
+                x += (70.5 * x_sign - globalWallLocationRight.x) * 0.1;
             }
             if (Math.abs(globalWallLocationRight.y - 70.5 * y_sign) < 4) {
-                odoY += (70.5 * y_sign - globalWallLocationRight.y) * 0.1;
+                y += (70.5 * y_sign - globalWallLocationRight.y) * 0.1;
             }
         }
 
@@ -328,8 +320,8 @@ public class Localizer {
         double forward = (p[0] + p[1] + p[2] + p[3]) / 4;
         double left = (-p[0] + p[1] - p[2] + p[3]) / 4; //left power is less than 1 of forward power
         double turn = (-p[0] - p[1] + p[2] + p[3]) / 4;
-        currentPowerVector.x = forward * Math.cos(odoHeading) - left * Math.sin(odoHeading);
-        currentPowerVector.y = left * Math.cos(odoHeading) + forward * Math.sin(odoHeading);
+        currentPowerVector.x = forward * Math.cos(heading) - left * Math.sin(heading);
+        currentPowerVector.y = left * Math.cos(heading) + forward * Math.sin(heading);
         currentPowerVector.heading = turn;
     }
 
