@@ -189,7 +189,7 @@ public class Localizer {
 
 //        mergeUltrasonics();
 
-        heading = odoHeading + imuMerge + aprilTagHeadingMerge + headingOffset + Globals.START_HEADING_OFFSET;
+        heading = odoHeading + imuMerge + headingOffset + Globals.START_HEADING_OFFSET;
 
         currentPose = new Pose2d(x, y, heading);
 
@@ -257,6 +257,8 @@ public class Localizer {
         if (sensors.imuJustUpdated) {
             headingDif += (imuHeading-lastImuHeading) - (odoHeading-lastOdoHeading);// This is error for heading from IMU
             headingDif = Utils.headingClip(headingDif);
+            lastImuHeading = imuHeading;
+            lastOdoHeading = odoHeading;
         }
         double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1.0e3)/GET_LOOP_TIME();
         if (percentHeadingDif > 1){

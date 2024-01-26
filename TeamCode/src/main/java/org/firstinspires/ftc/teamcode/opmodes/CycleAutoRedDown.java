@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
@@ -32,15 +33,30 @@ public class CycleAutoRedDown extends LinearOpMode {
             waitForStart();
 
             doGroundPreload();
+            Log.e("autoState: ", "navigateAroundGroundPreload" );
             navigateAroundGroundPreload();
+
+            Log.e("autoState: ", "intakeStackInitial" );
             intakeStackInitial();
+
+            Log.e("autoState: ", "navigateToBoard" );
             navigateToBoard();
+
+            Log.e("autoState: ", "doBoardPreload" );
             doBoardPreload();
 
             for (int i = 0; i < numCycles; i++) {
+
+                Log.e("autoState: ", "navigateBackToStack" );
                 navigateBackToStack();
+
+                Log.e("autoState: ", "intakeStack" );
                 intakeStack();
+
+                Log.e("autoState: ", "navigateToBoard" );
                 navigateToBoard();
+
+                Log.e("autoState: ", "depositOnBoard" );
                 depositOnBoard();
             }
 
@@ -68,7 +84,6 @@ public class CycleAutoRedDown extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, true, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(-36.911, -61, -Math.PI / 2));
 
         robot.droppers.leftDown();
         robot.droppers.rightRelease();
@@ -79,6 +94,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         vision.disableAprilTag();
 
         while (opModeInInit() && !isStopRequested()) {
+            robot.drivetrain.setPoseEstimate(new Pose2d(-36.911, -61, -Math.PI / 2));
+
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
@@ -131,7 +148,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         pause(150);
     }
-    Pose2d rightInFrontOfStackPose = new Pose2d(-48, -10.5, Math.PI);
+    Pose2d rightInFrontOfStackPose = new Pose2d(-48.5, -11.5, Math.PI);
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
@@ -139,12 +156,12 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.splineToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true, false);
-                robot.splineToPoint(new Pose2d(-34.0, -11.5, -Math.PI/2), this, false, false, false);
-                robot.splineToPoint(new Pose2d(-34.0, -11.5, Math.PI), this, false, false, false);
+                robot.goToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-34.0, -11.5, -Math.PI/2), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-34.0, -11.5, Math.PI), this, false, false, 1);
                 break;
             case CENTER:
-                robot.splineToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, false);
+                robot.goToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, 1);
                 break;
 //            case RIGHT:
 //                robot.splineToPoint(new Pose2d(-37, -11.5, Math.PI), this, false, false, false);
@@ -152,7 +169,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
 
         robot.intake.setActuationHeight(pixelIndex);
-        robot.splineToPoint(rightInFrontOfStackPose, this, false, true, false);
+        robot.goToPoint(rightInFrontOfStackPose, this, false, true, 0.25);
     }
 
     public void navigateToBoard() {
@@ -164,7 +181,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.splineToPoint(new Pose2d(27.41, -10, Math.toRadians(150)), this, false, false, false);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex);
-        robot.splineToPoint(rightInFrontOfStackPose, this, false, false, false);
+        robot.goToPoint(rightInFrontOfStackPose, this, false, false, 0.25);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -175,7 +192,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
         robot.intake.on();
-        robot.splineToPoint(intakePose, this, true, true, true);
+        robot.goToPoint(intakePose, this, true, true, 0.25);
         pixelIndex--;
         pause(300);
         Globals.NUM_PIXELS = 2;
@@ -186,7 +203,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void intakeStack() {
         Globals.mergeUltrasonics = true;
         deposit = new Vector3(5, 0, 18);
-        robot.splineToPoint(intakePose, this, true, true, true);
+        robot.goToPoint(intakePose, this, true, true, 0.25);
         pause(300);
         pixelIndex--;
         robot.intake.setActuationHeight(pixelIndex);
