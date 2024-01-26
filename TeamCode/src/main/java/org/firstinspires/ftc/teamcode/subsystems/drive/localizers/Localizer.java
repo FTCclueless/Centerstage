@@ -35,6 +35,8 @@ public class Localizer {
     public double y = 0;
     public double heading = 0;
 
+    double odoHeading = 0;
+
     public Pose2d currentPose = new Pose2d(0,0,0);
     public Pose2d currentVel = new Pose2d(0,0,0);
     public Pose2d relCurrentVel = new Pose2d(0,0,0);
@@ -79,11 +81,11 @@ public class Localizer {
             this.encoders[i].update(encoders[i]);
         }
     }
-
+    double headingOffset = 0;
     public void setPose(double x, double y, double h) {
         this.x = x;
         this.y = y;
-        this.heading += h - this.heading;
+        headingOffset += h - this.heading;
         currentPose = new Pose2d(x, y, h);
     }
 
@@ -102,6 +104,7 @@ public class Localizer {
     }
 
     double weight;
+    double aprilTagHeadingMerge = 0;
 
     public void update() {
         // TODO: Remove calculation for TeleOp -- Eric
@@ -138,7 +141,7 @@ public class Localizer {
         x += relDeltaX * Math.cos(heading) - relDeltaY * Math.sin(heading);
         y += relDeltaY * Math.cos(heading) + relDeltaX * Math.sin(heading);
 
-        heading += deltaHeading;
+        odoHeading = (encoders[1].getCurrentDist()-encoders[0].getCurrentDist())/(leftY-rightY);
 
         if (this.sensors.useIMU) {
             updateHeadingWithIMU(sensors.getImuHeading());
@@ -155,7 +158,7 @@ public class Localizer {
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
                         aprilTagPose.x - interpolatedPastPose.x,
                         aprilTagPose.y - interpolatedPastPose.y,
-                        Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading)
+                        Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading - headingDif)
                 );
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
@@ -180,12 +183,13 @@ public class Localizer {
                 Log.e("changeInPosition.heading (deg)", Math.toDegrees(changeInPosition.heading) + "");
                 x += changeInPosition.x;
                 y += changeInPosition.y;
-                heading += changeInPosition.heading;
-                headingDif -= changeInPosition.heading;
+                aprilTagHeadingMerge += changeInPosition.heading;
             }
         }
 
 //        mergeUltrasonics();
+
+        heading = odoHeading + imuMerge + aprilTagHeadingMerge + headingOffset + Globals.START_HEADING_OFFSET;
 
         currentPose = new Pose2d(x, y, heading);
 
@@ -238,10 +242,20 @@ public class Localizer {
     }
 
     double headingDif = 0.0;
+    boolean firstLoop = true;
+    double lastImuHeading;
+    double lastOdoHeading;
+
+    double imuMerge = 0;
 
     public void updateHeadingWithIMU(double imuHeading) {
+        if (firstLoop){
+            lastOdoHeading = odoHeading;
+            lastImuHeading = lastOdoHeading;
+            firstLoop = false;
+        }
         if (sensors.imuJustUpdated) {
-            headingDif += imuHeading-(currentPose.getHeading()+headingDif);
+            headingDif += (imuHeading-lastImuHeading) - (odoHeading-lastOdoHeading);// This is error for heading from IMU
             headingDif = Utils.headingClip(headingDif);
         }
         double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1.0e3)/GET_LOOP_TIME();
@@ -254,7 +268,7 @@ public class Localizer {
         double headingErrAdd = headingDif * (1/percentHeadingDif);
 
         headingDif -= headingErrAdd;
-        heading += headingErrAdd;
+        imuMerge += headingErrAdd;
     }
 
     double leftDist = 0.0;

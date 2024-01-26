@@ -211,7 +211,7 @@ public class Sensors {
     }
 
     public double getImuHeading() {
-        return imuHeading + Globals.START_HEADING_OFFSET;
+        return imuHeading;
     }
 
     public double getVoltage() { return voltage; }
