@@ -131,7 +131,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         pause(150);
     }
-    Pose2d rightInFrontOfStackPose = new Pose2d(-50, -12, Math.PI);
+    Pose2d rightInFrontOfStackPose = new Pose2d(-48, -10.5, Math.PI);
     /**
      * Navigates under stage door
      * If center we route around the ground preload pixel
@@ -146,9 +146,9 @@ public class CycleAutoRedDown extends LinearOpMode {
             case CENTER:
                 robot.splineToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, false);
                 break;
-            case RIGHT:
-                robot.splineToPoint(new Pose2d(-37, -11.5, Math.PI), this, false, false, false);
-                break;
+//            case RIGHT:
+//                robot.splineToPoint(new Pose2d(-37, -11.5, Math.PI), this, false, false, false);
+//                break;
         }
 
         robot.intake.setActuationHeight(pixelIndex);
@@ -164,13 +164,13 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.splineToPoint(new Pose2d(27.41, -10, Math.toRadians(150)), this, false, false, false);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex);
-        robot.splineToPoint(rightInFrontOfStackPose, this, false, true, false);
+        robot.splineToPoint(rightInFrontOfStackPose, this, false, false, false);
     }
 
     int pixelIndex = 4; // 0 index based
     double[] actuationDistances = new double[] {12.75, 12.75, 12.75, 12.75, 12.75}; // 1 <-- 5 pixels
 
-    Pose2d intakePose = new Pose2d(-58, -12, Math.PI); // Eric: Prev -55
+    Pose2d intakePose = new Pose2d(-58, -10.5, Math.PI); // Eric: Prev -55
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -204,6 +204,7 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
+        robot.splineToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, boardPreload.heading), this, false, false, true);
         robot.splineToPoint(boardPreload, this, true, true, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit

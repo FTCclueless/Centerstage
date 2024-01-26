@@ -133,7 +133,7 @@ public class Localizer {
 
         relHistory.add(0,new Pose2d(relDeltaX,relDeltaY,deltaHeading));
 
-        if (deltaHeading != 0) { // this avoids the issue where deltaHeading = 0 and then it goes to undefined. This effectively does L'Hopital's
+        if (Math.abs(deltaHeading) > 0.01) { // this avoids the issue where deltaHeading = 0 and then it goes to undefined. This effectively does L'Hopital's
             double r1 = relDeltaX / deltaHeading;
             double r2 = relDeltaY / deltaHeading;
             relDeltaX = Math.sin(deltaHeading) * r1 - (1.0 - Math.cos(deltaHeading)) * r2;
