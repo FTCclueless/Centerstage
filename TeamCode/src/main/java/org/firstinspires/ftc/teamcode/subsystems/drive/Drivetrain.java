@@ -188,7 +188,7 @@ public class Drivetrain {
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
         ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
 
-        if (path != null){
+        if (path != null) {
             double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
             double radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
             while (radiusToPath < pathRadius && pathIndex != path.poses.size()) {
@@ -200,6 +200,7 @@ public class Drivetrain {
                 pathIndex ++;
             }
             SplinePose2d pathTarget = path.poses.get(Math.min(path.poses.size()-1,pathIndex));
+            lastTargetPoint = targetPoint;
             targetPoint = pathTarget.clone();
             if (pathIndex == path.poses.size()){
                 path = null;
@@ -429,6 +430,14 @@ public class Drivetrain {
         this.finalAdjustment = finalAdjustment;
         this.stop = stop;
         this.maxPower = Math.abs(maxPower);
+
+        Log.e("targetPoint.x", targetPoint.x + "");
+        Log.e("targetPoint.y", targetPoint.y + "");
+        Log.e("targetPoint.heading (deg)", Math.toDegrees(targetPoint.heading) + "");
+
+        Log.e("lastTargetPoint.x", lastTargetPoint.x + "");
+        Log.e("lastTargetPoint.y", lastTargetPoint.y + "");
+        Log.e("lastTargetPoint.heading (deg)", Math.toDegrees(lastTargetPoint.heading) + "");
 
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             this.targetPoint = targetPoint;

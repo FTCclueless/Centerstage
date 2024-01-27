@@ -119,10 +119,6 @@ public class Localizer {
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
-//        Log.e("deltaLeft", deltaLeft + "");
-//        Log.e("deltaRight", deltaRight + "");
-//        Log.e("deltaBack", deltaBack + "");
-
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
@@ -151,10 +147,6 @@ public class Localizer {
             Pose2d aprilTagPose = aprilTagLocalizer.update(); // update april tags
 
             if (aprilTagPose != null && !aprilTagPose.isNaN()) {
-                Log.e("aprilTagPose.heading (deg)", Math.toDegrees(aprilTagPose.heading) + "");
-                Log.e("interpolatedPastPose.heading (deg)", Math.toDegrees(interpolatedPastPose.heading) + "");
-                Log.e("Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading) (deg)",Math.toDegrees(Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading)) + "");
-
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
                         aprilTagPose.x - interpolatedPastPose.x,
                         aprilTagPose.y - interpolatedPastPose.y,
@@ -173,14 +165,11 @@ public class Localizer {
                     changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
                 }
                 if (maxVel < 3 && Math.abs(relCurrentVel.heading) < Math.toRadians(30)) {
-                    Log.e("errorBetweenInterpolatedPastPoseAndAprilTag.heading (deg)", Math.toDegrees(errorBetweenInterpolatedPastPoseAndAprilTag.heading) + "");
-                    Log.e("weight", weight + "");
                     changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }
                 for (Pose2d pose : poseHistory){
                     pose.add(changeInPosition);
                 }
-                Log.e("changeInPosition.heading (deg)", Math.toDegrees(changeInPosition.heading) + "");
                 x += changeInPosition.x;
                 y += changeInPosition.y;
                 aprilTagHeadingMerge += changeInPosition.heading;
@@ -195,9 +184,6 @@ public class Localizer {
 
         nanoTimes.add(0, System.nanoTime());
         poseHistory.add(0,currentPose);
-
-//        Log.e("x", x + "");
-//        Log.e("y", y + "");
 
         updateVelocity();
         updateField();

@@ -89,14 +89,13 @@ public class Robot {
     public void goToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, maxPower); // need this to start the process so thresholds don't immediately become true
-        update(); // mauybe remove?
-        while(((boolean) func.call()) && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        update(); // maybe remove?
+        while(((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             update();
         }
     }
 
-    public void followSpline(Spline spline, Func func, boolean isReversed) {
-        spline.setReversed(isReversed);
+    public void followSpline(Spline spline, Func func) {
         long start = System.currentTimeMillis();
         drivetrain.setPath(spline);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
@@ -104,7 +103,26 @@ public class Robot {
 
         do {
             update();
-        } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy());
+        } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+    }
+
+    public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double xThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
+        long start = System.currentTimeMillis();
+        drivetrain.setFinalAdjustment(finalAdjustment);
+        drivetrain.setStop(stop);
+        drivetrain.setMaxPower(maxPower);
+
+        drivetrain.setPath(spline);
+        drivetrain.state = Drivetrain.State.GO_TO_POINT;
+        update();
+
+        do {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                intake.off();
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
     public void splineToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
@@ -118,7 +136,7 @@ public class Robot {
 
         path.addPoint(clonedPose);
 
-        followSpline(path, func, isReversed);
+        followSpline(path, func);
     }
 
     public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
@@ -148,7 +166,7 @@ public class Robot {
     public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
-        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
@@ -159,7 +177,7 @@ public class Robot {
     public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
-        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 intake.reverse();
                 deposit.depositAt(depositVector3); // async call to deposit
@@ -177,7 +195,7 @@ public class Robot {
 
         drivetrain.setPath(path);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
-        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 intake.reverse();
                 deposit.depositAt(depositVector3); // async call to deposit

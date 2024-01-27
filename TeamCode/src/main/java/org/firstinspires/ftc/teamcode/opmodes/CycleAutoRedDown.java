@@ -35,34 +35,16 @@ public class CycleAutoRedDown extends LinearOpMode {
             waitForStart();
 
             doGroundPreload();
-            Log.e("autoState: ", "navigateAroundGroundPreload" );
             navigateAroundGroundPreload();
-
-            Log.e("autoState: ", "intakeStackInitial" );
             intakeStackInitial();
-
-            Log.e("autoState: ", "navigateToBoard" );
-            navigateToBoard();
-
-            Log.e("autoState: ", "doBoardPreload" );
             doBoardPreload();
 
             for (int i = 0; i < numCycles; i++) {
-
-                Log.e("autoState: ", "navigateBackToStack" );
                 navigateBackToStack();
-
-                Log.e("autoState: ", "intakeStack" );
                 intakeStack();
-
-                Log.e("autoState: ", "navigateToBoard" );
-                navigateToBoard();
-
-                Log.e("autoState: ", "depositOnBoard" );
                 depositOnBoard();
             }
-
-            pause(1000);
+            end();
         } catch (Error e) {
             Log.e("*******************ERROR*******************", e + "");
         }
@@ -125,7 +107,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-35.411, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -30.25, Math.PI);
+                boardPreload =          new Pose2d(49.25, -30.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -133,13 +115,13 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -37.25, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -36.25, Math.PI);
+                boardPreload =          new Pose2d(49.25, -36.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-35.411, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50, -41.41, Math.PI);
+                boardPreload =          new Pose2d(49.25, -41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -174,7 +156,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.splineToPoint(rightInFrontOfStackPose, this, false);
     }
 
-    public void navigateToBoard() {
+    public void navigateToBoardInital() {
         robot.goToPointWithDepositAndIntake(new Pose2d(15, -10, Math.PI), this, false, false, deposit, 0);
         robot.intake.off();
     }
@@ -184,18 +166,18 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex);
         robot.followSpline(
             new Spline(Globals.ROBOT_POSITION, 3)
+                .setReversed(false)
                 .addPoint(new Pose2d(27.41, -10, Math.toRadians(180)))
-                .setReversed(true)
-                .addPoint(rightInFrontOfStackPose),
-            () -> opModeIsActive() && Globals.NUM_PIXELS != 2,
-            false
+                .addPoint(rightInFrontOfStackPose)
+                .addPoint(intakePose),
+            () -> opModeIsActive() && Globals.NUM_PIXELS != 2
         );
     }
 
     int pixelIndex = 4; // 0 index based
     double[] actuationDistances = new double[] {12.75, 12.75, 12.75, 12.75, 12.75}; // 1 <-- 5 pixels
 
-    Pose2d intakePose = new Pose2d(-58, -10.5, Math.PI); // Eric: Prev -55
+    Pose2d intakePose = new Pose2d(-59.75, -11.5, Math.PI); // Eric: Prev -55
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -211,7 +193,6 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void intakeStack() {
         Globals.mergeUltrasonics = true;
         deposit = new Vector3(5, 0, 18);
-        robot.goToPoint(intakePose, this, true, true, 0.25);
         pause(300);
         pixelIndex--;
         robot.intake.setActuationHeight(pixelIndex);
@@ -229,7 +210,20 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.splineToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, boardPreload.heading), this, false, false, true);
+        robot.intake.reverse();
+        robot.followSplineWithIntakeAndDeposit(
+                new Spline(Globals.ROBOT_POSITION, 3)
+                        .setReversed(true)
+                        .addPoint(new Pose2d(22, -10, Math.PI))
+                        .addPoint(new Pose2d(boardPreload.x-7, boardPreload.y, boardPreload.heading)),
+                deposit,
+                0,
+                1.0,
+                false,
+                false
+        );
+        robot.intake.off();
+
         robot.goToPoint(boardPreload, this, true, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
@@ -247,8 +241,21 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.splineToPoint(new Pose2d(42.75, -27.75, Math.PI), this, false, true, true);
-        robot.goToPoint(new Pose2d(49, -27.75, Math.PI), this, false, true);
+        robot.intake.reverse();
+        robot.followSplineWithIntakeAndDeposit(
+                new Spline(Globals.ROBOT_POSITION, 3)
+                        .setReversed(true)
+                        .addPoint(new Pose2d(22, -10, Math.PI))
+                        .addPoint(new Pose2d(42.75, -27.75, Math.PI)),
+                deposit,
+                0,
+                1.0,
+                false,
+                false
+        );
+        robot.intake.off();
+
+        robot.goToPoint(new Pose2d(49.25, -27.75, Math.PI), this, false, true, 1.0);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
@@ -260,12 +267,14 @@ public class CycleAutoRedDown extends LinearOpMode {
     /**
      * Assumes that it is in the parking line row
      */
-    public void park() {
-        robot.splineToPoint(new Pose2d(42, -12, Math.PI), this, false, false, true); // intermediate parking
-        robot.splineToPoint(new Pose2d(58, -12, Math.PI), this, false, true, true); // parking
+    public void end() {
+        robot.deposit.retract();
+        robot.deposit.release.intake();
 
         robot.drivetrain.forceStopAllMotors();
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
+
+        pause(1500);
     }
 
     public void pause (double milliseconds) {
