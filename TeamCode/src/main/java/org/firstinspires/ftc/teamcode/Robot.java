@@ -17,6 +17,7 @@ import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -85,11 +86,11 @@ public class Robot {
         TelemetryUtil.sendTelemetry();
     }
 
-    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
+    public void goToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, maxPower); // need this to start the process so thresholds don't immediately become true
         update(); // mauybe remove?
-        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+        while(((boolean) func.call()) && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             update();
         }
     }
@@ -114,6 +115,10 @@ public class Robot {
         do {
             update();
         } while (opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+    }
+
+    public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
+        goToPoint(pose, opMode::opModeIsActive, finalAdjustment, stop, maxPower);
     }
 
     public void splineToPoint(Pose2d pose, LinearOpMode opmode, boolean isReversed) {

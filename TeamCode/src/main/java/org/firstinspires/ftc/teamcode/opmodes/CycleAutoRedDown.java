@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -181,7 +182,13 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.splineToPoint(new Pose2d(27.41, -10, Math.toRadians(150)), this, false, false, false);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex);
-        robot.goToPoint(rightInFrontOfStackPose, this, false, false, 0.25);
+        robot.goToPoint(
+            rightInFrontOfStackPose,
+            () -> opModeIsActive() && Globals.NUM_PIXELS != 2,
+            false,
+            false,
+            0.25
+        );
     }
 
     int pixelIndex = 4; // 0 index based
