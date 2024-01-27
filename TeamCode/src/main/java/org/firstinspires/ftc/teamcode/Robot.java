@@ -95,26 +95,34 @@ public class Robot {
         }
     }
 
-    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
-        Pose2d clonedPose = pose.clone();
+    public void followSpline(Spline spline, Func func, boolean isReversed) {
+        spline.setReversed(isReversed);
         long start = System.currentTimeMillis();
-        drivetrain.setFinalAdjustment(finalAdjustment);
-        drivetrain.setStop(stop);
-        drivetrain.setMaxPower(maxPower);
-
-        Spline path = new Spline(drivetrain.getPoseEstimate(), 3);
-        double angle = AngleUtil.clipAngle(Math.atan2(clonedPose.y - Globals.ROBOT_POSITION.y, clonedPose.x - Globals.ROBOT_POSITION.x));
-        path.setReversed(isReversed);
-
-        path.addPoint(clonedPose);
-
-        drivetrain.setPath(path);
+        drivetrain.setPath(spline);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
         update();
 
         do {
             update();
-        } while (opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+        } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy());
+    }
+
+    public void splineToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
+        Pose2d clonedPose = pose.clone();
+        drivetrain.setFinalAdjustment(finalAdjustment);
+        drivetrain.setStop(stop);
+        drivetrain.setMaxPower(maxPower);
+
+        Spline path = new Spline(drivetrain.getPoseEstimate(), 3);
+        path.setReversed(isReversed);
+
+        path.addPoint(clonedPose);
+
+        followSpline(path, func, isReversed);
+    }
+
+    public void splineToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
+        splineToPoint(pose, opMode::opModeIsActive, finalAdjustment, stop, maxPower, isReversed);
     }
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double maxPower) {
@@ -151,6 +159,24 @@ public class Robot {
     public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                intake.reverse();
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        }
+    }
+
+    public void splineToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, boolean isReversed, Vector3 depositVector3, double xThreshold) {
+        long start = System.currentTimeMillis();
+        Spline path = new Spline(drivetrain.getPoseEstimate(), 3);
+        path.setReversed(isReversed);
+
+        path.addPoint(pose.clone());
+
+        drivetrain.setPath(path);
+        drivetrain.state = Drivetrain.State.GO_TO_POINT;
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 5000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 intake.reverse();

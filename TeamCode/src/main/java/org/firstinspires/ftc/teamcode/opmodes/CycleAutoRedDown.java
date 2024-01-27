@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -170,24 +171,24 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
 
         robot.intake.setActuationHeight(pixelIndex);
-        robot.goToPoint(rightInFrontOfStackPose, this, false, true, 0.25);
+        robot.splineToPoint(rightInFrontOfStackPose, this, false);
     }
 
     public void navigateToBoard() {
-        robot.goToPointWithDepositAndIntake(new Pose2d(32, -10, Math.PI), this, false, false, deposit, 0);
+        robot.goToPointWithDepositAndIntake(new Pose2d(15, -10, Math.PI), this, false, false, deposit, 0);
         robot.intake.off();
     }
 
     public void navigateBackToStack() {
-        robot.splineToPoint(new Pose2d(27.41, -10, Math.toRadians(150)), this, false, false, false);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex);
-        robot.goToPoint(
-            rightInFrontOfStackPose,
+        robot.followSpline(
+            new Spline(Globals.ROBOT_POSITION, 3)
+                .addPoint(new Pose2d(27.41, -10, Math.toRadians(180)))
+                .setReversed(true)
+                .addPoint(rightInFrontOfStackPose),
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2,
-            false,
-            false,
-            0.25
+            false
         );
     }
 
@@ -229,7 +230,7 @@ public class CycleAutoRedDown extends LinearOpMode {
      */
     public void doBoardPreload() {
         robot.splineToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, boardPreload.heading), this, false, false, true);
-        robot.splineToPoint(boardPreload, this, true, true, true);
+        robot.goToPoint(boardPreload, this, true, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
@@ -246,7 +247,8 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     public void depositOnBoard() {
-        robot.splineToPoint(new Pose2d(49.75, -27.75, Math.PI), this, false, true, true);
+        robot.splineToPoint(new Pose2d(42.75, -27.75, Math.PI), this, false, true, true);
+        robot.goToPoint(new Pose2d(49, -27.75, Math.PI), this, false, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

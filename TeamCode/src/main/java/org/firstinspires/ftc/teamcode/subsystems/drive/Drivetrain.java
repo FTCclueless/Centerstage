@@ -330,7 +330,7 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    public static PID xPID = new PID(0.085,0.0,0.01);
+    public static PID xPID = new PID(0.07,0.0,0.01);
     public static PID yPID = new PID(0.1575,0.0,0.015);
     public static PID turnPID = new PID(0.5,0.0,0.01);
 
@@ -346,7 +346,7 @@ public class Drivetrain {
 
     public static PID finalXPID = new PID(0.1, 0.0,0.0);
     public static PID finalYPID = new PID(0.1, 0.0,0.0);
-    public static PID finalTurnPID = new PID(0.075, 0.0,0.0);
+    public static PID finalTurnPID = new PID(0.5, 0.0,0.0);
 
     public void finalAdjustment() {
         double fwd = Math.abs(xError) > finalXThreshold/2 ? finalXPID.update(xError, -maxPower, maxPower) : 0;
@@ -415,6 +415,8 @@ public class Drivetrain {
         TelemetryUtil.packet.put("xError", xError);
         TelemetryUtil.packet.put("yError", yError);
         TelemetryUtil.packet.put("turnError (deg)", Math.toDegrees(turnError));
+
+        TelemetryUtil.packet.put("maxPower", maxPower);
 
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
@@ -507,6 +509,11 @@ public class Drivetrain {
     }
 
     public void setMotorPowers(double lf, double lr, double rr, double rf) {
+        TelemetryUtil.packet.put("lf power", lf);
+        TelemetryUtil.packet.put("lr power", lr);
+        TelemetryUtil.packet.put("rr power", rr);
+        TelemetryUtil.packet.put("rf power", rf);
+
         leftFront.setTargetPower(lf);
         leftRear.setTargetPower(lr);
         rightRear.setTargetPower(rr);
