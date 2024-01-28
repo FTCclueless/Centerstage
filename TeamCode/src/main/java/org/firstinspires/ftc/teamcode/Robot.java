@@ -106,7 +106,7 @@ public class Robot {
         } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double xThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
+    public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
@@ -117,9 +117,14 @@ public class Robot {
         update();
 
         do {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            intake.actuationFullyUp();
+            if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
                 deposit.depositAt(depositVector3); // async call to deposit
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
+                intake.reverse();
             }
             update();
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());

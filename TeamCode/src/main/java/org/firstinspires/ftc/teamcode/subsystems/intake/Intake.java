@@ -38,7 +38,7 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.30258678, 0.21853489, 0.06163804, -0.0336207533, -0.162500308}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {0.34741445, 0.257759109, 0.162500308, -0.067241506, -0.1512933902}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.417675;
 
     // stall checking variables

@@ -36,12 +36,12 @@ public class Deposit {
     double targetX = 0.0;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.2633625;
+    public static double v4BarTransferAngle = -0.173707225;
     public static double v4BarGrabAngle = -0.04482767;
     public static double v4BarDepositAngle = -3.2724194;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.87974304;
+    public static double topServoTransferAngle = -0.918967259;
     public static double topServoGrabAngle = -0.9637949;
     public static double topServoDepositAngle = 2.06767633;
     public static double topServoRetractAngle = 0.7060358;
@@ -115,8 +115,8 @@ public class Deposit {
     long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
 
-    double v4ServoPower = 0.70;
-    double topServoPower = 1.0;
+    public static double v4ServoPower = 1.0;
+    public static double topServoPower = 1.0;
 
     public void update() {
         TelemetryUtil.packet.put("Deposit State", state);

@@ -431,14 +431,6 @@ public class Drivetrain {
         this.stop = stop;
         this.maxPower = Math.abs(maxPower);
 
-        Log.e("targetPoint.x", targetPoint.x + "");
-        Log.e("targetPoint.y", targetPoint.y + "");
-        Log.e("targetPoint.heading (deg)", Math.toDegrees(targetPoint.heading) + "");
-
-        Log.e("lastTargetPoint.x", lastTargetPoint.x + "");
-        Log.e("lastTargetPoint.y", lastTargetPoint.y + "");
-        Log.e("lastTargetPoint.heading (deg)", Math.toDegrees(lastTargetPoint.heading) + "");
-
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             this.targetPoint = targetPoint;
             lastTargetPoint = targetPoint;

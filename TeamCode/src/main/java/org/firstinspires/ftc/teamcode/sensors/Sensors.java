@@ -35,7 +35,6 @@ public class Sensors {
     private final DigitalChannel depositBeamBreak;
     private HuskyLens huskyLens;
     private final AnalogInput distLeft, distRight;
-    private final DigitalChannel limitSwitch1, limitSwitch2;
 
     private int slidesEncoder;
     private double slidesVelocity;
@@ -52,7 +51,6 @@ public class Sensors {
     private double imuHeading = 0.0;
     public boolean useIMU; // don't change the value here. Change in drivetrain.
     HuskyLens.Block[] huskyLensBlocks;
-    private long limitTime = System.currentTimeMillis();
 
     public static double voltageK = 0.3;
 
@@ -70,9 +68,6 @@ public class Sensors {
             Log.e("HuskyLens", "Init successfully");
         distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
         distRight = hardwareMap.get(AnalogInput.class, "distRight");
-
-        limitSwitch1 = hardwareMap.get(DigitalChannel.class, "limitSwitch1");
-        limitSwitch2 = hardwareMap.get(DigitalChannel.class, "limitSwitch2");
 
         initSensors(hardwareMap);
     }
@@ -120,7 +115,7 @@ public class Sensors {
     public boolean huskyJustUpdated = false;
 
     private void updateControlHub() {
-        try {
+//        try {
             odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
             odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
             odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
@@ -150,10 +145,6 @@ public class Sensors {
             distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
             distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
-            if (limitSwitch1.getState() || limitSwitch2.getState()) {
-                limitTime = currTime;
-            }
-
             if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
                 huskyLensBlocks = huskyLens.blocks();
                 lastHuskyLensUpdatedTime = currTime;
@@ -161,12 +152,12 @@ public class Sensors {
             } else {
                 huskyJustUpdated = false;
             }
-        }
-        catch (Exception e) {
-            Log.e("******* Error due to ", e.getClass().getName());
-            e.printStackTrace();
-            Log.e("******* fail", "control hub failed");
-        }
+//        }
+//        catch (Exception e) {
+//            Log.e("******* Error due to ", e.getClass().getName());
+//            e.printStackTrace();
+//            Log.e("******* fail", "control hub failed");
+//        }
     }
 
     private void updateExpansionHub() {
@@ -219,10 +210,6 @@ public class Sensors {
     public double getDistLeft() { return distLeftVal; }
 
     public double getDistRight() { return distRightVal; }
-
-    public boolean getLimit() {
-        return (System.currentTimeMillis() - limitTime < 100);
-    }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;
