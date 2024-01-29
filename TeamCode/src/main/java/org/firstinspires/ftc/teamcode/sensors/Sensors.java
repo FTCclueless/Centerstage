@@ -73,7 +73,7 @@ public class Sensors {
     }
 
     private void initSensors(HardwareMap hardwareMap) {
-        try {
+//        try {
             controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
             controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
@@ -92,9 +92,9 @@ public class Sensors {
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
             huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_TRACKING);
-        } catch (Exception e) {
-            throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
-        }
+//        } catch (Exception e) {
+//            throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
+//        }
     }
 
     public void update() {

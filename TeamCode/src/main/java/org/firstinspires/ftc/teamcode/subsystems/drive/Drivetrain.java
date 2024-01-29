@@ -140,7 +140,7 @@ public class Drivetrain {
         rightFront.setMinimumPowerToOvercomeFriction(0.0);
     }
 
-    Pose2d targetPoint = new Pose2d(0,0,0);
+    public Pose2d targetPoint = new Pose2d(0,0,0);
     Pose2d lastTargetPoint = new Pose2d(0,0,0);
 
     double xError = 0.0;

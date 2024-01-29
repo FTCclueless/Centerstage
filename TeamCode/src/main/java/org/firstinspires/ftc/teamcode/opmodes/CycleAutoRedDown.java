@@ -7,14 +7,14 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
-import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
-import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 @Autonomous(name = "RED Cycle Auto Down")
 public class CycleAutoRedDown extends LinearOpMode {
@@ -25,8 +25,41 @@ public class CycleAutoRedDown extends LinearOpMode {
     private long start;
     private Vector3 deposit = null;
     private Pose2d boardPreload = null;
+    public static double fx = 0.15;
+    public static double fy = 0.15;
+    public static double fh = 0.01; // JANK
 
     private int numCycles = 2;
+
+    // Janky method that I don't want to type 3 times
+    public void preciseIntake() {
+        Log.e("pixelIndex", pixelIndex + "");
+        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+        double limitYp = intakePose.getY() + 5;
+        double limitYn = intakePose.getY() - 5;
+         robot.goToPoint(
+             new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading()),
+                 () -> {
+                     int sign = 1;
+                     // Hella janky way to insert ourselves into the update() function
+                     if ((System.currentTimeMillis() - start.get()) > 500) {
+                         //pixelIndex = Math.max(0, index - 1);
+                         robot.intake.setActuationAngle(robot.intake.actuation.getTargetAngle() + 0.2, 1);
+                         //robot.intake.setActuationHeight(pixelIndex);
+                         // Lord forgive me
+                         robot.drivetrain.targetPoint.x -= 0.2;
+                         start.set(System.currentTimeMillis());
+                     }
+                     if (robot.drivetrain.targetPoint.y >= limitYp || robot.drivetrain.targetPoint.y <= limitYn) {
+                         sign *= -1;
+                     }
+                     robot.drivetrain.targetPoint.y += 0.2 * sign;
+                     return Globals.NUM_PIXELS != 2 && opModeIsActive();
+                 },
+            false, 0.2,
+            fx, fy, fh
+        );
+    }
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -166,25 +199,27 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2
         );
+        preciseIntake();
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-60, -59.75, -59.50, -59.15, -58.75}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-61, -60.5, -60.3, -60, -59.3}; // 1 <-- 5 pixels
 
-    Pose2d intakePose = new Pose2d(-59, -11.5, Math.PI);
+    Pose2d intakePose = new Pose2d(-59.4, -11.5, Math.PI);
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
         robot.intake.setActuationHeight(pixelIndex);
         robot.intake.on();
         robot.followSpline(
-                new Spline(Globals.ROBOT_POSITION, 3)
-                        .setReversed(false)
-                        .addPoint(rightInFrontOfStackPose)
-                        .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
-                () -> opModeIsActive() && Globals.NUM_PIXELS != 2
+            new Spline(Globals.ROBOT_POSITION, 3)
+                .setReversed(false)
+                .addPoint(rightInFrontOfStackPose)
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
+            () -> opModeIsActive() && Globals.NUM_PIXELS != 2
         );
-        pixelIndex--;
+        preciseIntake();
+        pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(300);
         Globals.NUM_PIXELS = 2;
         deposit = new Vector3(5, 0, 9.5);
@@ -195,11 +230,11 @@ public class CycleAutoRedDown extends LinearOpMode {
         Globals.mergeUltrasonics = true;
         deposit = new Vector3(5, 0, 18);
         pause(300);
-        pixelIndex--;
+        pixelIndex = Math.max(pixelIndex - 1, 0);
         robot.intake.setActuationHeight(pixelIndex);
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading()), this, true, true, 0.25);
+        preciseIntake();
         pause(300);
-        pixelIndex--;
+        pixelIndex = Math.max(pixelIndex - 1, 0);
         Globals.NUM_PIXELS = 2;
         deposit = new Vector3(5, 0, 9+(4-pixelIndex));
         Globals.mergeUltrasonics = false;
