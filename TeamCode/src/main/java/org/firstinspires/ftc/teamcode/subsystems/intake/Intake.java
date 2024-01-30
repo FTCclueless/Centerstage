@@ -38,14 +38,14 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.34741445, 0.257759109, 0.162500308, -0.067241506, -0.1512933902}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {0.420259427, 0.26896627, 0.196121061383, 0.123276095, -0.03922421227}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.417675;
 
     // stall checking variables
     double intakeDebounce;
     double stallStart;
     double intakeCheck;
-    public static double stallThresh = 4500;
+    public static double stallThresh = 10000; // 4500
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {
@@ -63,7 +63,7 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 275;
+    public static int pixelTouchingDist = 260;
     private double confirmationLoops = 0;
     public static double desiredConfirmationLoops = 15;
     private long goReverseStart = 0;
@@ -99,12 +99,12 @@ public class Intake {
     }
 
     public void update() {
-//        TelemetryUtil.packet.put("Intake Motor State", motorState);
-//        TelemetryUtil.packet.put("Intake Stall State", stallState);
-//        TelemetryUtil.packet.put("Intake Pixel Check State", pixelCheckState);
+        TelemetryUtil.packet.put("Intake Motor State", motorState);
+        TelemetryUtil.packet.put("Intake Stall State", stallState);
+        TelemetryUtil.packet.put("Intake Pixel Check State", pixelCheckState);
 //
-//        TelemetryUtil.packet.put("Intake Current", intakeCurrent);
-//        TelemetryUtil.packet.put("Intake Pixel Color Sensor Dist", dist);
+        TelemetryUtil.packet.put("Intake Current", intakeCurrent);
+        TelemetryUtil.packet.put("Intake Pixel Color Sensor Dist", dist);
 
         switch (motorState) {
             case ON:
