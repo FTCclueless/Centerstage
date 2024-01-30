@@ -152,6 +152,19 @@ public class Robot {
         goToPoint(pose, opMode::opModeIsActive, finalAdjustment, stop, maxPower);
     }
 
+    public void goToPoint(Pose2d pose, Func func, boolean stop, double maxPower, double fX, double fY, double fH) {
+        double tx = Drivetrain.finalXThreshold;
+        double ty = Drivetrain.finalYThreshold;
+        double th = Drivetrain.finalTurnThreshold;
+        Drivetrain.finalXThreshold = fX;
+        Drivetrain.finalYThreshold = fY;
+        Drivetrain.finalTurnThreshold = fH;
+        goToPoint(pose, func, true, stop, maxPower);
+        Drivetrain.finalXThreshold = tx;
+        Drivetrain.finalYThreshold = ty;
+        Drivetrain.finalTurnThreshold = th;
+    }
+
     public void splineToPoint(Pose2d pose, LinearOpMode opmode, boolean isReversed) {
         splineToPoint(pose, opmode, false, true, isReversed);
     }
