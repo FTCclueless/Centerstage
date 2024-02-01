@@ -94,21 +94,21 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-35.411, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50.25, -30.25, Math.PI);
+                boardPreload =          new Pose2d(49.50, -30.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 robot.goToPoint(new Pose2d(-43.4, -34.6, -Math.toRadians(50)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -35.25, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-36.25, -33.5, -Math.PI/2);
                 boardPreload =          new Pose2d(49.50, -36.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-35.411, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(50.25, -41.41, Math.PI);
+                boardPreload =          new Pose2d(49.50, -41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
