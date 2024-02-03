@@ -94,20 +94,18 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(11.8, -43.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -29, Math.PI);
+                boardPreload =          new Pose2d(48.75, -29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(8.8, -33.5, -Math.toRadians(30)), this, false, false);
+                robot.goToPoint(new Pose2d(8.8, -33.5, -Math.toRadians(70)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(24, -32.5, Math.PI), this, false, false);
-
-                deposit = new Vector3(5, 0, 10);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(15, -32, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -36.41, Math.PI);
+                groundPreloadPosition = new Pose2d(15, -30.5, -Math.PI/2);
+                boardPreload =          new Pose2d(48.75, -37.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -117,17 +115,15 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 robot.goToPoint(new Pose2d(15, -38.5, Math.PI), this, false, false);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(11.8, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -41.5, Math.PI);
+                groundPreloadPosition = new Pose2d(14, -46.5, -Math.PI/2);
+                boardPreload =          new Pose2d(48.75, -41.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(18.5, -33.5, -Math.toRadians(135)), this, false, false);
+                robot.goToPoint(new Pose2d(21.5, -33.5, -Math.toRadians(135)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(21, -37.5, Math.PI), this, false, false);
-
-                deposit = new Vector3(5, 0, 10);
                 break;
         }
     }
