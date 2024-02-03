@@ -93,26 +93,26 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-35.411, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49.50, -30.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -29, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 robot.goToPoint(new Pose2d(-43.4, -34.6, -Math.toRadians(50)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -33.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49.50, -36.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -32.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -35.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(-35.411, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49.50, -41.41, Math.PI);
+                groundPreloadPosition = new Pose2d(-35.25, -51, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-32, -33.5, -Math.toRadians(140)), this, false, true);
+                robot.goToPoint(new Pose2d(-32, -33.5, -Math.toRadians(120)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
@@ -125,23 +125,28 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
      * If center we route around the ground preload pixel
      */
     public void navigateToBoard() {
+        deposit = new Vector3(5, 0, 8.5);
+
         switch (teamPropLocation) {
             case LEFT:
                 robot.goToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true);
                 robot.goToPoint(new Pose2d(-34.0, -8.5, -Math.PI/2), this, false, false);
                 robot.goToPoint(new Pose2d(-34.0, -8.5, Math.PI), this, false, false);
+
+                deposit = new Vector3(5, 0, 10);
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-51.5, -8.5, Math.PI), this, false, false);
                 break;
             case RIGHT:
                 robot.goToPoint(new Pose2d(-37, -8.5, Math.PI), this, false, false);
+
+                deposit = new Vector3(5, 0, 10);
                 break;
         }
 
-        deposit = new Vector3(5, 0, 9.5);
         robot.goToPointWithDeposit(new Pose2d(28, -8.5, Math.PI), this, false, false, deposit,0);
-        robot.goToPoint(new Pose2d(28, -8.5, Math.toRadians(135)), this, false, true); // face toward tags to relocalize while we wait
+        robot.goToPoint(new Pose2d(26, -8.5, Math.toRadians(135)), this, false, true); // face toward tags to relocalize while we wait
         //pause(10000); // waiting for teammate to deposit their preload
     }
 
