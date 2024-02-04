@@ -43,12 +43,12 @@ public class Deposit {
     // top servo angles
     public static double topServoTransferAngle = -0.918967259;
     public static double topServoGrabAngle = -0.9637949;
-    public static double topServoDepositAngle = 2.06767633;
+    public static double topServoDepositAngle = 1.938;
     public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode
-    public static double v4BarReadjustAngle = -3.0090574;
-    public static double topServoReadjustAngle = 2.2245731819;
+    public static double v4BarReadjustAngle = -3.9896627;
+    public static double topServoReadjustAngle = -1.09827794;
 
     // old readjustment values
 //    public static double v4BarReadjustAngle = -2.75124228;
@@ -115,7 +115,7 @@ public class Deposit {
     long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
 
-    public static double v4ServoPower = 0.7;
+    public static double v4ServoPower = 0.99;
     public static double topServoPower = 1.0;
 
     public void update() {
@@ -173,12 +173,12 @@ public class Deposit {
 
                 if (inPixelAdjustmentMode) {
                     alreadySwitched = true;
-                    endAffector.v4Servo.setTargetAngle(v4BarReadjustAngle,0.65);
-                    endAffector.topServo.setTargetAngle(topServoReadjustAngle,0.65);
+                    endAffector.v4Servo.setTargetAngle(v4BarReadjustAngle,v4ServoPower);
+                    endAffector.topServo.setTargetAngle(topServoReadjustAngle,topServoPower);
                 } else {
                     if (alreadySwitched) {
-                        endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,0.65);
-                        endAffector.topServo.setTargetAngle(topServoDepositAngle,0.65);
+                        endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
+                        endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
                     } else {
                         endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
                         endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);

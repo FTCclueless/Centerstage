@@ -38,14 +38,14 @@ public class Intake {
     public static double intakePower = 1.0; // TODO: Made this editable in FTC dashboard
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {0.420259427, 0.26896627, 0.196121061383, 0.123276095, -0.03922421227}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {0.31379369, 0.26896627, 0.196121061383, 0.123276095, -0.03922421227}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.417675;
 
     // stall checking variables
     double intakeDebounce;
     double stallStart;
     double intakeCheck;
-    public static double stallThresh = 10000; // 4500
+    public static double stallThresh = 4500; // 4500
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {

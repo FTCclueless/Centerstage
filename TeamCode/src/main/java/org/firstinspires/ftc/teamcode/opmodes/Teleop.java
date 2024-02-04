@@ -70,7 +70,7 @@ public class Teleop extends LinearOpMode {
         waitForStart();
 
         boolean depoFlag = false;
-        double driver2SlidesAdjustmentConstant = 0.35; // make sure to change lines 176
+        double driver2SlidesAdjustmentConstant; // make sure to change lines 176
 
         while (!isStopRequested()) {
             // update robot
@@ -177,7 +177,7 @@ public class Teleop extends LinearOpMode {
             // driver B adjusting deposit position
 
             if (robot.deposit.inPixelAdjustmentMode) {
-                driver2SlidesAdjustmentConstant = 0.175;
+                driver2SlidesAdjustmentConstant = 0.25;
             } else {
                 driver2SlidesAdjustmentConstant = 0.35;
             }
@@ -213,7 +213,8 @@ public class Teleop extends LinearOpMode {
                 robot.deposit.releaseTwo();
             }
             // pixel adjustment toggle
-            if (x_2.isClicked(gamepad2.x) && robot.deposit.state == Deposit.State.DEPOSIT)  {
+//            if (x_2.isClicked(gamepad2.x) && robot.deposit.state == Deposit.State.DEPOSIT)  {
+            if (x_2.isClicked(gamepad2.x))  {
                 robot.deposit.togglePixelAdjustmentMode();
             }
 
