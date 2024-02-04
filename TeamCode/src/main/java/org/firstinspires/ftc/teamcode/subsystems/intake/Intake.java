@@ -45,7 +45,7 @@ public class Intake {
     double intakeDebounce;
     double stallStart;
     double intakeCheck;
-    public static double stallThresh = 4500; // 4500
+    public static double stallThresh = 10000; // 4500
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {
