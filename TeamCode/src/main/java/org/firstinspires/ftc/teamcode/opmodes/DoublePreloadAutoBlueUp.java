@@ -56,7 +56,6 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, false, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 60.5, Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
 
         robot.droppers.leftDown();
         robot.droppers.rightRelease();
@@ -70,6 +69,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
+            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 60.5, Math.PI / 2));
 
             robot.update();
         }
@@ -93,19 +93,19 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(50.25, 41.5, Math.PI);
+                groundPreloadPosition = new Pose2d(13.5, 46.5, Math.PI/2);
+                boardPreload =          new Pose2d(48.75, 40.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(20, 33.5, Math.toRadians(135)), this, false, false);
+                robot.goToPoint(new Pose2d(21, 33.5, Math.toRadians(135)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(21, 37.5, Math.PI), this, false, false);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(11.8, 34, Math.PI/2);
-                boardPreload =          new Pose2d(50.25, 36.41, Math.PI);
+                groundPreloadPosition = new Pose2d(15, 31, Math.PI/2);
+                boardPreload =          new Pose2d(48.25, 34.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -116,14 +116,14 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(50.25, 27.5, Math.PI);
+                boardPreload =          new Pose2d(48.75, 29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(6.8, 33.5, Math.toRadians(45)), this, false, false);
+                robot.goToPoint(new Pose2d(8.8, 33.5, Math.toRadians(45)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
-                robot.goToPoint(new Pose2d(24, 32.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(24, 31.5, Math.PI), this, false, false);
                 break;
         }
     }
@@ -132,7 +132,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
         robot.droppers.leftRelease();
         pause(150);
 
-        deposit = new Vector3(5, 0, 7);
+        deposit = new Vector3(5, 0, 8.5);
         robot.deposit.depositAt(deposit); // async call to deposit
     }
 

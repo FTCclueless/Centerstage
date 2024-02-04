@@ -57,7 +57,6 @@ public class DoublePreloadAutoBlueDown extends LinearOpMode {
         vision = new Vision(hardwareMap, telemetry, false, true, true);
         robot = new Robot(hardwareMap, vision);
 
-        robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, 60.5, Math.PI / 2));
 
         robot.droppers.rightDown();
         robot.droppers.leftRelease();
@@ -71,6 +70,7 @@ public class DoublePreloadAutoBlueDown extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
+            robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, 60.5, Math.PI / 2));
 
             robot.update();
         }
@@ -94,23 +94,23 @@ public class DoublePreloadAutoBlueDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-35.411, 49.5, Math.PI/2);
-                boardPreload =          new Pose2d(50.0, 41.41, Math.PI);
+                groundPreloadPosition = new Pose2d(-35.25, 51, Math.PI/2);
+                boardPreload =          new Pose2d(49, 41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-32, 33.5, Math.toRadians(140)), this, false, true);
+                robot.goToPoint(new Pose2d(-32, 33.5, Math.toRadians(120)), this, false, true);
                 break;
 
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, 38.25, Math.PI/2);
-                boardPreload =          new Pose2d(50.0, 36.0, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, 32.5, Math.PI/2);
+                boardPreload =          new Pose2d(49, 35.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(-35.411, 42.5, Math.PI/2);
-                boardPreload =          new Pose2d(50.0, 27.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, 42.5, Math.PI/2);
+                boardPreload =          new Pose2d(49, 29, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -135,9 +135,9 @@ public class DoublePreloadAutoBlueDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-51.5, 8.5, Math.PI), this, false, false);
                 break;
             case RIGHT:
-                robot.goToPoint(new Pose2d(-36.5, 34.6, Math.PI/2), this, false, true);
-                robot.goToPoint(new Pose2d(-36.5, 8.5, Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-36.5, 8.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(-34.0, 34.6, Math.PI/2), this, false, true);
+                robot.goToPoint(new Pose2d(-34.0, 8.5, Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(-34.0, 8.5, Math.PI), this, false, false);
                 break;
         }
 

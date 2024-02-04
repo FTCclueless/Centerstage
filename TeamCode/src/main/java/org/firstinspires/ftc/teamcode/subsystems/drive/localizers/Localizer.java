@@ -155,7 +155,7 @@ public class Localizer {
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
-                weight = Math.max(1/Math.max(maxVel,10), minAprilTagWeight); // as speed increases we should decrease weight of april tags
+                weight = Math.max(1/Math.max(maxVel,8), minAprilTagWeight); // as speed increases we should decrease weight of april tags
 //                weight/=5;
 
                 // resetting odo with april tag data
