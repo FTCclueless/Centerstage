@@ -454,6 +454,7 @@ public class Drivetrain {
     }
 
     public void setPath(Spline path) {
+        pathIndex = 0;
         this.path = path;
     }
 
