@@ -55,6 +55,7 @@ public class Spline {
     }
 
     public Spline addPoint(Pose2d p) {
+        p = p.clone();
         if (reversed) {
             p.heading += Math.PI;
         }
