@@ -31,36 +31,6 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     private int numCycles = 2;
 
-    // Janky method that I don't want to type 3 times
-    public void preciseIntake() {
-        Log.e("pixelIndex", pixelIndex + "");
-        AtomicLong start = new AtomicLong(System.currentTimeMillis());
-        double limitYp = intakePose.getY() + 5;
-        double limitYn = intakePose.getY() - 5;
-         robot.goToPoint(
-             new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading()),
-                 () -> {
-                     int sign = 1;
-                     // Hella janky way to insert ourselves into the update() function
-                     if ((System.currentTimeMillis() - start.get()) > 500) {
-                         //pixelIndex = Math.max(0, index - 1);
-                         robot.intake.setActuationAngle(robot.intake.actuation.getTargetAngle() + 0.2, 1);
-                         //robot.intake.setActuationHeight(pixelIndex);
-                         // Lord forgive me
-                         robot.drivetrain.targetPoint.x -= 0.2;
-                         start.set(System.currentTimeMillis());
-                     }
-                     if (robot.drivetrain.targetPoint.y >= limitYp || robot.drivetrain.targetPoint.y <= limitYn) {
-                         sign *= -1;
-                     }
-                     robot.drivetrain.targetPoint.y += 0.2 * sign;
-                     return Globals.NUM_PIXELS != 2 && opModeIsActive();
-                 },
-            false, 0.2,
-            fx, fy, fh
-        );
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
         try {
@@ -139,31 +109,31 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-35.411, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -30.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -29, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-45, -34.6, -Math.toRadians(50)), this, false, true);
+                robot.goToPoint(new Pose2d(-43.4, -34.6, -Math.toRadians(50)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -37.25, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -36.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -32.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -35.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(-35.411, -49.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -41.41, Math.PI);
+                groundPreloadPosition = new Pose2d(-35.25, -51, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -41.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-33, -34, -Math.toRadians(120)), this, false, true);
+                robot.goToPoint(new Pose2d(-32, -33.5, -Math.toRadians(120)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
 
-//        pause(150);
+        pause(150);
     }
     Pose2d rightInFrontOfStackPose = new Pose2d(-48.5, -11.5, Math.PI);
     /**
@@ -199,11 +169,10 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2
         );
-        preciseIntake();
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-61, -60.5, -60.3, -60, -59.3}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-59.75, -59.5, -59.25, -59, -57.8}; // 1 <-- 5 pixels
 
     Pose2d intakePose = new Pose2d(-59.4, -11.5, Math.PI);
 
@@ -218,7 +187,6 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2
         );
-        preciseIntake();
         pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(300);
         Globals.NUM_PIXELS = 2;
@@ -232,7 +200,6 @@ public class CycleAutoRedDown extends LinearOpMode {
         pause(300);
         pixelIndex = Math.max(pixelIndex - 1, 0);
         robot.intake.setActuationHeight(pixelIndex);
-        preciseIntake();
         pause(300);
         pixelIndex = Math.max(pixelIndex - 1, 0);
         Globals.NUM_PIXELS = 2;
@@ -299,6 +266,36 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.releaseOne();
         pause(150);
         robot.releaseOne();
+    }
+
+    // Janky method that I don't want to type 3 times
+    public void preciseIntake() {
+        Log.e("pixelIndex", pixelIndex + "");
+        AtomicLong start = new AtomicLong(System.currentTimeMillis());
+        double limitYp = intakePose.getY() + 5;
+        double limitYn = intakePose.getY() - 5;
+        robot.goToPoint(
+                new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading()),
+                () -> {
+                    int sign = 1;
+                    // Hella janky way to insert ourselves into the update() function
+                    if ((System.currentTimeMillis() - start.get()) > 500) {
+                        //pixelIndex = Math.max(0, index - 1);
+                        robot.intake.setActuationAngle(robot.intake.actuation.getTargetAngle() + 0.2, 1);
+                        //robot.intake.setActuationHeight(pixelIndex);
+                        // Lord forgive me
+                        robot.drivetrain.targetPoint.x -= 0.2;
+                        start.set(System.currentTimeMillis());
+                    }
+                    if (robot.drivetrain.targetPoint.y >= limitYp || robot.drivetrain.targetPoint.y <= limitYn) {
+                        sign *= -1;
+                    }
+                    robot.drivetrain.targetPoint.y += 0.2 * sign;
+                    return Globals.NUM_PIXELS != 2 && opModeIsActive();
+                },
+                false, 0.2,
+                fx, fy, fh
+        );
     }
 
     /**

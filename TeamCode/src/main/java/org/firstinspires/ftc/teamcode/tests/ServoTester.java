@@ -23,6 +23,9 @@ import java.util.ArrayList;
 @Config
 @TeleOp(group = "Test")
 public class ServoTester extends LinearOpMode {
+
+    public static double intakePower = 1.0;
+
     @Override
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
@@ -94,7 +97,7 @@ public class ServoTester extends LinearOpMode {
                 if (intakeOn) {
                     robot.intake.intake.setTargetPower(0.0);
                 } else {
-                    robot.intake.intake.setTargetPower(1.0);
+                    robot.intake.intake.setTargetPower(intakePower);
                 }
                 intakeOn = !intakeOn;
             }

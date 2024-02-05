@@ -29,6 +29,8 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             doInitialization();
             waitForStart();
 
+//            pause(15000);
+
             doGroundPreload();
             navigateToBoard();
             doBoardPreload();
@@ -125,7 +127,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
      * If center we route around the ground preload pixel
      */
     public void navigateToBoard() {
-        deposit = new Vector3(5, 0, 8.5);
+        deposit = new Vector3(5, 0, 10);
 
         switch (teamPropLocation) {
             case LEFT:
@@ -137,6 +139,8 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-51.5, -8.5, Math.PI), this, false, false);
+
+                deposit = new Vector3(5, 0, 10);
                 break;
             case RIGHT:
                 robot.goToPoint(new Pose2d(-37, -8.5, Math.PI), this, false, false);
@@ -145,9 +149,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
                 break;
         }
 
-        robot.goToPointWithDeposit(new Pose2d(28, -8.5, Math.PI), this, false, false, deposit,0);
-        robot.goToPoint(new Pose2d(26, -8.5, Math.toRadians(135)), this, false, true); // face toward tags to relocalize while we wait
-        //pause(10000); // waiting for teammate to deposit their preload
+        robot.goToPointWithDeposit(new Pose2d(26, -8.5, Math.PI), this, false, false, deposit,0);
     }
 
     /**
@@ -168,12 +170,12 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
      * Assumes that it is in the parking line row
      */
     public void park() {
-        //robot.goToPoint(new Pose2d(42, -9, Math.PI), this, false, false); // intermediate parking
-        //robot.goToPoint(new Pose2d(58, -9, Math.PI), this, false, true); // parking
+        robot.goToPoint(new Pose2d(42, -9, Math.PI), this, false, false); // intermediate parking
+        robot.goToPoint(new Pose2d(58, -9, Math.PI), this, false, true); // parking
 
         Globals.AUTO_ENDING_POSE = robot.drivetrain.getPoseEstimate();
 
-        pause (2000);
+        pause (500);
     }
 
     public void pause (double milliseconds) {
