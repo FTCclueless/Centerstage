@@ -167,12 +167,14 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .addPoint(new Pose2d(27.41, -12, Math.toRadians(180)))
                 .addPoint(rightInFrontOfStackPose)
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
-            () -> opModeIsActive() && Globals.NUM_PIXELS != 2
+            // Add back uncommented and remove isBusy TODO - Eric
+            // Also make sure to give this a timer TODO - Eric
+            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
         );
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-59.75, -59.5, -59.25, -59, -57.8}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-57, -57.7, -58, -58.3, -57.8}; // 1 <-- 5 pixels
 
     Pose2d intakePose = new Pose2d(-59.4, -11.5, Math.PI);
 
@@ -185,7 +187,9 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .setReversed(false)
                 .addPoint(rightInFrontOfStackPose)
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading())),
-            () -> opModeIsActive() && Globals.NUM_PIXELS != 2
+            // Add back uncommented and remove isBusy TODO - Eric
+            // Also make sure to give this a timer TODO - Eric
+            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
         );
         pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(300);

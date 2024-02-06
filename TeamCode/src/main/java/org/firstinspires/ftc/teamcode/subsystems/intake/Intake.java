@@ -166,7 +166,7 @@ public class Intake {
                 break;
         }
 
-        switch (pixelCheckState) {
+        /*switch (pixelCheckState) {
             case CHECK:
                 confirmationLoops = 0;
 
@@ -202,7 +202,7 @@ public class Intake {
                 }
 
                 break;
-        }
+        }*/
     }
 
     public void on() {
