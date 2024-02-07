@@ -174,7 +174,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-57, -57.7, -58, -58.3, -57.8}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56.5, -57, -57.6, -58, -57.4}; // 1 <-- 5 pixels
 
     Pose2d intakePose = new Pose2d(-59.4, -11.5, Math.PI);
 
@@ -238,7 +238,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         robot.releaseOne();
 
-        robot.deposit.release.close();
+//        robot.deposit.release.close();
 
         deposit = new Vector3(5, 0, 11.5);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
@@ -263,12 +263,12 @@ public class CycleAutoRedDown extends LinearOpMode {
         );
         robot.intake.off();
 
-        robot.goToPoint(new Pose2d(48.25, -30, Math.PI), this, false, true, 1.0);
+        robot.goToPoint(new Pose2d(47.25, -30, Math.PI), this, false, true, 1.0);
 
-        robot.depositAt(deposit.z, deposit.x); // sync call to deposit
+        robot.depositAt(deposit.z + 5, deposit.x); // sync call to deposit
 
         robot.releaseOne();
-        pause(150);
+        pause(300);
         robot.releaseOne();
     }
 
