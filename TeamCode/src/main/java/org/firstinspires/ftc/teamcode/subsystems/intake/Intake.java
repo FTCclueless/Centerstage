@@ -63,7 +63,7 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 256;
+    public static int pixelTouchingDist = 350;
     private double confirmationLoops = 0;
     public static double desiredConfirmationLoops = 15;
     private long goReverseStart = 0;

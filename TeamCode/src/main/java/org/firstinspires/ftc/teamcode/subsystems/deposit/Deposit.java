@@ -193,9 +193,7 @@ public class Deposit {
             case START_RETRACT:
                 inPixelAdjustmentMode = false;
                 alreadySwitched = false;
-                endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
-                    endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
                     release.close();
 
                     if (endAffector.v4Servo.getCurrentAngle() <= Math.toRadians(135)) {
@@ -212,6 +210,9 @@ public class Deposit {
                     if (endAffector.v4Servo.inPosition()) {
                         state = State.RETRACT;
                     }
+                } else {
+                    endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
+                    endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
                 }
                 break;
             case RETRACT:
