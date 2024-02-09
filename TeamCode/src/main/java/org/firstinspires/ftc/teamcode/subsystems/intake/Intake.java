@@ -63,11 +63,14 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 350;
+    public static int pixelTouchingDist = 265;
     private double confirmationLoops = 0;
     public static double desiredConfirmationLoops = 15;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
+
+    public boolean useIntakeStallCheck = true;
+    public boolean useIntakeColorSensorCheck = true;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -128,81 +131,84 @@ public class Intake {
                 break;
         }
 
-        switch (stallState) {
-            case CHECK:
-                if (motorState != MotorState.ON) {
-                    intakeCheck = System.currentTimeMillis();
-                }
-
-                if (System.currentTimeMillis() - intakeCheck > 150) {
-                    intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
-                    intakeCheck = System.currentTimeMillis();
-                    intakeDebounce = System.currentTimeMillis();
-                    if (intakeCurrent > stallThresh) {
-                        stallStart = System.currentTimeMillis();
-                        stallState = StallState.CONFIRM;
+        if  (useIntakeStallCheck) {
+            switch (stallState) {
+                case CHECK:
+                    if (motorState != MotorState.ON) {
+                        intakeCheck = System.currentTimeMillis();
                     }
-                }
-                break;
-            case CONFIRM:
-                intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
 
-                if (intakeCurrent > stallThresh) {
-                    intakeDebounce = System.currentTimeMillis();
-                }
-                if (System.currentTimeMillis() - intakeDebounce > 100) {
-                    intakeCheck = System.currentTimeMillis();
+                    if (System.currentTimeMillis() - intakeCheck > 150) {
+                        intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+                        intakeCheck = System.currentTimeMillis();
+                        intakeDebounce = System.currentTimeMillis();
+                        if (intakeCurrent > stallThresh) {
+                            stallStart = System.currentTimeMillis();
+                            stallState = StallState.CONFIRM;
+                        }
+                    }
+                    break;
+                case CONFIRM:
+                    intakeCurrent = intake.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+
+                    if (intakeCurrent > stallThresh) {
+                        intakeDebounce = System.currentTimeMillis();
+                    }
+                    if (System.currentTimeMillis() - intakeDebounce > 100) {
+                        intakeCheck = System.currentTimeMillis();
+                        stallState = StallState.CHECK;
+                    }
+                    if (intakeDebounce - stallStart > 250) {
+                        intakeCheck = System.currentTimeMillis();
+                        stallState = StallState.UNSTALL;
+                    }
+                    break;
+                case UNSTALL:
+                    Log.e("JAM REVERSE FALLBACK", "-----");
+                    reverseForSomeTime(750);
                     stallState = StallState.CHECK;
-                }
-                if (intakeDebounce - stallStart > 250) {
-                    intakeCheck = System.currentTimeMillis();
-                    stallState = StallState.UNSTALL;
-                }
-                break;
-            case UNSTALL:
-                Log.e("JAM REVERSE FALLBACK", "-----");
-                reverseForSomeTime(750);
-                stallState = StallState.CHECK;
-                break;
+                    break;
+            }
         }
 
-        /*switch (pixelCheckState) {
-            case CHECK:
-                confirmationLoops = 0;
-
-                if (motorState == MotorState.ON && System.currentTimeMillis() - lastProxPoll > 100) {
-                    dist = colorSensorV3.readPS();
-                    if (dist >= pixelTouchingDist)
-                        pixelCheckState = PixelCheckState.CONFIRM;
-                    lastProxPoll = System.currentTimeMillis();
-                }
-                break;
-            case CONFIRM:
-                // Super polling
-                dist = colorSensorV3.readPS();
-
-                if (dist < pixelTouchingDist)
-                    pixelCheckState = PixelCheckState.CHECK;
-
-                if (confirmationLoops++ >= desiredConfirmationLoops) {
+        if (useIntakeColorSensorCheck) {
+            switch (pixelCheckState) {
+                case CHECK:
                     confirmationLoops = 0;
-                    pixelCheckState = PixelCheckState.GO_REVERSE;
-                    goReverseStart = System.currentTimeMillis();
-                }
-                break;
-            case GO_REVERSE:
-                Log.e("PIXEL REVERSE FALLBACK", "-----");
-                Globals.NUM_PIXELS = 2;
-                // Wait a bit then reverse for some time
-                if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {
-                    // Jankly set the previous state so reverseForSomeTime will turn the intake off
-                    motorState = MotorState.OFF;
-                    reverseForSomeTime(750);
-                    pixelCheckState = PixelCheckState.CHECK;
-                }
 
-                break;
-        }*/
+                    if (motorState == MotorState.ON && System.currentTimeMillis() - lastProxPoll > 100) {
+                        dist = colorSensorV3.readPS();
+                        if (dist >= pixelTouchingDist)
+                            pixelCheckState = PixelCheckState.CONFIRM;
+                        lastProxPoll = System.currentTimeMillis();
+                    }
+                    break;
+                case CONFIRM:
+                    // Super polling
+                    dist = colorSensorV3.readPS();
+
+                    if (dist < pixelTouchingDist)
+                        pixelCheckState = PixelCheckState.CHECK;
+
+                    if (confirmationLoops++ >= desiredConfirmationLoops) {
+                        confirmationLoops = 0;
+                        pixelCheckState = PixelCheckState.GO_REVERSE;
+                        goReverseStart = System.currentTimeMillis();
+                    }
+                    break;
+                case GO_REVERSE:
+                    Log.e("PIXEL REVERSE FALLBACK", "-----");
+                    Globals.NUM_PIXELS = 2;
+                    // Wait a bit then reverse for some time
+                    if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {
+                        // Jankly set the previous state so reverseForSomeTime will turn the intake off
+                        motorState = MotorState.OFF;
+                        reverseForSomeTime(750);
+                        pixelCheckState = PixelCheckState.CHECK;
+                    }
+                    break;
+            }
+        }
     }
 
     public void on() {

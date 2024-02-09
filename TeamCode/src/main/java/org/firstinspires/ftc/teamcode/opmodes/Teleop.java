@@ -62,6 +62,9 @@ public class Teleop extends LinearOpMode {
         robot.intake.setActuationHeight(0);
         robot.deposit.retract();
 
+        robot.intake.useIntakeStallCheck = false;
+        robot.intake.useIntakeColorSensorCheck = false;
+
         while (opModeInInit())
         {
             robot.update();
