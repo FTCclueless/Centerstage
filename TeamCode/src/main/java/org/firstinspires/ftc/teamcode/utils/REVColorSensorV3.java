@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 
 // High(ish) level drivers for APDS-9151
 
+@Disabled
 @I2cDeviceType
 @DeviceProperties(name = "FASTD-REVColorSensorV3", xmlTag = "FAST_DRIVER_REVCOLORSENSORV3_IMPL")
 /**

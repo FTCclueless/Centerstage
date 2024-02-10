@@ -68,7 +68,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
-            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, -60.5, -Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
+            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, -59.75, -Math.PI / 2)); // TODO: Change initial starting position to be 3 inches + in the y
 
             robot.update();
         }
@@ -94,7 +94,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(11.8, -43.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.75, -29.75, Math.PI);
+                boardPreload =          new Pose2d(48.25, -29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 robot.goToPoint(new Pose2d(8.8, -33.5, -Math.toRadians(70)), this, false, false);
@@ -105,7 +105,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(15, -30.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.75, -37.25, Math.PI);
+                boardPreload =          new Pose2d(48.25, -37.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -116,7 +116,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(14, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.75, -41.5, Math.PI);
+                boardPreload =          new Pose2d(48.25, -41.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 robot.goToPoint(new Pose2d(21.5, -33.5, -Math.toRadians(135)), this, false, false);

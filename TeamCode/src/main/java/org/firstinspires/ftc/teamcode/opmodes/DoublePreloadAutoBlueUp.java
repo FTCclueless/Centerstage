@@ -69,7 +69,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
-            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 60.5, Math.PI / 2));
+            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 59.75, Math.PI / 2));
 
             robot.update();
         }
@@ -94,7 +94,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(13.5, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(48.75, 40.5, Math.PI);
+                boardPreload =          new Pose2d(48.25, 40.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 robot.goToPoint(new Pose2d(21, 33.5, Math.toRadians(135)), this, false, false);
@@ -116,10 +116,10 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(48.75, 29.75, Math.PI);
+                boardPreload =          new Pose2d(48.25, 29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(8.8, 33.5, Math.toRadians(45)), this, false, false);
+                robot.goToPoint(new Pose2d(10, 33.5, Math.toRadians(40)), this, false, false);
 
                 releaseAndTriggerDeposit();
 

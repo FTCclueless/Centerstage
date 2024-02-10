@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 
+@Disabled
 @TeleOp
 public class EncoderPoseTuner extends LinearOpMode {
     @Override

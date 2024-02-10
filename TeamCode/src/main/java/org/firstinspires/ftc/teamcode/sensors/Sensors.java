@@ -33,7 +33,7 @@ public class Sensors {
 //    private final DigitalChannel magnetSensor;
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
-    private HuskyLens huskyLens;
+//    private HuskyLens huskyLens;
     private final AnalogInput distLeft, distRight;
 
     private int slidesEncoder;
@@ -61,11 +61,11 @@ public class Sensors {
 
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
-        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-        if (!huskyLens.knock())
-            Log.e("HuskyLens", "Failed to init! BAD BAD!");
-        else
-            Log.e("HuskyLens", "Init successfully");
+//        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
+//        if (!huskyLens.knock())
+//            Log.e("HuskyLens", "Failed to init! BAD BAD!");
+//        else
+//            Log.e("HuskyLens", "Init successfully");
         distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
         distRight = hardwareMap.get(AnalogInput.class, "distRight");
 
@@ -91,7 +91,7 @@ public class Sensors {
             imu.resetYaw();
 
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-            huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_TRACKING);
+//            huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_TRACKING);
 //        } catch (Exception e) {
 //            throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
 //        }
@@ -145,13 +145,13 @@ public class Sensors {
             distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
             distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
-            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
-                huskyLensBlocks = huskyLens.blocks();
-                lastHuskyLensUpdatedTime = currTime;
-                huskyJustUpdated = true;
-            } else {
-                huskyJustUpdated = false;
-            }
+//            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
+//                huskyLensBlocks = huskyLens.blocks();
+//                lastHuskyLensUpdatedTime = currTime;
+//                huskyJustUpdated = true;
+//            } else {
+//                huskyJustUpdated = false;
+//            }
 //        }
 //        catch (Exception e) {
 //            Log.e("******* Error due to ", e.getClass().getName());

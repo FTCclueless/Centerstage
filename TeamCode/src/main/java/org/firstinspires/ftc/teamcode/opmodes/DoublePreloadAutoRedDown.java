@@ -71,7 +71,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
-            robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, -60.5, -Math.PI / 2));
+            robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, -59.75, -Math.PI / 2));
 
             robot.update();
         }
@@ -100,7 +100,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-43.4, -34.6, -Math.toRadians(50)), this, false, true);
+                robot.goToPoint(new Pose2d(-44.5, -34.6, -Math.toRadians(40)), this, false, true);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -32.5, -Math.PI/2);
@@ -145,7 +145,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             case RIGHT:
                 robot.goToPoint(new Pose2d(-37, -8.5, Math.PI), this, false, false);
 
-                deposit = new Vector3(5, 0, 10);
+                deposit = new Vector3(5, 0, 9);
                 break;
         }
 
@@ -159,6 +159,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
+        robot.goToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, boardPreload.heading), this, false, false);
         robot.goToPoint(boardPreload, this, true, true);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
