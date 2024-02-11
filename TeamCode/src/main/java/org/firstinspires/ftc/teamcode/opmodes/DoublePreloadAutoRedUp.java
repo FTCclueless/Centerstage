@@ -25,6 +25,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        Globals.isRed = true;
         try {
             doInitialization();
             waitForStart();
@@ -104,7 +105,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 robot.goToPoint(new Pose2d(24, -32.5, Math.PI), this, false, false);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(15, -30.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(15, -31.75, -Math.PI/2);
                 boardPreload =          new Pose2d(48.25, -37.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -119,7 +120,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 boardPreload =          new Pose2d(48.25, -41.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(21.5, -33.5, -Math.toRadians(135)), this, false, false);
+                robot.goToPoint(new Pose2d(21.5, -33.5, -Math.toRadians(125)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
@@ -142,7 +143,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.goToPoint(boardPreload, this, true, true);
+        robot.goToPoint(boardPreload, this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

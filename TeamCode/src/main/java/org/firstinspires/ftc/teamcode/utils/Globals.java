@@ -7,6 +7,7 @@ public class Globals {
     public static long LOOP_START = System.nanoTime();
     public static double LOOP_TIME = 0.0;
     public static RunMode RUNMODE = RunMode.TESTER;
+    public static boolean isRed = false;
 
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;

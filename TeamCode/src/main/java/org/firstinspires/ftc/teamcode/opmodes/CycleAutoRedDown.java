@@ -33,10 +33,11 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        Globals.isRed = true;
         try {
             doInitialization();
             waitForStart();
-            pause(3500);
+            pause(2000);
 
             doGroundPreload();
             navigateAroundGroundPreload();
@@ -237,7 +238,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         );
         robot.intake.off();
 
-        robot.goToPoint(boardPreload, this, true, true);
+        robot.goToPoint(boardPreload, this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
@@ -269,7 +270,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.off();
 
         long start = System.currentTimeMillis();
-        robot.goToPoint(new Pose2d(47.25, -31.8, Math.PI), () -> {return opModeIsActive() && System.currentTimeMillis() - start < 500;}, false, true, 1.0);
+        robot.goToPoint(new Pose2d(47.25, -31.8, Math.PI), this::opModeIsActive, true, 0.9, 0.75,1.1, 2.5);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

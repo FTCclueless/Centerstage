@@ -159,13 +159,13 @@ public class Robot {
         goToPoint(pose, opMode::opModeIsActive, finalAdjustment, stop, maxPower);
     }
 
-    public void goToPoint(Pose2d pose, Func func, boolean stop, double maxPower, double fX, double fY, double fH) {
+    public void goToPoint(Pose2d pose, Func func, boolean stop, double maxPower, double finalXThreshold, double finalYThreshold, double finalHeadingThreshold) {
         double tx = Drivetrain.finalXThreshold;
         double ty = Drivetrain.finalYThreshold;
         double th = Drivetrain.finalTurnThreshold;
-        Drivetrain.finalXThreshold = fX;
-        Drivetrain.finalYThreshold = fY;
-        Drivetrain.finalTurnThreshold = fH;
+        Drivetrain.finalXThreshold = finalXThreshold;
+        Drivetrain.finalYThreshold = finalYThreshold;
+        Drivetrain.finalTurnThreshold = finalHeadingThreshold;
         goToPoint(pose, func, true, stop, maxPower);
         Drivetrain.finalXThreshold = tx;
         Drivetrain.finalYThreshold = ty;
@@ -192,6 +192,17 @@ public class Robot {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+            update();
+        }
+    }
+
+    public void goToPointWithDeposit(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
+        long start = System.currentTimeMillis();
+        drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
+        while(((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }

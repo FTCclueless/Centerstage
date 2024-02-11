@@ -16,9 +16,10 @@ public class AprilTagTester extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Globals.RUNMODE = RunMode.AUTO;
+        Globals.isRed = true;
         Vision vision = new Vision(hardwareMap, telemetry, true, false, true);
         Robot robot = new Robot(hardwareMap, vision);
-        robot.drivetrain.localizer.setPoseEstimate(new Pose2d(48,-48, Math.toRadians(180)));
+        robot.drivetrain.setPoseEstimate(new Pose2d(-36.911, -60.25, -Math.PI / 2));
 
         waitForStart();
 

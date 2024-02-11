@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
@@ -46,7 +47,7 @@ public class AprilTagLocalizer {
                 double totalDist = 0.0;
 
                 for (AprilTagDetection tag : tags) {
-                    double dist = getDistance(tag);
+                    double dist = getDistance(tag, Globals.isRed);
                     if (dist > 0) {
                         if (tagEstimates.size() == 0) {
                             localizer.findPastInterpolatedPose(tag.frameAcquisitionNanoTime);
@@ -101,8 +102,17 @@ public class AprilTagLocalizer {
         return tagEstimate;
     }
 
-    public double getDistance(AprilTagDetection tag) {
-        if (tag.ftcPose != null && tag.metadata.fieldPosition.get(0) > 0) {
+    private boolean isBoardTagColoredSide(AprilTagDetection tag, boolean isRed) {
+        if (isRed) {
+            return tag.id == 4 || tag.id == 5 || tag.id == 6;
+        } else {
+            return tag.id == 1 || tag.id == 2 || tag.id == 3;
+        }
+    }
+
+    public double getDistance(AprilTagDetection tag, boolean isRed) {
+        Log.e("tag.id", tag.id + "");
+        if (isBoardTagColoredSide(tag, isRed)) {
             double dist = Math.sqrt(Math.pow(tag.ftcPose.y,2) + Math.pow(tag.ftcPose.x, 2));
             if (dist > 48 || localizer.x < 0)
                 return -1;
