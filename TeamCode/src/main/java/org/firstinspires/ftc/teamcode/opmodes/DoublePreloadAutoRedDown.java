@@ -29,7 +29,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             doInitialization();
             waitForStart();
 
-//            pause(15000);
+            pause(15000);
 
             doGroundPreload();
             navigateToBoard();
