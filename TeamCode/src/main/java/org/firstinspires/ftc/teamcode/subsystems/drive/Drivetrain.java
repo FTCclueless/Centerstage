@@ -453,6 +453,8 @@ public class Drivetrain {
         this.maxPower = Math.abs(maxPower);
     }
 
+    public double getMaxPower() {return maxPower;}
+
     public void setPath(Spline path) {
         pathIndex = 0;
         this.path = path;

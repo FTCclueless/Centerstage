@@ -95,8 +95,10 @@ public class Robot {
         }
     }
 
-    public void followSpline(Spline spline, Func func) {
+    public void followSpline(Spline spline, Func func, double maxPower) {
         long start = System.currentTimeMillis();
+        double prev = drivetrain.getMaxPower();
+        drivetrain.setMaxPower(maxPower);
         drivetrain.setPath(spline);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
         update();
@@ -104,6 +106,11 @@ public class Robot {
         do {
             update();
         } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+        drivetrain.setMaxPower(prev);
+    }
+
+    public void followSpline(Spline spline, Func func) {
+        followSpline(spline, func, 1.0);
     }
 
     public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
