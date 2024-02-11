@@ -198,7 +198,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(450);
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 9);
+        deposit = new Vector3(5, 0, 9.5);
         Globals.mergeUltrasonics = false;
     }
 
