@@ -111,7 +111,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -29, Math.PI);
+                boardPreload =          new Pose2d(48, -29, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -119,13 +119,13 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -32.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -35.25, Math.PI);
+                boardPreload =          new Pose2d(48, -35.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-35.25, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -40.41, Math.PI);
+                boardPreload =          new Pose2d(48, -40.41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -198,7 +198,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(450);
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 9.5);
+        deposit = new Vector3(5, 0, 10);
         Globals.mergeUltrasonics = false;
     }
 

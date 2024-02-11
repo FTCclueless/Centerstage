@@ -111,7 +111,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, 42.5, Math.PI/2);
-                boardPreload =          new Pose2d(49, 29, Math.PI);
+                boardPreload =          new Pose2d(48, 29, Math.PI); //todo check these x values, not fully tuned
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -119,13 +119,13 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, 32.5, Math.PI/2);
-                boardPreload =          new Pose2d(49, 35.25, -Math.PI);
+                boardPreload =          new Pose2d(48, 35.25, -Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-35.25, 51, Math.PI/2);
-                boardPreload =          new Pose2d(49, 40.41, -Math.PI);
+                boardPreload =          new Pose2d(48, 40.41, -Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
