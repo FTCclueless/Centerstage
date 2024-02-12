@@ -37,7 +37,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         try {
             doInitialization();
             waitForStart();
-            pause(2000);
+            pause(3500);
 
             doGroundPreload();
             navigateAroundGroundPreload();
