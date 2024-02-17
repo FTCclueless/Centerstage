@@ -73,6 +73,7 @@ public class Slides {
 
     public void update() {
         length = (double) sensors.getSlidesPos() * ticksToInches;
+        System.out.println(length);
         vel = sensors.getSlidesVelocity() * ticksToInches;
         if (!(Globals.RUNMODE == RunMode.TESTER)) {
             slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
@@ -85,6 +86,14 @@ public class Slides {
 
     public boolean inPosition(double threshold) {
         return Math.abs(targetLength - length) <= threshold;
+    }
+
+    public void setLength(double length) {
+        this.length = length;
+    }
+
+    public double getLength(double length) {
+        return this.length;
     }
 
     public double getLength() {

@@ -44,6 +44,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Vision vision) {
         hardwareQueue = new HardwareQueue();
         this.vision = vision;
+        Globals.autoStartTime  = -1;
 
         sensors = new Sensors(hardwareMap, hardwareQueue, this);
 
@@ -65,6 +66,9 @@ public class Robot {
     public void update() {
         START_LOOP();
         updateSubsystems();
+        // MONKEYING
+        if (System.currentTimeMillis() - Globals.autoStartTime > 30000 && Globals.autoStartTime != -1)
+            Globals.gotBloodyAnnialated = true;
         //hi, hud
         updateTelemetry();
     }

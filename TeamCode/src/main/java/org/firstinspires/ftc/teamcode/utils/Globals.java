@@ -1,13 +1,17 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import com.acmerobotics.dashboard.config.Config;
+
 ;
 
+@Config
 public class Globals {
     // general
     public static long LOOP_START = System.nanoTime();
     public static double LOOP_TIME = 0.0;
     public static RunMode RUNMODE = RunMode.TESTER;
     public static boolean isRed = false;
+    public static long autoStartTime = -1;
 
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;
@@ -21,6 +25,7 @@ public class Globals {
     public static Pose2d ROBOT_POSITION = new Pose2d(0,0,0);
     public static Pose2d ROBOT_VELOCITY = new Pose2d(0,0,0);
     public static Pose2d AUTO_ENDING_POSE = new Pose2d(0,0,0);
+    public static boolean gotBloodyAnnialated = false;
 
     // deposit
     public static int NUM_PIXELS = 0;

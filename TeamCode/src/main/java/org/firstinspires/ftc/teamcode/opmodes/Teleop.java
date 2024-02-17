@@ -25,7 +25,6 @@ public class Teleop extends LinearOpMode {
         Intake intake = robot.intake;
         Hang hang = robot.hang;
 
-
         // Button Toggle naming convention = BUTTON_DRIVER (for example, button a for driver 1 should be called a_1)
 
         // DRIVER 1
@@ -60,6 +59,12 @@ public class Teleop extends LinearOpMode {
         robot.droppers.retractBoth();
         robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
         robot.intake.setActuationHeight(0);
+        if (Globals.gotBloodyAnnialated) { // Reset monkey slides pluh. Get that bread
+            robot.deposit.depositAt(8, 5);
+            do {
+                robot.update();
+            } while (!robot.deposit.checkReady());
+        }
         robot.deposit.retract();
 
         robot.intake.useIntakeStallCheck = false;

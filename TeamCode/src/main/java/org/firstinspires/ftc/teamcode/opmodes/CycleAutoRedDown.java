@@ -37,7 +37,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         try {
             doInitialization();
             waitForStart();
-            pause(3500);
+            Globals.autoStartTime = System.currentTimeMillis();
+            //pause(3500);
 
             doGroundPreload();
             navigateAroundGroundPreload();
@@ -192,10 +193,10 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .setReversed(false)
                 .addPoint(new Pose2d(-48.5, -12, Math.PI))
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], -12, Math.PI)),
-            // Add back uncommented and remove isBusy TODO - Eric
-            // Also make sure to give this a timer TODO - Eric
-            () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 2000
+            this::opModeIsActive
         );
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 2000)
+            robot.update();
         pixelIndex = Math.max(pixelIndex - 1, 0);
         pause(450);
         Globals.NUM_PIXELS = 2;
@@ -209,7 +210,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         pause(300);
         pixelIndex = Math.max(pixelIndex - 1, 0);
         robot.intake.setActuationHeight(pixelIndex);
-        pause(350);
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 2000)
+            robot.update();
         pixelIndex = Math.max(pixelIndex - 1, 0);
         Globals.NUM_PIXELS = 2;
         deposit = new Vector3(5, 0, 13.5 + (cycleNum*5));

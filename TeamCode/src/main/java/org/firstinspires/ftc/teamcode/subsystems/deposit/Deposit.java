@@ -108,7 +108,7 @@ public class Deposit {
     }
 
     public boolean checkReady() {
-        return endAffector.checkReady() && !slides.inPosition(2);
+        return endAffector.checkReady() && slides.inPosition(2);
     }
 
     long beginDepositTime;

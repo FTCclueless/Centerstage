@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -88,7 +89,12 @@ public class Drivetrain {
             hardwareQueue.addDevice(motor);
         }
 
-        setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        if (Globals.RUNMODE != RunMode.TELEOP)
+            leftFront.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
