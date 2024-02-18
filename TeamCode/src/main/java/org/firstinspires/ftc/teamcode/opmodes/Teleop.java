@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.util.Log;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -58,26 +60,50 @@ public class Teleop extends LinearOpMode {
 
         robot.airplane.hold();
         robot.droppers.retractBoth();
-        robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
+
         robot.intake.setActuationHeight(0);
         robot.deposit.retract();
 
-        // making sure slides are down
+        // making sure arm is over
         long start = System.currentTimeMillis();
-        do {
-            robot.deposit.slides.setTargetLength(-100);
-            robot.update();
-        } while (Math.abs(robot.deposit.slides.vel) > 0.1 || (System.currentTimeMillis() - start < 500));
-        robot.deposit.slides.resetSlidesEncoders();
-
-        robot.intake.useIntakeStallCheck = false;
-        robot.intake.useIntakeColorSensorCheck = false;
-
-        while (opModeInInit())
-        {
+        while (System.currentTimeMillis() - start < 2500) {
             robot.update();
         }
 
+        // making sure slides are down
+        double lastDist = 0.0;
+        double vel = 0.0;
+        start = System.currentTimeMillis();
+        long velocityStart = System.currentTimeMillis();
+        robot.deposit.slides.manualMode = true;
+
+        while (vel > 0.1 || (System.currentTimeMillis() - start < 500)) {
+            if ((System.currentTimeMillis() - velocityStart) > 100) {
+                vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
+                lastDist = robot.deposit.slides.getLength();
+                velocityStart = System.currentTimeMillis();
+            }
+
+            robot.deposit.slides.setTargetPowerFORCED(-1);
+            robot.update();
+
+            Log.e("vel", vel + "");
+        }
+        robot.deposit.slides.resetSlidesEncoders();
+        robot.deposit.slides.manualMode = false;
+
+        // disabling intake checks
+        robot.intake.useIntakeStallCheck = false;
+        robot.intake.useIntakeColorSensorCheck = false;
+
+        // initializing
+        while (opModeInInit())
+        {
+            robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
+            robot.update();
+        }
+
+        // waiting for start
         waitForStart();
 
         boolean depoFlag = false;

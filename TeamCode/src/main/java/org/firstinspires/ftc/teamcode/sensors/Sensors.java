@@ -34,7 +34,7 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
 //    private HuskyLens huskyLens;
-    private final AnalogInput distLeft, distRight;
+    private final AnalogInput distLeft, distRight, boardIR;
 
     private int slidesEncoder;
     private double slidesVelocity;
@@ -45,6 +45,7 @@ public class Sensors {
     public double[] analogVoltages = new double[analogEncoders.length];
     private double voltage;
     private double distLeftVal, distRightVal;
+    private double boardIRVal;
 
     private BHI260IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -68,6 +69,7 @@ public class Sensors {
 //            Log.e("HuskyLens", "Init successfully");
         distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
         distRight = hardwareMap.get(AnalogInput.class, "distRight");
+        boardIR = hardwareMap.get(AnalogInput.class, "boardIR");
 
         initSensors(hardwareMap);
     }
@@ -162,6 +164,7 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
+            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
 //            for (int i = 0; i < analogVoltages.length; i++) {
 //                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
 //            }
@@ -210,6 +213,8 @@ public class Sensors {
     public double getDistLeft() { return distLeftVal; }
 
     public double getDistRight() { return distRightVal; }
+
+    public double getBoardIR() { return boardIRVal; }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;

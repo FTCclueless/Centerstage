@@ -107,6 +107,11 @@ public class Deposit {
         state = State.START_RETRACT;
     }
 
+    public void retractInit() {
+        endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
+        endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
+    }
+
     public boolean checkReady() {
         return endAffector.checkReady() && slides.inPosition(2);
     }

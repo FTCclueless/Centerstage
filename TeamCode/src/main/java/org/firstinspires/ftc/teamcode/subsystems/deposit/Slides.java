@@ -54,7 +54,7 @@ public class Slides {
     }
 
     public void resetSlidesEncoders() {
-        Log.e("RESETTTING", "RESTETING SLIDES");
+        Log.e("RESETTTING", "RESTETING SLIDES *************");
 
         m1.setPower(0);
         m2.setPower(0);
@@ -76,6 +76,8 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
 
+        Log.e("targetLength", targetLength + "");
+        Log.e("error", error + "");
         TelemetryUtil.packet.put("slidesError", error);
 
         if (targetLength <= 0.6) {
@@ -86,17 +88,28 @@ public class Slides {
         return (error * (maxVel / kA)) * kP + kStatic + ((Math.abs(error) > minPowerThresh) ? minPower * Math.signum(error) : 0);
     }
 
+    public boolean manualMode = false;
     public void update() {
         length = (double) sensors.getSlidesPos() * ticksToInches;
-        System.out.println(length);
         vel = sensors.getSlidesVelocity() * ticksToInches;
-        if (!(Globals.RUNMODE == RunMode.TESTER)) {
-            slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
+
+        if (!manualMode) {
+            if (!(Globals.RUNMODE == RunMode.TESTER)) {
+                slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
+            }
         }
     }
 
     public void setTargetLength(double length) {
         targetLength = Math.max(Math.min(length, maxSlidesHeight),0);
+    }
+
+    public void setTargetPowerFORCED(double power) {
+        slidesMotors.setTargetPower(Math.max(Math.min(power, 1), -1));
+    }
+
+    public void setTargetLengthFORCED(double length) {
+        targetLength = length;
     }
 
     public boolean inPosition(double threshold) {

@@ -37,6 +37,8 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("dist_left", sensors.getDistLeft());
             telemetry.addData("dist_right", sensors.getDistRight());
 
+            telemetry.addData("board_ir", sensors.getBoardIR());
+
             telemetry.update();
         }
     }

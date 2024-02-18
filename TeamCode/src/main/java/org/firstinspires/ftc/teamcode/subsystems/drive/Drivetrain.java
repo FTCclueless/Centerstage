@@ -570,9 +570,11 @@ public class Drivetrain {
         setMoveVector(drive,turn);
     }
 
+//    public static PID rotateTeleopPID = new PID(1.75,0.,0.0);
+
     public void rotate(Gamepad gamepad, double heading, double threshold, double maxPower) {
         if (heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
-            this.targetPoint = new Pose2d(localizer.x, localizer.y, heading);
+            this.targetPoint = new Pose2d(localizer.x, localizer.y, Math.toRadians(heading));
             this.maxPower = Math.abs(maxPower);
 
             lastTargetPoint = targetPoint;
@@ -580,12 +582,13 @@ public class Drivetrain {
             resetIntegrals();
         }
 
-        resetMinPowersToOvercomeFriction();
         state = State.DRIVE;
 
         double forward = smoothControls(gamepad.left_stick_y);
         double strafe = smoothControls(gamepad.left_stick_x);
-        double turn = Math.abs(turnError) > Math.toRadians(threshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
+        double turn = Math.abs(turnError) > Math.toRadians(threshold)? turnPID.update(turnError, -maxPower, maxPower) : 0;
+
+        Log.e("turn", turn + "");
 
         Vector2 drive = new Vector2(forward,strafe);
         if (drive.mag() <= 0.05){
