@@ -34,8 +34,8 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
             telemetry.addData("deposit_triggered", sensors.isDepositTriggered());
 
-            telemetry.addData("dist_left", sensors.getDistLeft());
-            telemetry.addData("dist_right", sensors.getDistRight());
+            //telemetry.addData("dist_left", sensors.getDistLeft());
+            //telemetry.addData("dist_right", sensors.getDistRight());
 
             telemetry.update();
         }

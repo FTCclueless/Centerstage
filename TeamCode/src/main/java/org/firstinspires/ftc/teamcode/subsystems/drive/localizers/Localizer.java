@@ -271,8 +271,8 @@ public class Localizer {
     double lastRightDist = 0.0;
 
     public void mergeUltrasonics() {
-        leftDist = sensors.getDistLeft();
-        rightDist = sensors.getDistRight();
+        //leftDist = sensors.getDistLeft();
+        //rightDist = sensors.getDistRight();
 
         double x_sign = Math.abs(Utils.headingClip(heading)) < Math.toRadians(90) ? 1 : -1;
         double y_sign = Math.signum(Utils.headingClip(heading));

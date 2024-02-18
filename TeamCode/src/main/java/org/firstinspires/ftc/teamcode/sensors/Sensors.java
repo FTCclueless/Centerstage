@@ -34,7 +34,7 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
 //    private HuskyLens huskyLens;
-    private final AnalogInput distLeft, distRight;
+    //private final AnalogInput distLeft, distRight;
 
     private int slidesEncoder;
     private double slidesVelocity;
@@ -66,8 +66,8 @@ public class Sensors {
 //            Log.e("HuskyLens", "Failed to init! BAD BAD!");
 //        else
 //            Log.e("HuskyLens", "Init successfully");
-        distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
-        distRight = hardwareMap.get(AnalogInput.class, "distRight");
+        //distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
+        //distRight = hardwareMap.get(AnalogInput.class, "distRight");
 
         initSensors(hardwareMap);
     }
@@ -142,8 +142,8 @@ public class Sensors {
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
-            distRightVal = (distRight.getVoltage() / 3.2) * 1000;
+            //distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
+            //distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
 //            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
 //                huskyLensBlocks = huskyLens.blocks();
@@ -207,9 +207,9 @@ public class Sensors {
 
     public double getVoltage() { return voltage; }
 
-    public double getDistLeft() { return distLeftVal; }
+    //public double getDistLeft() { return distLeftVal; }
 
-    public double getDistRight() { return distRightVal; }
+    //public double getDistRight() { return distRightVal; }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;
