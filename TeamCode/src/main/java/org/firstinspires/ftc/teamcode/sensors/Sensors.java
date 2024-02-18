@@ -144,8 +144,8 @@ public class Sensors {
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
-            distRightVal = (distRight.getVoltage() / 3.2) * 1000;
+            //distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
+            //distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
 //            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
 //                huskyLensBlocks = huskyLens.blocks();
@@ -210,9 +210,9 @@ public class Sensors {
 
     public double getVoltage() { return voltage; }
 
-    public double getDistLeft() { return distLeftVal; }
+    //public double getDistLeft() { return distLeftVal; }
 
-    public double getDistRight() { return distRightVal; }
+    //public double getDistRight() { return distRightVal; }
 
     public double getBoardIR() { return boardIRVal; }
 
