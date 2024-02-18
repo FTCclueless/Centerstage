@@ -34,7 +34,7 @@ public class Sensors {
     private final DigitalChannel intakeBeamBreak;
     private final DigitalChannel depositBeamBreak;
 //    private HuskyLens huskyLens;
-    private final AnalogInput distLeft, distRight, boardIR;
+    private final AnalogInput boardIR;
 
     private int slidesEncoder;
     private double slidesVelocity;
@@ -67,8 +67,8 @@ public class Sensors {
 //            Log.e("HuskyLens", "Failed to init! BAD BAD!");
 //        else
 //            Log.e("HuskyLens", "Init successfully");
-        distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
-        distRight = hardwareMap.get(AnalogInput.class, "distRight");
+//        distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
+//        distRight = hardwareMap.get(AnalogInput.class, "distRight");
         boardIR = hardwareMap.get(AnalogInput.class, "boardIR");
 
         initSensors(hardwareMap);
