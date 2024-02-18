@@ -38,6 +38,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle rightTrigger_1 = new ButtonToggle();
         ButtonToggle leftTrigger_1_double = new ButtonToggle();
         ButtonToggle left_dpad_1 = new ButtonToggle();
+        ButtonToggle down_dpad_1 = new ButtonToggle();
 
         // DRIVER 2
         ButtonToggle dpadUp_2 = new ButtonToggle();
@@ -59,13 +60,15 @@ public class Teleop extends LinearOpMode {
         robot.droppers.retractBoth();
         robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
         robot.intake.setActuationHeight(0);
-        if (Globals.gotBloodyAnnialated) { // Reset monkey slides pluh. Get that bread
-            robot.deposit.depositAt(8, 5);
-            do {
-                robot.update();
-            } while (!robot.deposit.checkReady());
-        }
         robot.deposit.retract();
+
+        // making sure slides are down
+        long start = System.currentTimeMillis();
+        do {
+            robot.deposit.slides.setTargetLength(-100);
+            robot.update();
+        } while (Math.abs(robot.deposit.slides.vel) > 0.1 || (System.currentTimeMillis() - start < 500));
+        robot.deposit.slides.resetSlidesEncoders();
 
         robot.intake.useIntakeStallCheck = false;
         robot.intake.useIntakeColorSensorCheck = false;
@@ -133,10 +136,10 @@ public class Teleop extends LinearOpMode {
             }
 
             // hanging mechanism
-            if ((gamepad1.y || gamepad2.y) && !robot.deposit.isDepositing()) {
+            if (gamepad2.y && !robot.deposit.isDepositing()) {
                 hang.on();
                 robot.intake.actuationFullyUp();
-            } else if ((gamepad1.a || gamepad2.a) && !robot.deposit.isDepositing()) {
+            } else if (gamepad2.a && !robot.deposit.isDepositing()) {
                 hang.reverse();
                 robot.intake.actuationFullyUp();
             } else if (gamepad2.dpad_right && !robot.deposit.isDepositing()) {
@@ -172,9 +175,11 @@ public class Teleop extends LinearOpMode {
                 robot.airplane.release();
             }
 
-            // driving
-            robot.drivetrain.drive(gamepad1);
-
+            if (gamepad1.dpad_down) { // auto heading adjustment
+                robot.drivetrain.rotate(gamepad1,180, 0.1, 1.0);
+            } else { // driving
+                robot.drivetrain.drive(gamepad1);
+            }
 
 
 
@@ -238,13 +243,13 @@ public class Teleop extends LinearOpMode {
             }
 
             // adjusting actuation angle
-            if (dpadUp_2.isClicked(gamepad2.dpad_up)) {
+            if (dpadUp_2.isClicked(gamepad2.dpad_up) || ((y_1.isHeld(gamepad1.y, 200) || y_1.isClicked(gamepad1.y)) && !robot.deposit.isDepositing())) {
                 pixelIndex++;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
             }
 
-            if (dpadDown_2.isClicked(gamepad2.dpad_down)) {
+            if (dpadDown_2.isClicked(gamepad2.dpad_down) || ((a_1.isHeld(gamepad1.a, 200) || a_1.isClicked(gamepad1.a)) && !robot.deposit.isDepositing())) {
                 pixelIndex--;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);

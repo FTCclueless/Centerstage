@@ -557,12 +557,36 @@ public class Drivetrain {
 
     public void drive(Gamepad gamepad) {
         resetMinPowersToOvercomeFriction();
-
         state = State.DRIVE;
 
         double forward = smoothControls(gamepad.left_stick_y);
         double strafe = smoothControls(gamepad.left_stick_x);
         double turn = smoothControls(-gamepad.right_stick_x);
+
+        Vector2 drive = new Vector2(forward,strafe);
+        if (drive.mag() <= 0.05){
+            drive.mul(0);
+        }
+        setMoveVector(drive,turn);
+    }
+
+    public void rotate(Gamepad gamepad, double heading, double threshold, double maxPower) {
+        if (heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
+            this.targetPoint = new Pose2d(localizer.x, localizer.y, heading);
+            this.maxPower = Math.abs(maxPower);
+
+            lastTargetPoint = targetPoint;
+
+            resetIntegrals();
+        }
+
+        resetMinPowersToOvercomeFriction();
+        state = State.DRIVE;
+
+        double forward = smoothControls(gamepad.left_stick_y);
+        double strafe = smoothControls(gamepad.left_stick_x);
+        double turn = Math.abs(turnError) > Math.toRadians(threshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
+
         Vector2 drive = new Vector2(forward,strafe);
         if (drive.mag() <= 0.05){
             drive.mul(0);

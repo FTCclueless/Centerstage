@@ -34,24 +34,39 @@ public class Slides {
     public static double downPower = -0.1;
     public static double forceDownPower = -0.5;
 
+    private DcMotorEx m1;
+    private DcMotorEx m2;
+
     public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
         this.sensors = sensors;
 
-        DcMotorEx m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
-        DcMotorEx m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
+        m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
+        m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
 
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if (Globals.RUNMODE != RunMode.TELEOP) {
-            Log.e("RESETTTING", "RESTETING SLIDES");
-            m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            resetSlidesEncoders();
         }
 
         slidesMotors = new PriorityMotor(new DcMotorEx[] {m1, m2}, "slidesMotor", 2, 5, new double[] {-1, -1}, sensors);
         hardwareQueue.addDevice(slidesMotors);
+    }
+
+    public void resetSlidesEncoders() {
+        Log.e("RESETTTING", "RESTETING SLIDES");
+
+        m1.setPower(0);
+        m2.setPower(0);
+
+        m1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        m1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        m2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        targetLength = 0;
+        m1.setPower(0);
+        m2.setPower(0);
     }
 
     /**

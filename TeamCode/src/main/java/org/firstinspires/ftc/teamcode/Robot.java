@@ -66,10 +66,6 @@ public class Robot {
     public void update() {
         START_LOOP();
         updateSubsystems();
-        // MONKEYING
-        if (System.currentTimeMillis() - Globals.autoStartTime > 30000 && Globals.autoStartTime != -1)
-            Globals.gotBloodyAnnialated = true;
-        //hi, hud
         updateTelemetry();
     }
 
