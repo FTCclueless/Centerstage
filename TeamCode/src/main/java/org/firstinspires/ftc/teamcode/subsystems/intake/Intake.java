@@ -38,8 +38,8 @@ public class Intake {
     public static double intakePower = 1.0;
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {3.2556096190, 0.20612106138, 0.1576726368, 0.0392242122, -0.1112242122}; // 1 pixel --> 5 pixel
-    double actuationFullyUpAngle = 0.078448424553;
+    double[] actuationAngles = new double[] {1.249571333, 0.8069808, 0.61638047, 0.448276711, 0.30819023}; // 1 pixel --> 5 pixel
+    double actuationFullyUpAngle = -1.9724175;
 
     // stall checking variables
     double intakeDebounce;

@@ -95,6 +95,7 @@ public class Slides {
 
         if (!manualMode) {
             if (!(Globals.RUNMODE == RunMode.TESTER)) {
+                Log.e("slidesFF", "" + feedforward());
                 slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
             }
         }
