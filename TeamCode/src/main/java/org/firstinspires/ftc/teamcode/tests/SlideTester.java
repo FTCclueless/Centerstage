@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 
-@Disabled
+
 @TeleOp
 @Config
 public class SlideTester extends LinearOpMode {

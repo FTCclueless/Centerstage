@@ -62,16 +62,16 @@ public class Teleop extends LinearOpMode {
         robot.droppers.retractBoth();
 
         robot.intake.setActuationHeight(0);
-        robot.deposit.retract();
+        // robot.deposit.retract();
 
         // making sure arm is over
-        long start = System.currentTimeMillis();
+        /*long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 2500) {
             robot.update();
-        }
+        }*/
 
         // making sure slides are down
-        double lastDist = 0.0;
+        /*double lastDist = 0.0;
         double vel = 0.0;
         start = System.currentTimeMillis();
         long velocityStart = System.currentTimeMillis();
@@ -88,7 +88,20 @@ public class Teleop extends LinearOpMode {
             robot.update();
 
             Log.e("vel", vel + "");
+        }*/
+
+        if (Globals.gotBloodyAnnihilated) {
+            robot.deposit.depositAt(10, 5);
+            while (!robot.deposit.checkReady()) {
+                robot.update();
+            }
+
+            robot.deposit.retract();
+            while (!robot.deposit.checkReady()) {
+                robot.update();
+            }
         }
+
         robot.deposit.slides.resetSlidesEncoders();
         robot.deposit.slides.manualMode = false;
 

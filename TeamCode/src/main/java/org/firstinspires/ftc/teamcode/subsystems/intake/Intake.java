@@ -38,7 +38,7 @@ public class Intake {
     public static double intakePower = 1.0;
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {1.249571333, 0.8069808, 0.61638047, 0.448276711, 0.30819023}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {1.249571333, 0.8069808, 0.61638047, 0.448276711, 0.28819023}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.9724175;
 
     // stall checking variables
@@ -249,7 +249,7 @@ public class Intake {
     }
 
     public void setActuationHeight (int pixelIndex) {
-        actuation.setTargetAngle(actuationAngles[pixelIndex], 0.2);
+        actuation.setTargetAngle(actuationAngles[pixelIndex], 0.5);
     }
 
     public void setActuationAngle(double angle, double power) { // 0 index based

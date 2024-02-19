@@ -12,7 +12,7 @@ public class Globals {
     public static RunMode RUNMODE = RunMode.TESTER;
     public static boolean isRed = false;
     public static long autoStartTime = -1;
-
+    public static boolean gotBloodyAnnihilated = false; // STOP DELETEING THIS FOR GODS SAKE
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;
     public static double TRACK_WIDTH = 14.352084806;

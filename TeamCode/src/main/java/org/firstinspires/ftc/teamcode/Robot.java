@@ -65,6 +65,7 @@ public class Robot {
 
     public void update() {
         START_LOOP();
+        Globals.gotBloodyAnnihilated = System.currentTimeMillis() - Globals.autoStartTime > 29500 && Globals.autoStartTime != -1;
         updateSubsystems();
         updateTelemetry();
     }
