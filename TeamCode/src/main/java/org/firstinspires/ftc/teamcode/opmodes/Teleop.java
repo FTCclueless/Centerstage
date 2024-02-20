@@ -91,6 +91,7 @@ public class Teleop extends LinearOpMode {
         }*/
 
         if (Globals.gotBloodyAnnihilated) {
+            robot.deposit.state = Deposit.State.FINISH_DEPOSIT;
             robot.deposit.depositAt(10, 5);
             while (!robot.deposit.checkReady()) {
                 robot.update();

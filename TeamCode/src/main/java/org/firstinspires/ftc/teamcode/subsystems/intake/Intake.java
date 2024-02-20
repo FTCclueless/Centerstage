@@ -38,7 +38,7 @@ public class Intake {
     public static double intakePower = 1.0;
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {1.249571333, 0.8069808, 0.61638047, 0.448276711, 0.28819023}; // 1 pixel --> 5 pixel
+    double[] actuationAngles = new double[] {1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
     double actuationFullyUpAngle = -1.9724175;
 
     // stall checking variables
@@ -65,7 +65,7 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 265;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 15;
+    public static double desiredConfirmationLoops = 11;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
 
