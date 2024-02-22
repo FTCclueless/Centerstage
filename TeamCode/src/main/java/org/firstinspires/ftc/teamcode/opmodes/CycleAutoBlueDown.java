@@ -168,13 +168,12 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.followSpline(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(false)
-                        .addPoint(new Pose2d(27.41, 12, -Math.PI))
-                        .addPoint(new Pose2d(-48.5, 15, -Math.PI))
-                        .addPoint(new Pose2d(intakeXDistances[pixelIndex], 18, -Math.PI)),
+                        .addPoint(new Pose2d(27.41, 12, -Math.PI), 0.7)
+                        .addPoint(new Pose2d(-48.5, 15, -Math.PI), 0.7)
+                        .addPoint(new Pose2d(intakeXDistances[pixelIndex], 18, -Math.PI), 0.7),
                 // Add back uncommented and remove isBusy TODO - Eric
                 // Also make sure to give this a timer TODO - Eric
-                () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy(),
-                0.7
+                () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
         );
     }
 

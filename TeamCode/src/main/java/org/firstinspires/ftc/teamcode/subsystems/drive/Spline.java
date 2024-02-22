@@ -8,15 +8,17 @@ import java.util.ArrayList;
 class SplinePose2d extends Pose2d {
     public final boolean reversed;
     public final double radius;
+    public final double power;
 
     public SplinePose2d(Pose2d p, boolean reversed, double radius) {
-        this(p.x, p.y, p.heading, reversed, radius);
+        this(p.x, p.y, p.heading, reversed, radius, 1.0);
     }
 
-    public SplinePose2d(double x, double y, double heading, boolean reversed, double radius) {
+    public SplinePose2d(double x, double y, double heading, boolean reversed, double radius, double power) {
         super(x, y, heading);
         this.reversed = reversed;
         this.radius = radius;
+        this.power = power;
     }
 }
 
@@ -55,6 +57,10 @@ public class Spline {
     }
 
     public Spline addPoint(Pose2d p) {
+        return this.addPoint(p, 1.0);
+    }
+
+    public Spline addPoint(Pose2d p, double power) {
         p = p.clone();
         if (reversed) {
             p.heading += Math.PI;
@@ -84,7 +90,7 @@ public class Spline {
             System.out.println("HOLY JESUS SOMETHING BAD HAPPENED (FIRST TEMPR IS BRICKED)");
         }
 
-        poses.set(0, new SplinePose2d(poses.get(0).x, poses.get(0).y, poses.get(0).heading, poses.get(0).reversed, firstR));
+        poses.set(0, new SplinePose2d(poses.get(0).x, poses.get(0).y, poses.get(0).heading, poses.get(0).reversed, firstR, power));
 
         for (double time = 0.0; time < 1.0; time+=0.001) {
             point = new Pose2d(0,0,0);
@@ -114,7 +120,11 @@ public class Spline {
     }
 
     public Spline addPoint(double x, double y, double heading) {
-        return this.addPoint(new Pose2d(x, y, heading));
+        return this.addPoint(new Pose2d(x, y, heading), 1.0);
+    }
+
+    public Spline addPoint(double x, double y, double heading, double power) {
+        return this.addPoint(new Pose2d(x, y, heading), power);
     }
 
     public Pose2d getLastPoint() {
@@ -124,13 +134,13 @@ public class Spline {
         return null;
     }
 
-    public void setPoint(int index, Pose2d point, boolean reversed, double radius) {
+    /*public void setPoint(int index, Pose2d point, boolean reversed, double radius) {
         poses.set(index, new SplinePose2d(point, reversed, radius));
     }
 
     public void setPoint(int index, SplinePose2d point, double heading) {
         poses.set(index, new SplinePose2d(point.x, point.y, heading, point.reversed, point.radius));
-    }
+    }*/
 
 
     /**
@@ -147,7 +157,7 @@ public class Spline {
         return this;
     }
 
-    public static Spline reflecth(Spline spline) {
+    /*public static Spline reflecth(Spline spline) {
         Spline temp = new Spline(new Pose2d(0,0,0), spline.inchesPerNewPointGenerated);
         temp.poses = new ArrayList<>();
         for (SplinePose2d point : spline.poses) {
@@ -163,5 +173,5 @@ public class Spline {
             temp.poses.add(new SplinePose2d(point.x,-point.y,point.heading,point.reversed,point.radius));
         }
         return temp;
-    }
+    }*/
 }
