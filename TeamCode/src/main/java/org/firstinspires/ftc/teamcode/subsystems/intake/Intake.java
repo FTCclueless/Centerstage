@@ -38,8 +38,11 @@ public class Intake {
     public static double intakePower = 1.0;
 
     double actuationLength = 3.5;
-    double[] actuationAngles = new double[] {1.40086, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
-    double actuationFullyUpAngle = -1.9724175;
+
+//    double[] actuationAngles = new double[] {1.40086, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
+//    double actuationFullyUpAngle = -1.9724175;
+    double[] actuationAngles = new double[] {1.40086, 0.734053115, 0.605949349, 0.434655958, 0.25}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
+    double actuationFullyUpAngle = -1.69224458;
 
     // stall checking variables
     double intakeDebounce;
@@ -65,7 +68,7 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 265;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 11;
+    public static double desiredConfirmationLoops = 9;
     private long goReverseStart = 0;
     public static double goReverseDelay = 350;
 
@@ -249,7 +252,17 @@ public class Intake {
     }
 
     public void setActuationHeight (int pixelIndex) {
-        actuation.setTargetAngle(actuationAngles[pixelIndex], 0.5);
+        if (pixelIndex < 0) {
+            pixelIndex = 0;
+        }
+        actuation.setTargetAngle(actuationAngles[pixelIndex], 1.0);
+    }
+
+    public void setActuationHeight (int pixelIndex, double power) {
+        if (pixelIndex < 0) {
+            pixelIndex = 0;
+        }
+        actuation.setTargetAngle(actuationAngles[pixelIndex], power);
     }
 
     public void setActuationAngle(double angle, double power) { // 0 index based

@@ -201,6 +201,7 @@ public class Drivetrain {
         ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
 
         if (path != null) {
+            maxPower = path.poses.get(pathIndex).power;
             double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
             double radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
             while (radiusToPath < pathRadius && pathIndex != path.poses.size()) {
