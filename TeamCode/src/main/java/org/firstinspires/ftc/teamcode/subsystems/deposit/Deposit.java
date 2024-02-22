@@ -36,12 +36,12 @@ public class Deposit {
     double targetX = 0.0;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.173707225;
+    public static double v4BarTransferAngle = -0.218534896;
     public static double v4BarGrabAngle = -0.04482767;
     public static double v4BarDepositAngle = -3.2724194;
 
     // top servo angles
-    public static double topServoTransferAngle = -0.918967259;
+    public static double topServoTransferAngle = -0.9301741;
     public static double topServoGrabAngle = -0.9637949;
     public static double topServoDepositAngle = 1.938;
     public static double topServoRetractAngle = 0.7060358;
@@ -61,7 +61,7 @@ public class Deposit {
 
         state = State.GRAB;
 
-        slides = new Slides(hardwareMap, hardwareQueue, sensors);
+        slides = new Slides(hardwareMap, hardwareQueue, sensors, robot.drivetrain);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         release = new Release(hardwareMap, hardwareQueue);
     }
@@ -108,8 +108,11 @@ public class Deposit {
     }
 
     public void retractInit() {
+        state = State.IDLE;
+
+        release.close();
         endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
-        endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
+        endAffector.topServo.setTargetAngle(topServoTransferAngle, topServoPower);
     }
 
     public boolean checkReady() {

@@ -42,7 +42,7 @@ public class EndAffector {
             new double[] {-1}
         );
         this.sensors = sensors;
-        v4Servo.setCurrentAngle(Deposit.v4BarTransferAngle);
+//        v4Servo.setCurrentAngle(Deposit.v4BarTransferAngle);
 
         hardwareQueue.addDevice(v4Servo);
         hardwareQueue.addDevice(topServo);

@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -37,11 +38,15 @@ public class Slides {
     private DcMotorEx m1;
     private DcMotorEx m2;
 
-    public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
+    private Drivetrain drivetrain;
+
+    public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Drivetrain drivetrain) {
         this.sensors = sensors;
+        this.drivetrain = drivetrain;
 
         m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
+
 
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -56,6 +61,8 @@ public class Slides {
     public void resetSlidesEncoders() {
         Log.e("RESETTTING", "RESTETING SLIDES *************");
 
+        drivetrain.resetSlidesMotorRightFront();
+
         m1.setPower(0);
         m2.setPower(0);
 
@@ -69,6 +76,16 @@ public class Slides {
         m2.setPower(0);
     }
 
+    public void setSlidesMotorsToCoast() {
+        m1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        m2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+    }
+
+    public void setSlidesMotorsToBrake() {
+        m1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        m2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+    }
+
     /**
      * Pretty misleading function name -- Eric
      * @return power
@@ -77,8 +94,10 @@ public class Slides {
         double error = targetLength - length;
 
         Log.e("targetLength", targetLength + "");
+
         Log.e("error", error + "");
         TelemetryUtil.packet.put("slidesError", error);
+        TelemetryUtil.packet.put("length", length);
 
         if (targetLength <= 0.6) {
             error = -4;

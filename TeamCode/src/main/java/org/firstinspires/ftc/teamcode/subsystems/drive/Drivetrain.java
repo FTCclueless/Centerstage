@@ -89,12 +89,11 @@ public class Drivetrain {
             hardwareQueue.addDevice(motor);
         }
 
-        //setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // resetting odos
         leftFront.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftRear.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        if (Globals.RUNMODE != RunMode.TELEOP)
-            leftFront.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -111,6 +110,13 @@ public class Drivetrain {
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();
+    }
+
+    public void resetSlidesMotorRightFront() {
+        Log.e("RESETTTING", "*****RESTETING RIGHT FRONT *************");
+
+        rightFront.motor[0].setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.motor[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public Drivetrain (HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {

@@ -144,7 +144,9 @@ public class Sensors {
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            //distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
+            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
+
+        //distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
             //distRightVal = (distRight.getVoltage() / 3.2) * 1000;
 
 //            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
@@ -164,7 +166,6 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
 //            for (int i = 0; i < analogVoltages.length; i++) {
 //                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
 //            }

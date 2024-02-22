@@ -62,16 +62,25 @@ public class Teleop extends LinearOpMode {
         robot.droppers.retractBoth();
 
         robot.intake.setActuationHeight(0);
-        // robot.deposit.retract();
+
+        // moving slides up first
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 500) {
+            robot.deposit.slides.setTargetPowerFORCED(0.85);
+            robot.update();
+        }
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
 
         // making sure arm is over
-        /*long start = System.currentTimeMillis();
+        robot.deposit.retractInit();
+        start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 2500) {
+            robot.deposit.slides.setTargetPowerFORCED(0.0);
             robot.update();
-        }*/
+        }
 
         // making sure slides are down
-        /*double lastDist = 0.0;
+        double lastDist = 0.0;
         double vel = 0.0;
         start = System.currentTimeMillis();
         long velocityStart = System.currentTimeMillis();
@@ -82,28 +91,41 @@ public class Teleop extends LinearOpMode {
                 vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
                 lastDist = robot.deposit.slides.getLength();
                 velocityStart = System.currentTimeMillis();
+
             }
 
-            robot.deposit.slides.setTargetPowerFORCED(-1);
+            robot.deposit.slides.setTargetPowerFORCED(-1.0);
             robot.update();
 
             Log.e("vel", vel + "");
-        }*/
-
-        if (Globals.gotBloodyAnnihilated) {
-            robot.deposit.state = Deposit.State.FINISH_DEPOSIT;
-            robot.deposit.depositAt(10, 5);
-            while (!robot.deposit.checkReady()) {
-                robot.update();
-            }
-
-            robot.deposit.retract();
-            while (!robot.deposit.checkReady()) {
-                robot.update();
-            }
+            Log.e("vel_encoder", robot.deposit.slides.vel + "");
         }
 
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
+
+        robot.deposit.slides.setSlidesMotorsToCoast();
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 500) {
+            robot.update();
+        }
+
+        robot.deposit.slides.setSlidesMotorsToBrake();
         robot.deposit.slides.resetSlidesEncoders();
+        robot.update();
+
+//        if (Globals.gotBloodyAnnihilated) {
+//            robot.deposit.state = Deposit.State.FINISH_DEPOSIT;
+//            robot.deposit.depositAt(10, 5);
+//            while (!robot.deposit.checkReady()) {
+//                robot.update();
+//            }
+//
+//            robot.deposit.retract();
+//            while (!robot.deposit.checkReady()) {
+//                robot.update();
+//            }
+//        }
+
         robot.deposit.slides.manualMode = false;
 
         // disabling intake checks
@@ -113,6 +135,7 @@ public class Teleop extends LinearOpMode {
         // initializing
         while (opModeInInit())
         {
+            robot.deposit.state = Deposit.State.INTAKE;
             robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
             robot.update();
         }
