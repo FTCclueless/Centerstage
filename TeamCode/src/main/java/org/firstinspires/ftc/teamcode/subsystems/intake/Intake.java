@@ -255,12 +255,18 @@ public class Intake {
         if (pixelIndex < 0) {
             pixelIndex = 0;
         }
+        if (pixelIndex > 4) {
+            pixelIndex = 4;
+        }
         actuation.setTargetAngle(actuationAngles[pixelIndex], 1.0);
     }
 
     public void setActuationHeight (int pixelIndex, double power) {
         if (pixelIndex < 0) {
             pixelIndex = 0;
+        }
+        if (pixelIndex > 4) {
+            pixelIndex = 4;
         }
         actuation.setTargetAngle(actuationAngles[pixelIndex], power);
     }
