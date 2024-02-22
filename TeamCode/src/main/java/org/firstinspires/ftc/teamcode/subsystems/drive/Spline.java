@@ -14,6 +14,10 @@ class SplinePose2d extends Pose2d {
         this(p.x, p.y, p.heading, reversed, radius, 1.0);
     }
 
+    public SplinePose2d(Pose2d p, boolean reversed, double radius, double power) {
+        this(p.x, p.y, p.heading, reversed, radius, power);
+    }
+
     public SplinePose2d(double x, double y, double heading, boolean reversed, double radius, double power) {
         super(x, y, heading);
         this.reversed = reversed;
@@ -107,14 +111,14 @@ public class Spline {
                 point.heading = Math.atan2(velY,velX);
                 point.clipAngle();
 
-                poses.add(new SplinePose2d(point, reversed, findR(time)));
+                poses.add(new SplinePose2d(point, reversed, findR(time), power));
                 System.out.println("pathIndex: " + poses.size() + " radius: " + findR(time));
 
                 lastPoint = point;
             }
         }
 
-        poses.add(new SplinePose2d(p, reversed, findR(1.0)));
+        poses.add(new SplinePose2d(p, reversed, findR(1.0), power));
 
         return this;
     }
