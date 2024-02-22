@@ -68,9 +68,9 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 265;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 9;
+    public static double desiredConfirmationLoops = 11;
     private long goReverseStart = 0;
-    public static double goReverseDelay = 350;
+    public static double goReverseDelay = 500;
 
     public boolean useIntakeStallCheck = true;
     public boolean useIntakeColorSensorCheck = true;
@@ -259,6 +259,17 @@ public class Intake {
             pixelIndex = 4;
         }
         actuation.setTargetAngle(actuationAngles[pixelIndex], 1.0);
+    }
+
+    public void setActuationHeightSlightlyAbove (int pixelIndex) {
+        if (pixelIndex < 0) {
+            pixelIndex = 0;
+        }
+        if (pixelIndex > 4) {
+            pixelIndex = 4;
+        }
+        actuation.setTargetAngle(actuationAngles[pixelIndex] - 0.2, 1.0);
+        robot.update();
     }
 
     public void setActuationHeight (int pixelIndex, double power) {
