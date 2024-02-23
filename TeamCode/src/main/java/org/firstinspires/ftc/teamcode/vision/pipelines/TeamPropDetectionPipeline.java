@@ -67,7 +67,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
         // dilating and eroding to remove noise
         noiseReduction(cbMat, deNoiseMat);
 
-        // cropping into 3 regions
+//        // cropping into 3 regions
         leftMat = deNoiseMat.submat(leftRegion);
         centerMat = deNoiseMat.submat(centerRegion);
         rightMat = deNoiseMat.submat(rightRegion);
@@ -86,7 +86,7 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
             team_prop_location = TeamPropLocation.RIGHT;
         }
 
-        return cbMat;
+        return deNoiseMat;
     }
 
     public TeamPropLocation getTeamPropLocation() {
@@ -107,9 +107,6 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
     private void noiseReduction(Mat input, Mat output)
     {
         Imgproc.erode(input, output, erodeElement);
-        Imgproc.erode(output, output, erodeElement);
-
-        Imgproc.dilate(output, output, dilateElement);
         Imgproc.dilate(output, output, dilateElement);
     }
 
