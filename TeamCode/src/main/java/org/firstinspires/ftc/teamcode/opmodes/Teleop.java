@@ -65,7 +65,7 @@ public class Teleop extends LinearOpMode {
 
         // moving slides up first
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 150) {
+        while (System.currentTimeMillis() - start < 75) {
             robot.deposit.slides.setTargetPowerFORCED(0.85);
             robot.update();
         }
@@ -94,7 +94,7 @@ public class Teleop extends LinearOpMode {
 
             }
 
-            robot.deposit.slides.setTargetPowerFORCED(-1.0);
+            robot.deposit.slides.setTargetPowerFORCED(-0.8);
             robot.update();
 
             Log.e("vel", vel + "");
@@ -201,17 +201,18 @@ public class Teleop extends LinearOpMode {
             // hanging mechanism
             if (gamepad2.y && !robot.deposit.isDepositing()) {
                 hang.on();
-                robot.intake.actuationFullyUp();
             } else if (gamepad2.a && !robot.deposit.isDepositing()) {
                 hang.reverse();
-                robot.intake.actuationFullyUp();
             } else if (gamepad2.dpad_right && !robot.deposit.isDepositing()) {
-                hang.rightReverse();
-                robot.intake.actuationFullyUp();
+                hang.rightUp();
             } else if (gamepad2.dpad_left && !robot.deposit.isDepositing()) {
+                hang.rightReverse();
+            } else if (gamepad2.dpad_up && !robot.deposit.isDepositing()) {
+                hang.leftUp();
+            } else if (gamepad2.dpad_down && !robot.deposit.isDepositing()) {
                 hang.leftReverse();
-                robot.intake.actuationFullyUp();
-            } else {
+            }
+            else {
                 hang.off();
             }
 
@@ -252,8 +253,8 @@ public class Teleop extends LinearOpMode {
 
             // driver B adjusting deposit position
 
-            if (robot.deposit.inPixelAdjustmentMode) {
-                driver2SlidesAdjustmentConstant = 0.25;
+            if (leftTrigger_2.isToggled(gamepad2.left_trigger > 0.2)) {
+                driver2SlidesAdjustmentConstant = 0.1;
             } else {
                 driver2SlidesAdjustmentConstant = 0.35;
             }
@@ -281,13 +282,10 @@ public class Teleop extends LinearOpMode {
             TelemetryUtil.packet.put("depoFlag", depoFlag);
 
             // dunking (both)
-            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
+            if (rightTrigger_2.isClicked(gamepad2.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT && !robot.deposit.inPixelAdjustmentMode) {
                 robot.deposit.releaseOne();
             }
 
-            if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
-                robot.deposit.releaseTwo();
-            }
             // pixel adjustment toggle
 //            if (x_2.isClicked(gamepad2.x) && robot.deposit.state == Deposit.State.DEPOSIT)  {
             if (x_2.isClicked(gamepad2.x))  {

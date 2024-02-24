@@ -93,9 +93,6 @@ public class Slides {
     private double feedforward() {
         double error = targetLength - length;
 
-        Log.e("targetLength", targetLength + "");
-
-        Log.e("error", error + "");
         TelemetryUtil.packet.put("slidesError", error);
         TelemetryUtil.packet.put("length", length);
 
@@ -114,7 +111,6 @@ public class Slides {
 
         if (!manualMode) {
             if (!(Globals.RUNMODE == RunMode.TESTER)) {
-                Log.e("slidesFF", "" + feedforward());
                 slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
             }
         }

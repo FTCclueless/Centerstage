@@ -48,4 +48,12 @@ public class Hang {
     public void rightReverse() {
         rightServo.setTargetPower(1.0);
     }
+
+    public void leftUp() {
+        leftServo.setTargetPower(-1.0);
+    }
+
+    public void rightUp() {
+        rightServo.setTargetPower(-1.0);
+    }
 }

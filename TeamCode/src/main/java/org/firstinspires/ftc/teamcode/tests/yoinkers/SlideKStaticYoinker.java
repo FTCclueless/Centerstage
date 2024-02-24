@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
-@Disabled
 @Config
 @TeleOp
 public class SlideKStaticYoinker extends LinearOpMode {
@@ -24,7 +23,7 @@ public class SlideKStaticYoinker extends LinearOpMode {
         waitForStart();
 
         double power = 0;
-        while (robot.sensors.getSlidesVelocity() <= 10 && opModeIsActive()) {
+        while (Math.abs(robot.sensors.getSlidesVelocity()) <= 10 && opModeIsActive()) {
             power += 0.001;
             ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[0].setPower(-power);
             ((PriorityMotor)robot.hardwareQueue.getDevice("slidesMotor")).motor[1].setPower(-power);
@@ -32,7 +31,9 @@ public class SlideKStaticYoinker extends LinearOpMode {
             TelemetryUtil.packet.put("velo", robot.sensors.getSlidesVelocity());
             robot.sensors.update();
             TelemetryUtil.sendTelemetry();
-            // robot.hardwareQueue.update();
+            Log.e("robot.sensors.getSlidesVelocity()", robot.sensors.getSlidesVelocity() + "");
+            Log.e("opModeIsActive", opModeIsActive() + "");
+//            robot.hardwareQueue.update();
         }
 
         Log.e(power+ "", "e");
