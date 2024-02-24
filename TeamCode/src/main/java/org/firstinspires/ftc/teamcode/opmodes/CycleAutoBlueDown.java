@@ -173,17 +173,19 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.followSpline(
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
-                .addPoint(new Pose2d(27.41, 12, Math.PI), 0.8)
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 6, Math.PI), 0.2),
+                .addPoint(new Pose2d(27.41, 9.5, Math.PI), 1.0)
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 5, Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
-            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
+            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy(),
+            true, false
         );
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 5, Math.PI), this, true, false);
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-56.2, -56.2, -57, -57, -55.7}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-55.7, -55.7, -43, -43, -55.7}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -231,7 +233,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.05);
+            robot.intake.setActuationHeight(0, 0.1);
             robot.update();
         }
 

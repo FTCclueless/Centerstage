@@ -30,6 +30,8 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("rightOdo", sensors.getOdometry()[1]);
             telemetry.addData("backOdo", sensors.getOdometry()[2]);
 
+            telemetry.addData("ultrasonicOne", sensors.getUltrasonicDist());
+
             telemetry.addData("slides encoder", sensors.getSlidesPos());
 
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());

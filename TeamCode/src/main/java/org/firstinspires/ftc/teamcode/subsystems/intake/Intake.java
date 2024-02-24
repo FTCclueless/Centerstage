@@ -71,6 +71,7 @@ public class Intake {
     public static double desiredConfirmationLoops = 11;
     private long goReverseStart = 0;
     public static double goReverseDelay = 500;
+    public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)
 
     public boolean useIntakeStallCheck = true;
     public boolean useIntakeColorSensorCheck = true;
@@ -167,6 +168,7 @@ public class Intake {
                     }
                     break;
                 case UNSTALL:
+                    reversedTime = System.currentTimeMillis();
                     Log.e("JAM REVERSE FALLBACK", "-----");
                     reverseForSomeTime(750);
                     stallState = StallState.CHECK;
@@ -200,6 +202,7 @@ public class Intake {
                     }
                     break;
                 case GO_REVERSE:
+                    reversedTime = System.currentTimeMillis();
                     Log.e("PIXEL REVERSE FALLBACK", "-----");
                     Globals.NUM_PIXELS = 2;
                     // Wait a bit then reverse for some time
@@ -284,6 +287,10 @@ public class Intake {
 
     public void setActuationAngle(double angle, double power) { // 0 index based
         actuation.setTargetAngle(angle, power);
+    }
+
+    public boolean twoPixelsInTransfer() {
+        return colorSensorV3.readPS() >= pixelTouchingDist;
     }
 
     public double getIntakeActuationOffset() {
