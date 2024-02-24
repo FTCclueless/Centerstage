@@ -55,6 +55,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle x_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
+
         int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
 
@@ -253,7 +254,11 @@ public class Teleop extends LinearOpMode {
 
             // driver B adjusting deposit position
 
-            if (leftTrigger_2.isToggled(gamepad2.left_trigger > 0.2)) {
+            if (leftTrigger_2.isClicked(gamepad2.left_trigger > 0.2)) {
+                robot.deposit.isSlowSlidesMode = !robot.deposit.isSlowSlidesMode;
+            }
+
+            if (robot.deposit.isSlowSlidesMode) {
                 driver2SlidesAdjustmentConstant = 0.1;
             } else {
                 driver2SlidesAdjustmentConstant = 0.35;

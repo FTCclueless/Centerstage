@@ -50,6 +50,8 @@ public class Deposit {
     public static double v4BarReadjustAngle = -3.9896627;
     public static double topServoReadjustAngle = -1.09827794;
 
+    public boolean isSlowSlidesMode = false;
+
     // old readjustment values
 //    public static double v4BarReadjustAngle = -2.75124228;
 //    public static double topServoReadjustAngle = 0.5435355;
@@ -201,6 +203,7 @@ public class Deposit {
             case START_RETRACT:
                 inPixelAdjustmentMode = false;
                 alreadySwitched = false;
+                isSlowSlidesMode = false;
                 if (System.currentTimeMillis() - beginRetractTime > 200) {
                     release.close();
 
