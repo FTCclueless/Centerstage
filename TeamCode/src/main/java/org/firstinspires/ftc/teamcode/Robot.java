@@ -119,6 +119,21 @@ public class Robot {
 
         do {
             intake.actuationFullyUp();
+
+            // Make it so if we spit out a pixel mid way & we still don't have 2, attempt to reintake it
+            System.out.println("Reversed time: " + intake.reversedTime);
+            if (intake.reversedTime != -1 && System.currentTimeMillis() - intake.reversedTime > 600) {
+                System.out.println("Reversed time is not garbage");
+                if (!intake.twoPixelsInTransfer()) {
+                    System.out.println("Panic!");
+                    intake.on();
+                    Pose2d newTargetPoint = drivetrain.targetPoint.clone();
+                    newTargetPoint.x -= 3;
+                    drivetrain.targetPoint = newTargetPoint;
+                }
+                intake.reversedTime = -1;
+            }
+
             if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
                 deposit.depositAt(depositVector3); // async call to deposit
@@ -202,6 +217,12 @@ public class Robot {
             }
             update();
         }
+    }
+
+    public void followSpline(Spline spline, Func func, boolean finalAdjustment, boolean stop) {
+        drivetrain.setFinalAdjustment(finalAdjustment);
+        drivetrain.setStop(stop);
+        followSpline(spline, func);
     }
 
     public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {

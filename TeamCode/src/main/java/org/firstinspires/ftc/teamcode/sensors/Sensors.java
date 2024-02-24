@@ -42,6 +42,9 @@ public class Sensors {
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
     private final AnalogInput[] analogEncoders = new AnalogInput[2];
+    private long lastUltrasonicPoll = System.currentTimeMillis();
+    private final AnalogInput ultrasonic;
+    private double ultrasonicDist = 0;
     public double[] analogVoltages = new double[analogEncoders.length];
     private double voltage;
     private double distLeftVal, distRightVal;
@@ -62,6 +65,8 @@ public class Sensors {
 
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
+        ultrasonic = hardwareMap.get(AnalogInput.class, "ultrasonic");
+        ultrasonicDist = ultrasonic.getVoltage() / ultrasonic.getMaxVoltage();
 //        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
 //        if (!huskyLens.knock())
 //            Log.e("HuskyLens", "Failed to init! BAD BAD!");
@@ -131,6 +136,11 @@ public class Sensors {
                 imuJustUpdated = true;
             }
 
+            if (System.currentTimeMillis() - lastUltrasonicPoll > 300) {
+                ultrasonicDist = ultrasonic.getVoltage() / ultrasonic.getMaxVoltage();
+                lastUltrasonicPoll = System.currentTimeMillis();
+            }
+
             timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
             if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
@@ -185,6 +195,8 @@ public class Sensors {
     public int[] getOdometry() {
         return odometry;
     }
+
+    public double getUltrasonicDist() {return ultrasonicDist;}
 
     public int getSlidesPos() {
         return slidesEncoder;
