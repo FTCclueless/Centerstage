@@ -309,13 +309,13 @@ public class Teleop extends LinearOpMode {
             }
 
             // adjusting actuation angle
-            if (dpadUp_2.isClicked(gamepad2.dpad_up) || ((y_1.isHeld(gamepad1.y, 200) || y_1.isClicked(gamepad1.y)) && !robot.deposit.isDepositing())) {
+            if ((y_1.isHeld(gamepad1.y, 200) || y_1.isClicked(gamepad1.y)) && !robot.deposit.isDepositing()) {
                 pixelIndex++;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
             }
 
-            if (dpadDown_2.isClicked(gamepad2.dpad_down) || ((a_1.isHeld(gamepad1.a, 200) || a_1.isClicked(gamepad1.a)) && !robot.deposit.isDepositing())) {
+            if ((a_1.isHeld(gamepad1.a, 200) || a_1.isClicked(gamepad1.a)) && !robot.deposit.isDepositing()) {
                 pixelIndex--;
                 pixelIndex = Utils.minMaxClipInt(pixelIndex, 0, 4);
                 intake.setActuationHeight(pixelIndex);
