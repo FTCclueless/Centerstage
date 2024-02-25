@@ -145,11 +145,11 @@ public class Sensors {
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            boardIRVal = (boardIR.getVoltage()) / 3.3 * 1000;
+            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
 
-            cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.3 * 1000;
-            cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.3 * 1000;
-            frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.3 * 1000;
+            cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.2 * 1000;
+            cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.2 * 1000;
+            frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;
 
 //            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
 //                huskyLensBlocks = huskyLens.blocks();
