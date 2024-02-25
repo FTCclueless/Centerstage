@@ -159,7 +159,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
     }
 
-    public void navigateToBoardInital() {
+    public void navigateToBoardInitial() {
         robot.goToPointWithDepositAndIntake(new Pose2d(15, -10, Math.PI), this, false, false, deposit, 0);
         robot.intake.off();
     }
@@ -248,7 +248,7 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.followSplineWithIntakeAndDeposit(
+        robot.followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
                         .addPoint(new Pose2d(25, -10, Math.PI))
@@ -258,7 +258,8 @@ public class CycleAutoRedDown extends LinearOpMode {
                 -4,
                 1.0,
                 false,
-                false
+                false,
+                0
         );
         robot.intake.off();
 

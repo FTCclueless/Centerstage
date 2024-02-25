@@ -14,13 +14,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
-import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
-import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -185,6 +183,8 @@ public class Drivetrain {
 
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
+    public boolean useUltrasonicCornerDetection = false;
+
     Spline path = null;
     int pathIndex = 0;
     int pathRadius = 15;
@@ -226,6 +226,10 @@ public class Drivetrain {
 
         calculateErrors();
         updateTelemetry();
+
+        if (useUltrasonicCornerDetection) {
+            updateCornerUltrasonicsDetection();
+        }
 
         switch (state) {
             case GO_TO_POINT:
@@ -298,6 +302,60 @@ public class Drivetrain {
             case DRIVE:
                 break;
             case IDLE:
+                break;
+        }
+    }
+
+    double ultrasonicDist = 0;
+    double ultrasonicDistThreshold = 50;
+
+    enum UltrasonicCheckState {
+        CHECK,
+        CONFIRM_BLOCKED,
+        WAIT
+    }
+    private UltrasonicCheckState ultrasonicCheckState = UltrasonicCheckState.CHECK;
+    private long ultrasonicBlockedStart, ultrasonicUnBlockedCheckTimer, startWaitTime;
+    private long ultrasonicDebounce;
+
+    public void updateCornerUltrasonicsDetection() {
+        if (Globals.isRed) {
+            ultrasonicDist = sensors.getCornerLeftDist();
+        } else {
+            ultrasonicDist = sensors.getCornerRightDist();
+        }
+
+        switch (ultrasonicCheckState) {
+            case CHECK:
+                if (ultrasonicDist > ultrasonicDistThreshold) { // we are blocked
+                    ultrasonicBlockedStart = System.currentTimeMillis();
+                    ultrasonicDebounce = System.currentTimeMillis();
+                    ultrasonicCheckState = UltrasonicCheckState.CONFIRM_BLOCKED;
+                }
+                break;
+            case CONFIRM_BLOCKED:
+                if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
+                    ultrasonicDebounce = System.currentTimeMillis();
+                }
+                if (System.currentTimeMillis() - ultrasonicDebounce > 100) { // if we detect that we are not blocked for 100 ms we assume false detection and go back
+                    ultrasonicCheckState = UltrasonicCheckState.CHECK;
+                }
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 250) { // we need to detect we are blocked for more than 250 ms with no breaks
+                    startWaitTime = System.currentTimeMillis();
+                    ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
+                    ultrasonicCheckState = UltrasonicCheckState.WAIT;
+                }
+                break;
+            case WAIT:
+                while (System.currentTimeMillis() - startWaitTime < 3000) {
+                    forceStopAllMotors();
+                    if (ultrasonicDist < ultrasonicDistThreshold) { // checking that we are still blocked
+                        ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
+                    }
+                    if (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer > 750) { // break early
+                        break;
+                    }
+                }
                 break;
         }
     }

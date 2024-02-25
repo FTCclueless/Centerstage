@@ -8,8 +8,6 @@ import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
-import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
-import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
 @TeleOp
 public class SensorTester extends LinearOpMode {
@@ -30,17 +28,16 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("rightOdo", sensors.getOdometry()[1]);
             telemetry.addData("backOdo", sensors.getOdometry()[2]);
 
-            telemetry.addData("ultrasonicOne", sensors.getUltrasonicDist());
-
             telemetry.addData("slides encoder", sensors.getSlidesPos());
 
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
             telemetry.addData("deposit_triggered", sensors.isDepositTriggered());
 
-            //telemetry.addData("dist_left", sensors.getDistLeft());
-            //telemetry.addData("dist_right", sensors.getDistRight());
-
             telemetry.addData("board_ir", sensors.getBoardIR());
+
+            telemetry.addData("cornerLeftUltrasonic", sensors.getCornerLeftDist());
+            telemetry.addData("cornerRightUltrasonic", sensors.getCornerRightDist());
+            telemetry.addData("frontUltrasonic", sensors.getFrontDist());
 
             telemetry.update();
         }

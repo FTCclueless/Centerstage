@@ -146,6 +146,50 @@ public class Robot {
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
+    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold) {
+        long start = System.currentTimeMillis();
+        drivetrain.setFinalAdjustment(finalAdjustment);
+        drivetrain.setStop(stop);
+        drivetrain.setMaxPower(maxPower);
+
+        drivetrain.setPath(spline);
+        drivetrain.state = Drivetrain.State.GO_TO_POINT;
+        update();
+
+        do {
+            intake.actuationFullyUp();
+
+            // Make it so if we spit out a pixel mid way & we still don't have 2, attempt to reintake it
+            System.out.println("Reversed time: " + intake.reversedTime);
+            if (intake.reversedTime != -1 && System.currentTimeMillis() - intake.reversedTime > 600) {
+                System.out.println("Reversed time is not garbage");
+                if (!intake.twoPixelsInTransfer()) {
+                    System.out.println("Panic!");
+                    intake.on();
+                    Pose2d newTargetPoint = drivetrain.targetPoint.clone();
+                    newTargetPoint.x -= 3;
+                    drivetrain.targetPoint = newTargetPoint;
+                }
+                intake.reversedTime = -1;
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
+                intake.off();
+                deposit.depositAt(depositVector3); // async call to deposit
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
+                intake.reverse();
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > beginCornerUltrasonicCheckThreshold) {
+                drivetrain.useUltrasonicCornerDetection = true;
+            }
+            update();
+        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+        drivetrain.useUltrasonicCornerDetection = false;
+    }
+
     public void splineToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
         Pose2d clonedPose = pose.clone();
         drivetrain.setFinalAdjustment(finalAdjustment);

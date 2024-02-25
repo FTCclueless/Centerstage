@@ -12,12 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
-import org.firstinspires.ftc.teamcode.utils.Globals;
-import org.firstinspires.ftc.teamcode.utils.REVColorSensorV3;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -42,12 +38,10 @@ public class Sensors {
     private boolean intakeTriggered = false;
     private boolean depositTriggered = false;
     private final AnalogInput[] analogEncoders = new AnalogInput[2];
-    private long lastUltrasonicPoll = System.currentTimeMillis();
-    private final AnalogInput ultrasonic;
-    private double ultrasonicDist = 0;
+    private final AnalogInput cornerLeftUltrasonic, cornerRightUltrasonic, frontUltrasonic;
+    private double cornerLeftUltrasonicDist, cornerRightUltrasonicDist, frontUltrasonicDist = 0;
     public double[] analogVoltages = new double[analogEncoders.length];
     private double voltage;
-    private double distLeftVal, distRightVal;
     private double boardIRVal;
 
     private BHI260IMU imu;
@@ -65,8 +59,10 @@ public class Sensors {
 
         intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
         depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
-        ultrasonic = hardwareMap.get(AnalogInput.class, "ultrasonic");
-        ultrasonicDist = ultrasonic.getVoltage() / ultrasonic.getMaxVoltage();
+        cornerLeftUltrasonic = hardwareMap.get(AnalogInput.class, "cornerLeftUltrasonic");
+        cornerRightUltrasonic = hardwareMap.get(AnalogInput.class, "cornerRightUltrasonic");
+        frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
+
 //        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
 //        if (!huskyLens.knock())
 //            Log.e("HuskyLens", "Failed to init! BAD BAD!");
@@ -136,11 +132,6 @@ public class Sensors {
                 imuJustUpdated = true;
             }
 
-            if (System.currentTimeMillis() - lastUltrasonicPoll > 300) {
-                ultrasonicDist = ultrasonic.getVoltage() / ultrasonic.getMaxVoltage();
-                lastUltrasonicPoll = System.currentTimeMillis();
-            }
-
             timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
             if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
@@ -154,10 +145,11 @@ public class Sensors {
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
+            boardIRVal = (boardIR.getVoltage()) / 3.3 * 1000;
 
-        //distLeftVal = (distLeft.getVoltage() / 3.2) * 1000;
-            //distRightVal = (distRight.getVoltage() / 3.2) * 1000;
+            cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.3 * 1000;
+            cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.3 * 1000;
+            frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.3 * 1000;
 
 //            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
 //                huskyLensBlocks = huskyLens.blocks();
@@ -176,9 +168,6 @@ public class Sensors {
 
     private void updateExpansionHub() {
         try {
-//            for (int i = 0; i < analogVoltages.length; i++) {
-//                analogVoltages[i] = analogVoltages[i] * (1-voltageK) + analogEncoders[i].getVoltage()*voltageK;
-//            }
         }
         catch (Exception e) {
             Log.e("******* Error due to ", e.getClass().getName());
@@ -195,8 +184,6 @@ public class Sensors {
     public int[] getOdometry() {
         return odometry;
     }
-
-    public double getUltrasonicDist() {return ultrasonicDist;}
 
     public int getSlidesPos() {
         return slidesEncoder;
@@ -223,9 +210,11 @@ public class Sensors {
 
     public double getVoltage() { return voltage; }
 
-    //public double getDistLeft() { return distLeftVal; }
+    public double getCornerLeftDist() { return cornerLeftUltrasonicDist; }
 
-    //public double getDistRight() { return distRightVal; }
+    public double getCornerRightDist() { return cornerRightUltrasonicDist; }
+
+    public double getFrontDist() { return frontUltrasonicDist; }
 
     public double getBoardIR() { return boardIRVal; }
 
