@@ -142,7 +142,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
         robot.droppers.leftRelease();
 
-        pause(150);
+        pause(50);
     }
 
     /**
