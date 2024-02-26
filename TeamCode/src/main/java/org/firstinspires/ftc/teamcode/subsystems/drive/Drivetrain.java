@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -50,10 +51,12 @@ public class Drivetrain {
 
     public Localizer localizer;
     public Vision vision;
+    public Robot robot;
 
-    public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Vision vision) {
+    public Drivetrain(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Vision vision, Robot robot) {
         this.hardwareQueue = hardwareQueue;
         this.sensors = sensors;
+        this.robot = robot;
 
         leftFront = new PriorityMotor(
             hardwareMap.get(DcMotorEx.class, "leftFront"),
@@ -117,8 +120,8 @@ public class Drivetrain {
         rightFront.motor[0].setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public Drivetrain (HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors) {
-        this(hardwareMap, hardwareQueue, sensors, null);
+    public Drivetrain (HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
+        this(hardwareMap, hardwareQueue, sensors, null, robot);
     }
 
     public void setMinPowersToOvercomeFriction() {
@@ -307,7 +310,7 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 50;
+    double ultrasonicDistThreshold = 100;
 
     enum UltrasonicCheckState {
         CHECK,

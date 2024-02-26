@@ -49,9 +49,9 @@ public class Robot {
         sensors = new Sensors(hardwareMap, hardwareQueue, this);
 
         if (vision != null) {
-            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors, vision);
+            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors, vision, this);
         } else {
-            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors);
+            drivetrain = new Drivetrain(hardwareMap, hardwareQueue, sensors, this);
         }
 
         deposit = new Deposit(hardwareMap, hardwareQueue, sensors, this);
@@ -146,7 +146,7 @@ public class Robot {
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold) {
+    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold, double endCornerUltrasonicCheckThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
@@ -183,7 +183,11 @@ public class Robot {
             }
 
             if (drivetrain.localizer.getPoseEstimate().x > beginCornerUltrasonicCheckThreshold) {
-                drivetrain.useUltrasonicCornerDetection = true;
+                if (drivetrain.getPoseEstimate().x > endCornerUltrasonicCheckThreshold) {
+                    drivetrain.useUltrasonicCornerDetection = false;
+                } else {
+                    drivetrain.useUltrasonicCornerDetection = true;
+                }
             }
             update();
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());

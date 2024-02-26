@@ -48,6 +48,9 @@ public class CycleAutoRedDown extends LinearOpMode {
             for (int i = 0; i < numCycles; i++) {
                 navigateBackToStack();
                 intakeStack();
+                if (System.currentTimeMillis() - Globals.autoStartTime > 25000) { // if we have less than 5 secs remaining we don't go for the deposit
+                    break;
+                }
                 depositOnBoard();
             }
             end();
@@ -183,7 +186,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-58, -58, -57.35, -57.35, -55.7}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-58, -58, -57.75, -57.75, -55.25}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -259,7 +262,8 @@ public class CycleAutoRedDown extends LinearOpMode {
                 1.0,
                 false,
                 false,
-                0
+                0,
+                36
         );
         robot.intake.off();
 
