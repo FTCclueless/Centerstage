@@ -186,7 +186,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-58, -58, -57.75, -57.75, -55.25}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-58, -58, -58, -58, -55.25}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
