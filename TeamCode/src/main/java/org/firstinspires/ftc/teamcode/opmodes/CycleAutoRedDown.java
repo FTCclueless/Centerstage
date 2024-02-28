@@ -124,7 +124,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-45.5, -36, -Math.toRadians(50)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -32.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-36.25, -33, -Math.PI/2);
                 boardPreload =          new Pose2d(46.5, -35.25, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
@@ -173,6 +173,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.on();
 
         robot.intake.setActuationHeight(pixelIndex); // non destructive
+        System.out.println("LL: pixelIndex " + pixelIndex);
+        System.out.println("LL: intakeXDistance " + intakeXDistances[pixelIndex]);
         robot.followSpline(
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
@@ -186,7 +188,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-58, -58, -58, -58, -55.25}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-58, -58, -58, -58, -55.1}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -215,22 +217,27 @@ public class CycleAutoRedDown extends LinearOpMode {
         Globals.NUM_PIXELS = 2;
 
         Globals.mergeUltrasonics = false;
+        pixelIndex--;
     }
 
     int cycleNum = 0;
     public void intakeStack() {
+        System.out.println(pixelIndex + " is the pixel index");
         Globals.mergeUltrasonics = true;
         pixelIndex = Math.max(pixelIndex - 1, 0);
 
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
-        pause(300);
+        start = System.currentTimeMillis();
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
+            robot.intake.setActuationHeight(0, 0.05);
+            robot.update();
+        }
+
         pixelIndex = Math.max(pixelIndex - 1, 0);
 
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
-
-        pause(500);
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {

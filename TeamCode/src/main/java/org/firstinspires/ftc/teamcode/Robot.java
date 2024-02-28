@@ -121,7 +121,7 @@ public class Robot {
             intake.actuationFullyUp();
 
             // Make it so if we spit out a pixel mid way & we still don't have 2, attempt to reintake it
-            System.out.println("Reversed time: " + intake.reversedTime);
+            /*System.out.println("Reversed time: " + intake.reversedTime);
             if (intake.reversedTime != -1 && System.currentTimeMillis() - intake.reversedTime > 600) {
                 System.out.println("Reversed time is not garbage");
                 if (!intake.twoPixelsInTransfer()) {
@@ -132,7 +132,7 @@ public class Robot {
                     drivetrain.targetPoint = newTargetPoint;
                 }
                 intake.reversedTime = -1;
-            }
+            }*/
 
             if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
