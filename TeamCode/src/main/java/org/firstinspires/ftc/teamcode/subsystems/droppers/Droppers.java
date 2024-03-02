@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Droppers {
     public PriorityServo leftDropper, rightDropper;
 
-    public static double leftDownAngle = 3.7509743;
+    public static double leftDownAngle = 3.931354;
     public static double leftReleaseAngle = 0.0;
 
     public static double rightDownAngle = -3.996105855;

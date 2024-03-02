@@ -121,7 +121,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-45.5, -36, -Math.toRadians(50)), this, false, true);
+                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(50)), this, false, true);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -33, -Math.PI/2);
@@ -152,7 +152,8 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-36.5, -34.6, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, true, 1);
                 robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
                 robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
                 break;
@@ -179,7 +180,7 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(27.41, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -17.5 , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
@@ -209,7 +210,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         pause(750);
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 500) {
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
             robot.intake.setActuationHeight(0, 0.05);
             robot.update();
         }
@@ -241,7 +242,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.05);
+            robot.intake.setActuationHeight(0, 0.0625);
             robot.update();
         }
 
@@ -285,7 +286,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         deposit = new Vector3(5, 0, 11.5);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
-        pause(300);
+        pause(350);
 
         robot.releaseOne();
     }
@@ -310,7 +311,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         robot.releaseOne();
-        pause(300);
+        pause(75);
         robot.releaseOne();
     }
 
