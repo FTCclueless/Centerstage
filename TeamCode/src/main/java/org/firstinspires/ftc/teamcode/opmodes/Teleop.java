@@ -65,10 +65,9 @@ public class Teleop extends LinearOpMode {
         robot.intake.setActuationHeight(0);
 
         // moving slides up first
-        robot.deposit.release.releaseTwo();
+        robot.deposit.release.releaseTwoFORCED();
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 75) {
-            robot.deposit.release.releaseTwo();
             robot.deposit.slides.setTargetPowerFORCED(0.85);
             robot.update();
         }

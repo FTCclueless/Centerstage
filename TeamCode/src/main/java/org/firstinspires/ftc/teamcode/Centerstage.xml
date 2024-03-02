@@ -8,7 +8,6 @@
             <goBILDA5202SeriesMotor name="hang" port="3" />
             <ContinuousRotationServo name="leftHang" port="0" />
             <Servo name="release" port="1" />
-            <Servo name="topServo" port="2" />
             <Servo name="V4BarServo1" port="3" />
             <Servo name="V4BarServo2" port="4" />
             <ContinuousRotationServo name="rightHang" port="5" />
@@ -23,6 +22,7 @@
             <goBILDA5202SeriesMotor name="rightRear" port="3" />
             <Servo name="actuation " port="0" />
             <Servo name="airplane" port="1" />
+            <Servo name="topServo" port="2" />
             <Servo name="rightDropper" port="3" />
             <Servo name="leftDropper" port="5" />
             <AnalogInput name="boardIR" port="0" />

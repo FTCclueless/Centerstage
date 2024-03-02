@@ -77,6 +77,10 @@ public class Release {
         releasingTwo = true;
     }
 
+    public void releaseTwoFORCED() {
+        release.setTargetAngle(dunkTwoAngle, 1);
+    }
+
     public boolean readyToRetract() {
         return Globals.NUM_PIXELS <= 0 && !busy;
     }
