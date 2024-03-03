@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.sensors;
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -44,7 +45,7 @@ public class Sensors {
     private double voltage;
     private double boardIRVal;
 
-    private BHI260IMU imu;
+    private IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
     public boolean useIMU; // don't change the value here. Change in drivetrain.
@@ -83,7 +84,7 @@ public class Sensors {
             expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
             expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
-            imu = hardwareMap.get(BHI260IMU.class, "imu");
+            imu = hardwareMap.get(IMU.class, "imu");
             imu.initialize(
                     new IMU.Parameters(new RevHubOrientationOnRobot(
                             RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
