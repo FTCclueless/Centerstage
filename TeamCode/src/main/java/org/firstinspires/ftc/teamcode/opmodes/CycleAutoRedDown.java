@@ -181,7 +181,7 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(27.41, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -17.5 , Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -18.5 , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
@@ -190,7 +190,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-58.5, -58.5, -58, -58, -55.65}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-58.5, -58.5, -58, -58, -55.95}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;

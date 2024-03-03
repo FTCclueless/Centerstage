@@ -310,7 +310,7 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 175;
+    double ultrasonicDistThreshold = 100;
 
     enum UltrasonicCheckState {
         CHECK,
