@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
@@ -188,7 +187,6 @@ public class Drivetrain {
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
     public boolean useUltrasonicCornerDetection = false;
-    public LinearOpMode opMode;
 
     Spline path = null;
     int pathIndex = 0;
@@ -352,13 +350,10 @@ public class Drivetrain {
                 }
                 break;
             case WAIT:
-                while (opMode.opModeIsActive()) {
+                while (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer < 750) {
                     forceStopAllMotors();
                     if (ultrasonicDist < ultrasonicDistThreshold) { // checking that we are still blocked
                         ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
-                    }
-                    if (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer > 750) { // break early
-                        break;
                     }
                 }
                 break;

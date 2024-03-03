@@ -272,8 +272,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 false,
                 false,
                 0,
-                36,
-                this
+                36
         );
         robot.intake.off();
 

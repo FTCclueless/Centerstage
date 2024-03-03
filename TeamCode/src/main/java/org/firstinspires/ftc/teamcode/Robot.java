@@ -146,7 +146,7 @@ public class Robot {
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold, double endCornerUltrasonicCheckThreshold, LinearOpMode linearOpMode) {
+    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold, double endCornerUltrasonicCheckThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
@@ -190,9 +190,8 @@ public class Robot {
                 }
             }
             update();
-        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy() && linearOpMode.opModeIsActive());
+        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
         drivetrain.useUltrasonicCornerDetection = false;
-        drivetrain.opMode = linearOpMode;
     }
 
     public void splineToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
