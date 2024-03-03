@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
@@ -187,6 +188,7 @@ public class Drivetrain {
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
     public boolean useUltrasonicCornerDetection = false;
+    public LinearOpMode opMode;
 
     Spline path = null;
     int pathIndex = 0;
@@ -310,7 +312,7 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 100;
+    double ultrasonicDistThreshold = 175;
 
     enum UltrasonicCheckState {
         CHECK,
@@ -343,14 +345,14 @@ public class Drivetrain {
                 if (System.currentTimeMillis() - ultrasonicDebounce > 100) { // if we detect that we are not blocked for 100 ms we assume false detection and go back
                     ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 }
-                if (ultrasonicDebounce - ultrasonicBlockedStart > 250) { // we need to detect we are blocked for more than 250 ms with no breaks
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 200) { // we need to detect we are blocked for more than 250 ms with no breaks
                     startWaitTime = System.currentTimeMillis();
                     ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.WAIT;
                 }
                 break;
             case WAIT:
-                while (System.currentTimeMillis() - startWaitTime < 3000) {
+                while (opMode.opModeIsActive()) {
                     forceStopAllMotors();
                     if (ultrasonicDist < ultrasonicDistThreshold) { // checking that we are still blocked
                         ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();

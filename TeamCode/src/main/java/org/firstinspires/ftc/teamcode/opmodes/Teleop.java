@@ -81,6 +81,8 @@ public class Teleop extends LinearOpMode {
             robot.update();
         }
 
+        robot.deposit.release.releaseTwoFORCED();
+
         // making sure slides are down
         double lastDist = 0.0;
         double vel = 0.0;
