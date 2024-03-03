@@ -49,7 +49,7 @@ public class Localizer {
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
-    double minAprilTagWeight = 1/5;
+    double minAprilTagWeight = 1/40;
     double maxVel = 0.0;
 
 
