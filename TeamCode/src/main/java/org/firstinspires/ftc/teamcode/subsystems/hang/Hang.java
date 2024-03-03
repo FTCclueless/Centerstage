@@ -26,6 +26,21 @@ public class Hang {
 
     public void update() {}
 
+    public void quickTurnOnOff() {
+        onFORCED();
+        offFORCED();
+    }
+
+    public void onFORCED() {
+        leftServo.servo[0].setPower(-1.0);
+        rightServo.servo[0].setPower(-1.0);
+    }
+
+    public void offFORCED() {
+        leftServo.servo[0].setPower(0.0);
+        rightServo.servo[0].setPower(0.0);
+    }
+
     public void on() {
         leftServo.setTargetPower(-1.0);
         rightServo.setTargetPower(-1.0);

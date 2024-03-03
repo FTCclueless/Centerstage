@@ -22,6 +22,8 @@ public class Reset extends LinearOpMode {
 
         robot.deposit.state = Deposit.State.IDLE;
 
+        robot.hang.quickTurnOnOff();
+
         waitForStart();
 
         while (!isStopRequested()) {

@@ -61,6 +61,7 @@ public class Teleop extends LinearOpMode {
 
         robot.airplane.hold();
         robot.droppers.retractBoth();
+        robot.hang.quickTurnOnOff();
 
         robot.intake.setActuationHeight(0);
 

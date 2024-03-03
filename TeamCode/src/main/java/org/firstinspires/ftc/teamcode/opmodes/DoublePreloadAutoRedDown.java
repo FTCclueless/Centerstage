@@ -68,6 +68,8 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         vision.enableTeamProp();
         vision.disableAprilTag();
 
+        robot.hang.quickTurnOnOff();
+
         while (opModeInInit() && !isStopRequested()) {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);

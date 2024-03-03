@@ -85,6 +85,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         vision.enableTeamProp();
         vision.disableAprilTag();
 
+        robot.hang.quickTurnOnOff();
+
         while (opModeInInit() && !isStopRequested()) {
             robot.drivetrain.setPoseEstimate(new Pose2d(-36.911, -60.75, -Math.PI / 2));
 
