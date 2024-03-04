@@ -32,8 +32,8 @@ public class Hang {
     }
 
     public void onFORCED() {
-        leftServo.servo[0].setPower(-1.0);
-        rightServo.servo[0].setPower(-1.0);
+        leftServo.servo[0].setPower(-0.1);
+        rightServo.servo[0].setPower(-0.1);
     }
 
     public void offFORCED() {

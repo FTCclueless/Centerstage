@@ -47,7 +47,6 @@ public class Slides {
         m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
 
-
         m2.setDirection(DcMotorSimple.Direction.REVERSE);
 
         if (Globals.RUNMODE != RunMode.TELEOP) {
@@ -124,16 +123,17 @@ public class Slides {
         slidesMotors.setTargetPower(Math.max(Math.min(power, 1), -1));
     }
 
+    public void turnOffPowerFORCED() {
+        slidesMotors.motor[0].setPower(0);
+        slidesMotors.motor[1].setPower(0);
+    }
+
     public void setTargetLengthFORCED(double length) {
         targetLength = length;
     }
 
     public boolean inPosition(double threshold) {
         return Math.abs(targetLength - length) <= threshold;
-    }
-
-    public void setLength(double length) {
-        this.length = length;
     }
 
     public double getLength(double length) {

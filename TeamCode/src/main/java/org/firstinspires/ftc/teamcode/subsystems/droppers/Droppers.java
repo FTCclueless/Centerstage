@@ -9,17 +9,11 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Droppers {
     public PriorityServo leftDropper, rightDropper;
 
-    public static double leftDownAngle = 3.931354;
-    public static double leftReleaseAngle = 0.0;
+    public static double leftDownAngle = 3.741724117;
+    public static double leftReleaseAngle = 0.041626;
 
-    public static double rightDownAngle = -3.996105855;
-    public static double rightReleaseAngle = 0;
-
-    public enum STATE {
-        IDLE,
-        BUSY
-    }
-    public STATE state = STATE.IDLE;
+    public static double rightDownAngle = -4.2504875944;
+    public static double rightReleaseAngle = -0.3792600;
 
     public Droppers(HardwareMap hardwareMap, HardwareQueue hardwareQueue) {
         leftDropper = new PriorityServo(hardwareMap.get(Servo.class, "leftDropper"), "leftDropper",
@@ -47,7 +41,7 @@ public class Droppers {
     }
 
     public void leftRelease() {
-        leftDropper.setTargetAngle(leftReleaseAngle, 1.0);
+        leftDropper.setTargetAngle(leftReleaseAngle, 1);
     }
 
     public void rightDown() {
@@ -55,7 +49,7 @@ public class Droppers {
     }
 
     public void rightRelease() {
-        rightDropper.setTargetAngle(rightReleaseAngle, 1.0);
+        rightDropper.setTargetAngle(rightReleaseAngle, 1);
     }
 
     public void retractBoth() {
@@ -63,18 +57,5 @@ public class Droppers {
         rightRelease();
     }
 
-    public void update() {
-        switch(state) {
-            case IDLE:
-                if (leftDropper.getCurrentAngle() != leftDropper.getTargetAngle() || rightDropper.getCurrentAngle() != rightDropper.getTargetAngle()) {
-                    state = STATE.BUSY;
-                }
-                break;
-            case BUSY:
-                if (leftDropper.getCurrentAngle() == leftDropper.getTargetAngle() || rightDropper.getCurrentAngle() == rightDropper.getTargetAngle()) {
-                    state = STATE.IDLE;
-                }
-                break;
-        }
-    }
+    public void update() {}
 }

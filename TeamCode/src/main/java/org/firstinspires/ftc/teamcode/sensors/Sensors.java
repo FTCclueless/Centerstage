@@ -28,8 +28,6 @@ public class Sensors {
     //private IMU imu;
     private int[] odometry = new int[] {0,0,0};
 //    private final DigitalChannel magnetSensor;
-    private final DigitalChannel intakeBeamBreak;
-    private final DigitalChannel depositBeamBreak;
 //    private HuskyLens huskyLens;
     private final AnalogInput boardIR;
 
@@ -58,8 +56,6 @@ public class Sensors {
         this.hardwareQueue = hardwareQueue;
         this.robot = robot;
 
-        intakeBeamBreak = hardwareMap.get(DigitalChannel.class, "intakeBeamBreak");
-        depositBeamBreak = hardwareMap.get(DigitalChannel.class, "depositBeamBreak");
         cornerLeftUltrasonic = hardwareMap.get(AnalogInput.class, "cornerLeftUltrasonic");
         cornerRightUltrasonic = hardwareMap.get(AnalogInput.class, "cornerRightUltrasonic");
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
@@ -139,9 +135,6 @@ public class Sensors {
                 voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
                 lastVoltageUpdatedTime = currTime;
             }
-
-            intakeTriggered = intakeBeamBreak.getState();
-            depositTriggered = depositBeamBreak.getState();
 
             slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
             slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;

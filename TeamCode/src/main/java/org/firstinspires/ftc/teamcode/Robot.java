@@ -190,7 +190,7 @@ public class Robot {
                 }
             }
             update();
-        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+        } while (drivetrain.isBusy());
         drivetrain.useUltrasonicCornerDetection = false;
     }
 

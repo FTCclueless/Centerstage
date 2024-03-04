@@ -310,7 +310,7 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 100;
+    double ultrasonicDistThreshold = 200;
 
     enum UltrasonicCheckState {
         CHECK,
@@ -322,28 +322,27 @@ public class Drivetrain {
     private long ultrasonicDebounce;
 
     public void updateCornerUltrasonicsDetection() {
-        if (Globals.isRed) {
-            ultrasonicDist = sensors.getCornerLeftDist();
-        } else {
-            ultrasonicDist = sensors.getCornerRightDist();
-        }
+        updateUltrasonics();
 
         switch (ultrasonicCheckState) {
             case CHECK:
-                if (ultrasonicDist > ultrasonicDistThreshold) { // we are blocked
+                Log.e("ultrasonic state", "check");
+                if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicBlockedStart = System.currentTimeMillis();
                     ultrasonicDebounce = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.CONFIRM_BLOCKED;
                 }
                 break;
             case CONFIRM_BLOCKED:
+                Log.e("ultrasonic state", "confirm blocked");
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicDebounce = System.currentTimeMillis();
                 }
-                if (System.currentTimeMillis() - ultrasonicDebounce > 100) { // if we detect that we are not blocked for 100 ms we assume false detection and go back
+                if (System.currentTimeMillis() - ultrasonicDebounce > 50) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
                     ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 }
-                if (ultrasonicDebounce - ultrasonicBlockedStart > 200) { // we need to detect we are blocked for more than 250 ms with no breaks
+                Log.e("ultrasonicDebounce - ultrasonicBlockedStart", (ultrasonicDebounce - ultrasonicBlockedStart) + "");
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 150) { // we need to detect we are blocked for more than 250 ms with no breaks
                     startWaitTime = System.currentTimeMillis();
                     ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.WAIT;
@@ -351,13 +350,30 @@ public class Drivetrain {
                 break;
             case WAIT:
                 while (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer < 750) {
+                    Log.e("ultrasonic state", "wait");
+                    robot.sensors.update();
+                    updateUltrasonics();
                     forceStopAllMotors();
+                    robot.deposit.slides.turnOffPowerFORCED();
+
                     if (ultrasonicDist < ultrasonicDistThreshold) { // checking that we are still blocked
                         ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
                     }
                 }
+                Log.e("out of wait", "weee");
+
+                ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 break;
         }
+    }
+
+    private void updateUltrasonics() {
+        if (Globals.isRed) {
+            ultrasonicDist = sensors.getCornerLeftDist();
+        } else {
+            ultrasonicDist = sensors.getCornerRightDist();
+        }
+        Log.e("ultrasonicDist", ultrasonicDist + "");
     }
 
     public void calculateErrors() {

@@ -181,16 +181,18 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(27.41, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -18.5 , Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -17 , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
             () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
         );
+
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -17, Math.PI), this, true, true);
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-58.5, -58.5, -58, -58, -55.95}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-57.9, -57.9, -57.75, -57.75, -55.4}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -232,7 +234,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
+//        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
+        while (System.currentTimeMillis() - start < 300) {
             robot.intake.setActuationHeight(0, 0.05);
             robot.update();
         }
@@ -242,7 +245,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+//        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+        while (System.currentTimeMillis() - start < 1200) {
             robot.intake.setActuationHeight(0, 0.0625);
             robot.update();
         }
@@ -272,9 +276,11 @@ public class CycleAutoRedDown extends LinearOpMode {
                 false,
                 false,
                 0,
-                36
+                40
         );
         robot.intake.off();
+
+        Log.e("exited", "exited the follow spline");
 
         robot.goToPoint(boardPreload, this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
 

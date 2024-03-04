@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 
-public class PriorityMotor extends PriorityDevice{
+public class PriorityMotor extends PriorityDevice {
     double lastPower = 0;
     public double power = 0;
     public DcMotorEx[] motor; // if the subsystem has multiple motors (i.e. slides)

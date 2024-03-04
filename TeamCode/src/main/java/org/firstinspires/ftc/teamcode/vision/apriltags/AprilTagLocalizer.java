@@ -111,7 +111,6 @@ public class AprilTagLocalizer {
     }
 
     public double getDistance(AprilTagDetection tag, boolean isRed) {
-        Log.e("tag.id", tag.id + "");
         if (isBoardTagColoredSide(tag, isRed)) {
             double dist = Math.sqrt(Math.pow(tag.ftcPose.y,2) + Math.pow(tag.ftcPose.x, 2));
             if (dist > 48 || localizer.x < 0)
