@@ -143,6 +143,7 @@ public class Localizer {
             updateHeadingWithIMU(sensors.getImuHeading());
         }
 
+        aprilTagHeadingMerge = 0;
         if (useAprilTag && nanoTimes.size() > 5) {
             Pose2d aprilTagPose = aprilTagLocalizer.update(); // update april tags
 
@@ -172,13 +173,13 @@ public class Localizer {
                 }
                 x += changeInPosition.x;
                 y += changeInPosition.y;
-                aprilTagHeadingMerge += changeInPosition.heading;
+                aprilTagHeadingMerge = changeInPosition.heading;
             }
         }
 
 //        mergeUltrasonics();
 
-        heading = odoHeading + imuMerge + headingOffset + Globals.START_HEADING_OFFSET;
+        heading = odoHeading + imuMerge + headingOffset /*+ aprilTagHeadingMerge*/ + Globals.START_HEADING_OFFSET;
 
         currentPose = new Pose2d(x, y, heading);
 
