@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.REVColorSensorV3;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -48,6 +49,8 @@ public class Intake {
     double intakeDebounce;
     double stallStart;
     double intakeCheck;
+    public static double reversedPower = -0.9;
+    public static double timeToReverse = 500;
     public static double stallThresh = 8000;
     public final REVColorSensorV3 colorSensorV3;
 
@@ -75,6 +78,7 @@ public class Intake {
 
     public boolean useIntakeStallCheck = true;
     public boolean useIntakeColorSensorCheck = true;
+    public boolean reversed = false;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.sensors = sensors;
@@ -127,8 +131,9 @@ public class Intake {
                 intake.setTargetPower(-0.35);
                 break;
             case REVERSE_FOR_TIME:
-                if (System.currentTimeMillis() - reverseForSomeTimeStart < time) {
-                    intake.setTargetPower(-1.0);
+                long elapsed = System.currentTimeMillis() - reverseForSomeTimeStart;
+                if (elapsed < time) {
+                    intake.setTargetPower(reversedPower * Math.sin((Math.PI / (time * 2)) * elapsed)); // Pulse once
                 } else {
                     motorState = previousState;
                 }
@@ -170,7 +175,7 @@ public class Intake {
                 case UNSTALL:
                     reversedTime = System.currentTimeMillis();
                     Log.e("JAM REVERSE FALLBACK", "-----");
-                    reverseForSomeTime(750);
+                    reverseForSomeTime(timeToReverse);
                     stallState = StallState.CHECK;
                     break;
             }
@@ -233,6 +238,7 @@ public class Intake {
     double time;
     MotorState previousState;
     public void reverseForSomeTime(double time) {
+        reversed = true;
         this.time = time;
         reverseForSomeTimeStart = System.currentTimeMillis();
 
