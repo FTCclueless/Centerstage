@@ -48,7 +48,7 @@ public class CycleAutoRedDown extends LinearOpMode {
             for (int i = 0; i < numCycles; i++) {
                 navigateBackToStack();
                 intakeStack();
-                if (System.currentTimeMillis() - Globals.autoStartTime > 25000) { // if we have less than 5 secs remaining we don't go for the deposit
+                if (System.currentTimeMillis() - Globals.autoStartTime > 27000) { // if we have less than 5 secs remaining we don't go for the deposit
                     break;
                 }
                 depositOnBoard();
@@ -180,7 +180,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSpline(
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
-                .addPoint(new Pose2d(27.41, -12, Math.PI))
+                .addPoint(new Pose2d(29.25, -12, Math.PI))
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], -17 , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
@@ -251,6 +251,13 @@ public class CycleAutoRedDown extends LinearOpMode {
             robot.update();
         }
 
+        if (robot.intake.reversed) {
+            Log.e("trying to turn intake on", "turning");
+            robot.intake.on();
+            pause(1000);
+        }
+        robot.intake.reversed = false;
+
         Globals.NUM_PIXELS = 2;
         deposit = new Vector3(5, 0, 13.5 + (cycleNum*5));
         Globals.mergeUltrasonics = false;
@@ -264,7 +271,7 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(
+        robot.followSplineWithIntakeAndDeposit(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
                         .addPoint(new Pose2d(26, -8.5, Math.PI))
@@ -274,9 +281,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 -4,
                 1.0,
                 false,
-                false,
-                0,
-                40
+                false
         );
         robot.intake.off();
 

@@ -42,7 +42,7 @@ public class Intake {
 
 //    double[] actuationAngles = new double[] {1.40086, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
 //    double actuationFullyUpAngle = -1.9724175;
-    double[] actuationAngles = new double[] {0.9862087, 0.5827597, 0.4258628, 0.274569, 0.170086}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
+    double[] actuationAngles = new double[] {1.0870710, 0.5827597, 0.4258628, 0.274569, 0.170086}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
     double actuationFullyUpAngle = -1.69224458;
 
     // stall checking variables
@@ -207,6 +207,7 @@ public class Intake {
                     }
                     break;
                 case GO_REVERSE:
+                    reversed = true;
                     reversedTime = System.currentTimeMillis();
                     Log.e("PIXEL REVERSE FALLBACK", "-----");
                     Globals.NUM_PIXELS = 2;
@@ -238,7 +239,6 @@ public class Intake {
     double time;
     MotorState previousState;
     public void reverseForSomeTime(double time) {
-        reversed = true;
         this.time = time;
         reverseForSomeTimeStart = System.currentTimeMillis();
 
