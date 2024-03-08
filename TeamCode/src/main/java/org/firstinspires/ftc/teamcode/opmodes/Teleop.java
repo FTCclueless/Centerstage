@@ -135,7 +135,7 @@ public class Teleop extends LinearOpMode {
 
         // disabling intake checks
         robot.intake.useIntakeStallCheck = false;
-        robot.intake.useIntakeColorSensorCheck = false;
+//        robot.intake.useIntakeColorSensorCheck = false; TODO: uncomment
 
         // initializing
         while (opModeInInit())

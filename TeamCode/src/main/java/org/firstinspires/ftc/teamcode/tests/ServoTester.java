@@ -109,6 +109,8 @@ public class ServoTester extends LinearOpMode {
             //telemetry.addData("v4Encoder", v4Bar);
             telemetry.addData("angle", servos.get(servoIndex).getCurrentAngle());
             telemetry.addData("targetAngle", servos.get(servoIndex).getTargetAngle());
+            telemetry.addData("intakeColorSensorDist", robot.intake.forcePullColorSensorDist());
+
             if (servos.get(servoIndex) instanceof PriorityServoAxonEnc) {
                 telemetry.addData("voltage", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderVoltage());
                 telemetry.addData("angle", " " + ((PriorityServoAxonEnc) servos.get(servoIndex)).getEncoderAngle());

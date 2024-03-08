@@ -187,7 +187,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
-            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
+            () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy()
         );
 
         robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -13.5, Math.PI), this, true, true);
@@ -247,7 +247,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.05);
+            robot.intake.setActuationHeight(0, 0.0725);
             robot.update();
         }
 

@@ -69,7 +69,7 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 265;
+    public static int pixelTouchingDist = 270;
     private double confirmationLoops = 0;
     public static double desiredConfirmationLoops = 15;
     private long goReverseStart = 0;
@@ -305,5 +305,9 @@ public class Intake {
 
     public boolean isActuationUp() {
         return actuation.getCurrentAngle() == actuationFullyUpAngle;
+    }
+
+    public int forcePullColorSensorDist() {
+        return colorSensorV3.readPS();
     }
 }

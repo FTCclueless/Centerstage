@@ -118,7 +118,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         switch (teamPropLocation) {
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.25, 42.5, Math.PI/2);
-                boardPreload =          new Pose2d(47, 29.75, Math.PI);
+                boardPreload =          new Pose2d(47, 28, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -179,15 +179,12 @@ public class CycleAutoBlueDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, 12, Math.PI), 1.0)
-                .addPoint(new Pose2d(-45, 12 , Math.PI), 1.0)
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 4, Math.PI), 0.5),
-//                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 15.5, Math.PI), 0.2),
-            // Add back uncommented and remove isBusy TODO - Eric
-            // Also make sure to give this a timer TODO - Eric
-            () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy(),
+                .addPoint(new Pose2d(-45, 9.5 , Math.PI), 1.0)
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 7.5, Math.PI), 0.5),
+            () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy(),
             true, false
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 12, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 7.5, Math.PI), this, true, false);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -256,7 +253,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.intake.reversed = false;
 
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 13.5 + (cycleNum*1.5));
+        deposit = new Vector3(5, 0, 13.5 + (cycleNum*5));
         Globals.mergeUltrasonics = false;
         cycleNum++;
     }
