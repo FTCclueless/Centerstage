@@ -122,7 +122,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(50)), this, false, true);
+                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(60)), this, false, true);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -34.5, -Math.PI/2);
@@ -133,7 +133,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -43.25, Math.PI);
+                boardPreload =          new Pose2d(46.5, -41.75, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -153,7 +153,8 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(robot.drivetrain.getPoseEstimate().x, robot.drivetrain.getPoseEstimate().y, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, true, 1);
                 robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, true, 1);
                 robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
                 robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
@@ -181,14 +182,15 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -17 , Math.PI), 0.5),
+                .addPoint(new Pose2d(-45, -12 , Math.PI), 1.0)
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -13.5 , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
             () -> opModeIsActive() /*&& Globals.NUM_PIXELS != 2*/ && robot.drivetrain.isBusy()
         );
 
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -17, Math.PI), this, true, true);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -13.5, Math.PI), this, true, true);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -206,7 +208,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], -12, Math.PI)),
             this::opModeIsActive
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -13.5, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -12, Math.PI), this, true, false);
 
         robot.intake.setActuationHeight(pixelIndex, 0.8);
 
@@ -234,8 +236,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-//        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
-        while (System.currentTimeMillis() - start < 300) {
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
             robot.intake.setActuationHeight(0, 0.05);
             robot.update();
         }
@@ -245,9 +246,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-//        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-        while (System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.0625);
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+            robot.intake.setActuationHeight(0, 0.05);
             robot.update();
         }
 
@@ -274,7 +274,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSplineWithIntakeAndDeposit(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(26, -8.5, Math.PI))
+                        .addPoint(new Pose2d(26, -10, Math.PI))
                         .addPoint(new Pose2d(boardPreload.x-7, boardPreload.y+5, boardPreload.heading)),
                 deposit,
                 0,
@@ -307,7 +307,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSplineWithIntakeAndDeposit(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(25, -15, Math.PI))
+                        .addPoint(new Pose2d(25, -10, Math.PI))
                         .addPoint(new Pose2d(42.75, -30.5, Math.PI)),
                 deposit,
                 0,

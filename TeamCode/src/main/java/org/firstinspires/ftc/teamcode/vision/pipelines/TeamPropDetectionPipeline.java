@@ -18,9 +18,9 @@ public class TeamPropDetectionPipeline implements VisionProcessor {
 
     static int YCRCB_CHANNEL_IDX = 1;
 
-    Rect leftRegion = new Rect(30,190,95,25);
-    Rect centerRegion = new Rect(235,190,160,25);
-    Rect rightRegion = new Rect(490,190,85,25);
+    Rect leftRegion = new Rect(30,235,95,25);
+    Rect centerRegion = new Rect(235,235,160,25);
+    Rect rightRegion = new Rect(490,235,85,25);
 
     Mat leftMat, centerMat, rightMat = new Mat();
     Mat cbMat = new Mat();

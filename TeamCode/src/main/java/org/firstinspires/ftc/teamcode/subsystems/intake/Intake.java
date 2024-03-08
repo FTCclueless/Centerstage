@@ -49,7 +49,7 @@ public class Intake {
     double intakeDebounce;
     double stallStart;
     double intakeCheck;
-    public static double reversedPower = -0.9;
+    public static double reversedPower = -1.0;
     public static double timeToReverse = 500;
     public static double stallThresh = 8000;
     public final REVColorSensorV3 colorSensorV3;

@@ -32,17 +32,19 @@ public class Slides {
     public static double kStatic = 0.15;
     public static double minPower = 0.22;
     public static double minPowerThresh = 0.8;
-    public static double downPower = -0.25;
+    public static double downPower = -0.1;
     public static double forceDownPower = -0.5;
 
     private DcMotorEx m1;
     private DcMotorEx m2;
 
     private Drivetrain drivetrain;
+    private Deposit deposit;
 
-    public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Drivetrain drivetrain) {
+    public Slides(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Drivetrain drivetrain, Deposit deposit) {
         this.sensors = sensors;
         this.drivetrain = drivetrain;
+        this.deposit = deposit;
 
         m1 = hardwareMap.get(DcMotorEx.class, "slidesMotor0");
         m2 = hardwareMap.get(DcMotorEx.class, "slidesMotor1");
@@ -112,6 +114,12 @@ public class Slides {
             if (!(Globals.RUNMODE == RunMode.TESTER)) {
                 slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
             }
+        }
+
+        if (deposit.state == Deposit.State.INTAKE) {
+            downPower = -0.3;
+        } else {
+            downPower = -0.1;
         }
     }
 
