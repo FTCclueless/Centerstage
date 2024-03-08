@@ -125,10 +125,10 @@ public class Drivetrain {
     }
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.2933028305179981);
-        leftRear.setMinimumPowerToOvercomeFriction(0.34301851543941514);
-        rightRear.setMinimumPowerToOvercomeFriction(0.35201662929607813);
-        rightFront.setMinimumPowerToOvercomeFriction(0.345230427428854);
+        leftFront.setMinimumPowerToOvercomeFriction(0.37200445076032007);
+        leftRear.setMinimumPowerToOvercomeFriction(0.46185277763899724);
+        rightRear.setMinimumPowerToOvercomeFriction(0.4982929713010509);
+        rightFront.setMinimumPowerToOvercomeFriction(0.5163265823462083);
 //        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
 //        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
 //        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
