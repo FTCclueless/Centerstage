@@ -17,7 +17,7 @@ public class Release {
 
     public static double transferAngle = -1.0031194;
     public static double preGrabAngle = -1.0061777;
-    public static double closeAngle = -0.55049238;
+    public static double closeAngle = -0.48015169;
     public static double dunkOneAngle = -0.8073888;
     public static double dunkTwoAngle = -1.10098;
 

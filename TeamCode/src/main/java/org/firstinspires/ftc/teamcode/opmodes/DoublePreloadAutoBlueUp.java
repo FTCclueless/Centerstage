@@ -108,7 +108,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(16, 32.5, Math.PI/2);
-                boardPreload =          new Pose2d(48.35, 35.5, Math.PI);
+                boardPreload =          new Pose2d(48.35, 36.8, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -122,7 +122,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 boardPreload =          new Pose2d(48.35, 28.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(10, 33.5, Math.toRadians(50)), this, false, false);
+                robot.goToPoint(new Pose2d(10, 27.5, Math.toRadians(35)), this, false, false);
 
                 releaseAndTriggerDeposit();
 

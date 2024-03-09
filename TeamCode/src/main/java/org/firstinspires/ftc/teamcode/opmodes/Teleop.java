@@ -55,7 +55,6 @@ public class Teleop extends LinearOpMode {
         ButtonToggle x_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
-
         int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
 
@@ -69,6 +68,9 @@ public class Teleop extends LinearOpMode {
         robot.deposit.release.releaseTwoFORCED();
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 75) {
+            telemetry.addData("State:", "NOT READY TO START");
+            telemetry.update();
+
             robot.deposit.slides.setTargetPowerFORCED(0.85);
             robot.update();
         }
@@ -77,7 +79,7 @@ public class Teleop extends LinearOpMode {
         // making sure arm is over
         robot.deposit.retractInit();
         start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 2500) {
+        while (System.currentTimeMillis() - start < 1750) {
             robot.deposit.slides.setTargetPowerFORCED(0.0);
             robot.update();
         }
@@ -135,7 +137,7 @@ public class Teleop extends LinearOpMode {
 
         // disabling intake checks
         robot.intake.useIntakeStallCheck = false;
-//        robot.intake.useIntakeColorSensorCheck = false; TODO: uncomment
+        robot.intake.useIntakeColorSensorCheck = false;
 
         // initializing
         while (opModeInInit())
@@ -143,6 +145,9 @@ public class Teleop extends LinearOpMode {
             robot.deposit.state = Deposit.State.INTAKE;
             robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
             robot.update();
+
+            telemetry.addData("State:", "ready to start");
+            telemetry.update();
         }
 
         // waiting for start
