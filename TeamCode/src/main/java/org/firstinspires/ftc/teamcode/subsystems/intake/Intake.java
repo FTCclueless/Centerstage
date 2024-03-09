@@ -42,7 +42,7 @@ public class Intake {
 
 //    double[] actuationAngles = new double[] {1.40086, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
 //    double actuationFullyUpAngle = -1.9724175;
-    double[] actuationAngles = new double[] {1.042243355, 0.5827597, 0.4258628, 0.274569, 0.170086}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
+    double[] actuationAngles = new double[] {0.9021568, 0.53793205, 0.3810352049, 0.31379369, 0.106465719}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
     double actuationFullyUpAngle = -1.69224458;
 
     // stall checking variables

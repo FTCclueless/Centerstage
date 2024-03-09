@@ -64,13 +64,20 @@ public class Teleop extends LinearOpMode {
 
         robot.intake.setActuationHeight(0);
 
-        // moving slides up first
+        // opening first
         robot.deposit.release.releaseTwoFORCED();
         long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 75) {
+        while (System.currentTimeMillis() - start < 250) {
             telemetry.addData("State:", "NOT READY TO START");
             telemetry.update();
 
+            robot.deposit.release.releaseTwoFORCED();
+            robot.update();
+        }
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 75) {
+            robot.deposit.release.releaseTwoFORCED();
             robot.deposit.slides.setTargetPowerFORCED(0.85);
             robot.update();
         }
@@ -80,11 +87,10 @@ public class Teleop extends LinearOpMode {
         robot.deposit.retractInit();
         start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 1750) {
+            robot.deposit.release.close();
             robot.deposit.slides.setTargetPowerFORCED(0.0);
             robot.update();
         }
-
-        robot.deposit.release.releaseTwoFORCED();
 
         // making sure slides are down
         double lastDist = 0.0;
@@ -142,11 +148,12 @@ public class Teleop extends LinearOpMode {
         // initializing
         while (opModeInInit())
         {
-            robot.deposit.state = Deposit.State.INTAKE;
+            robot.deposit.release.close();
+            robot.deposit.state = Deposit.State.GRAB;
             robot.drivetrain.setPoseEstimate(Globals.AUTO_ENDING_POSE);
             robot.update();
 
-            telemetry.addData("State:", "ready to start");
+            telemetry.addData("State:", "READY TO START");
             telemetry.update();
         }
 

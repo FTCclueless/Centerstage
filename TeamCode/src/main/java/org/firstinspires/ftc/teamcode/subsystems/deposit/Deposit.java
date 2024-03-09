@@ -113,8 +113,8 @@ public class Deposit {
         state = State.IDLE;
 
         release.close();
-        endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
-        endAffector.topServo.setTargetAngle(topServoTransferAngle, topServoPower);
+        endAffector.v4Servo.setTargetAngle(v4BarGrabAngle, v4ServoPower);
+        endAffector.topServo.setTargetAngle(topServoGrabAngle, topServoPower);
     }
 
     public boolean checkReady() {
