@@ -172,6 +172,8 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, -13, Math.PI);
 
+    double intakeYDistance = -14.5;
+
     public void navigateBackToStack() {
         robot.intake.on();
 
@@ -183,14 +185,14 @@ public class CycleAutoRedDown extends LinearOpMode {
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, -12, Math.PI))
                 .addPoint(new Pose2d(-45, -12 , Math.PI), 1.0)
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5 , Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance , Math.PI), 0.5),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy()
         );
 
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5, Math.PI), this, true, true);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, true, true);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -246,16 +248,17 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.0725);
+        if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
+            robot.intake.setActuationHeight(0, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance + 7, Math.PI), this, false, false, 0.5);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance - 7, Math.PI), this, false, false, 0.5);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 0.5);
+        } else {
+            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+                robot.intake.setActuationHeight(0, 0.0725);
 
-            if (pixelIndex < 1 && Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 500) {
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5 + 6, Math.PI), this, false, false, 0.5);
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5 - 6, Math.PI), this, false, false, 0.5);
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5, Math.PI), this, false, false, 0.5);
+                robot.update();
             }
-
-            robot.update();
         }
 
         if (robot.intake.reversed) {

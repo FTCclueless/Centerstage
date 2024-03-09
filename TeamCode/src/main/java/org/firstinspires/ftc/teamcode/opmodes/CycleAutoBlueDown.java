@@ -171,6 +171,8 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, 13, Math.PI);
 
+    double intakeYDistance = 10.75;
+
     public void navigateBackToStack() {
         robot.intake.on();
 
@@ -180,11 +182,11 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, 12, Math.PI), 1.0)
                 .addPoint(new Pose2d(-45, 9.5 , Math.PI), 1.0)
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], 7.5, Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), 0.5),
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy(),
             true, false
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 7.5, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, true, false);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -202,7 +204,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 .addPoint(new Pose2d(intakeXDistances[pixelIndex], 12, Math.PI)),
             this::opModeIsActive
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 10.75, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], 12, Math.PI), this, true, false);
 
         robot.intake.setActuationHeight(pixelIndex, 0.8);
 
@@ -230,14 +232,8 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
-            robot.intake.setActuationHeight(0, 0.07);
-
-            if (pixelIndex < 1 && Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 500) {
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5 + 6, Math.PI), this, false, false, 0.5);
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5 - 6, Math.PI), this, false, false, 0.5);
-                robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -14.5, Math.PI), this, false, false, 0.5);
-            }
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+            robot.intake.setActuationHeight(0, 0.7);
 
             robot.update();
         }
@@ -247,9 +243,17 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.0725);
-            robot.update();
+
+        if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
+            robot.intake.setActuationHeight(0, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance + 7, Math.PI), this, false, false, 0.5);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance - 7, Math.PI), this, false, false, 0.5);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 0.5);
+        } else {
+            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+                robot.intake.setActuationHeight(0, 0.0725);
+                robot.update();
+            }
         }
 
         if (robot.intake.reversed) {
