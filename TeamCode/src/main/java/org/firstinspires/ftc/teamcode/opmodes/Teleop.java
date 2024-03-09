@@ -83,6 +83,9 @@ public class Teleop extends LinearOpMode {
         }
         robot.deposit.slides.setTargetPowerFORCED(0.0);
 
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 150) {}
+
         // making sure arm is over
         robot.deposit.retractInit();
         start = System.currentTimeMillis();

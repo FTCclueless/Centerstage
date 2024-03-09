@@ -30,7 +30,7 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
             doInitialization();
             waitForStart();
 
-             pause(15000);
+//             pause(15000);
 
             doGroundPreload();
             navigateToBoard();
@@ -99,25 +99,25 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -28, Math.PI);
+                boardPreload =          new Pose2d(47.5, -29, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-44, -34.6, -Math.toRadians(50)), this, false, true);
+                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(60)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -33.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -35.25, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -34.5, -Math.PI/2);
+                boardPreload =          new Pose2d(47.5, -33.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(-35.25, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -40.41, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
+                boardPreload =          new Pose2d(47.5, -41.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-32, -33.5, -Math.toRadians(110)), this, false, true);
+                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(125)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
@@ -134,27 +134,29 @@ public class DoublePreloadAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-34.0, -34.6, -Math.PI/2), this, false, true);
-                robot.goToPoint(new Pose2d(-34.0, -8.5, -Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(-34.0, -8.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, true, 1);
+                robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
 
-                deposit = new Vector3(5, 0, 10);
+                deposit = new Vector3(5, 0, 10.25);
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-51.5, -8.5, Math.PI), this, false, false);
 
-                deposit = new Vector3(5, 0, 9.5);
+                deposit = new Vector3(5, 0, 10);
                 break;
             case RIGHT:
                 // Jank -- eric
                 robot.goToPoint(new Pose2d(-37, -7, Math.PI), this, false, false);
 
-                deposit = new Vector3(5, 0, 9);
+                deposit = new Vector3(5, 0, 10.25);
                 break;
         }
 
         // JANK
-        robot.goToPointWithDeposit(new Pose2d(26, -8.2, Math.PI), this, false, false, deposit,0);
+        robot.goToPointWithDeposit(new Pose2d(30, -8.2, Math.PI), this, false, false, deposit,0);
     }
 
     /**
