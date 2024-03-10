@@ -286,15 +286,6 @@ public class Teleop extends LinearOpMode {
             depoPos.x -= gamepad2.right_stick_y*driver2SlidesAdjustmentConstant;
             depoPos.z -= gamepad2.left_stick_y*driver2SlidesAdjustmentConstant;
 
-            // trigger deposit
-            if (leftBumper_2.isClicked(gamepad2.left_bumper)) {
-                Globals.NUM_PIXELS = 2;
-                depoFlag = true;
-                if (robot.deposit.state == Deposit.State.DEPOSIT) {
-                    robot.deposit.releaseOne();
-                }
-            }
-
             if (depoFlag) {
                 depoPos.z = Math.max(Math.min(depoPos.z, Slides.maxSlidesHeight),0);
                 robot.deposit.depositAt(depoPos.z, depoPos.x);
