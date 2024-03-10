@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 
 
+@Disabled
 @Config
 @TeleOp
 public class DepositTest extends LinearOpMode {

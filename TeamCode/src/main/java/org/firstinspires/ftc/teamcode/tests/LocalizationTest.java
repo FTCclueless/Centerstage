@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 
 
+@Disabled
 @TeleOp
 public class LocalizationTest extends LinearOpMode {
     @Override
