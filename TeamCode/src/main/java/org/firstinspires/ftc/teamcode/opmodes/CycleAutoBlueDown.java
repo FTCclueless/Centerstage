@@ -126,7 +126,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, 34.5, Math.PI/2);
-                boardPreload =          new Pose2d(46.5, 34.35, Math.PI);
+                boardPreload =          new Pose2d(47.15, 34.35, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -170,7 +170,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, 13, Math.PI);
 
-    double intakeYDistance = 6;
+    double intakeYDistance = 5.25;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -189,7 +189,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-56, -56, -55.4, -55.4, -55.4}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56, -56, -55.4, -55.4, -55}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -317,7 +317,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         );
         robot.intake.off();
 
-        robot.goToPoint(new Pose2d(46.25, 29, Math.PI), this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
+        robot.goToPoint(new Pose2d(46, 29, Math.PI), this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Slides;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 
+@Disabled
 @Config
 @TeleOp
 public class SlideKStaticYoinker extends LinearOpMode {

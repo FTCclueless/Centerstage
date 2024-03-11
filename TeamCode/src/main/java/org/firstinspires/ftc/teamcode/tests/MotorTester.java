@@ -15,7 +15,6 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 
 import java.util.ArrayList;
 
-@Disabled
 @Config
 @TeleOp(group = "Test")
 public class MotorTester extends LinearOpMode {

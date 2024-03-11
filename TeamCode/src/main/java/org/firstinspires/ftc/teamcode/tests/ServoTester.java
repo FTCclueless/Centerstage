@@ -21,7 +21,6 @@ import org.firstinspires.ftc.teamcode.vision.pipelines.TeamPropDetectionPipeline
 
 import java.util.ArrayList;
 
-@Disabled
 @Config
 @TeleOp(group = "Test")
 public class ServoTester extends LinearOpMode {

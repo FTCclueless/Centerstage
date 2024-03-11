@@ -38,11 +38,14 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
             doInitialization();
             waitForStart();
             Globals.autoStartTime = System.currentTimeMillis();
-            pause(9500);
 
             doGroundPreload();
             navigateAroundGroundPreload();
             intakeStackInitial();
+
+            robot.intake.off();
+            pause(8800);
+
             doBoardPreload();
 
             for (int i = 0; i < numCycles; i++) {
@@ -127,7 +130,7 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, 34.5, Math.PI/2);
-                boardPreload =          new Pose2d(46.5, 34.35, Math.PI);
+                boardPreload =          new Pose2d(47.75, 34.35, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -171,7 +174,7 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, 13, Math.PI);
 
-    double intakeYDistance = 6;
+    double intakeYDistance = 5.25;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -190,7 +193,7 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-56, -56, -55.4, -55.4, -55.4}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56, -56, -55.4, -55.4, -55}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -211,8 +214,8 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
         pause(750);
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
-            robot.intake.setActuationHeight(0, 0.05);
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
+            robot.intake.setActuationHeight(0, 0.1);
             robot.update();
         }
 
@@ -232,8 +235,8 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.05);
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
+            robot.intake.setActuationHeight(0, 0.1);
 
             robot.update();
         }
@@ -244,7 +247,7 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.0725);
+            robot.intake.setActuationHeight(0, 0.1);
 
             robot.update();
         }
@@ -312,7 +315,7 @@ public class OneCycleAutoBlueDown extends LinearOpMode {
         );
         robot.intake.off();
 
-        robot.goToPoint(new Pose2d(46.25, 29, Math.PI), this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
+        robot.goToPoint(new Pose2d(45.75, 29, Math.PI), this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

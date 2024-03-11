@@ -100,7 +100,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 boardPreload =          new Pose2d(48.35, 40.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(21, 33.5, Math.toRadians(135)), this, false, false);
+                robot.goToPoint(new Pose2d(21, 33.5, Math.toRadians(125)), this, false, false);
 
                 releaseAndTriggerDeposit();
 

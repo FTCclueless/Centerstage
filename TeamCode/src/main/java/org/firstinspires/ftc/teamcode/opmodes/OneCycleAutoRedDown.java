@@ -38,11 +38,14 @@ public class OneCycleAutoRedDown extends LinearOpMode {
             doInitialization();
             waitForStart();
             Globals.autoStartTime = System.currentTimeMillis();
-            pause(9500);
 
             doGroundPreload();
             navigateAroundGroundPreload();
             intakeStackInitial();
+
+            robot.intake.off();
+            pause(8800);
+
             doBoardPreload();
 
             for (int i = 0; i < numCycles; i++) {
@@ -138,7 +141,7 @@ public class OneCycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(120)), this, false, true);
+                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(115)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
@@ -172,7 +175,7 @@ public class OneCycleAutoRedDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, -13, Math.PI);
 
-    double intakeYDistance = -15.25;
+    double intakeYDistance = -16.5;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -217,8 +220,8 @@ public class OneCycleAutoRedDown extends LinearOpMode {
         pause(750);
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
-            robot.intake.setActuationHeight(0, 0.04);
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
+            robot.intake.setActuationHeight(0, 0.1);
             robot.update();
         }
 
@@ -239,7 +242,7 @@ public class OneCycleAutoRedDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
-            robot.intake.setActuationHeight(0, 0.05);
+            robot.intake.setActuationHeight(0, 0.1);
             robot.update();
         }
 
@@ -249,7 +252,7 @@ public class OneCycleAutoRedDown extends LinearOpMode {
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
-            robot.intake.setActuationHeight(0, 0.0725);
+            robot.intake.setActuationHeight(0, 0.1);
 
             robot.update();
         }

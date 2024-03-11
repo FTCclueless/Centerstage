@@ -10,7 +10,6 @@ import org.firstinspires.ftc.teamcode.subsystems.deposit.Deposit;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
 
-@Disabled
 @TeleOp
 public class SensorTester extends LinearOpMode {
     @Override

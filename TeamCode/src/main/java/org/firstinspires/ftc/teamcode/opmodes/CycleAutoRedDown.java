@@ -125,7 +125,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -35.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -34.5, Math.PI);
+                boardPreload =          new Pose2d(46.5, -35, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -137,7 +137,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(120)), this, false, true);
+                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(115)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
@@ -171,7 +171,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
     Pose2d intakePose = new Pose2d(-59, -13, Math.PI);
 
-    double intakeYDistance = -15.25;
+    double intakeYDistance = -16.5;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -206,10 +206,10 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(-48.5, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -12, Math.PI)),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -12.5, Math.PI)),
             this::opModeIsActive
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -12, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], -12.5, Math.PI), this, true, false);
 
         robot.intake.setActuationHeight(pixelIndex, 0.8);
 
