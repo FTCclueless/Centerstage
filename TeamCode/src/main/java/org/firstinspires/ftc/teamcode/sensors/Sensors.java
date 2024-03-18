@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
@@ -49,6 +50,8 @@ public class Sensors {
     public boolean useIMU; // don't change the value here. Change in drivetrain.
     HuskyLens.Block[] huskyLensBlocks;
 
+    private double leftFrontMotorCurrent, leftRearMotorCurrent, rightRearMotorCurrent, rightFrontMotorCurrent;
+
     public static double voltageK = 0.3;
 
     public Sensors(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Robot robot) {
@@ -60,41 +63,29 @@ public class Sensors {
         cornerRightUltrasonic = hardwareMap.get(AnalogInput.class, "cornerRightUltrasonic");
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
 
-//        huskyLens = hardwareMap.get(HuskyLens.class, "huskylens");
-//        if (!huskyLens.knock())
-//            Log.e("HuskyLens", "Failed to init! BAD BAD!");
-//        else
-//            Log.e("HuskyLens", "Init successfully");
-//        distLeft = hardwareMap.get(AnalogInput.class, "distLeft");
-//        distRight = hardwareMap.get(AnalogInput.class, "distRight");
         boardIR = hardwareMap.get(AnalogInput.class, "boardIR");
 
         initSensors(hardwareMap);
     }
 
     private void initSensors(HardwareMap hardwareMap) {
-//        try {
-            controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
-            controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
+        controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
-            expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
-            expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
+        expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
-            imu = hardwareMap.get(IMU.class, "imu");
-            imu.initialize(
-                    new IMU.Parameters(new RevHubOrientationOnRobot(
-                            RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                            RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                    )
+        imu = hardwareMap.get(IMU.class, "imu");
+        imu.initialize(
+                new IMU.Parameters(new RevHubOrientationOnRobot(
+                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
                 )
-            );
-            imu.resetYaw();
+            )
+        );
+        imu.resetYaw();
 
-            voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-//            huskyLens.selectAlgorithm(HuskyLens.Algorithm.OBJECT_TRACKING);
-//        } catch (Exception e) {
-//            throw new RuntimeException("One or more of the REV hubs could not be found. More info: " + e);
-//        }
+        voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
     }
 
     public void update() {
@@ -115,49 +106,34 @@ public class Sensors {
     public boolean huskyJustUpdated = false;
 
     private void updateControlHub() {
-//        try {
-            odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
-            odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
-            odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
+        odometry[0] = ((PriorityMotor) hardwareQueue.getDevice("leftFront")).motor[0].getCurrentPosition(); // left (0)
+        odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
+        odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
 
-            imuJustUpdated = false;
-            long currTime = System.currentTimeMillis();
-            if (useIMU && currTime - imuLastUpdateTime >= imuUpdateTime) {
-                YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-                imuHeading = orientation.getYaw(AngleUnit.RADIANS);
-                imuLastUpdateTime = currTime;
-                imuJustUpdated = true;
-            }
+        imuJustUpdated = false;
+        long currTime = System.currentTimeMillis();
+        if (useIMU && currTime - imuLastUpdateTime >= imuUpdateTime) {
+            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
+            imuHeading = orientation.getYaw(AngleUnit.RADIANS);
+            imuLastUpdateTime = currTime;
+            imuJustUpdated = true;
+        }
 
-            timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
+        timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
-            if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
-                voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
-                lastVoltageUpdatedTime = currTime;
-            }
+        if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
+            voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+            lastVoltageUpdatedTime = currTime;
+        }
 
-            slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
-            slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
+        slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
+        slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-            boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
+        boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
 
-            cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.2 * 1000;
-            cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.2 * 1000;
-            frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;
-
-//            if (currTime - lastHuskyLensUpdatedTime > huskyUpdateTime && (robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK || robot.drivetrain.state == Drivetrain.State.ALIGN_WITH_STACK_FINAL_ADJUSTMENT)) {
-//                huskyLensBlocks = huskyLens.blocks();
-//                lastHuskyLensUpdatedTime = currTime;
-//                huskyJustUpdated = true;
-//            } else {
-//                huskyJustUpdated = false;
-//            }
-//        }
-//        catch (Exception e) {
-//            Log.e("******* Error due to ", e.getClass().getName());
-//            e.printStackTrace();
-//            Log.e("******* fail", "control hub failed");
-//        }
+        cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.2 * 1000;
+        cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.2 * 1000;
+        frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;
     }
 
     private void updateExpansionHub() {
@@ -218,6 +194,18 @@ public class Sensors {
 
     public double getNormalizedIMUHeading() {
         return getImuHeading() - (numRotations*(2*Math.PI));
+    }
+
+    public void updateDrivetrainMotorCurrents() {
+        leftFrontMotorCurrent = robot.drivetrain.leftFront.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+        leftRearMotorCurrent = robot.drivetrain.leftRear.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+        rightRearMotorCurrent = robot.drivetrain.rightRear.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+        rightFrontMotorCurrent = robot.drivetrain.rightFront.motor[0].getCurrent(CurrentUnit.MILLIAMPS);
+
+        TelemetryUtil.packet.put("leftFrontMotorCurrent", leftFrontMotorCurrent);
+        TelemetryUtil.packet.put("leftRearMotorCurrent", leftRearMotorCurrent);
+        TelemetryUtil.packet.put("rightRearMotorCurrent", rightRearMotorCurrent);
+        TelemetryUtil.packet.put("rightFrontMotorCurrent", rightFrontMotorCurrent);
     }
 
     private double previousAngle = 0.0;

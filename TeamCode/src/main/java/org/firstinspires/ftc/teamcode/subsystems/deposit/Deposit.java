@@ -38,12 +38,12 @@ public class Deposit {
     // v4bar angles
     public static double v4BarTransferAngle = -0.29137986;
     public static double v4BarGrabAngle = -0.0504311300;
-    public static double v4BarDepositAngle = -3.2724194;
+    public static double v4BarDepositAngle = -3.2556096189;
 
     // top servo angles
     public static double topServoTransferAngle = -0.94138109;
     public static double topServoGrabAngle = -0.8349153756;
-    public static double topServoDepositAngle = 1.938;
+    public static double topServoDepositAngle = 2.101297086;
     public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode

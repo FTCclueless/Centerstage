@@ -58,97 +58,9 @@ public class Teleop extends LinearOpMode {
         int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
 
-        robot.airplane.hold();
-        robot.droppers.retractBoth();
-        robot.hang.quickTurnOnOff();
+        initializationSequence(robot);
 
-        robot.intake.setActuationHeight(0);
-
-        // opening first
-        robot.deposit.release.releaseTwoFORCED();
-        long start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 250) {
-            telemetry.addData("State:", "NOT READY TO START");
-            telemetry.update();
-
-            robot.deposit.release.releaseTwoFORCED();
-            robot.update();
-        }
-
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 75) {
-            robot.deposit.release.releaseTwoFORCED();
-            robot.deposit.slides.setTargetPowerFORCED(0.85);
-            robot.update();
-        }
-        robot.deposit.slides.setTargetPowerFORCED(0.0);
-
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 150) {}
-
-        // making sure arm is over
-        robot.deposit.retractInit();
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 1750) {
-            robot.deposit.release.close();
-            robot.deposit.slides.setTargetPowerFORCED(0.0);
-            robot.update();
-        }
-
-        // making sure slides are down
-        double lastDist = 0.0;
-        double vel = 0.0;
-        start = System.currentTimeMillis();
-        long velocityStart = System.currentTimeMillis();
-        robot.deposit.slides.manualMode = true;
-
-        while (vel > 0.1 || (System.currentTimeMillis() - start < 500)) {
-            if ((System.currentTimeMillis() - velocityStart) > 100) {
-                vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
-                lastDist = robot.deposit.slides.getLength();
-                velocityStart = System.currentTimeMillis();
-
-            }
-
-            robot.deposit.slides.setTargetPowerFORCED(-0.8);
-            robot.update();
-
-            Log.e("vel", vel + "");
-            Log.e("vel_encoder", robot.deposit.slides.vel + "");
-        }
-
-        robot.deposit.slides.setTargetPowerFORCED(0.0);
-
-        robot.deposit.slides.setSlidesMotorsToCoast();
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 500) {
-            robot.update();
-        }
-
-        robot.deposit.slides.setSlidesMotorsToBrake();
-        robot.deposit.slides.resetSlidesEncoders();
-        robot.update();
-
-//        if (Globals.gotBloodyAnnihilated) {
-//            robot.deposit.state = Deposit.State.FINISH_DEPOSIT;
-//            robot.deposit.depositAt(10, 5);
-//            while (!robot.deposit.checkReady()) {
-//                robot.update();
-//            }
-//
-//            robot.deposit.retract();
-//            while (!robot.deposit.checkReady()) {
-//                robot.update();
-//            }
-//        }
-
-        robot.deposit.slides.manualMode = false;
-
-        // disabling intake checks
-        robot.intake.useIntakeStallCheck = false;
-        robot.intake.useIntakeColorSensorCheck = false;
-
-        // initializing
+        // init loop
         while (opModeInInit())
         {
             robot.deposit.release.close();
@@ -331,8 +243,89 @@ public class Teleop extends LinearOpMode {
                 intake.setActuationHeight(pixelIndex);
             }
 
+            robot.sensors.updateDrivetrainMotorCurrents();
+
             telemetry.addData("Pixel Height", pixelIndex+1);
             telemetry.update();
         }
+    }
+
+    private void initializationSequence(Robot robot) {
+        robot.airplane.hold();
+        robot.droppers.retractBoth();
+        robot.hang.quickTurnOnOff();
+
+        robot.intake.setActuationHeight(0);
+
+        // opening first
+        robot.deposit.release.releaseTwoFORCED();
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 250) {
+            telemetry.addData("State:", "NOT READY TO START");
+            telemetry.update();
+
+            robot.deposit.release.releaseTwoFORCED();
+            robot.update();
+        }
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 75) {
+            robot.deposit.release.releaseTwoFORCED();
+            robot.deposit.slides.setTargetPowerFORCED(0.85);
+            robot.update();
+        }
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 150) {}
+
+        // making sure arm is over
+        robot.deposit.retractInit();
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 1750) {
+            robot.deposit.release.close();
+            robot.deposit.slides.setTargetPowerFORCED(0.0);
+            robot.update();
+        }
+
+        // making sure slides are down
+        double lastDist = 0.0;
+        double vel = 0.0;
+        start = System.currentTimeMillis();
+        long velocityStart = System.currentTimeMillis();
+        robot.deposit.slides.manualMode = true;
+
+        while (vel > 0.1 || (System.currentTimeMillis() - start < 500)) {
+            if ((System.currentTimeMillis() - velocityStart) > 100) {
+                vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
+                lastDist = robot.deposit.slides.getLength();
+                velocityStart = System.currentTimeMillis();
+
+            }
+
+            robot.deposit.slides.setTargetPowerFORCED(-0.8);
+            robot.update();
+
+            Log.e("vel", vel + "");
+            Log.e("vel_encoder", robot.deposit.slides.vel + "");
+        }
+
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
+
+        robot.deposit.slides.setSlidesMotorsToCoast();
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 500) {
+            robot.update();
+        }
+
+        robot.deposit.slides.setSlidesMotorsToBrake();
+        robot.deposit.slides.resetSlidesEncoders();
+        robot.update();
+
+        robot.deposit.slides.manualMode = false;
+
+        // disabling intake checks
+        robot.intake.useIntakeStallCheck = false;
+        robot.intake.useIntakeColorSensorCheck = false;
     }
 }
