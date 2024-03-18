@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.sensors;
 
 import android.util.Log;
 
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -36,13 +34,17 @@ public class Sensors {
     private double slidesVelocity;
     private boolean slidesDown = false;
     private boolean intakeTriggered = false;
-    private boolean depositTriggered = false;
+    private boolean depositTouched = false;
+
     private final AnalogInput[] analogEncoders = new AnalogInput[2];
     private final AnalogInput cornerLeftUltrasonic, cornerRightUltrasonic, frontUltrasonic;
     private double cornerLeftUltrasonicDist, cornerRightUltrasonicDist, frontUltrasonicDist = 0;
     public double[] analogVoltages = new double[analogEncoders.length];
+
     private double voltage;
     private double boardIRVal;
+
+    private DigitalChannel depositLimitSwitch;
 
     private IMU imu;
     private long imuLastUpdateTime = System.currentTimeMillis();
@@ -62,6 +64,8 @@ public class Sensors {
         cornerLeftUltrasonic = hardwareMap.get(AnalogInput.class, "cornerLeftUltrasonic");
         cornerRightUltrasonic = hardwareMap.get(AnalogInput.class, "cornerRightUltrasonic");
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
+
+        depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
 
         boardIR = hardwareMap.get(AnalogInput.class, "boardIR");
 
@@ -131,6 +135,8 @@ public class Sensors {
 
         boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
 
+        depositTouched = depositLimitSwitch.getState();
+
         cornerLeftUltrasonicDist = cornerLeftUltrasonic.getVoltage() / 3.2 * 1000;
         cornerRightUltrasonicDist = cornerRightUltrasonic.getVoltage() / 3.2 * 1000;
         frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;
@@ -170,8 +176,8 @@ public class Sensors {
         return intakeTriggered;
     }
 
-    public boolean isDepositTriggered() {
-        return depositTriggered;
+    public boolean isDepositTouched() {
+        return depositTouched;
     }
 
     public double getImuHeading() {

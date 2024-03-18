@@ -162,8 +162,8 @@ public class Teleop extends LinearOpMode {
             }
 
             // release two pixels
-            if (rightTrigger_1.isClicked(gamepad1.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
-                robot.deposit.releaseTwo();
+            if (rightTrigger_1.isClicked(gamepad1.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT && robot.sensors.isDepositTouched()) {
+                robot.deposit.releaseOne();
             }
 
             // airplane (both)

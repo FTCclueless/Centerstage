@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.tests;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -32,7 +31,7 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("slides encoder", sensors.getSlidesPos());
 
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
-            telemetry.addData("deposit_triggered", sensors.isDepositTriggered());
+            telemetry.addData("deposit_triggered", sensors.isDepositTouched());
 
             telemetry.addData("board_ir", sensors.getBoardIR());
 
