@@ -231,7 +231,7 @@ public class Drivetrain {
         updateTelemetry();
 
         if (useUltrasonicCornerDetection) {
-            updateCornerUltrasonicsDetection();
+            updateBackUltrasonicsDetection();
         }
 
         switch (state) {
@@ -321,7 +321,9 @@ public class Drivetrain {
     private long ultrasonicBlockedStart, ultrasonicUnBlockedCheckTimer, startWaitTime;
     private long ultrasonicDebounce;
 
-    public void updateCornerUltrasonicsDetection() {
+    State heldState;
+
+    public void updateBackUltrasonicsDetection() {
         updateUltrasonics();
 
         switch (ultrasonicCheckState) {
@@ -346,11 +348,14 @@ public class Drivetrain {
                     startWaitTime = System.currentTimeMillis();
                     ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.WAIT;
+                    heldState = state;
                 }
                 break;
             case WAIT:
                 while (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer < 750) {
                     Log.e("ultrasonic state", "wait");
+                    state = State.BRAKE;
+
                     robot.sensors.update();
                     updateUltrasonics();
                     forceStopAllMotors();
@@ -362,17 +367,15 @@ public class Drivetrain {
                 }
                 Log.e("out of wait", "weee");
 
+                state = heldState;
+                heldState = null;
                 ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 break;
         }
     }
 
     private void updateUltrasonics() {
-        if (Globals.isRed) {
-            ultrasonicDist = sensors.getCornerLeftDist();
-        } else {
-            ultrasonicDist = sensors.getCornerRightDist();
-        }
+        ultrasonicDist = sensors.getBackDist();
         Log.e("ultrasonicDist", ultrasonicDist + "");
     }
 

@@ -37,8 +37,7 @@ public class SensorTester extends LinearOpMode {
 
             telemetry.addData("intakeColorSensorDist", robot.intake.forcePullColorSensorDist());
 
-            telemetry.addData("cornerLeftUltrasonic", sensors.getCornerLeftDist());
-            telemetry.addData("cornerRightUltrasonic", sensors.getCornerRightDist());
+            telemetry.addData("cornerLeftUltrasonic", sensors.getBackDist());
             telemetry.addData("frontUltrasonic", sensors.getFrontDist());
 
             telemetry.update();

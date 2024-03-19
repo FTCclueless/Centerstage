@@ -142,6 +142,12 @@ public class Robot {
             if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
             }
+
+            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                break;
+            }
             update();
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
@@ -180,6 +186,12 @@ public class Robot {
 
             if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
+            }
+
+            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                break;
             }
 
             if (drivetrain.localizer.getPoseEstimate().x > beginCornerUltrasonicCheckThreshold) {
@@ -252,6 +264,12 @@ public class Robot {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
+            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                update();
+                break;
+            }
             update();
         }
     }
@@ -262,6 +280,12 @@ public class Robot {
         while(((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
+            }
+            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                update();
+                break;
             }
             update();
         }
@@ -280,6 +304,12 @@ public class Robot {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 intake.reverse();
                 deposit.depositAt(depositVector3); // async call to deposit
+            }
+            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                update();
+                break;
             }
             update();
         }
