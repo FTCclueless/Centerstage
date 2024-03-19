@@ -33,7 +33,7 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
             telemetry.addData("deposit_triggered", sensors.isDepositTouched());
 
-            telemetry.addData("board_ir", sensors.getBoardIR());
+            telemetry.addData("depositLimitSwitch", sensors.isDepositTouched());
 
             telemetry.addData("intakeColorSensorDist", robot.intake.forcePullColorSensorDist());
 

@@ -28,7 +28,6 @@ public class Sensors {
     private int[] odometry = new int[] {0,0,0};
 //    private final DigitalChannel magnetSensor;
 //    private HuskyLens huskyLens;
-    private final AnalogInput boardIR;
 
     private int slidesEncoder;
     private double slidesVelocity;
@@ -65,8 +64,6 @@ public class Sensors {
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
 
         depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
-
-        boardIR = hardwareMap.get(AnalogInput.class, "boardIR");
 
         initSensors(hardwareMap);
     }
@@ -132,8 +129,6 @@ public class Sensors {
         slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
         slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-        boardIRVal = (boardIR.getVoltage()) / 3.2 * 1000;
-
         depositTouched = depositLimitSwitch.getState();
 
         backUltrasonicDist = backUltrasonic.getVoltage() / 3.2 * 1000;
@@ -187,8 +182,6 @@ public class Sensors {
     public double getBackDist() { return backUltrasonicDist; }
 
     public double getFrontDist() { return frontUltrasonicDist; }
-
-    public double getBoardIR() { return boardIRVal; }
 
     public HuskyLens.Block[] getHuskyLensBlocks() {
         return huskyLensBlocks;
