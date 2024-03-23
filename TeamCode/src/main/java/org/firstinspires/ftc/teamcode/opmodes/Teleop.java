@@ -161,7 +161,7 @@ public class Teleop extends LinearOpMode {
                 robot.deposit.releaseOne();
             }
 
-            // release two pixels
+            // automatic board release
             if (rightTrigger_1.isClicked(gamepad1.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT && robot.sensors.isDepositTouched()) {
                 robot.deposit.releaseOne();
             }

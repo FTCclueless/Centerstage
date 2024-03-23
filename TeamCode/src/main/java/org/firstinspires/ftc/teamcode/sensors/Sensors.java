@@ -130,6 +130,7 @@ public class Sensors {
         slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
         depositTouched = depositLimitSwitch.getState();
+        Log.e("touch state", "" + depositLimitSwitch.getMode());
 
         backUltrasonicDist = backUltrasonic.getVoltage() / 3.2 * 1000;
         frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;

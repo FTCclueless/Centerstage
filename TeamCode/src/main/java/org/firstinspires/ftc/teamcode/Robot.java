@@ -146,6 +146,7 @@ public class Robot {
             if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
                 drivetrain.setPath(null);
                 drivetrain.state = Drivetrain.State.BRAKE;
+                Log.e("yay!", "e");
                 break;
             }
             update();
