@@ -29,7 +29,8 @@
             <AnalogInput name="frontUltrasonic" port="1" />
             <AnalogInput name="cornerRightUltrasonic" port="2" />
             <AnalogInput name="cornerLeftUltrasonic" port="3" />
-            <DigitalDevice name="limitSwitch1" port="1" />
+            <DigitalDevice name="depositLimitSwitch" port="0" />
+            <DigitalDevice name="limitswitch1" port="1" />
             <DigitalDevice name="limitSwitch2" port="3" />
             <FAST_DRIVER_REVCOLORSENSORV3_IMPL name="intakeColorSensor" port="2" bus="2" />
             <HuskyLens name="huskylens" port="3" bus="2" />
