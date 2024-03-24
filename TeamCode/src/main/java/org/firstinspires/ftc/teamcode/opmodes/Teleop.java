@@ -169,19 +169,23 @@ public class Teleop extends LinearOpMode {
 
             if (!robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
                 if (leftTrigger_1.releasedAndNotHeldPreviously(gamepad1LeftTrigger, holdTime)) {
+                    Log.e("left trigger releasedAndNotHeldPreviously", "");
                     robot.deposit.releaseOne();
                 }
 
                 if (leftTrigger_1.isHeld(gamepad1LeftTrigger, holdTime) &&  robot.sensors.isDepositTouched() && !alreadyReleasedOne) {
                     alreadyReleasedOne = true;
+                    Log.e("left trigger isHeld and deposit touched", "");
                     robot.deposit.releaseOne();
                 }
 
                 if (rightTrigger_1.releasedAndNotHeldPreviously(gamepad1RightTrigger, holdTime)) {
+                    Log.e("right trigger trigger releasedAndNotHeldPreviously", "");
                     robot.deposit.releaseTwo();
                 }
 
                 if (rightTrigger_1.isHeld(gamepad1RightTrigger, holdTime) && robot.sensors.isDepositTouched()) {
+                    Log.e("right trigger isHeld and deposit touched", "");
                     robot.deposit.releaseTwo();
                 }
             }

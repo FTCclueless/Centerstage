@@ -223,7 +223,7 @@ public class Deposit {
                     }
                 } else {
                     endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
-                    endAffector.topServo.setTargetAngle(topServoRetractAngle, topServoPower);
+                    endAffector.topServo.setTargetAngle(topServoDepositAngle, topServoPower);
                 }
                 break;
             case RETRACT:

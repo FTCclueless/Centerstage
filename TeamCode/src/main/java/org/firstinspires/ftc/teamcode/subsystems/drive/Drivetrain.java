@@ -124,26 +124,21 @@ public class Drivetrain {
         this(hardwareMap, hardwareQueue, sensors, null, robot);
     }
 
+    // leftFront, leftRear, rightRear, rightFront
+    double[] minPowersToOvercomeFriction = new double[] {0.3900852763699948, 0.4463175236276425, 0.3838909067910283, 0.3905833334245449};
+
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.37200445076032007);
-        leftRear.setMinimumPowerToOvercomeFriction(0.46185277763899724);
-        rightRear.setMinimumPowerToOvercomeFriction(0.4982929713010509);
-        rightFront.setMinimumPowerToOvercomeFriction(0.5163265823462083);
-//        leftFront.setMinimumPowerToOvercomeFriction(0.17493824636733907);
-//        leftRear.setMinimumPowerToOvercomeFriction(0.2752498640527196);
-//        rightRear.setMinimumPowerToOvercomeFriction(0.27855616387960147);
-//        rightFront.setMinimumPowerToOvercomeFriction(0.22428003736833285);
-//        leftFront.setMinimumPowerToOvercomeFriction(0.44669999999 * 0.7);
-//        leftRear.setMinimumPowerToOvercomeFriction(0.4696999999999 * 0.7);
-//        rightRear.setMinimumPowerToOvercomeFriction(0.474699999999999 * 0.7);
-//        rightFront.setMinimumPowerToOvercomeFriction(0.42039999999997 * 0.7);
+        leftFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[0]);
+        leftRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[1]);
+        rightRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[2]);
+        rightFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[3]);
     }
 
     public void setLowerMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.2933028305179981/2);
-        leftRear.setMinimumPowerToOvercomeFriction(0.34301851543941514/2);
-        rightRear.setMinimumPowerToOvercomeFriction(0.35201662929607813/2);
-        rightFront.setMinimumPowerToOvercomeFriction(0.345230427428854/2);
+        leftFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[0]/2);
+        leftRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[1]/2);
+        rightRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[2]/2);
+        rightFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[3]/2);
     }
 
     public void resetMinPowersToOvercomeFriction() {
@@ -421,8 +416,8 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    public static PID xPID = new PID(0.07,0.0,0.01);
-    public static PID yPID = new PID(0.1575,0.0,0.015);
+    public static PID xPID = new PID(0.06,0.0,0.007);
+    public static PID yPID = new PID(0.125,0.0,0.0175);
     public static PID turnPID = new PID(0.5,0.0,0.01);
 
     public void PIDF() {

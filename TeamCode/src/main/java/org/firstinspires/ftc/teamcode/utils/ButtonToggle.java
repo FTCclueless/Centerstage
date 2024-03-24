@@ -34,6 +34,7 @@ public class ButtonToggle {
     boolean isBeingHeld = false;
     public boolean isReleased(boolean button) {
         if (isBeingHeld && !button) {
+            isBeingHeld = button;
             return true;
         }
         isBeingHeld = button;
@@ -43,6 +44,7 @@ public class ButtonToggle {
     boolean previousLoopIsHeld = false;
     public boolean releasedAndNotHeldPreviously(boolean button, double holdTime) {
         if (isReleased(button) && !previousLoopIsHeld) {
+            previousLoopIsHeld = isHeld(button, holdTime);
             return true;
         }
 
