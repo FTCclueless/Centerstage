@@ -31,13 +31,12 @@ public class SensorTester extends LinearOpMode {
             telemetry.addData("slides encoder", sensors.getSlidesPos());
 
             telemetry.addData("intake_triggered", sensors.isIntakeTriggered());
-            telemetry.addData("deposit_triggered", sensors.isDepositTouched());
 
             telemetry.addData("depositLimitSwitch", sensors.isDepositTouched());
 
             telemetry.addData("intakeColorSensorDist", robot.intake.forcePullColorSensorDist());
 
-            telemetry.addData("cornerLeftUltrasonic", sensors.getBackDist());
+            telemetry.addData("backUltrasonic", sensors.getBackDist());
             telemetry.addData("frontUltrasonic", sensors.getFrontDist());
 
             telemetry.update();

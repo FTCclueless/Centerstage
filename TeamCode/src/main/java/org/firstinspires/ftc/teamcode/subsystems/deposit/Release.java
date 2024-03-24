@@ -53,18 +53,14 @@ public class Release {
     public boolean isBusy() {return busy;}
 
     public void releaseOne() {
-        Log.e("Globals.NUM_PIXELS", Globals.NUM_PIXELS + "");
-        Log.e("busy?", busy + "");
-        Log.e("readyToRetract", readyToRetract() + "");
-
-        if (Globals.NUM_PIXELS == 2) {
-            release.setTargetAngle(dunkOneAngle, 1);
-        } else {
-            release.setTargetAngle(dunkTwoAngle, 1);
-        }
-        Globals.NUM_PIXELS--;
-
         if (!busy) {
+            if (Globals.NUM_PIXELS == 2) {
+                release.setTargetAngle(dunkOneAngle, 1);
+            } else {
+                release.setTargetAngle(dunkTwoAngle, 1);
+            }
+            Globals.NUM_PIXELS--;
+
             dunkTime = 250;
             timer = System.currentTimeMillis();
             busy = true;

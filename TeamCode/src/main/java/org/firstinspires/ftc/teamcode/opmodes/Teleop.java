@@ -55,6 +55,8 @@ public class Teleop extends LinearOpMode {
         ButtonToggle x_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
+        boolean alreadyReleasedOne = false;
+
         int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
 
@@ -156,14 +158,32 @@ public class Teleop extends LinearOpMode {
                 depoPos.z-=0.5;
             }
 
-            // release one pixel (both)
-            if (leftTrigger_1.isClicked(gamepad1.left_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
-                robot.deposit.releaseOne();
+            // pixel release (automatic and manual)
+            boolean gamepad1LeftTrigger = gamepad1.left_trigger > 0.2;
+            boolean gamepad1RightTrigger = gamepad1.right_trigger > 0.2;
+            double holdTime = 500;
+
+            if (!gamepad1LeftTrigger) {
+                alreadyReleasedOne = false;
             }
 
-            // automatic board release
-            if (rightTrigger_1.isClicked(gamepad1.right_trigger > 0.2) && !robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT && robot.sensors.isDepositTouched()) {
-                robot.deposit.releaseOne();
+            if (!robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
+                if (leftTrigger_1.releasedAndNotHeldPreviously(gamepad1LeftTrigger, holdTime)) {
+                    robot.deposit.releaseOne();
+                }
+
+                if (leftTrigger_1.isHeld(gamepad1LeftTrigger, holdTime) &&  robot.sensors.isDepositTouched() && !alreadyReleasedOne) {
+                    alreadyReleasedOne = true;
+                    robot.deposit.releaseOne();
+                }
+
+                if (rightTrigger_1.releasedAndNotHeldPreviously(gamepad1RightTrigger, holdTime)) {
+                    robot.deposit.releaseTwo();
+                }
+
+                if (rightTrigger_1.isHeld(gamepad1RightTrigger, holdTime) && robot.sensors.isDepositTouched()) {
+                    robot.deposit.releaseTwo();
+                }
             }
 
             // airplane (both)

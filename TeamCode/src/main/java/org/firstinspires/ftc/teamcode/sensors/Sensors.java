@@ -37,11 +37,10 @@ public class Sensors {
 
     private final AnalogInput[] analogEncoders = new AnalogInput[2];
     private final AnalogInput backUltrasonic, frontUltrasonic;
-    private double backUltrasonicDist, cornerRightUltrasonicDist, frontUltrasonicDist = 0;
+    private double backUltrasonicDist, frontUltrasonicDist = 0;
     public double[] analogVoltages = new double[analogEncoders.length];
 
     private double voltage;
-    private double boardIRVal;
 
     private DigitalChannel depositLimitSwitch;
 
@@ -60,7 +59,7 @@ public class Sensors {
         this.hardwareQueue = hardwareQueue;
         this.robot = robot;
 
-        backUltrasonic = hardwareMap.get(AnalogInput.class, "cornerLeftUltrasonic");
+        backUltrasonic = hardwareMap.get(AnalogInput.class, "backUltrasonic");
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
 
         depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
@@ -86,6 +85,8 @@ public class Sensors {
         imu.resetYaw();
 
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+
+        depositLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
     }
 
     public void update() {
@@ -129,8 +130,7 @@ public class Sensors {
         slidesEncoder = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getCurrentPosition() * -1;
         slidesVelocity = ((PriorityMotor) hardwareQueue.getDevice("rightFront")).motor[0].getVelocity() * -1;
 
-        depositTouched = depositLimitSwitch.getState();
-        Log.e("touch state", "" + depositLimitSwitch.getMode());
+        depositTouched = !depositLimitSwitch.getState();
 
         backUltrasonicDist = backUltrasonic.getVoltage() / 3.2 * 1000;
         frontUltrasonicDist = frontUltrasonic.getVoltage() / 3.2 * 1000;

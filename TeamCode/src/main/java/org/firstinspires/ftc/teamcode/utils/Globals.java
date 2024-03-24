@@ -17,9 +17,9 @@ public class Globals {
     public static boolean DRIVETRAIN_ENABLED = true;
     public static double TRACK_WIDTH = 14.352084806;
     public static double MIN_MOTOR_POWER_TO_OVERCOME_FRICTION = 0.1;
-    public static double MAX_HEADING_SPEED = 6.719682384942526;
-    public static double MAX_X_SPEED = 71.66017979223801;
-    public static double MAX_Y_SPEED = 45.54393227277953;
+    public static double MAX_HEADING_SPEED = 9.046897651154636;
+    public static double MAX_X_SPEED = 86.14575569046524;
+    public static double MAX_Y_SPEED = 55.54759669214725;
     public static double START_HEADING_OFFSET = 0.0;
 
     public static Pose2d ROBOT_POSITION = new Pose2d(0,0,0);
