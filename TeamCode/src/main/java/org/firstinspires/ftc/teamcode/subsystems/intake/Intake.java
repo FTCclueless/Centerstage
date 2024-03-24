@@ -71,7 +71,7 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 270;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 5;
+    public static double desiredConfirmationLoops = 10;
     private long goReverseStart = 0;
     public static double goReverseDelay = 500;
     public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)

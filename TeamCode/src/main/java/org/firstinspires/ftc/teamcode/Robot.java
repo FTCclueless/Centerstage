@@ -107,7 +107,7 @@ public class Robot {
         } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    double movingSlidesDepositHeight = 13;
+    double movingSlidesDepositHeight = 8;
     public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
@@ -257,6 +257,20 @@ public class Robot {
 
     public void goToPoint(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop) {
         goToPoint(pose, opMode, finalAdjustment, stop, 1.0);
+    }
+
+    public void goToPointWithLimitSwitch(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, double power) {
+        long start = System.currentTimeMillis();
+        drivetrain.goToPoint(pose, finalAdjustment, false, power); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
+            if (sensors.isDepositTouched()) { //break out of spline if touch detected
+                drivetrain.setPath(null);
+                drivetrain.state = Drivetrain.State.BRAKE;
+                update();
+                break;
+            }
+            update();
+        }
     }
 
     public void goToPointWithDeposit(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {

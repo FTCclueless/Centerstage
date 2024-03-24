@@ -292,7 +292,7 @@ public class Drivetrain {
                 state = State.WAIT_AT_POINT;
                 break;
             case WAIT_AT_POINT:
-                if (!atPoint()) {
+                if (atPointThresholds(1.5, 1.5, 5)) {
                     resetIntegrals();
                     state = State.GO_TO_POINT;
                 }

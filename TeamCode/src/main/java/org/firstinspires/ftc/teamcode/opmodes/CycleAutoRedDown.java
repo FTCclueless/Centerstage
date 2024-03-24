@@ -30,6 +30,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     public static double fh = 0.01; // JANK
 
     private int numCycles = 2;
+    private int depositHeightScalar = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -116,24 +117,27 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -29, Math.PI);
+                boardPreload =          new Pose2d(47.5, -29, Math.PI);
                 deposit = new Vector3(5, 0, 10.25);
+                depositHeightScalar = 5;
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(55)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -35.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -35, Math.PI);
-                deposit = new Vector3(5, 0, 10);
+                groundPreloadPosition = new Pose2d(-36.25, -39, -Math.PI/2);
+                boardPreload =          new Pose2d(47.5, -34.5, Math.PI);
+                deposit = new Vector3(5, 0, 9.1);
+                depositHeightScalar = 2;
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -41.75, Math.PI);
+                boardPreload =          new Pose2d(47.5, -41.75, Math.PI);
                 deposit = new Vector3(5, 0, 10.25);
+                depositHeightScalar = 2;
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -183,8 +187,7 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, -12, Math.PI))
-                .addPoint(new Pose2d(-45, -12 , Math.PI), 1.0)
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance , Math.PI), 0.5),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex]+3, intakeYDistance , Math.PI), 1.0),
 //                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
@@ -195,7 +198,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-57.9, -57.9, -57.75, -57.75, -56.1}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-57.9, -57.9, -57.75, -57.75, -54.7}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -267,7 +270,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.reversed = false;
 
         Globals.NUM_PIXELS = 2;
-        deposit = new Vector3(5, 0, 16.5 + (cycleNum*5));
+        deposit = new Vector3(5, 0, 16.5 + (cycleNum* depositHeightScalar));
         Globals.mergeUltrasonics = false;
         cycleNum++;
     }
@@ -295,15 +298,13 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         Log.e("exited", "exited the follow spline");
 
-        robot.goToPoint(boardPreload, this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
-
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
+
+        robot.goToPointWithLimitSwitch(boardPreload, this, true, 0.5);
 
         robot.releaseOne();
 
-//        robot.deposit.release.close();
-
-        deposit = new Vector3(5, 0, 13);
+        deposit = new Vector3(5, 0, 11.5);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         pause(350);
@@ -316,7 +317,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
                         .addPoint(new Pose2d(25, -10, Math.PI))
-                        .addPoint(new Pose2d(42.75, -30.5, Math.PI)),
+                        .addPoint(new Pose2d(42.75, -34, Math.PI)),
                 deposit,
                 0,
                 -4,
@@ -326,12 +327,12 @@ public class CycleAutoRedDown extends LinearOpMode {
         );
         robot.intake.off();
 
-        robot.goToPoint(new Pose2d(46.25, -30.5, Math.PI), this::opModeIsActive, true, 0.9, 0.65,2, 2.5);
-
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
+        robot.goToPointWithLimitSwitch(new Pose2d(47.5, -34, Math.PI), this, true, 0.5);
+
         robot.releaseOne();
-        pause(75);
+        sleep(150);
         robot.releaseOne();
     }
 
