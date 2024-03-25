@@ -21,7 +21,7 @@ public class Release {
     public static double dunkOneAngle = -0.8073888;
     public static double dunkTwoAngle = -1.10098;
 
-    public static double dunkTime = 175;
+    public static double dunkTime = 150;
     public static double timer = 0;
 
     boolean busy = false;
@@ -61,7 +61,7 @@ public class Release {
             }
             Globals.NUM_PIXELS--;
 
-            dunkTime = 175;
+            dunkTime = 150;
             timer = System.currentTimeMillis();
             busy = true;
         }
