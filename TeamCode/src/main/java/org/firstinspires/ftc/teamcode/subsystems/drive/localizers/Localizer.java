@@ -40,9 +40,13 @@ public class Localizer {
     public Pose2d currentPose = new Pose2d(0,0,0);
     public Pose2d currentVel = new Pose2d(0,0,0);
     public Pose2d relCurrentVel = new Pose2d(0,0,0);
+    public Pose2d currentAcc = new Pose2d(0,0,0);
+    public Pose2d relCurrentAcc = new Pose2d(0,0,0);
     public Pose2d currentPowerVector = new Pose2d(0,0,0);
 
     ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
+    ArrayList<Pose2d> velPoseHistory = new ArrayList<>();
+    ArrayList<Pose2d> relVelPoseHistory = new ArrayList<>();
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
     ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
@@ -187,6 +191,7 @@ public class Localizer {
         poseHistory.add(0,currentPose);
 
         updateVelocity();
+        updateAcceleration();
         updateField();
     }
 
@@ -361,10 +366,52 @@ public class Localizer {
             currentVel = new Pose2d(0, 0, 0);
             relCurrentVel = new Pose2d(0, 0, 0);
         }
+        velPoseHistory.add(0, currentVel);
+        relVelPoseHistory.add(0, relCurrentVel);
         while (lastIndex + 1 < nanoTimes.size()){
             nanoTimes.remove(nanoTimes.size() - 1);
             relHistory.remove(relHistory.size() - 1);
             poseHistory.remove(poseHistory.size() - 1);
+        }
+    }
+
+    public void updateAcceleration() {
+        double targetAccTimeEstimate = 0.70;
+        double actualAccTime = 0;
+        double relDeltaXTotal = 0;
+        double relDeltaYTotal = 0;
+        double totalTime = 0;
+        int lastIndex = 0;
+        long start = nanoTimes.size() != 0 ? nanoTimes.get(0) : 0;
+        for (int i = 0; i < nanoTimes.size(); i++){
+            totalTime = (double)(start - nanoTimes.get(i)) / 1.0E9;
+            if (totalTime <= targetAccTimeEstimate){
+                actualAccTime = totalTime;
+                relDeltaXTotal += relVelPoseHistory.get(i).getX();
+                relDeltaYTotal += relVelPoseHistory.get(i).getY();
+                lastIndex = i;
+            }
+        }
+        if (actualAccTime != 0) {
+            currentAcc = new Pose2d(
+                    (velPoseHistory.get(0).getX() - velPoseHistory.get(lastIndex).getX()) / actualAccTime,
+                    (velPoseHistory.get(0).getY() - velPoseHistory.get(lastIndex).getY()) / actualAccTime,
+                    (velPoseHistory.get(0).getHeading() - velPoseHistory.get(lastIndex).getHeading()) / actualAccTime
+            );
+            relCurrentAcc = new Pose2d(
+                    (relDeltaXTotal) / actualAccTime,
+                    (relDeltaYTotal) / actualAccTime,
+                    (velPoseHistory.get(0).getHeading() - velPoseHistory.get(lastIndex).getHeading()) / actualAccTime
+            );
+        }
+        else {
+            currentAcc = new Pose2d(0, 0, 0);
+            relCurrentAcc = new Pose2d(0, 0, 0);
+        }
+        while (lastIndex + 1 < nanoTimes.size()){
+            //nanoTimes.remove(nanoTimes.size() - 1);
+            relVelPoseHistory.remove(relVelPoseHistory.size() - 1);
+            velPoseHistory.remove(velPoseHistory.size() - 1);
         }
     }
 
