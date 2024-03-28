@@ -7,31 +7,25 @@
             <goBILDA5202SeriesMotor name="intake" port="2" />
             <goBILDA5202SeriesMotor name="hang" port="3" />
             <ContinuousRotationServo name="leftHang" port="0" />
-            <Servo name="release" port="1" />
+            <ContinuousRotationServo name="rightHang" port="1" />
             <Servo name="V4BarServo1" port="3" />
             <Servo name="V4BarServo2" port="4" />
-            <ContinuousRotationServo name="rightHang" port="5" />
+            <Servo name="topServo" port="5" />
             <AnalogInput name="" port="3" />
-            <DigitalDevice name="intakeBeamBreak" port="0" />
-            <DigitalDevice name="depositBeamBreak" port="1" />
         </LynxModule>
         <LynxModule name="Control Hub" port="173">
             <goBILDA5202SeriesMotor name="leftFront" port="0" />
             <goBILDA5202SeriesMotor name="leftRear" port="1" />
             <goBILDA5202SeriesMotor name="rightFront" port="2" />
             <goBILDA5202SeriesMotor name="rightRear" port="3" />
-            <Servo name="topServo" port="0" />
             <Servo name="airplane" port="1" />
             <Servo name="actuation " port="2" />
             <Servo name="rightDropper" port="3" />
+            <Servo name="release" port="4" />
             <Servo name="leftDropper" port="5" />
-            <AnalogInput name="boardIR" port="0" />
             <AnalogInput name="frontUltrasonic" port="1" />
-            <AnalogInput name="cornerRightUltrasonic" port="2" />
-            <AnalogInput name="cornerLeftUltrasonic" port="3" />
-            <DigitalDevice name="depositLimitSwitch" port="0" />
-            <DigitalDevice name="limitswitch1" port="1" />
-            <DigitalDevice name="limitSwitch2" port="3" />
+            <AnalogInput name="backUltrasonic" port="3" />
+            <DigitalDevice name="depositLimitSwitch" port="7" />
             <FAST_DRIVER_REVCOLORSENSORV3_IMPL name="intakeColorSensor" port="2" bus="2" />
             <HuskyLens name="huskylens" port="3" bus="2" />
             <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
