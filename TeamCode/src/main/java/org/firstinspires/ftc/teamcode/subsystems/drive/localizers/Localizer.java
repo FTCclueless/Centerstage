@@ -376,10 +376,15 @@ public class Localizer {
     }
 
     private void updateExpected() {
-        expected.x = currentPose.x + (0.0476 - 0.0168 * currentVel.x + 1.5E-03 * Math.pow(currentVel.x, 2)) * Math.signum(currentVel.x);
-        expected.y = currentPose.y + (0.0138 * currentVel.y + 2.98E-03 * Math.pow(currentVel.y, 2)) * Math.signum(currentVel.y);
-        // HEADING DATA IS GARBAGE
-        expected.heading = currentPose.heading/* + (0.03 + 0.0882 * currentVel.heading + -0.118 * Math.pow(currentVel.heading, 2)) * Math.signum(currentVel.heading)*/;
+        Pose2d rel = new Pose2d(
+            0.0476 - 0.0168 * currentVel.x + 1.5E-03 * Math.pow(currentVel.x, 2) * Math.signum(currentVel.x),
+            0.0138 * currentVel.y + 2.98E-03 * Math.pow(currentVel.y, 2) * Math.signum(currentVel.y),
+            // HEADING DATA IS GARBAGE
+            0/* + (0.03 + 0.0882 * currentVel.heading + -0.118 * Math.pow(currentVel.heading, 2)) * Math.signum(currentVel.heading)*/
+        );
+        // Convert to global
+        expected.x = currentPose.x + rel.x * Math.cos(currentPose.heading) - rel.y * Math.sin(currentPose.heading);
+        expected.y = currentPose.y + rel.y * Math.cos(currentPose.heading) + rel.x * Math.sin(currentPose.heading);
     }
 
     MovingAverage movingAverage = new MovingAverage(100);
