@@ -385,6 +385,7 @@ public class Localizer {
         // Convert to global
         expected.x = currentPose.x + rel.x * Math.cos(currentPose.heading) - rel.y * Math.sin(currentPose.heading);
         expected.y = currentPose.y + rel.y * Math.cos(currentPose.heading) + rel.x * Math.sin(currentPose.heading);
+        expected.heading = currentPose.heading + rel.heading;
     }
 
     MovingAverage movingAverage = new MovingAverage(100);
