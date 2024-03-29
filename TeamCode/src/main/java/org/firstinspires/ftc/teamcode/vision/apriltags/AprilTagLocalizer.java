@@ -128,7 +128,7 @@ public class AprilTagLocalizer {
 
     public void updateField(Pose2d estimate) {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-        DashboardUtil.drawRobot(fieldOverlay, estimate);
+        DashboardUtil.drawRobot(fieldOverlay, estimate, "#000000");
     }
 
     public boolean detectedTag () {

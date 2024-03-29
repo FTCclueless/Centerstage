@@ -15,6 +15,10 @@ public class Vector3 implements Cloneable {
         x=y=z=0;
     }
 
+    public Pose2d toPose() {
+        return new Pose2d(x, y, z);
+    }
+
 
 
     public void add(Vector3 a) {

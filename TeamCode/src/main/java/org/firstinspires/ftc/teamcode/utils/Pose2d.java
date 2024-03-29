@@ -51,6 +51,10 @@ public class Pose2d implements Cloneable {
         heading = AngleUtil.clipAngle(heading);
     }
 
+    public Vector3 toVec3() {
+        return new Vector3(x, y, heading);
+    }
+
     @NonNull
     @Override
     public Pose2d clone() {

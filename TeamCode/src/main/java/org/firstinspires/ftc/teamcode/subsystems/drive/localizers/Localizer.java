@@ -37,16 +37,14 @@ public class Localizer {
 
     double odoHeading = 0;
 
+    public Pose2d expected = new Pose2d(0, 0, 0);
     public Pose2d currentPose = new Pose2d(0,0,0);
     public Pose2d currentVel = new Pose2d(0,0,0);
     public Pose2d relCurrentVel = new Pose2d(0,0,0);
-    public Pose2d currentAcc = new Pose2d(0,0,0);
     public Pose2d relCurrentAcc = new Pose2d(0,0,0);
     public Pose2d currentPowerVector = new Pose2d(0,0,0);
 
     ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
-    ArrayList<Pose2d> velPoseHistory = new ArrayList<>();
-    ArrayList<Pose2d> relVelPoseHistory = new ArrayList<>();
     ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
     ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
@@ -191,7 +189,7 @@ public class Localizer {
         poseHistory.add(0,currentPose);
 
         updateVelocity();
-        updateAcceleration();
+        updateExpected();
         updateField();
     }
 
@@ -366,8 +364,6 @@ public class Localizer {
             currentVel = new Pose2d(0, 0, 0);
             relCurrentVel = new Pose2d(0, 0, 0);
         }
-        velPoseHistory.add(0, currentVel);
-        relVelPoseHistory.add(0, relCurrentVel);
         while (lastIndex + 1 < nanoTimes.size()){
             nanoTimes.remove(nanoTimes.size() - 1);
             relHistory.remove(relHistory.size() - 1);
@@ -375,48 +371,15 @@ public class Localizer {
         }
     }
 
-    public void updateAcceleration() {
-        double targetAccTimeEstimate = 0.70;
-        double actualAccTime = 0;
-        double relDeltaXTotal = 0;
-        double relDeltaYTotal = 0;
-        double totalTime = 0;
-        int lastIndex = 0;
-        long start = nanoTimes.size() != 0 ? nanoTimes.get(0) : 0;
-        for (int i = 0; i < nanoTimes.size(); i++){
-            totalTime = (double)(start - nanoTimes.get(i)) / 1.0E9;
-            if (totalTime <= targetAccTimeEstimate){
-                actualAccTime = totalTime;
-                relDeltaXTotal += relVelPoseHistory.get(i).getX();
-                relDeltaYTotal += relVelPoseHistory.get(i).getY();
-                lastIndex = i;
-            }
-        }
-        if (actualAccTime != 0) {
-            currentAcc = new Pose2d(
-                    (velPoseHistory.get(0).getX() - velPoseHistory.get(lastIndex).getX()) / actualAccTime,
-                    (velPoseHistory.get(0).getY() - velPoseHistory.get(lastIndex).getY()) / actualAccTime,
-                    (velPoseHistory.get(0).getHeading() - velPoseHistory.get(lastIndex).getHeading()) / actualAccTime
-            );
-            relCurrentAcc = new Pose2d(
-                    (relDeltaXTotal) / actualAccTime,
-                    (relDeltaYTotal) / actualAccTime,
-                    (velPoseHistory.get(0).getHeading() - velPoseHistory.get(lastIndex).getHeading()) / actualAccTime
-            );
-        }
-        else {
-            currentAcc = new Pose2d(0, 0, 0);
-            relCurrentAcc = new Pose2d(0, 0, 0);
-        }
-        while (lastIndex + 1 < nanoTimes.size()){
-            //nanoTimes.remove(nanoTimes.size() - 1);
-            relVelPoseHistory.remove(relVelPoseHistory.size() - 1);
-            velPoseHistory.remove(velPoseHistory.size() - 1);
-        }
-    }
-
     public double kalmanFilter (double value1, double value2, double value2Weight) {
         return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
+    }
+
+    private void updateExpected() {
+        expected.x = currentPose.x + (0.0476 - 0.0168 * currentVel.x + 1.5E-03 * Math.pow(currentVel.x, 2)) * Math.signum(currentVel.x);
+        expected.y = currentPose.y + (0.0138 * currentVel.y + 2.98E-03 * Math.pow(currentVel.y, 2)) * Math.signum(currentVel.y);
+        // HEADING DATA IS GARBAGE
+        expected.heading = currentPose.heading/* + (0.03 + 0.0882 * currentVel.heading + -0.118 * Math.pow(currentVel.heading, 2)) * Math.signum(currentVel.heading)*/;
     }
 
     MovingAverage movingAverage = new MovingAverage(100);
@@ -438,6 +401,7 @@ public class Localizer {
         TelemetryUtil.packet.put("turn speed (deg)", Math.toDegrees(relCurrentVel.heading));
 
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate());
+        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");
+        DashboardUtil.drawRobot(fieldOverlay, expected, "#BB00BB");
     }
 }
