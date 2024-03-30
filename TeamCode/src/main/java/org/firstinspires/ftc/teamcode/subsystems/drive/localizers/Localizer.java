@@ -349,15 +349,16 @@ public class Localizer {
             }
         }
         if (actualVelTime != 0) {
-            currentVel = new Pose2d(
-                    (poseHistory.get(0).getX() - poseHistory.get(lastIndex).getX()) / actualVelTime,
-                    (poseHistory.get(0).getY() - poseHistory.get(lastIndex).getY()) / actualVelTime,
-                    (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
-            );
             relCurrentVel = new Pose2d(
                     (relDeltaXTotal) / actualVelTime,
                     (relDeltaYTotal) / actualVelTime,
                     (poseHistory.get(0).getHeading() - poseHistory.get(lastIndex).getHeading()) / actualVelTime
+            );
+
+            currentVel = new Pose2d(
+                    relCurrentVel.x*Math.cos(heading) - relCurrentVel.y*Math.sin(heading),
+                    relCurrentVel.x*Math.sin(heading) + relCurrentVel.y*Math.cos(heading),
+                    relCurrentVel.heading
             );
         }
         else {
@@ -388,7 +389,7 @@ public class Localizer {
             distance = totalVel*(getExpectedDistance(d)/d);
         }
 
-        if (totalVel == 0) {
+        if (totalVel <= 0.01) {
             expected.x = x;
             expected.y = y;
             return;
@@ -396,6 +397,7 @@ public class Localizer {
 
         expected.x = x + distance * currentVel.x/totalVel;
         expected.y = y + distance * currentVel.y/totalVel;
+        expected.heading = heading;
     }
 
     private double getExpectedDistance (double x) {

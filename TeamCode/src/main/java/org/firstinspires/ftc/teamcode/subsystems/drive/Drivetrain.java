@@ -292,7 +292,7 @@ public class Drivetrain {
                 state = State.WAIT_AT_POINT;
                 break;
             case WAIT_AT_POINT:
-                if (atPointThresholds(1.5, 1.5, 5)) {
+                if (!atPointThresholds(1.5, 1.5, 5)) {
                     resetIntegrals();
                     state = State.GO_TO_POINT;
                 }
@@ -416,31 +416,36 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    public static PID xPID = new PID(0.06,0.0,0.007);
+    public static PID xPID = new PID(0.045,0.0,0.003);
     public static PID yPID = new PID(0.125,0.0,0.0175);
     public static PID turnPID = new PID(0.35,0.0,0.01);
 
+    double fwd, strafe, turn, turnAdjustThreshold;
+
     public void PIDF() {
-        double expectedXError = (targetPoint.x - localizer.expected.x);
-        double expectedYError = (targetPoint.y - localizer.expected.y);
+        double globalExpectedXError = (targetPoint.x - localizer.expected.x);
+        double globalExpectedYError = (targetPoint.y - localizer.expected.y);
 
         // converting from global to relative
-        expectedXError = expectedXError*Math.cos(localizer.heading) + expectedYError*Math.sin(localizer.heading);
-        expectedYError = expectedYError*Math.cos(localizer.heading) - expectedXError*Math.sin(localizer.heading);
+        double relExpectedXError = globalExpectedXError*Math.cos(localizer.heading) + globalExpectedYError*Math.sin(localizer.heading);
+        double relExpectedYError = globalExpectedYError*Math.cos(localizer.heading) - globalExpectedXError*Math.sin(localizer.heading);
 
-        double fwd = Math.abs(expectedXError) > xThreshold/2 ? xPID.update(expectedXError, -maxPower, maxPower) + 0.05 * Math.signum(expectedXError) : 0;
-        double strafe = Math.abs(expectedYError) > yThreshold/2 ? yPID.update(expectedYError, -maxPower, maxPower) + 0.05 * Math.signum(expectedYError) : 0;
+        fwd = Math.abs(relExpectedXError) > xThreshold / 2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
+        strafe = Math.abs(relExpectedYError) > yThreshold / 2 ? yPID.update(relExpectedYError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedYError) : 0;
 
-        double turnAdjustThreshold = (Math.abs(xError) > xThreshold/2 || Math.abs(yError) > yThreshold/2) ? turnThreshold/3.0 : turnThreshold;
-        double turn = Math.abs(turnError) > Math.toRadians(turnAdjustThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
+        turnAdjustThreshold = (Math.abs(xError) > xThreshold/2 || Math.abs(yError) > yThreshold/2) ? turnThreshold/3.0 : turnThreshold;
+        turn = Math.abs(turnError) > Math.toRadians(turnAdjustThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
+
+        TelemetryUtil.packet.put("expectedXError", globalExpectedXError);
+        TelemetryUtil.packet.put("expectedYError", globalExpectedYError);
     }
 
-    public static PID finalXPID = new PID(0.1, 0.0,0.0);
+    public static PID finalXPID = new PID(0.05, 0.0,0.0);
     public static PID finalYPID = new PID(0.1, 0.0,0.0);
-    public static PID finalTurnPID = new PID(0.5, 0.0,0.0);
+    public static PID finalTurnPID = new PID(0.45, 0.0,0.0);
 
     public void finalAdjustment() {
         double fwd = Math.abs(xError) > finalXThreshold/2 ? finalXPID.update(xError, -maxPower, maxPower) : 0;

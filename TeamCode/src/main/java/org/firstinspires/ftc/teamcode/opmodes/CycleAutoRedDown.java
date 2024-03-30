@@ -187,14 +187,13 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(29.25, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex]+3, intakeYDistance , Math.PI), 1.0),
-//                .addPoint(new Pose2d(intakeXDistances[pixelIndex], -15.5, Math.PI), 0.2),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance , Math.PI), 1.0),
             // Add back uncommented and remove isBusy TODO - Eric
             // Also make sure to give this a timer TODO - Eric
             () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy()
         );
 
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, true, true);
+//        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, true, true);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -256,7 +255,6 @@ public class CycleAutoRedDown extends LinearOpMode {
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
                 robot.intake.setActuationHeight(0, 0.0725);
-
                 robot.update();
             }
         }
