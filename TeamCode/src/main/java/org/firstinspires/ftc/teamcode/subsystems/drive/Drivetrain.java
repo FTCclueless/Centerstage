@@ -418,12 +418,20 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.06,0.0,0.007);
     public static PID yPID = new PID(0.125,0.0,0.0175);
-    public static PID turnPID = new PID(0.5,0.0,0.01);
+    public static PID turnPID = new PID(0.35,0.0,0.01);
 
     public void PIDF() {
+        double expectedXError = (targetPoint.x - localizer.expected.x);
+        double expectedYError = (targetPoint.y - localizer.expected.y);
+
+        // converting from global to relative
+        expectedXError = expectedXError*Math.cos(localizer.heading) + expectedYError*Math.sin(localizer.heading);
+        expectedYError = expectedYError*Math.cos(localizer.heading) - expectedXError*Math.sin(localizer.heading);
+
+        double fwd = Math.abs(expectedXError) > xThreshold/2 ? xPID.update(expectedXError, -maxPower, maxPower) + 0.05 * Math.signum(expectedXError) : 0;
+        double strafe = Math.abs(expectedYError) > yThreshold/2 ? yPID.update(expectedYError, -maxPower, maxPower) + 0.05 * Math.signum(expectedYError) : 0;
+
         double turnAdjustThreshold = (Math.abs(xError) > xThreshold/2 || Math.abs(yError) > yThreshold/2) ? turnThreshold/3.0 : turnThreshold;
-        double fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -maxPower, maxPower) + 0.05 * Math.signum(xError) : 0;
-        double strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -maxPower, maxPower) + 0.05 * Math.signum(yError) : 0;
         double turn = Math.abs(turnError) > Math.toRadians(turnAdjustThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);

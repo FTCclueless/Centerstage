@@ -252,7 +252,6 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance - 16, Math.PI), this, false, false, 0.75);
             robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 0.75);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
@@ -334,36 +333,6 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.releaseOne();
         sleep(150);
         robot.releaseOne();
-    }
-
-    // Janky method that I don't want to type 3 times
-    public void preciseIntake() {
-        Log.e("pixelIndex", pixelIndex + "");
-        AtomicLong start = new AtomicLong(System.currentTimeMillis());
-        double limitYp = intakePose.getY() + 5;
-        double limitYn = intakePose.getY() - 5;
-        robot.goToPoint(
-                new Pose2d(intakeXDistances[pixelIndex], intakePose.getY(), intakePose.getHeading()),
-                () -> {
-                    int sign = 1;
-                    // Hella janky way to insert ourselves into the update() function
-                    if ((System.currentTimeMillis() - start.get()) > 500) {
-                        //pixelIndex = Math.max(0, index - 1);
-                        robot.intake.setActuationAngle(robot.intake.actuation.getTargetAngle() + 0.2, 1);
-                        //robot.intake.setActuationHeight(pixelIndex);
-                        // Lord forgive me
-                        robot.drivetrain.targetPoint.x -= 0.2;
-                        start.set(System.currentTimeMillis());
-                    }
-                    if (robot.drivetrain.targetPoint.y >= limitYp || robot.drivetrain.targetPoint.y <= limitYn) {
-                        sign *= -1;
-                    }
-                    robot.drivetrain.targetPoint.y += 0.2 * sign;
-                    return Globals.NUM_PIXELS != 2 && opModeIsActive();
-                },
-                false, 0.2,
-                fx, fy, fh
-        );
     }
 
     /**

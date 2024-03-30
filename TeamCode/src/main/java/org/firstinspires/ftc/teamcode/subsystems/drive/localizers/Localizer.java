@@ -375,17 +375,31 @@ public class Localizer {
         return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
     }
 
+    double a = 0.0025;
+    double b = -0.0728;
+    double c = 0.8062;
+    double d = Math.sqrt(c/a);
+
     private void updateExpected() {
-        Pose2d rel = new Pose2d(
-            0.0476 - 0.0168 * currentVel.x + 1.5E-03 * Math.pow(currentVel.x, 2) * Math.signum(currentVel.x),
-            0.0138 * currentVel.y + 2.98E-03 * Math.pow(currentVel.y, 2) * Math.signum(currentVel.y),
-            // HEADING DATA IS GARBAGE
-            0/* + (0.03 + 0.0882 * currentVel.heading + -0.118 * Math.pow(currentVel.heading, 2)) * Math.signum(currentVel.heading)*/
-        );
-        // Convert to global
-        expected.x = currentPose.x + rel.x * Math.cos(currentPose.heading) - rel.y * Math.sin(currentPose.heading);
-        expected.y = currentPose.y + rel.y * Math.cos(currentPose.heading) + rel.x * Math.sin(currentPose.heading);
-        expected.heading = currentPose.heading + rel.heading;
+        double totalVel = Math.sqrt(Math.pow(currentVel.x, 2) + Math.pow(currentVel.y, 2));
+        double distance = getExpectedDistance(totalVel);
+
+        if (totalVel <= d) {
+            distance = totalVel*(getExpectedDistance(d)/d);
+        }
+
+        if (totalVel == 0) {
+            expected.x = x;
+            expected.y = y;
+            return;
+        }
+
+        expected.x = x + distance * currentVel.x/totalVel;
+        expected.y = y + distance * currentVel.y/totalVel;
+    }
+
+    private double getExpectedDistance (double x) {
+        return a*Math.pow(x,2) + b*x + c;
     }
 
     MovingAverage movingAverage = new MovingAverage(100);
