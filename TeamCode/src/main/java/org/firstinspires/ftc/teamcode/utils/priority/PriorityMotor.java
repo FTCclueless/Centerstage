@@ -40,23 +40,27 @@ public class PriorityMotor extends PriorityDevice {
     }
 
     public void setTargetPower(double power) {
-        power = Utils.minMaxClip(power, -1.0, 1.0);
-        power *= 1-minPowerToOvercomeFriction;
-        this.power = power + (minPowerToOvercomeFriction * (12/sensors.getVoltage()) * Math.signum(power));
         if (power == 0) {
             this.power = 0;
+            return;
         }
+        power = Utils.minMaxClip(power, -1.0, 1.0);
+        double m = minPowerToOvercomeFriction * (12/sensors.getVoltage());
+        power *= 1-m;
+        this.power = power + m * Math.signum(power);
     }
 
-    double k = 0.05;
+    double k = 0.5;
     public void setTargetPowerSmooth(double power) {
-        power = Utils.minMaxClip(power, -1.0, 1.0);
-        power *= 1-minPowerToOvercomeFriction;
-        power = power + (minPowerToOvercomeFriction * (12/sensors.getVoltage()) * Math.signum(power));
-        this.power = power*k + this.lastPower*(1-k);
         if (power == 0) {
             this.power = 0;
+            return;
         }
+        power = Utils.minMaxClip(power, -1.0, 1.0);
+        double m = minPowerToOvercomeFriction * (12/sensors.getVoltage());
+        power *= 1-m;
+        power = power + m * Math.signum(power);
+        this.power = power*k + this.lastPower*(1-k);
     }
 
     public void setPowerForced(double power) {

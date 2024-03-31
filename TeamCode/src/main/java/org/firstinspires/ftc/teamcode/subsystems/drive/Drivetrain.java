@@ -407,7 +407,7 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.04,0.0,0.003);
     public static PID yPID = new PID(0.125,0.0,0.0175);
-    public static PID turnPID = new PID(0.35,0.0,0.01);
+    public static PID turnPID = new PID(0.2,0.0,0.01);
 
     double fwd, strafe, turn, turnAdjustThreshold;
 
@@ -434,7 +434,7 @@ public class Drivetrain {
 
     public static PID finalXPID = new PID(0.035, 0.0,0.0);
     public static PID finalYPID = new PID(0.1, 0.0,0.0);
-    public static PID finalTurnPID = new PID(0.45, 0.0,0.0);
+    public static PID finalTurnPID = new PID(0.01, 0.0,0.0);
 
     public void finalAdjustment() {
         double fwd = Math.abs(xError) > finalXThreshold/2 ? finalXPID.update(xError, -maxPower, maxPower) : 0;

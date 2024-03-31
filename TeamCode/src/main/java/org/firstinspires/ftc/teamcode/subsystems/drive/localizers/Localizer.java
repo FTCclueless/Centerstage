@@ -332,7 +332,7 @@ public class Localizer {
     }
 
     public void updateVelocity() {
-        double targetVelTimeEstimate = 0.1;
+        double targetVelTimeEstimate = 0.2;
         double actualVelTime = 0;
         double relDeltaXTotal = 0;
         double relDeltaYTotal = 0;
@@ -372,7 +372,7 @@ public class Localizer {
         }
     }
 
-    double a = 0.0025;
+    double a = 0.0035;
     double b = -0.0728;
     double c = 0.8062;
     double d = Math.sqrt(c/a);
