@@ -24,4 +24,8 @@ public class Utils {
     public static boolean withinThreshold(double value, double minThreshold, double maxThreshold) {
         return value > minThreshold && value < maxThreshold;
     }
+
+    public static double kalmanFilter (double value1, double value2, double value2Weight) {
+        return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
+    }
 }

@@ -181,7 +181,7 @@ public class Drivetrain {
 
     long perfectHeadingTimeStart = System.currentTimeMillis();
 
-    public boolean useUltrasonicCornerDetection = false;
+    public boolean useUltrasonicDetection = false;
 
     Spline path = null;
     int pathIndex = 0;
@@ -225,8 +225,8 @@ public class Drivetrain {
         calculateErrors();
         updateTelemetry();
 
-        if (useUltrasonicCornerDetection) {
-            updateBackUltrasonicsDetection();
+        if (useUltrasonicDetection) {
+            updateBackUltrasonicDetection();
         }
 
         switch (state) {
@@ -305,25 +305,25 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 200;
+    double ultrasonicDistThreshold = 160;
 
     enum UltrasonicCheckState {
         CHECK,
         CONFIRM_BLOCKED,
-        WAIT
+        WAIT,
+        ALREADY_BLOCKED_IDLE
     }
     private UltrasonicCheckState ultrasonicCheckState = UltrasonicCheckState.CHECK;
-    private long ultrasonicBlockedStart, ultrasonicUnBlockedCheckTimer, startWaitTime;
+    private long ultrasonicBlockedStart, startWaitTime;
     private long ultrasonicDebounce;
+    double blockedWaitTime = 3500;
 
-    State heldState;
-
-    public void updateBackUltrasonicsDetection() {
+    public void updateBackUltrasonicDetection() {
         updateUltrasonics();
 
         switch (ultrasonicCheckState) {
             case CHECK:
-                Log.e("ultrasonic state", "check");
+                Log.e("ultrasonic state", "CHECK");
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicBlockedStart = System.currentTimeMillis();
                     ultrasonicDebounce = System.currentTimeMillis();
@@ -331,40 +331,29 @@ public class Drivetrain {
                 }
                 break;
             case CONFIRM_BLOCKED:
-                Log.e("ultrasonic state", "confirm blocked");
+                Log.e("ultrasonic state", "CONFIRM_BLOCKED");
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicDebounce = System.currentTimeMillis();
                 }
-                if (System.currentTimeMillis() - ultrasonicDebounce > 50) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
+                if (System.currentTimeMillis() - ultrasonicDebounce > 75) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
                     ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 }
-                Log.e("ultrasonicDebounce - ultrasonicBlockedStart", (ultrasonicDebounce - ultrasonicBlockedStart) + "");
-                if (ultrasonicDebounce - ultrasonicBlockedStart > 150) { // we need to detect we are blocked for more than 250 ms with no breaks
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 100) { // we need to detect we are blocked for more than 100 ms with no breaks
                     startWaitTime = System.currentTimeMillis();
-                    ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.WAIT;
-                    heldState = state;
                 }
                 break;
             case WAIT:
-                while (System.currentTimeMillis() - ultrasonicUnBlockedCheckTimer < 750) {
-                    Log.e("ultrasonic state", "wait");
-                    state = State.BRAKE;
-
-                    robot.sensors.update();
-                    updateUltrasonics();
+                while (System.currentTimeMillis() - startWaitTime < blockedWaitTime) {
+                    Log.e("ultrasonic state", "WAIT");
                     forceStopAllMotors();
-                    robot.deposit.slides.turnOffPowerFORCED();
-
-                    if (ultrasonicDist < ultrasonicDistThreshold) { // checking that we are still blocked
-                        ultrasonicUnBlockedCheckTimer = System.currentTimeMillis();
-                    }
                 }
-                Log.e("out of wait", "weee");
 
-                state = heldState;
-                heldState = null;
-                ultrasonicCheckState = UltrasonicCheckState.CHECK;
+                useUltrasonicDetection = false;
+                ultrasonicCheckState = UltrasonicCheckState.ALREADY_BLOCKED_IDLE;
+                break;
+            case ALREADY_BLOCKED_IDLE:
+                Log.e("ultrasonic state", "ALREADY_BLOCKED_IDLE");
                 break;
         }
     }
@@ -416,7 +405,7 @@ public class Drivetrain {
         setMoveVector(move, turn);
     }
 
-    public static PID xPID = new PID(0.045,0.0,0.003);
+    public static PID xPID = new PID(0.04,0.0,0.003);
     public static PID yPID = new PID(0.125,0.0,0.0175);
     public static PID turnPID = new PID(0.35,0.0,0.01);
 
@@ -443,7 +432,7 @@ public class Drivetrain {
         TelemetryUtil.packet.put("expectedYError", globalExpectedYError);
     }
 
-    public static PID finalXPID = new PID(0.05, 0.0,0.0);
+    public static PID finalXPID = new PID(0.035, 0.0,0.0);
     public static PID finalYPID = new PID(0.1, 0.0,0.0);
     public static PID finalTurnPID = new PID(0.45, 0.0,0.0);
 
@@ -499,7 +488,7 @@ public class Drivetrain {
 
     public void forceStopAllMotors() {
         for (PriorityMotor motor : motors) {
-            motor.motor[0].setPower(0);
+            motor.setPowerForced(0.0);
         }
     }
 
@@ -611,15 +600,10 @@ public class Drivetrain {
     }
 
     public void setMotorPowers(double lf, double lr, double rr, double rf) {
-        TelemetryUtil.packet.put("lf power", lf);
-        TelemetryUtil.packet.put("lr power", lr);
-        TelemetryUtil.packet.put("rr power", rr);
-        TelemetryUtil.packet.put("rf power", rf);
-
-        leftFront.setTargetPower(lf);
-        leftRear.setTargetPower(lr);
-        rightRear.setTargetPower(rr);
-        rightFront.setTargetPower(rf);
+        leftFront.setTargetPowerSmooth(lf);
+        leftRear.setTargetPowerSmooth(lr);
+        rightRear.setTargetPowerSmooth(rr);
+        rightFront.setTargetPowerSmooth(rf);
     }
 
     private void normalizeArray(double[] arr) {

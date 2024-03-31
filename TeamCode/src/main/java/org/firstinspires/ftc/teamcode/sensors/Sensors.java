@@ -26,8 +26,6 @@ public class Sensors {
 
     //private IMU imu;
     private int[] odometry = new int[] {0,0,0};
-//    private final DigitalChannel magnetSensor;
-//    private HuskyLens huskyLens;
 
     private int slidesEncoder;
     private double slidesVelocity;

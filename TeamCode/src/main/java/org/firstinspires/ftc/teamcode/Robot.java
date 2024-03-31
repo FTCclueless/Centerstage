@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
 import org.firstinspires.ftc.teamcode.subsystems.droppers.Droppers;
 import org.firstinspires.ftc.teamcode.subsystems.hang.Hang;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
-import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.Func;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -107,7 +106,7 @@ public class Robot {
         } while (((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    double movingSlidesDepositHeight = 8;
+    double movingSlidesDepositHeight = 10.25;
     public void followSplineWithIntakeAndDeposit(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
         long start = System.currentTimeMillis();
         drivetrain.setFinalAdjustment(finalAdjustment);
@@ -121,41 +120,25 @@ public class Robot {
         do {
             intake.actuationFullyUp();
 
-            // Make it so if we spit out a pixel mid way & we still don't have 2, attempt to reintake it
-            /*System.out.println("Reversed time: " + intake.reversedTime);
-            if (intake.reversedTime != -1 && System.currentTimeMillis() - intake.reversedTime > 600) {
-                System.out.println("Reversed time is not garbage");
-                if (!intake.twoPixelsInTransfer()) {
-                    System.out.println("Panic!");
-                    intake.on();
-                    Pose2d newTargetPoint = drivetrain.targetPoint.clone();
-                    newTargetPoint.x -= 3;
-                    drivetrain.targetPoint = newTargetPoint;
-                }
-                intake.reversedTime = -1;
-            }*/
-
-            if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
+            if (drivetrain.getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
-                deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
+                deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight));
             }
 
             if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
             }
 
-            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-                drivetrain.setPath(null);
-                drivetrain.state = Drivetrain.State.BRAKE;
-                Log.e("yay!", "e");
-                break;
-            }
+//            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+//                drivetrain.setPath(null);
+//                drivetrain.state = Drivetrain.State.BRAKE;
+//                break;
+//            }
             update();
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }
 
-    public void followSplineWithIntakeAndDepositAndCornerUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold, double endCornerUltrasonicCheckThreshold) {
-        long start = System.currentTimeMillis();
+    public void followSplineWithIntakeAndDepositAndUltrasonicCheck(Spline spline, Vector3 depositVector3, double depositTriggerThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop, double beginCornerUltrasonicCheckThreshold, double endCornerUltrasonicCheckThreshold) {
         drivetrain.setFinalAdjustment(finalAdjustment);
         drivetrain.setStop(stop);
         drivetrain.setMaxPower(maxPower);
@@ -167,45 +150,31 @@ public class Robot {
         do {
             intake.actuationFullyUp();
 
-            // Make it so if we spit out a pixel mid way & we still don't have 2, attempt to reintake it
-            System.out.println("Reversed time: " + intake.reversedTime);
-            if (intake.reversedTime != -1 && System.currentTimeMillis() - intake.reversedTime > 600) {
-                System.out.println("Reversed time is not garbage");
-                if (!intake.twoPixelsInTransfer()) {
-                    System.out.println("Panic!");
-                    intake.on();
-                    Pose2d newTargetPoint = drivetrain.targetPoint.clone();
-                    newTargetPoint.x -= 3;
-                    drivetrain.targetPoint = newTargetPoint;
-                }
-                intake.reversedTime = -1;
-            }
-
             if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
-                deposit.depositAt(depositVector3); // async call to deposit
+                deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
             }
 
             if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
             }
 
-            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-                drivetrain.setPath(null);
-                drivetrain.state = Drivetrain.State.BRAKE;
-                break;
-            }
+//            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
+//                drivetrain.setPath(null);
+//                drivetrain.state = Drivetrain.State.BRAKE;
+//                break;
+//            }
 
-            if (drivetrain.localizer.getPoseEstimate().x > beginCornerUltrasonicCheckThreshold) {
-                if (drivetrain.getPoseEstimate().x > endCornerUltrasonicCheckThreshold) {
-                    drivetrain.useUltrasonicCornerDetection = false;
+            if (drivetrain.getPoseEstimate().x > beginCornerUltrasonicCheckThreshold) {
+                if (drivetrain.getPoseEstimate().x < endCornerUltrasonicCheckThreshold) {
+                    drivetrain.useUltrasonicDetection = true;
                 } else {
-                    drivetrain.useUltrasonicCornerDetection = true;
+                    drivetrain.useUltrasonicDetection = false;
                 }
             }
             update();
         } while (drivetrain.isBusy());
-        drivetrain.useUltrasonicCornerDetection = false;
+        drivetrain.useUltrasonicDetection = false;
     }
 
     public void splineToPoint(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, double maxPower, boolean isReversed) {
@@ -280,12 +249,6 @@ public class Robot {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
-            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-                drivetrain.setPath(null);
-                drivetrain.state = Drivetrain.State.BRAKE;
-                update();
-                break;
-            }
             update();
         }
     }
@@ -296,12 +259,6 @@ public class Robot {
         while(((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
-            }
-            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-                drivetrain.setPath(null);
-                drivetrain.state = Drivetrain.State.BRAKE;
-                update();
-                break;
             }
             update();
         }
@@ -320,12 +277,6 @@ public class Robot {
             if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
                 intake.reverse();
                 deposit.depositAt(depositVector3); // async call to deposit
-            }
-            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-                drivetrain.setPath(null);
-                drivetrain.state = Drivetrain.State.BRAKE;
-                update();
-                break;
             }
             update();
         }

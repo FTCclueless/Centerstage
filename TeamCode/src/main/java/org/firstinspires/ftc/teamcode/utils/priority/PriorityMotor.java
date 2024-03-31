@@ -48,6 +48,25 @@ public class PriorityMotor extends PriorityDevice {
         }
     }
 
+    double k = 0.05;
+    public void setTargetPowerSmooth(double power) {
+        power = Utils.minMaxClip(power, -1.0, 1.0);
+        power *= 1-minPowerToOvercomeFriction;
+        power = power + (minPowerToOvercomeFriction * (12/sensors.getVoltage()) * Math.signum(power));
+        this.power = power*k + this.lastPower*(1-k);
+        if (power == 0) {
+            this.power = 0;
+        }
+    }
+
+    public void setPowerForced(double power) {
+        for (int i = 0; i < motor.length; i ++) {
+            motor[i].setPower(power * multipier[i]);
+        }
+        lastUpdateTime = System.nanoTime();
+        lastPower = power;
+    }
+
     public double getPower() {
         return power;
     }

@@ -332,7 +332,7 @@ public class Localizer {
     }
 
     public void updateVelocity() {
-        double targetVelTimeEstimate = 0.35;
+        double targetVelTimeEstimate = 0.1;
         double actualVelTime = 0;
         double relDeltaXTotal = 0;
         double relDeltaYTotal = 0;
@@ -370,10 +370,6 @@ public class Localizer {
             relHistory.remove(relHistory.size() - 1);
             poseHistory.remove(poseHistory.size() - 1);
         }
-    }
-
-    public double kalmanFilter (double value1, double value2, double value2Weight) {
-        return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
     }
 
     double a = 0.0025;
