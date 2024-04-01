@@ -372,7 +372,7 @@ public class Localizer {
         }
     }
 
-    double a = 0.0035;
+    double a = 0.003;
     double b = -0.0728;
     double c = 0.8062;
     double d = Math.sqrt(c/a);

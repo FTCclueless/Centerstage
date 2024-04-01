@@ -50,7 +50,7 @@ public class PriorityMotor extends PriorityDevice {
         this.power = power + m * Math.signum(power);
     }
 
-    double k = 0.5;
+    double k = 0.5; // 0.5
     public void setTargetPowerSmooth(double power) {
         if (power == 0) {
             this.power = 0;

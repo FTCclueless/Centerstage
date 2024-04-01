@@ -305,7 +305,7 @@ public class Drivetrain {
     }
 
     double ultrasonicDist = 0;
-    double ultrasonicDistThreshold = 160;
+    double ultrasonicDistThreshold = 50;
 
     enum UltrasonicCheckState {
         CHECK,
@@ -338,7 +338,7 @@ public class Drivetrain {
                 if (System.currentTimeMillis() - ultrasonicDebounce > 75) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
                     ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 }
-                if (ultrasonicDebounce - ultrasonicBlockedStart > 100) { // we need to detect we are blocked for more than 100 ms with no breaks
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 125) { // we need to detect we are blocked for more than 100 ms with no breaks
                     startWaitTime = System.currentTimeMillis();
                     ultrasonicCheckState = UltrasonicCheckState.WAIT;
                 }
@@ -346,6 +346,7 @@ public class Drivetrain {
             case WAIT:
                 while (System.currentTimeMillis() - startWaitTime < blockedWaitTime) {
                     Log.e("ultrasonic state", "WAIT");
+                    updateUltrasonics();
                     forceStopAllMotors();
                 }
 

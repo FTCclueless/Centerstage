@@ -312,6 +312,13 @@ public class Teleop extends LinearOpMode {
             robot.update();
         }
 
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 250) {
+            robot.deposit.release.releaseTwoFORCED();
+            robot.deposit.slides.setTargetPowerFORCED(0.0);
+            robot.update();
+        }
+
         // making sure slides are down
         double lastDist = 0.0;
         double vel = 0.0;

@@ -245,8 +245,8 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance + 16, Math.PI), this, false, false, 0.75);
-            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 0.75);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance + 16, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
                 robot.intake.setActuationHeight(0, 0.0725);
