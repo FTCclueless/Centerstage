@@ -115,17 +115,16 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-42.25, -36.5, Math.toRadians(120));
                 boardPreload =          new Pose2d(47.5, -29, Math.PI);
                 deposit = new Vector3(5, 0, 9.9);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-
-                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(55)), this, false, true);
+                while (opModeIsActive()) {robot.update();}
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -39, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -34.5, Math.PI);
+                boardPreload =          new Pose2d(47.5, -35, Math.PI);
                 deposit = new Vector3(5, 0, 9.1);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -193,7 +192,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-57.75, -57.75, -57.5, -57.5, -55}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56.1, -56.1, -56.1, -56.1, -55}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;

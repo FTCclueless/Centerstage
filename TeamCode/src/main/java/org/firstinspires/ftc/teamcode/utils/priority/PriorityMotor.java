@@ -50,14 +50,14 @@ public class PriorityMotor extends PriorityDevice {
         this.power = power + m * Math.signum(power);
     }
 
-    double k = 0.5; // 0.5
+    double k = 0.7; // 0.5
     public void setTargetPowerSmooth(double power) {
         if (power == 0) {
             this.power = 0;
             return;
         }
         power = Utils.minMaxClip(power, -1.0, 1.0);
-        double m = minPowerToOvercomeFriction * (12/sensors.getVoltage());
+        double m = minPowerToOvercomeFriction * (13.5/sensors.getVoltage());
         power *= 1-m;
         power = power + m * Math.signum(power);
         this.power = power*k + this.lastPower*(1-k);
