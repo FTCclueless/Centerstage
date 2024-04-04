@@ -127,9 +127,6 @@ public class Teleop extends LinearOpMode {
             if (leftBumper_1.isClicked(gamepad1.left_bumper)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
-                if (robot.deposit.state == Deposit.State.DEPOSIT) {
-                    robot.deposit.releaseOne();
-                }
             }
 
             // hanging mechanism

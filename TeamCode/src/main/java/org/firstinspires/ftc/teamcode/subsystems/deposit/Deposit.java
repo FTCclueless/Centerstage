@@ -36,20 +36,25 @@ public class Deposit {
     double targetX = 0.0;
 
     // v4bar angles
-    public static double v4BarTransferAngle = -0.252155650350;
-    public static double v4BarGrabAngle = -0.0012069177935;
-    public static double v4BarDepositAngle = -4.65647434313;
+    public static double v4BarTransferAngle = -0.296983;
+    public static double v4BarGrabAngle = -0.1456899;
+    public static double v4BarDepositAngle = -3.2556096189;
 
     // top servo angles
-    public static double topServoTransferAngle = 3.642304373462;
-    public static double topServoGrabAngle = 3.6815285857;
-    public static double topServoDepositAngle = -1.540895105;
+    public static double topServoTransferAngle = -1.07020;
+    public static double topServoGrabAngle = -1.0309803;
+    public static double topServoDepositAngle = 2.017245202803;
+    public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode
-    public static double v4BarReadjustAngle = -5.21121621356;
-    public static double topServoReadjustAngle = 3.1267300643;
+    public static double v4BarReadjustAngle = -3.9896627;
+    public static double topServoReadjustAngle = -1.09827794;
 
     public boolean isSlowSlidesMode = false;
+
+    // old readjustment values
+//    public static double v4BarReadjustAngle = -2.75124228;
+//    public static double topServoReadjustAngle = 0.5435355;
 
     public Deposit(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
         this.hardwareQueue = hardwareQueue;
