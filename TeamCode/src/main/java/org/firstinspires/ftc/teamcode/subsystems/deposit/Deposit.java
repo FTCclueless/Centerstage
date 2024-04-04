@@ -174,7 +174,7 @@ public class Deposit {
                 endAffector.v4Servo.setTargetAngle(v4BarDepositAngle,v4ServoPower);
                 endAffector.topServo.setTargetAngle(topServoDepositAngle,topServoPower);
 
-                if (endAffector.v4Servo.inPosition() && slides.inPosition(2)) {
+                if (endAffector.v4Servo.inPosition() && slides.inPosition(5)) {
                     state = State.DEPOSIT;
                 }
                 break;
