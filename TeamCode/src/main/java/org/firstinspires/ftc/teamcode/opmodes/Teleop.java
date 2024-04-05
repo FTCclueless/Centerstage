@@ -55,6 +55,7 @@ public class Teleop extends LinearOpMode {
         ButtonToggle x_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
+        boolean isActuationFullyUp = false;
         boolean alreadyReleasedOne = false;
 
         int pixelIndex = 0;
@@ -93,6 +94,7 @@ public class Teleop extends LinearOpMode {
                 } else {
                     robot.intake.actuationFullyUp();
                 }
+                Log.e("intake.isActuationUp()", intake.isActuationUp() + "");
             }
 
             // lift actuation if we are reversing intake
@@ -279,12 +281,11 @@ public class Teleop extends LinearOpMode {
         robot.droppers.retractBoth();
         robot.hang.quickTurnOnOff();
 
-        robot.intake.setActuationHeight(0);
-
         // opening first
         robot.deposit.release.releaseTwoFORCED();
         long start = System.currentTimeMillis();
         while (System.currentTimeMillis() - start < 250) {
+            robot.intake.actuationFullyUp();
             telemetry.addData("State:", "NOT READY TO START");
             telemetry.update();
 

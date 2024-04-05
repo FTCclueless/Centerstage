@@ -26,6 +26,8 @@ import java.util.ArrayList;
 public class ServoTester extends LinearOpMode {
 
     public static double intakePower = 1.0;
+    public static boolean usePosition = false;
+    public static double position = Math.toRadians(60);
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -78,7 +80,7 @@ public class ServoTester extends LinearOpMode {
 
             // figuring out time to set servo pos
             long start = System.nanoTime();
-            servos.get(servoIndex).setTargetPose(servoPos[servoIndex], 1.0);
+            servos.get(servoIndex).setTargetPose(usePosition ? position : servoPos[servoIndex], 1.0);
             double elapsedTime = (System.nanoTime()-start)/1000000000.0;
             totalTime += elapsedTime;
 

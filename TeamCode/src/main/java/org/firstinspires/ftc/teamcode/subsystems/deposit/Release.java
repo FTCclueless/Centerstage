@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Release {
     public PriorityServo release;
 
-    public static double transferAngle = -1.0031194;
+    public static double transferAngle = -1.1009847;
     public static double preGrabAngle = -1.0061777;
     public static double closeAngle = -0.48015169;
     public static double dunkOneAngle = -0.8073888;
