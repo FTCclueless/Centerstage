@@ -32,8 +32,8 @@ public class Hang {
     }
 
     public void onFORCED() {
-        leftServo.servo[0].setPower(-0.1);
-        rightServo.servo[0].setPower(-0.1);
+        leftServo.servo[0].setPower(0.1);
+        rightServo.servo[0].setPower(0.1);
     }
 
     public void offFORCED() {
@@ -42,13 +42,13 @@ public class Hang {
     }
 
     public void on() {
-        leftServo.setTargetPower(-1.0);
-        rightServo.setTargetPower(-1.0);
+        leftServo.setTargetPower(1.0);
+        rightServo.setTargetPower(1.0);
     }
 
     public void reverse() {
-        leftServo.setTargetPower(1.0);
-        rightServo.setTargetPower(1.0);
+        leftServo.setTargetPower(-1.0);
+        rightServo.setTargetPower(-1.0);
     }
 
     public void off() {
@@ -57,18 +57,18 @@ public class Hang {
     }
 
     public void leftReverse() {
-        leftServo.setTargetPower(1.0);
-    }
-
-    public void rightReverse() {
-        rightServo.setTargetPower(1.0);
-    }
-
-    public void leftUp() {
         leftServo.setTargetPower(-1.0);
     }
 
-    public void rightUp() {
+    public void rightReverse() {
         rightServo.setTargetPower(-1.0);
+    }
+
+    public void leftUp() {
+        leftServo.setTargetPower(1.0);
+    }
+
+    public void rightUp() {
+        rightServo.setTargetPower(1.0);
     }
 }

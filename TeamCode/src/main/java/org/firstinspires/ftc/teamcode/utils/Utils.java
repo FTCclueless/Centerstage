@@ -28,4 +28,10 @@ public class Utils {
     public static double kalmanFilter (double value1, double value2, double value2Weight) {
         return (value1 * (1.0-value2Weight)) + (value2 * value2Weight);
     }
+
+    public static double calculateDistanceBetweenPoints (Pose2d point1, Pose2d point2) {
+        double deltaX = point1.x - point2.x;
+        double deltaY = point1.y - point2.y;
+        return Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    }
 }

@@ -332,7 +332,6 @@ public class Teleop extends LinearOpMode {
                 vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
                 lastDist = robot.deposit.slides.getLength();
                 velocityStart = System.currentTimeMillis();
-
             }
 
             robot.deposit.slides.setTargetPowerFORCED(-0.8);

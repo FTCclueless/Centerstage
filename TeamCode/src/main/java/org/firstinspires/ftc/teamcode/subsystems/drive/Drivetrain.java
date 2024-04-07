@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.utils.Vector2;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
 import org.firstinspires.ftc.teamcode.vision.Vision;
+import org.firstinspires.ftc.teamcode.utils.Utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -410,25 +411,37 @@ public class Drivetrain {
     public static PID yPID = new PID(0.125,0.0,0.0175);
     public static PID turnPID = new PID(0.2,0.0,0.01);
 
-    double fwd, strafe, turn, turnAdjustThreshold;
+    double fwd, strafe, turn, turnAdjustThreshold, finalTargetPointDistance;
 
     public void PIDF() {
         double globalExpectedXError = (targetPoint.x - localizer.expected.x);
         double globalExpectedYError = (targetPoint.y - localizer.expected.y);
 
+        if (path != null) {
+            finalTargetPointDistance = Math.abs(Utils.calculateDistanceBetweenPoints(localizer.getPoseEstimate(), finalTargetPoint));
+        } else {
+            finalTargetPointDistance = 0;
+        }
+
         // converting from global to relative
         double relExpectedXError = globalExpectedXError*Math.cos(localizer.heading) + globalExpectedYError*Math.sin(localizer.heading);
         double relExpectedYError = globalExpectedYError*Math.cos(localizer.heading) - globalExpectedXError*Math.sin(localizer.heading);
 
-        fwd = Math.abs(relExpectedXError) > xThreshold / 2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
-        strafe = Math.abs(relExpectedYError) > yThreshold / 2 ? yPID.update(relExpectedYError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedYError) : 0;
-
+        if (Math.abs(finalTargetPointDistance) < 20) { // if we are under threshold switch to predictive PID
+            fwd = Math.abs(relExpectedXError) > xThreshold / 2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
+            strafe = Math.abs(relExpectedYError) > yThreshold / 2 ? yPID.update(relExpectedYError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedYError) : 0;
+        } else {
+            fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -maxPower, maxPower) + 0.05 * Math.signum(xError) : 0;
+            strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -maxPower, maxPower) + 0.05 * Math.signum(yError) : 0;
+        }
+        // turn does not have predictiveError
         turnAdjustThreshold = (Math.abs(xError) > xThreshold/2 || Math.abs(yError) > yThreshold/2) ? turnThreshold/3.0 : turnThreshold;
         turn = Math.abs(turnError) > Math.toRadians(turnAdjustThreshold)/2? turnPID.update(turnError, -maxPower, maxPower) : 0;
 
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
 
+        // Logging
         TelemetryUtil.packet.put("expectedXError", globalExpectedXError);
         TelemetryUtil.packet.put("expectedYError", globalExpectedYError);
     }
@@ -518,6 +531,7 @@ public class Drivetrain {
         this.finalAdjustment = finalAdjustment;
         this.stop = stop;
         this.maxPower = Math.abs(maxPower);
+        finalTargetPoint = targetPoint;
 
         if (targetPoint.x != lastTargetPoint.x || targetPoint.y != lastTargetPoint.y || targetPoint.heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
             this.targetPoint = targetPoint;
@@ -543,9 +557,14 @@ public class Drivetrain {
 
     public double getMaxPower() {return maxPower;}
 
+    Pose2d finalTargetPoint;
     public void setPath(Spline path) {
         pathIndex = 0;
         this.path = path;
+
+        if (path != null) {
+            finalTargetPoint = path.poses.get(path.poses.size()-1);
+        }
     }
 
     public Spline getPath() {

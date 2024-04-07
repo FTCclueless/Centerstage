@@ -115,12 +115,13 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-42.25, -36.5, Math.toRadians(120));
+                groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
                 boardPreload =          new Pose2d(47.5, -29, Math.PI);
                 deposit = new Vector3(5, 0, 9.9);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                while (opModeIsActive()) {robot.update();}
+
+                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(55)), this, false, true);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -39, -Math.PI/2);
@@ -136,7 +137,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-33.5, -33.5, -Math.toRadians(115)), this, false, true);
+                robot.goToPoint(new Pose2d(-33.5, -35, -Math.toRadians(115)), this, false, true);
                 break;
         }
         robot.droppers.leftRelease();
@@ -151,11 +152,17 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(55)), this, false, false, 1);
                 robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-52.5, -40, -Math.PI/2), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-52.5, -11.5, -Math.PI/2), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-52.5, -11.5, Math.PI), this, false, false, 1);
+
+//                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, 1);
@@ -245,7 +252,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[4], intakeYDistance-16, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[4], intakeYDistance+7, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[4], intakeYDistance-18, Math.PI), this, false, false, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[4], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
@@ -285,7 +293,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 false,
                 false,
                 0,
-                46
+                40
         );
         robot.intake.off();
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
@@ -294,7 +302,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         robot.releaseOne();
 
-        deposit = new Vector3(5, 0, deposit.z+3);
+        deposit = new Vector3(5, 0, deposit.z+5);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         pause(350);
