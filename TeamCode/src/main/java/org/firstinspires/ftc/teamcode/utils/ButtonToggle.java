@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.utils;
 
+import android.util.Log;
+
 public class ButtonToggle {
     boolean lastButton = false;
     boolean isToggled = false;
@@ -19,7 +21,7 @@ public class ButtonToggle {
         return isToggled;
     }
 
-    long startOfButtonHeld;
+    long startOfButtonHeld = System.currentTimeMillis();
     public boolean isHeld(boolean button, double milliseconds) {
         if (button) {
             if (System.currentTimeMillis() - startOfButtonHeld > milliseconds) {
@@ -34,7 +36,7 @@ public class ButtonToggle {
     boolean isBeingHeld = false;
     public boolean isReleased(boolean button) {
         if (isBeingHeld && !button) {
-            isBeingHeld = button;
+            isBeingHeld = false;
             return true;
         }
         isBeingHeld = button;
@@ -43,7 +45,9 @@ public class ButtonToggle {
 
     boolean previousLoopIsHeld = false;
     public boolean releasedAndNotHeldPreviously(boolean button, double holdTime) {
-        if (isReleased(button) && !previousLoopIsHeld) {
+        boolean isReleased = isReleased(button);
+        if (isReleased && !previousLoopIsHeld) {
+            Log.e("isReleased", isReleased + "");
             previousLoopIsHeld = isHeld(button, holdTime);
             return true;
         }

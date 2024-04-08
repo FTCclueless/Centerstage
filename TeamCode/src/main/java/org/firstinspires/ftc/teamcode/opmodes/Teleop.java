@@ -55,6 +55,12 @@ public class Teleop extends LinearOpMode {
         ButtonToggle x_2 = new ButtonToggle();
         ButtonToggle y_2 = new ButtonToggle();
 
+        boolean releaseOneNormal = false;
+        boolean releaseOneLimitSwitch = false;
+
+        boolean releaseTwoNormal = false;
+        boolean releaseTwoLimitSwitch = false;
+
         boolean isActuationFullyUp = false;
         boolean alreadyReleasedOne = false;
 
@@ -161,33 +167,59 @@ public class Teleop extends LinearOpMode {
             }
 
             // pixel release (automatic and manual)
-            boolean gamepad1LeftTrigger = gamepad1.left_trigger > 0.2;
-            boolean gamepad1RightTrigger = gamepad1.right_trigger > 0.2;
+            boolean gamepad1LeftTrigger = gamepad1.left_trigger > 0.3;
+            boolean gamepad1RightTrigger = gamepad1.right_trigger > 0.3;
+
+            TelemetryUtil.packet.put("gamepad1_left_trigger", gamepad1.left_trigger);
+
             double holdTime = 500;
 
             if (!gamepad1LeftTrigger) {
                 alreadyReleasedOne = false;
             }
 
-            if (!robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
-                if (leftTrigger_1.releasedAndNotHeldPreviously(gamepad1LeftTrigger, holdTime)) {
-                    Log.e("left trigger releasedAndNotHeldPreviously", "");
-                    robot.deposit.releaseOne();
-                }
+            // checking triggers outside of loop
+            if (leftTrigger_1.releasedAndNotHeldPreviously(gamepad1LeftTrigger, holdTime)) {
+                releaseOneNormal = true;
+            } else {
+                releaseOneNormal = false;
+            }
+            if (leftTrigger_1.isHeld(gamepad1LeftTrigger, holdTime) &&  robot.sensors.isDepositTouched() && !alreadyReleasedOne) {
+                releaseOneLimitSwitch = true;
+            } else {
+                releaseOneLimitSwitch = false;
+            }
+            if (rightTrigger_1.isHeld(gamepad1RightTrigger, holdTime) && robot.sensors.isDepositTouched()) {
+                releaseTwoNormal = true;
+            } else {
+                releaseTwoNormal = false;
+            }
+            if (rightTrigger_1.releasedAndNotHeldPreviously(gamepad1RightTrigger, holdTime)) {
+                releaseTwoLimitSwitch = true;
+            } else {
+                releaseTwoLimitSwitch = false;
+            }
 
-                if (leftTrigger_1.isHeld(gamepad1LeftTrigger, holdTime) &&  robot.sensors.isDepositTouched() && !alreadyReleasedOne) {
+            // now checking in deposit
+            if (!robot.deposit.release.readyToRetract() && robot.deposit.state == Deposit.State.DEPOSIT) {
+                if (releaseOneNormal) {
                     alreadyReleasedOne = true;
                     Log.e("left trigger isHeld and deposit touched", "");
                     robot.deposit.releaseOne();
                 }
 
-                if (rightTrigger_1.releasedAndNotHeldPreviously(gamepad1RightTrigger, holdTime)) {
-                    Log.e("right trigger trigger releasedAndNotHeldPreviously", "");
+                if (releaseOneLimitSwitch) {
+                    Log.e("right trigger isHeld and deposit touched", "");
+                    robot.deposit.releaseOne();
+                }
+
+                if (releaseTwoNormal) {
+                    Log.e("left trigger releasedAndNotHeldPreviously", "");
                     robot.deposit.releaseTwo();
                 }
 
-                if (rightTrigger_1.isHeld(gamepad1RightTrigger, holdTime) && robot.sensors.isDepositTouched()) {
-                    Log.e("right trigger isHeld and deposit touched", "");
+                if (releaseTwoLimitSwitch) {
+                    Log.e("right trigger trigger releasedAndNotHeldPreviously", "");
                     robot.deposit.releaseTwo();
                 }
             }

@@ -21,7 +21,7 @@ public class Release {
     public static double dunkOneAngle = -0.8073888;
     public static double dunkTwoAngle = -1.10098;
 
-    public static double dunkTime = 150;
+    public static double dunkTime = 250; // TODO: CHANGE LINE 59 AND 62
     public static double timer = 0;
 
     boolean busy = false;
@@ -56,14 +56,14 @@ public class Release {
         if (!busy) {
             if (Globals.NUM_PIXELS == 2) {
                 release.setTargetAngle(dunkOneAngle, 1);
+                dunkTime = 250;
             } else {
                 release.setTargetAngle(dunkTwoAngle, 1);
+                dunkTime = 50;
             }
             Globals.NUM_PIXELS--;
-
-            dunkTime = 150;
-            timer = System.currentTimeMillis();
             busy = true;
+            timer = System.currentTimeMillis();
         }
     }
 
@@ -89,10 +89,6 @@ public class Release {
                 releasingTwo = false;
             }
         }
-
-//        if (Globals.NUM_PIXELS == 1 && !busy) {
-//            close();
-//        }
     }
 
     public boolean inPosition() {

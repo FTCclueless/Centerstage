@@ -43,7 +43,7 @@ public class Deposit {
     // top servo angles
     public static double topServoTransferAngle = -0.94698455;
     public static double topServoGrabAngle = -0.975001848;
-    public static double topServoDepositAngle = 2.017245202803;
+    public static double topServoDepositAngle = 2.07327979;
     public static double topServoRetractAngle = 0.7060358;
 
     // pixel readjustment mode
