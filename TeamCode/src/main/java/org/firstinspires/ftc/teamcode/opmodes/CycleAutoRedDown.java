@@ -116,7 +116,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -29, Math.PI);
+                boardPreload =          new Pose2d(47.5, -29.75, Math.PI);
                 deposit = new Vector3(5, 0, 9.9);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -284,17 +284,17 @@ public class CycleAutoRedDown extends LinearOpMode {
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
                         .addPoint(new Pose2d(26, -10, Math.PI))
-                        .addPoint(new Pose2d(26, -15, Math.toRadians(145))),
+                        .addPoint(new Pose2d(26, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(145) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 deposit,
                 0,
                 -4,
                 1.0,
                 false,
-                false
+                true
         );
-        robot.checkForPartner(this,500);
+        robot.checkForPartner(this,750);
 
-        robot.goToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, Math.PI), this, false, false);
+        robot.splineToPoint(new Pose2d(boardPreload.x-7, boardPreload.y, Math.PI), this, false, false, true);
         robot.intake.off();
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

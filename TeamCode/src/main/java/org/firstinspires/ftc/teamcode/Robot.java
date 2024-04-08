@@ -338,7 +338,10 @@ public class Robot {
 
     public void checkForPartner(LinearOpMode opmode, double checkTime) {
         long start = System.currentTimeMillis();
-        while (opmode.opModeIsActive() && System.currentTimeMillis() - start < checkTime) {
+        while (opmode.opModeIsActive() && System.currentTimeMillis() - start < checkTime ||
+                (sensors.ultrasonicCheckState == Sensors.UltrasonicCheckState.WAIT || sensors.ultrasonicCheckState == Sensors.UltrasonicCheckState.CONFIRM_BLOCKED)) {
+            update();
             sensors.checkForPartner();
+            Log.e("ultrasonic state", sensors.ultrasonicCheckState + "");
         }
     }}

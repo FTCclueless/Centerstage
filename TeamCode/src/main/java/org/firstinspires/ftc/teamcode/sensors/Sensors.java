@@ -148,6 +148,8 @@ public class Sensors {
     public void updateTelemetry() {
         TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getImuHeading()));
         TelemetryUtil.packet.put("voltage", voltage);
+        TelemetryUtil.packet.put("ultrasonicDist", getBackDist());
+        TelemetryUtil.packet.put("Ultrasonic State", ultrasonicCheckState);
     }
 
     public int[] getOdometry() {
@@ -223,10 +225,8 @@ public class Sensors {
     private long ultrasonicDebounce;
     double ultrasonicDist;
 
-    double blockedWaitTime = 3500;
-    double ultrasonicDistThreshold = 125;
-
-    boolean isBlocked = false;
+    double blockedWaitTime = 10000;
+    double ultrasonicDistThreshold = 160;
 
     public void checkForPartner() {
         ultrasonicDist = getBackDist();
@@ -234,7 +234,6 @@ public class Sensors {
 
         switch (ultrasonicCheckState) {
             case CHECK:
-                Log.e("ultrasonic state", "CHECK");
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicBlockedStart = System.currentTimeMillis();
                     ultrasonicDebounce = System.currentTimeMillis();
@@ -242,7 +241,6 @@ public class Sensors {
                 }
                 break;
             case CONFIRM_BLOCKED:
-                Log.e("ultrasonic state", "CONFIRM_BLOCKED");
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicDebounce = System.currentTimeMillis();
                 }
@@ -255,16 +253,17 @@ public class Sensors {
                 }
                 break;
             case WAIT:
-                while (System.currentTimeMillis() - startWaitTime < blockedWaitTime) {
-                    Log.e("ultrasonic state", "WAIT");
-                    ultrasonicDist = getBackDist();
-                    Log.e("ultrasonicDist", ultrasonicDist + "");
+                if (System.currentTimeMillis() - startWaitTime > blockedWaitTime) {
+                    ultrasonicCheckState = UltrasonicCheckState.ALREADY_BLOCKED_IDLE;
                 }
-
-                ultrasonicCheckState = UltrasonicCheckState.ALREADY_BLOCKED_IDLE;
+                if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
+                    ultrasonicDebounce = System.currentTimeMillis();
+                }
+                if (System.currentTimeMillis() - ultrasonicDebounce > 250) { // if we detect that we are not blocked for 250 ms we assume partner is gone and leave
+                    ultrasonicCheckState = UltrasonicCheckState.ALREADY_BLOCKED_IDLE;
+                }
                 break;
             case ALREADY_BLOCKED_IDLE:
-                Log.e("ultrasonic state", "ALREADY_BLOCKED_IDLE");
                 break;
         }
     }
