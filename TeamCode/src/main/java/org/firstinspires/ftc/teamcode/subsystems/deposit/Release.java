@@ -59,7 +59,7 @@ public class Release {
                 dunkTime = 250;
             } else {
                 release.setTargetAngle(dunkTwoAngle, 1);
-                dunkTime = 50;
+                dunkTime = 125;
             }
             Globals.NUM_PIXELS--;
             busy = true;
