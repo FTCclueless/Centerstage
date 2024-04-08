@@ -225,7 +225,7 @@ public class Sensors {
     private long ultrasonicDebounce;
     double ultrasonicDist;
 
-    double blockedWaitTime = 10000;
+    double blockedWaitTime = 3500;
     double ultrasonicDistThreshold = 160;
 
     public void checkForPartner() {

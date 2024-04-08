@@ -121,10 +121,10 @@ public class CycleAutoRedDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-45.5, -37.5, -Math.toRadians(55)), this, false, true);
+                robot.goToPoint(new Pose2d(-46.5, -37.5, -Math.toRadians(55)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -39, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-36.25, -38, -Math.PI/2);
                 boardPreload =          new Pose2d(47.5, -35, Math.PI);
                 deposit = new Vector3(5, 0, 9.1);
 
@@ -252,8 +252,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance-16, Math.PI), this, false, false, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[1], intakeYDistance-14, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[1], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
                 robot.intake.setActuationHeight(0, 0.0725);
@@ -333,7 +333,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.off();
         robot.deposit.depositAt(deposit); // async call
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.5,-32, Math.PI), this,true, 1.0);
+        robot.goToPointWithLimitSwitch(new Pose2d(47.5,-30.75, Math.PI), this,true, 1.0);
 
         robot.releaseOne();
         sleep(150);
