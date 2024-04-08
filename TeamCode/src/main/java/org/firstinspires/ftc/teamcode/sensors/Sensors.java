@@ -14,6 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -211,5 +212,61 @@ public class Sensors {
         previousAngle = angle;
     }
 
+    public enum UltrasonicCheckState {
+        CHECK,
+        CONFIRM_BLOCKED,
+        WAIT,
+        ALREADY_BLOCKED_IDLE
+    }
+    public UltrasonicCheckState ultrasonicCheckState = UltrasonicCheckState.CHECK;
+    private long ultrasonicBlockedStart, startWaitTime;
+    private long ultrasonicDebounce;
+    double ultrasonicDist;
+
+    double blockedWaitTime = 3500;
+    double ultrasonicDistThreshold = 125;
+
+    boolean isBlocked = false;
+
+    public void checkForPartner() {
+        ultrasonicDist = getBackDist();
+        Log.e("ultrasonicDist", ultrasonicDist + "");
+
+        switch (ultrasonicCheckState) {
+            case CHECK:
+                Log.e("ultrasonic state", "CHECK");
+                if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
+                    ultrasonicBlockedStart = System.currentTimeMillis();
+                    ultrasonicDebounce = System.currentTimeMillis();
+                    ultrasonicCheckState = UltrasonicCheckState.CONFIRM_BLOCKED;
+                }
+                break;
+            case CONFIRM_BLOCKED:
+                Log.e("ultrasonic state", "CONFIRM_BLOCKED");
+                if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
+                    ultrasonicDebounce = System.currentTimeMillis();
+                }
+                if (System.currentTimeMillis() - ultrasonicDebounce > 75) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
+                    ultrasonicCheckState = UltrasonicCheckState.CHECK;
+                }
+                if (ultrasonicDebounce - ultrasonicBlockedStart > 125) { // we need to detect we are blocked for more than 100 ms with no breaks
+                    startWaitTime = System.currentTimeMillis();
+                    ultrasonicCheckState = UltrasonicCheckState.WAIT;
+                }
+                break;
+            case WAIT:
+                while (System.currentTimeMillis() - startWaitTime < blockedWaitTime) {
+                    Log.e("ultrasonic state", "WAIT");
+                    ultrasonicDist = getBackDist();
+                    Log.e("ultrasonicDist", ultrasonicDist + "");
+                }
+
+                ultrasonicCheckState = UltrasonicCheckState.ALREADY_BLOCKED_IDLE;
+                break;
+            case ALREADY_BLOCKED_IDLE:
+                Log.e("ultrasonic state", "ALREADY_BLOCKED_IDLE");
+                break;
+        }
+    }
 }
 

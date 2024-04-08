@@ -335,4 +335,10 @@ public class Robot {
             update();
         }
     }
-}
+
+    public void checkForPartner(LinearOpMode opmode, double checkTime) {
+        long start = System.currentTimeMillis();
+        while (opmode.opModeIsActive() && System.currentTimeMillis() - start < checkTime) {
+            sensors.checkForPartner();
+        }
+    }}
