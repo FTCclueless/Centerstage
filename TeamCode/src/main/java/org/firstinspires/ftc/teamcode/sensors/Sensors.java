@@ -244,7 +244,7 @@ public class Sensors {
                 if (ultrasonicDist < ultrasonicDistThreshold) { // we are blocked
                     ultrasonicDebounce = System.currentTimeMillis();
                 }
-                if (System.currentTimeMillis() - ultrasonicDebounce > 75) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
+                if (System.currentTimeMillis() - ultrasonicDebounce > 150) { // if we detect that we are not blocked for 75 ms we assume false detection and go back
                     ultrasonicCheckState = UltrasonicCheckState.CHECK;
                 }
                 if (ultrasonicDebounce - ultrasonicBlockedStart > 125) { // we need to detect we are blocked for more than 100 ms with no breaks
