@@ -125,7 +125,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -38, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -35, Math.PI);
+                boardPreload =          new Pose2d(47.5, -36.5, Math.PI);
                 deposit = new Vector3(5, 0, 9.1);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -266,19 +266,19 @@ public class CycleAutoRedDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.followSplineWithIntakeAndDeposit(
+        robot.followSplineWithIntake(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(26, -10, Math.PI))
-                        .addPoint(new Pose2d(26, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
-                deposit,
+                        .addPoint(new Pose2d(31, -10, Math.PI))
+                        .addPoint(new Pose2d(31, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 0,
-                -4,
+                -40,
                 1.0,
                 false,
                 true
         );
         robot.checkForPartner(this,750);
+        robot.deposit.depositAt(new Vector3(5,0,10.25)); // async call to deposit
 
         robot.goToPoint(new Pose2d(boardPreload.x-10, boardPreload.y, Math.PI), this, false, false);
         robot.intake.off();

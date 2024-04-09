@@ -129,11 +129,31 @@ public class Robot {
                 intake.reverse();
             }
 
-//            if (sensors.isDepositTouched() && deposit.state == Deposit.State.DEPOSIT) { //break out of spline if touch detected
-//                drivetrain.setPath(null);
-//                drivetrain.state = Drivetrain.State.BRAKE;
-//                break;
-//            }
+            update();
+        } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
+    }
+
+    public void followSplineWithIntake(Spline spline, double intakeStopThreshold, double intakeReverseThreshold, double maxPower, boolean finalAdjustment, boolean stop) {
+        long start = System.currentTimeMillis();
+        drivetrain.setFinalAdjustment(finalAdjustment);
+        drivetrain.setStop(stop);
+        drivetrain.setMaxPower(maxPower);
+
+        drivetrain.setPath(spline);
+        drivetrain.state = Drivetrain.State.GO_TO_POINT;
+        update();
+
+        do {
+            intake.actuationFullyUp();
+
+            if (drivetrain.getPoseEstimate().x > intakeStopThreshold) {
+                intake.off();
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < intakeStopThreshold) {
+                intake.reverse();
+            }
+
             update();
         } while (System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy());
     }

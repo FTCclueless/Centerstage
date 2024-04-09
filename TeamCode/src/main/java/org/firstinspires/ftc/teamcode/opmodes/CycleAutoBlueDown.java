@@ -258,19 +258,19 @@ public class CycleAutoBlueDown extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.followSplineWithIntakeAndDeposit(
+        robot.followSplineWithIntake(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(26, 10, Math.PI))
-                        .addPoint(new Pose2d(26, 15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) ? -Math.toRadians(130) : -Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
-                deposit,
+                        .addPoint(new Pose2d(31, 10, Math.PI))
+                        .addPoint(new Pose2d(31, 15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) ? -Math.toRadians(130) : -Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 0,
-                -4,
+                -40,
                 1.0,
                 false,
                 true
         );
         robot.checkForPartner(this,750);
+        robot.deposit.depositAt(new Vector3(5,0,10.25)); // async call to deposit
 
         robot.goToPoint(new Pose2d(boardPreload.x-6, boardPreload.y, Math.PI), this, false, false);
         robot.intake.off();

@@ -250,7 +250,7 @@ public class Teleop extends LinearOpMode {
             if (robot.deposit.isSlowSlidesMode) {
                 driver2SlidesAdjustmentConstant = 0.1;
             } else {
-                driver2SlidesAdjustmentConstant = 0.35;
+                driver2SlidesAdjustmentConstant = 0.45;
             }
 
             depoPos.x -= gamepad2.right_stick_y*driver2SlidesAdjustmentConstant;
