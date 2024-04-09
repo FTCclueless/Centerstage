@@ -339,6 +339,7 @@ public class Robot {
         deposit.releaseOne();
         update();
         while (deposit.release.isBusy()) {
+            drivetrain.forceStopAllMotors(); // not sure if this is good
             update();
         }
     }
@@ -347,11 +348,13 @@ public class Robot {
         deposit.releaseOne();
         update();
         while (deposit.release.isBusy()) {
+            drivetrain.forceStopAllMotors(); // not sure if this is good
             update();
         }
         update();
         deposit.releaseOne();
         while (deposit.release.isBusy()) {
+            drivetrain.forceStopAllMotors(); // not sure if this is good
             update();
         }
     }
@@ -361,6 +364,7 @@ public class Robot {
         while (opmode.opModeIsActive() && System.currentTimeMillis() - start < checkTime ||
                 (sensors.ultrasonicCheckState == Sensors.UltrasonicCheckState.WAIT || sensors.ultrasonicCheckState == Sensors.UltrasonicCheckState.CONFIRM_BLOCKED)) {
             update();
+            drivetrain.forceStopAllMotors();
             sensors.checkForPartner();
             Log.e("ultrasonic state", sensors.ultrasonicCheckState + "");
         }

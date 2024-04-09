@@ -116,23 +116,23 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.25, -42.5, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -30.5, Math.PI);
+                boardPreload =          new Pose2d(48, -29.5, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-46, -37.5, -Math.toRadians(55)), this, false, true);
+                robot.goToPoint(new Pose2d(-46, -37.5, -Math.toRadians(60)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -36.5, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -36.5, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -36, -Math.PI/2);
+                boardPreload =          new Pose2d(48, -36.5, Math.PI);
                 deposit = new Vector3(5, 0, 9.1);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(47.5, -42, Math.PI);
+                boardPreload =          new Pose2d(48, -42, Math.PI);
                 deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -152,17 +152,16 @@ public class CycleAutoRedDown extends LinearOpMode {
     public void navigateAroundGroundPreload() {
         switch (teamPropLocation) {
             case LEFT:
-//                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(55)), this, false, false, 1);
-//                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
-//                robot.goToPoint(new Pose2d(-60, -40, -Math.PI/2), this, false, false, 1);
-//                robot.goToPoint(new Pose2d(-60, -11.5, -Math.PI/2), this, false, false, 1);
-//                robot.goToPoint(new Pose2d(-50, -11.5, Math.PI), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-46, -37.5, -Math.toRadians(40)), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-57, -32, -Math.toRadians(90)), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-57, -11.5, -Math.toRadians(90)), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-52, -11.5, Math.toRadians(180)), this, false, false, 1);
 
-                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -40, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -11.5, -Math.PI/2), this, false, false, 1);
+//                robot.goToPoint(new Pose2d(-36.5, -11.5, Math.PI), this, false, false, 1);
                 break;
             case CENTER:
                 robot.goToPoint(new Pose2d(-51.5, -11.5, Math.PI), this, false, false, 1);
@@ -176,13 +175,9 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.on();
 
         robot.intake.setActuationHeight(pixelIndex); // non destructive
-        robot.followSpline(
-            new Spline(Globals.ROBOT_POSITION, 3)
-                .setReversed(false)
-                .addPoint(new Pose2d(29.25, -12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance , Math.PI), 1.0),
-            () -> opModeIsActive() && Globals.NUM_PIXELS != 2 && robot.drivetrain.isBusy()
-        );
+
+        robot.goToPoint(new Pose2d(29.25, -12, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance , Math.PI), this, false, true);
     }
 
     int pixelIndex = 4; // 0 index based
@@ -238,11 +233,11 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[1], intakeYDistance+6, Math.PI), this, false, false, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[1], intakeYDistance-17, Math.PI), this, false, false, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[1], intakeYDistance, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(-54, intakeYDistance+6, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(-54, intakeYDistance-17, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(-54, intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
-            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1200) {
+            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
                 robot.intake.setActuationHeight(0, 0.0725);
                 robot.update();
             }
@@ -269,8 +264,8 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSplineWithIntake(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(37, -10, Math.PI))
-                        .addPoint(new Pose2d(37, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
+                        .addPoint(new Pose2d(30, -10, Math.PI))
+                        .addPoint(new Pose2d(30, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 0,
                 -40,
                 1.0,
@@ -280,6 +275,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.checkForPartner(this,750);
         robot.deposit.depositAt(new Vector3(5,0,10.25)); // async call to deposit
 
+        robot.goToPoint(new Pose2d(37, -15, Math.PI), this, false, false);
         robot.goToPoint(new Pose2d(boardPreload.x-10, boardPreload.y, Math.PI), this, false, false);
         robot.intake.off();
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
@@ -288,7 +284,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         robot.releaseOne();
 
-        deposit = new Vector3(5, 0, deposit.z+6);
+        deposit = new Vector3(5, 0, deposit.z+5);
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 
         pause(350);
@@ -308,11 +304,11 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSplineWithIntakeAndDeposit(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(25, -10, Math.PI))
-                        .addPoint(new Pose2d(43, -30.5, Math.PI)),
+                        .addPoint(new Pose2d(18, -10, Math.PI))
+                        .addPoint(new Pose2d(40, -30.75, Math.PI)),
                 deposit,
                 0,
-                -4,
+                -40,
                 1.0,
                 false,
                 false
@@ -320,11 +316,9 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.off();
         robot.deposit.depositAt(deposit); // async call
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.5,-30.75, Math.PI), this, true, 1.0);
+        robot.goToPointWithLimitSwitch(new Pose2d(47.5,-30.75, Math.PI), this, true, 0.25);
 
-        robot.releaseOne();
-        sleep(150);
-        robot.releaseOne();
+        robot.releaseTwo();
         cycleNum++;
     }
 
