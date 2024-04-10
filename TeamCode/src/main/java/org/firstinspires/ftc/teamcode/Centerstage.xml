@@ -18,17 +18,17 @@
             <goBILDA5202SeriesMotor name="leftRear" port="1" />
             <goBILDA5202SeriesMotor name="rightFront" port="2" />
             <goBILDA5202SeriesMotor name="rightRear" port="3" />
+            <Servo name="release" port="0" />
             <Servo name="airplane" port="1" />
             <Servo name="actuation " port="2" />
             <Servo name="rightDropper" port="3" />
-            <Servo name="release" port="4" />
             <Servo name="leftDropper" port="5" />
             <AnalogInput name="frontUltrasonic" port="1" />
             <AnalogInput name="backUltrasonic" port="3" />
             <DigitalDevice name="depositLimitSwitch" port="7" />
             <FAST_DRIVER_REVCOLORSENSORV3_IMPL name="intakeColorSensor" port="2" bus="2" />
             <HuskyLens name="huskylens" port="3" bus="2" />
-            <ControlHubImuBHI260AP name="imu" port="0" bus="0" />
+            <LynxEmbeddedIMU name="imu" port="0" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
     <Webcam name="Webcam 1" serialNumber="3D46502F" />
