@@ -124,8 +124,8 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-46, -37.5, -Math.toRadians(60)), this, false, true);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(-36.25, -36, -Math.PI/2);
-                boardPreload =          new Pose2d(48, -36.5, Math.PI);
+                groundPreloadPosition = new Pose2d(-36.25, -35.5, -Math.PI/2);
+                boardPreload =          new Pose2d(48, -36, Math.PI);
                 deposit = new Vector3(5, 0, 9.1);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -155,7 +155,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-46, -37.5, -Math.toRadians(40)), this, false, false, 1);
                 robot.goToPoint(new Pose2d(-57, -32, -Math.toRadians(90)), this, false, false, 1);
                 robot.goToPoint(new Pose2d(-57, -11.5, -Math.toRadians(90)), this, false, false, 1);
-                robot.goToPoint(new Pose2d(-52, -11.5, Math.toRadians(180)), this, false, false, 1);
+                robot.goToPoint(new Pose2d(-54, -11.5, Math.toRadians(180)), this, false, false, 1);
 
 //                robot.goToPoint(new Pose2d(-41.5, -40.5, -Math.toRadians(60)), this, false, false, 1);
 //                robot.goToPoint(new Pose2d(-41.5, -40, -Math.PI/2), this, false, false, 1);
@@ -169,7 +169,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
     }
 
-    double intakeYDistance = -14;
+    double intakeYDistance = -13.75;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -181,7 +181,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-55.45, -55.45, -55.2, -55.2, -54}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-55.45, -55.45, -55.2, -55.2, -55.35}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -233,9 +233,11 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(-54, intakeYDistance+6, Math.PI), this, false, false, 1.0);
-            robot.goToPoint(new Pose2d(-54, intakeYDistance-17, Math.PI), this, false, false, 1.0);
-            robot.goToPoint(new Pose2d(-54, intakeYDistance, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(-55, intakeYDistance+6, Math.PI), this, false, false, 1.0);
+            if (Globals.NUM_PIXELS != 2) {
+                robot.goToPoint(new Pose2d(-55, intakeYDistance-17, Math.PI), this, false, false, 1.0);
+            }
+            robot.goToPoint(new Pose2d(-55, intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
                 robot.intake.setActuationHeight(0, 0.0725);
