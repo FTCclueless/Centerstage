@@ -295,6 +295,10 @@ public class Intake {
         actuation.setTargetAngle(angle, power);
     }
 
+    public boolean actuationReady() {
+        return actuation.inPosition();
+    }
+
     public boolean twoPixelsInTransfer() {
         return colorSensorV3.readPS() >= pixelTouchingDist;
     }
