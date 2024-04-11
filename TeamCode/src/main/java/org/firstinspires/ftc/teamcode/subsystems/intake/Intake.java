@@ -42,8 +42,8 @@ public class Intake {
 
 //    double[] actuationAngles = new double[] {1.40086, 0.8069808, 0.42338047, 0.388276711, 0.15519023 /* 0.04 g */}; // 1 pixel --> 5 pixel
 //    double actuationFullyUpAngle = -1.9724175;
-    double[] actuationAngles = new double[] {-0.77865658, -0.51910438, -0.32696834, -0.239327348, -0.0775385777}; // 1 pixel --> 5 pixel 1.249571333, 0.8069808, 0.42338047, 0.388276711, 0.15519023
-    double actuationFullyUpAngle = 2.19439;
+    double[] actuationAngles = new double[] {0.885346505, 0.448276711, 0.364224828, 0.1625003, 0.005603458}; // 1 pixel --> 5 pixel
+    double actuationFullyUpAngle = -2.196550284;
 
     // stall checking variables
     double intakeDebounce;
@@ -87,11 +87,11 @@ public class Intake {
         actuation = new PriorityServo(
                 hardwareMap.get(Servo.class,"actuation"),
                 "actuation",
-                PriorityServo.ServoType.HITEC,
+                PriorityServo.ServoType.AXON_MINI,
                 1.0,
                 0.0,
                 1.0,
-                0.32099999,
+                0.391999,
                 false,
                 1.0,
                 1.0

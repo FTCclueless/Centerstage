@@ -126,7 +126,7 @@ public class Drivetrain {
     }
 
     // leftFront, leftRear, rightRear, rightFront
-    double[] minPowersToOvercomeFriction = new double[] {0.3900852763699948, 0.4463175236276425, 0.3838909067910283, 0.3905833334245449};
+    double[] minPowersToOvercomeFriction = new double[] {0.3121803239920063, 0.3533249418072871, 0.36038420175052865, 0.39695077434023707};
 
     public void setMinPowersToOvercomeFriction() {
         leftFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[0]);

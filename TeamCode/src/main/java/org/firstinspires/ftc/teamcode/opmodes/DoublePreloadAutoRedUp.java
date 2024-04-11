@@ -92,27 +92,27 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
         Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
         Log.e("teamPropLocation", teamPropLocation + "");
-        deposit = new Vector3(5, 0, 8.5);
+        deposit = new Vector3(5, 0, 7.00);
 
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(11.8, -43.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -29.75, Math.PI);
+                boardPreload =          new Pose2d(49, -29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(8.8, -33.5, -Math.toRadians(70)), this, false, false);
+                robot.goToPoint(new Pose2d(9, -35, -Math.toRadians(70)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(24, -32.5, Math.PI), this, false, false);
 
-                deposit = new Vector3(5, 0, 9.0);
+                deposit = new Vector3(5, 0, 9.5);
                 break;
             case CENTER:
-                groundPreloadPosition = new Pose2d(15, -31.75, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -37.25, Math.PI);
+                groundPreloadPosition = new Pose2d(15, -33.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -37.25, Math.PI);
 
-                robot.goToPoint(groundPreloadPosition, this, false, false);
+                robot.goToPoint(groundPreloadPosition, this, false, true);
 
                 releaseAndTriggerDeposit();
 
@@ -122,17 +122,17 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
                 deposit = new Vector3(5, 0, 8.5);
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(14, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(48.25, -41.5, Math.PI);
+                groundPreloadPosition = new Pose2d(20, -46.5, -Math.PI/2);
+                boardPreload =          new Pose2d(49, -43.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(21.5, -33.5, -Math.toRadians(130)), this, false, false);
+                robot.goToPoint(new Pose2d(27, -37.5, -Math.toRadians(110)), this, false, true);
 
                 releaseAndTriggerDeposit();
 
-                robot.goToPoint(new Pose2d(21, -37.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(21, -37.5, Math.PI), this, false, true);
 
-                deposit = new Vector3(5, 0, 9.0);
+                deposit = new Vector3(5, 0, 9.5);
                 break;
         }
     }
@@ -151,7 +151,7 @@ public class DoublePreloadAutoRedUp extends LinearOpMode {
      * Ends on the center lane
      */
     public void doBoardPreload() {
-        robot.goToPoint(boardPreload, this::opModeIsActive, true, 0.75, 0.75,1.1, 2.5);
+        robot.goToPointWithLimitSwitch(boardPreload, this, true, 1.0);
 
         robot.depositAt(deposit.z, deposit.x); // sync call to deposit
 

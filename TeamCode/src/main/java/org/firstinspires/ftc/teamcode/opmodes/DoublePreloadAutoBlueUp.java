@@ -100,7 +100,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 boardPreload =          new Pose2d(48.35, 40.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(21, 33.5, Math.toRadians(125)), this, false, false);
+                robot.goToPoint(new Pose2d(20.5, 35.5, Math.toRadians(125)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
@@ -108,25 +108,24 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(16, 34, Math.PI/2);
-                boardPreload =          new Pose2d(48.35, 34.25, Math.PI);
+                boardPreload =          new Pose2d(48.35, 33, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 releaseAndTriggerDeposit();
 
-                robot.goToPoint(new Pose2d(15, 38.5, Math.PI/2), this, false, false);
-                robot.goToPoint(new Pose2d(15, 38.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(15, 33, 2*Math.PI/3), this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(48.35, 28.5, Math.PI);
+                boardPreload =          new Pose2d(47.25, 27, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(10, 27.5, Math.toRadians(35)), this, false, false);
+                robot.goToPoint(new Pose2d(12, 30, Math.toRadians(35)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
-                robot.goToPoint(new Pose2d(24, 31.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(24, 27, Math.PI), this, false, false);
                 break;
         }
     }
@@ -135,7 +134,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
         robot.droppers.leftRelease();
         pause(150);
 
-        deposit = new Vector3(5, 0, 8.25);
+        deposit = new Vector3(5, 0, 7.00);
         robot.deposit.depositAt(deposit); // async call to deposit
     }
 
