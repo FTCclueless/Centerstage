@@ -51,7 +51,7 @@ public class Localizer {
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
-    double minAprilTagWeight = 1/40;
+    double minAprilTagWeight = 1/10;
     double maxVel = 0.0;
 
     public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
@@ -194,7 +194,7 @@ public class Localizer {
 
 //        mergeUltrasonics();
 
-        heading = odoHeading + imuMerge + headingOffset /*+ aprilTagHeadingMerge*/ + Globals.START_HEADING_OFFSET;
+        heading = odoHeading + imuMerge + headingOffset + aprilTagHeadingMerge + Globals.START_HEADING_OFFSET;
 
         currentPose = new Pose2d(x, y, heading);
 

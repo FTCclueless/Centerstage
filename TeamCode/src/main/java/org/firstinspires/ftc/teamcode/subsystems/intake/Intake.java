@@ -51,7 +51,7 @@ public class Intake {
     double intakeCheck;
     public static double reversedPower = -1.0;
     public static double timeToReverse = 500;
-    public static double stallThresh = 8000;
+    public static double stallThresh = 10000;
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {
@@ -277,7 +277,7 @@ public class Intake {
         if (pixelIndex > 4) {
             pixelIndex = 4;
         }
-        actuation.setTargetAngle(actuationAngles[pixelIndex] + 0.2, 1.0);
+        actuation.setTargetAngle(actuationAngles[pixelIndex] - 0.2, 1.0);
         robot.update();
     }
 
