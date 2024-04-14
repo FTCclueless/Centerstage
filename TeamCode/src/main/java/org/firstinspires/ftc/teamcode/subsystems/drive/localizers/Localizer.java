@@ -51,7 +51,7 @@ public class Localizer {
     public boolean useAprilTag;
 
     AprilTagLocalizer aprilTagLocalizer;
-    double minAprilTagWeight = 1/10;
+    double minAprilTagWeight = 1/8.0;
     double maxVel = 0.0;
 
     public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
