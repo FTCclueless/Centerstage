@@ -207,10 +207,10 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         robot.intake.setActuationHeight(pixelIndex, 1.0);
 
-        pause(750);
+        pause(500);
 
         start = System.currentTimeMillis();
-        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 300) {
+        while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 500) {
             robot.intake.setActuationHeight(0, 0.04);
             robot.update();
         }
@@ -239,10 +239,10 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        if (pixelIndex < 1 && Globals.NUM_PIXELS != 2 && teamPropLocation != TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
+        if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
             robot.goToPoint(new Pose2d(-53.5, intakeYDistance+6, Math.PI), this, false, false, 1.0);
-            if (Globals.NUM_PIXELS != 2) {
+            if (Globals.NUM_PIXELS != 2  && teamPropLocation != TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
                 robot.goToPoint(new Pose2d(-53.5, intakeYDistance-17, Math.PI), this, false, false, 1.0);
             }
             robot.goToPoint(new Pose2d(-53.5, intakeYDistance, Math.PI), this, false, false, 1.0);
@@ -282,7 +282,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 false,
                 true
         );
-        robot.checkForPartner(this,500);
+        robot.checkForPartner(this, 500);
         robot.deposit.depositAt(new Vector3(5,0,10.25)); // async call to deposit
 
         robot.goToPoint(new Pose2d(37, -15, Math.PI), this, false, false);
@@ -312,7 +312,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
 
         robot.followSplineWithIntakeAndDeposit(
-                new Spline(Globals.ROBOT_POSITION, 5)
+                new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
                         .addPoint(new Pose2d(21, -10, Math.PI))
                         .addPoint(new Pose2d(38, -30.75, Math.PI)),

@@ -79,7 +79,12 @@ public class AprilTagLocalizer {
     }
 
     public Pose2d getAprilTagEstimate(AprilTagDetection tag, double inputHeading) {
+        TelemetryUtil.packet.put("inputHeading", inputHeading);
+
         Vector3 globalTagPosition = convertVectorFToPose3d(tag.metadata.fieldPosition);
+
+        TelemetryUtil.packet.put("globalTagPosition.x", globalTagPosition.getX());
+        TelemetryUtil.packet.put("globalTagPosition.y", globalTagPosition.getY());
 
 //        Pose2d correctedTagData = new Pose2d(
 //                tag.ftcPose.y * Math.cos(Math.toRadians(30)) + Math.cos(Math.toRadians(60)) * -tag.ftcPose.z,
@@ -89,15 +94,25 @@ public class AprilTagLocalizer {
                 tag.ftcPose.y,
                 -tag.ftcPose.x);
 
+        TelemetryUtil.packet.put("correctedTagData.x", correctedTagData.getX());
+        TelemetryUtil.packet.put("correctedTagData.y", correctedTagData.getY());
+
         Pose2d relativeTagPosition = new Pose2d(
                 correctedTagData.x * Math.cos(cameraOffset.heading) - correctedTagData.y * Math.sin(cameraOffset.heading) + cameraOffset.x,
                 correctedTagData.x * Math.sin(cameraOffset.heading) + correctedTagData.y * Math.cos(cameraOffset.heading) + cameraOffset.y);
+
+        TelemetryUtil.packet.put("relativeTagPosition.x", relativeTagPosition.getX());
+        TelemetryUtil.packet.put("relativeTagPosition.y", relativeTagPosition.getY());
 
         // applying a rotation matrix for converting from relative robot to global using the odo heading
         double robotXFromTag = globalTagPosition.getX() - (Math.cos(inputHeading) * relativeTagPosition.x - Math.sin(inputHeading) * relativeTagPosition.y);
         double robotYFromTag = globalTagPosition.getY() - (Math.sin(inputHeading) * relativeTagPosition.x + Math.cos(inputHeading) * relativeTagPosition.y);
 
         Pose2d tagEstimate = new Pose2d(robotXFromTag, robotYFromTag, -Math.toRadians(tag.ftcPose.yaw) + Math.toRadians(180));
+
+        TelemetryUtil.packet.put("tagEstimate_x", tagEstimate.getX());
+        TelemetryUtil.packet.put("tagEstimate_y", tagEstimate.getY());
+        TelemetryUtil.packet.put("tagEstimate_heading", tagEstimate.getHeading());
 
         return tagEstimate;
     }
@@ -113,7 +128,7 @@ public class AprilTagLocalizer {
     public double getDistance(AprilTagDetection tag, boolean isRed) {
         if (isBoardTagColoredSide(tag, isRed)) {
             double dist = Math.sqrt(Math.pow(tag.ftcPose.y,2) + Math.pow(tag.ftcPose.x, 2));
-            if (dist > 48 || localizer.x < 0)
+            if (dist > 60 || localizer.x < 0)
                 return -1;
             return dist;
         }

@@ -49,9 +49,9 @@ public class Localizer {
     ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
     public boolean useAprilTag;
+    Pose2d aprilTagPose = new Pose2d(0,0,0);
 
     AprilTagLocalizer aprilTagLocalizer;
-    double minAprilTagWeight = 1/8.0;
     double maxVel = 0.0;
 
     public Localizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
@@ -73,6 +73,8 @@ public class Localizer {
         }
 
         relHistory.add(new Pose2d(0,0,0));
+        poseHistory.add(new Pose2d(0,0,0));
+        nanoTimes.add(Long.valueOf(0));
     }
 
     public void updateEncoders(int[] encoders) {
@@ -159,8 +161,11 @@ public class Localizer {
         // April Tag Heading
 
         aprilTagHeadingMerge = 0;
+        Log.e("nanoTimes.size()", nanoTimes.size() + "");
+        Log.e("poseHistory.size()", poseHistory.size() + "");
+        Log.e("relHistory.size()", relHistory.size() + "");
         if (useAprilTag && nanoTimes.size() > 5) {
-            Pose2d aprilTagPose = aprilTagLocalizer.update(); // update april tags
+            aprilTagPose = aprilTagLocalizer.update(); // update april tags
 
             if (aprilTagPose != null && !aprilTagPose.isNaN()) {
                 Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
@@ -171,20 +176,19 @@ public class Localizer {
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
-                weight = Math.max(1/Math.max(maxVel,8), minAprilTagWeight); // as speed increases we should decrease weight of april tags
-//                weight/=5;
+                weight = 4/Utils.minMaxClip(maxVel,16,50); // as speed increases we should decrease weight of april tags
 
                 // resetting odo with april tag data
                 Pose2d changeInPosition = new Pose2d(0,0,0);
-                if (maxVel < 25) {
+                if (maxVel < 45) {
                     changeInPosition.x = errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
                     changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
                 }
-                if (maxVel < 3 && Math.abs(relCurrentVel.heading) < Math.toRadians(30)) {
+                if (maxVel < 10 && Math.abs(relCurrentVel.heading) < Math.toRadians(30)) {
                     changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }
-                for (Pose2d pose : poseHistory){
-                    pose.add(changeInPosition);
+                for (int i = 0; i < poseHistory.size(); i++){
+                    poseHistory.get(i).add(changeInPosition);
                 }
                 x += changeInPosition.x;
                 y += changeInPosition.y;
@@ -199,7 +203,7 @@ public class Localizer {
         currentPose = new Pose2d(x, y, heading);
 
         nanoTimes.add(0, System.nanoTime());
-        poseHistory.add(0,currentPose);
+        poseHistory.add(0,currentPose.clone());
 
         updateVelocity();
         updateExpected();
@@ -434,5 +438,7 @@ public class Localizer {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");
         DashboardUtil.drawRobot(fieldOverlay, expected, "#BB00BB");
+
+//        DashboardUtil.drawRobot(fieldOverlay, aprilTagPose, "#BB00BB");
     }
 }

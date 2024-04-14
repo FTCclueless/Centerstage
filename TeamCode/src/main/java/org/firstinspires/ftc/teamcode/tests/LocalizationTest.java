@@ -14,12 +14,14 @@ import org.firstinspires.ftc.teamcode.vision.Vision;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Robot robot = new Robot(hardwareMap);
-//        robot.drivetrain.setPoseEstimate(new Pose2d(-35.411, -60.5, 0));
-        robot.drivetrain.setPoseEstimate(new Pose2d(0, 0, 0));
+        Vision vision = new Vision(hardwareMap, telemetry, false, false, true);
+        Robot robot = new Robot(hardwareMap, vision);
+
         Globals.RUNMODE = RunMode.TESTER;
 
         waitForStart();
+
+        robot.drivetrain.setPoseEstimate(new Pose2d(0, 0, Math.PI));
 
         while(!isStopRequested()) {
             robot.drivetrain.drive(gamepad1);
