@@ -184,7 +184,7 @@ public class Localizer {
                     changeInPosition.x = errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
                     changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
                 }
-                if (maxVel < 10 && Math.abs(relCurrentVel.heading) < Math.toRadians(30)) {
+                if (maxVel < 15 && Math.abs(relCurrentVel.heading) < Math.toRadians(180)) {
                     changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
                 }
                 for (int i = 0; i < poseHistory.size(); i++){

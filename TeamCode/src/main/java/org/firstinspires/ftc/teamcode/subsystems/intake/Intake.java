@@ -71,7 +71,7 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 290;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 5;
+    public static double desiredConfirmationLoops = 30;
     private long goReverseStart = 0;
     public static double goReverseDelay = 500;
     public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)
@@ -113,7 +113,7 @@ public class Intake {
         TelemetryUtil.packet.put("Intake Motor State", motorState);
         TelemetryUtil.packet.put("Intake Stall State", stallState);
         TelemetryUtil.packet.put("Intake Pixel Check State", pixelCheckState);
-//
+
         TelemetryUtil.packet.put("Intake Current", intakeCurrent);
         TelemetryUtil.packet.put("Intake Pixel Color Sensor Dist", dist);
 
