@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.vision.Vision;
 public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
-        Vision vision = new Vision(hardwareMap, telemetry, false, false, true);
+        Vision vision = new Vision(hardwareMap, telemetry, false, false, false);
         Robot robot = new Robot(hardwareMap, vision);
 
         Globals.RUNMODE = RunMode.TESTER;

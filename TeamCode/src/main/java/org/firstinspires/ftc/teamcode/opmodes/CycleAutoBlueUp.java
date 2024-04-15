@@ -96,6 +96,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
         Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
         Log.e("teamPropLocation", teamPropLocation + "");
+        deposit = new Vector3(5, 0, 7.00);
 
         switch (teamPropLocation) {
             case LEFT:
@@ -116,15 +117,15 @@ public class CycleAutoBlueUp extends LinearOpMode {
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 releaseAndTriggerDeposit();
-
-                robot.goToPoint(new Pose2d(15, 33, 2*Math.PI/3), this, false, false);
+                robot.goToPoint(new Pose2d(16, 39, Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(15, 39, 2*Math.PI/3), this, false, false);
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(47.25, 27, Math.PI);
+                boardPreload =          new Pose2d(47.25, 28, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(12, 30, Math.toRadians(35)), this, false, false);
+                robot.goToPoint(new Pose2d(10, 30, Math.toRadians(50)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
@@ -156,7 +157,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
         robot.releaseOne();
     }
 
-    double intakeYDistance = -34.5;
+    double intakeYDistance = 34.5;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -187,7 +188,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
-            robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance-17, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance-15, Math.PI), this, false, false, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
@@ -203,6 +204,12 @@ public class CycleAutoBlueUp extends LinearOpMode {
             pause(1000);
         }
         robot.intake.reversed = false;
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 650) {
+            robot.intake.reverse();
+            robot.update();
+        }
 
         Globals.NUM_PIXELS = 2;
         Globals.mergeUltrasonics = false;
@@ -225,15 +232,14 @@ public class CycleAutoBlueUp extends LinearOpMode {
         }
 
         robot.intake.actuationFullyUp();
-        robot.goToPoint(new Pose2d(-42, 58, Math.PI), this, false, false);
-        robot.intake.reverse();
+        robot.goToPoint(new Pose2d(-42, 56, Math.PI), this, false, false);
 
-        robot.goToPoint(new Pose2d(30, 58, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(30, 56, Math.PI), this, false, false);
         robot.deposit.depositAt(deposit); // async call
         robot.goToPoint(new Pose2d(40, 40, Math.PI), this, false, false);
         robot.intake.off();
 
-        robot.goToPointWithLimitSwitch(new Pose2d(49,40, Math.PI), this, false, 1.0);
+        robot.goToPointWithLimitSwitch(new Pose2d(48.5,40, Math.PI), this, false, 1.0);
 
         robot.releaseOne();
         sleep(150);

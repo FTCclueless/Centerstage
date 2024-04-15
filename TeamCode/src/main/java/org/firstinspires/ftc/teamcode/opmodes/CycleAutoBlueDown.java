@@ -148,7 +148,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
                 intakeXDistances[4] = -57;
 
-                intakeYDistance = 12.75;
+                intakeYDistance = 12;
                 break;
         }
         robot.droppers.rightRelease();
@@ -181,7 +181,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
         robot.intake.setActuationHeight(pixelIndex); // non destructive
 
-        robot.goToPoint(new Pose2d(29.25, 8.5, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(29.25, 7, Math.PI), this, false, false);
         robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this::opModeIsActive, true, 1.0, 0.75, 1, Math.toDegrees(1.25));
     }
 
@@ -275,7 +275,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
         robot.followSplineWithIntake(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(31, 10, Math.PI))
+                        .addPoint(new Pose2d(31, 9, Math.PI))
                         .addPoint(new Pose2d(31, 15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) ? -Math.toRadians(130) : -Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 0,
                 -40,

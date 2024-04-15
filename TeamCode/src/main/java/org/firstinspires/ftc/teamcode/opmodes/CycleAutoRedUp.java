@@ -212,6 +212,12 @@ public class CycleAutoRedUp extends LinearOpMode {
         }
         robot.intake.reversed = false;
 
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 650) {
+            robot.intake.reverse();
+            robot.update();
+        }
+
         Globals.NUM_PIXELS = 2;
         Globals.mergeUltrasonics = false;
     }
@@ -234,7 +240,6 @@ public class CycleAutoRedUp extends LinearOpMode {
 
         robot.intake.actuationFullyUp();
         robot.goToPoint(new Pose2d(-42, -58, Math.PI), this, false, false);
-        robot.intake.reverse();
 
         robot.goToPoint(new Pose2d(30, -58, Math.PI), this, false, false);
         robot.deposit.depositAt(deposit); // async call
