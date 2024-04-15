@@ -96,7 +96,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         Pose2d groundPreloadPosition = robot.drivetrain.getPoseEstimate();
 
         Log.e("teamPropLocation", teamPropLocation + "");
-        deposit = new Vector3(5, 0, 7.00);
+        deposit = new Vector3(5, 0, 7.50);
 
         switch (teamPropLocation) {
             case LEFT:
@@ -164,7 +164,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         robot.releaseOne();
     }
 
-    double intakeYDistance = -34.5;
+    double intakeYDistance = -36;
 
     public void navigateBackToStack() {
         robot.intake.on();

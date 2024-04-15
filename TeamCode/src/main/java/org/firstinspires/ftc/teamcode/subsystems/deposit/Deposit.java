@@ -125,7 +125,7 @@ public class Deposit {
     long beginGrabTime = System.currentTimeMillis();
     long beginRetractTime;
 
-    public static double v4ServoPower = 0.99;
+    public static double v4ServoPower = 0.85;
     public static double topServoPower = 1.0;
 
     public void update() {
