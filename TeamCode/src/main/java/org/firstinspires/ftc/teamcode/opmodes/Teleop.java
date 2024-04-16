@@ -248,7 +248,7 @@ public class Teleop extends LinearOpMode {
             }
 
             if (robot.deposit.isSlowSlidesMode) {
-                driver2SlidesAdjustmentConstant = 0.1;
+                driver2SlidesAdjustmentConstant = 0.2;
             } else {
                 driver2SlidesAdjustmentConstant = 0.45;
             }
