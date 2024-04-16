@@ -50,8 +50,8 @@ public class Intake {
     double stallStart;
     double intakeCheck;
     public static double reversedPower = -1.0;
-    public static double timeToReverse = 500;
-    public static double stallThresh = 10000;
+    public static double timeToReverse = 100;
+    public static double stallThresh = 8000;
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {
@@ -69,9 +69,9 @@ public class Intake {
     }
     private PixelCheckState pixelCheckState = PixelCheckState.CHECK;
     private long lastProxPoll = System.currentTimeMillis();
-    public static int pixelTouchingDist = 290;
+    public static int pixelTouchingDist = 315;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 30;
+    public static double desiredConfirmationLoops = 45;
     private long goReverseStart = 0;
     public static double goReverseDelay = 500;
     public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)
@@ -169,12 +169,12 @@ public class Intake {
                     }
                     if (intakeDebounce - stallStart > 250) {
                         intakeCheck = System.currentTimeMillis();
+                        Log.e("JAM REVERSE FALLBACK", "-----");
                         stallState = StallState.UNSTALL;
                     }
                     break;
                 case UNSTALL:
                     reversedTime = System.currentTimeMillis();
-                    Log.e("JAM REVERSE FALLBACK", "-----");
                     reverseForSomeTime(timeToReverse);
                     stallState = StallState.CHECK;
                     break;
@@ -204,12 +204,12 @@ public class Intake {
                         confirmationLoops = 0;
                         pixelCheckState = PixelCheckState.GO_REVERSE;
                         goReverseStart = System.currentTimeMillis();
+                        Log.e("2 PIXEL REVERSE FALLBACK", "-----");
                     }
                     break;
                 case GO_REVERSE:
                     reversed = true;
                     reversedTime = System.currentTimeMillis();
-                    Log.e("PIXEL REVERSE FALLBACK", "-----");
                     Globals.NUM_PIXELS = 2;
                     // Wait a bit then reverse for some time
                     if (System.currentTimeMillis() - goReverseStart > goReverseDelay) {

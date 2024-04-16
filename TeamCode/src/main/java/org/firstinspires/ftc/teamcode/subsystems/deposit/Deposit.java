@@ -7,6 +7,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Globals;
+import org.firstinspires.ftc.teamcode.utils.RunMode;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -50,6 +51,8 @@ public class Deposit {
     public static double v4BarReadjustAngle = -3.9896627;
     public static double topServoReadjustAngle = -1.09827794;
 
+    public static double autoTopServoDepositAngle = 2.1629351341167884;
+
     public boolean isSlowSlidesMode = false;
 
     // old readjustment values
@@ -66,6 +69,10 @@ public class Deposit {
         slides = new Slides(hardwareMap, hardwareQueue, sensors, robot.drivetrain, this);
         endAffector = new EndAffector(hardwareMap, hardwareQueue, sensors);
         release = new Release(hardwareMap, hardwareQueue);
+
+        if (Globals.RUNMODE == RunMode.AUTO) {
+            topServoDepositAngle = autoTopServoDepositAngle;
+        }
     }
 
     public void depositAt(Vector3 vector3) {

@@ -290,13 +290,18 @@ public class Robot {
         followSpline(spline, func);
     }
 
-    public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
+    public void goToPointWithDepositAndIntake(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double depositThreshold, double reverseIntakeThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            intake.actuationFullyUp();
+            if (drivetrain.localizer.getPoseEstimate().x > depositThreshold) {
+                intake.off();
+                deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
+            }
+
+            if (drivetrain.localizer.getPoseEstimate().x > reverseIntakeThreshold) {
                 intake.reverse();
-                deposit.depositAt(depositVector3); // async call to deposit
             }
             update();
         }

@@ -226,7 +226,7 @@ public class Sensors {
     double ultrasonicDist;
 
     double blockedWaitTime = 3500;
-    double ultrasonicDistThreshold = 150;
+    double ultrasonicDistThreshold = 100;
 
     public void checkForPartner() {
         ultrasonicDist = getBackDist();

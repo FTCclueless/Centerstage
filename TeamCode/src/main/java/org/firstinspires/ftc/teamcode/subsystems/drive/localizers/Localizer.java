@@ -161,9 +161,6 @@ public class Localizer {
         // April Tag Heading
 
         aprilTagHeadingMerge = 0;
-        Log.e("nanoTimes.size()", nanoTimes.size() + "");
-        Log.e("poseHistory.size()", poseHistory.size() + "");
-        Log.e("relHistory.size()", relHistory.size() + "");
         if (useAprilTag && nanoTimes.size() > 5) {
             aprilTagPose = aprilTagLocalizer.update(); // update april tags
 
@@ -176,7 +173,7 @@ public class Localizer {
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
-                weight = 4/Utils.minMaxClip(maxVel,16,50); // as speed increases we should decrease weight of april tags
+                weight = 4/Utils.minMaxClip(maxVel,10,50); // as speed increases we should decrease weight of april tags
 
                 // resetting odo with april tag data
                 Pose2d changeInPosition = new Pose2d(0,0,0);

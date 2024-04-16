@@ -409,7 +409,7 @@ public class Drivetrain {
 
     public static PID xPID = new PID(0.04,0.0,0.003);
     public static PID yPID = new PID(0.125,0.0,0.0175);
-    public static PID turnPID = new PID(0.4,0.0,0.01);
+    public static PID turnPID = new PID(0.25,0.0,0.01);
 
     double fwd, strafe, turn, turnAdjustThreshold, finalTargetPointDistance;
 
