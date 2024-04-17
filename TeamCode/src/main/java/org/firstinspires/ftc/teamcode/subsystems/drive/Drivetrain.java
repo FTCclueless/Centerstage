@@ -104,11 +104,11 @@ public class Drivetrain {
 
         if (vision != null) {
             if (vision.tagProcessor != null) {
-                localizer = new Localizer(hardwareMap, sensors,true, false, vision, this);
+                localizer = new Localizer(hardwareMap, sensors,true, true, vision, this);
                 Log.e("using vision localizer", "");
             }
         } else {
-            localizer = new Localizer(hardwareMap, sensors,false, false, null, this);
+            localizer = new Localizer(hardwareMap, sensors,false, true, null, this);
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();

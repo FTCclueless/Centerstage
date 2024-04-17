@@ -51,7 +51,7 @@ public class Intake {
     double intakeCheck;
     public static double reversedPower = -1.0;
     public static double timeToReverse = 100;
-    public static double stallThresh = 8000;
+    public static double stallThresh = 7000;
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {

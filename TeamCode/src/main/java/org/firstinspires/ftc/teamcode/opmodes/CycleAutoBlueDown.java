@@ -125,18 +125,18 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
                 robot.goToPoint(new Pose2d(-47, 37.5, Math.toRadians(55)), this, false, true);
 
-                intakeXDistances[4] = -54.75;
-                intakeYDistance = 12;
+                intakeXDistances[4] = -57;
+                intakeYDistance = 13;
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-39, 39, Math.PI/2);
-                boardPreload =          new Pose2d(47.5, 34.75, Math.PI);
-                deposit = new Vector3(5, 0, 9);
+                boardPreload =          new Pose2d(47.5, 34.5, Math.PI);
+                deposit = new Vector3(5, 0, 8.75);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                intakeXDistances[4] = -56.25;
-                intakeYDistance = 12;
+                intakeXDistances[4] = -57;
+                intakeYDistance = 13;
                 break;
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.911, 51, Math.PI/2);
@@ -148,8 +148,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-36, 33.5, Math.toRadians(120)), this, false, true);
 
                 intakeXDistances[4] = -57;
-                initialIntakeYDistance = 12.5;
-                intakeYDistance = 12.75;
+                intakeYDistance = 13;
                 break;
         }
         robot.droppers.rightRelease();
@@ -186,9 +185,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-55.3, -55.3, -55, -55, -55}; // 1 <-- 5 pixels
-
-    double initialIntakeYDistance = 13.75;
+    double[] intakeXDistances = new double[] {-55.3, -55.3, -55, -55, -57}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -199,10 +196,10 @@ public class CycleAutoBlueDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(-48.5, 12, Math.PI))
-                .addPoint(new Pose2d(intakeXDistances[pixelIndex], initialIntakeYDistance, Math.PI)),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI)),
             this::opModeIsActive
         );
-        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], initialIntakeYDistance, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, true, false);
 
         robot.intake.setActuationHeight(pixelIndex, 1.0);
 
