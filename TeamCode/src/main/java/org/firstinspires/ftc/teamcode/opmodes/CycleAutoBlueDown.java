@@ -126,7 +126,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-47, 37.5, Math.toRadians(55)), this, false, true);
 
                 intakeXDistances[4] = -54.75;
-                intakeYDistance = 12.5;
+                intakeYDistance = 12;
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-39, 39, Math.PI/2);
