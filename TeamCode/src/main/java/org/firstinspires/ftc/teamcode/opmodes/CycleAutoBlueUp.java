@@ -147,7 +147,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
      */
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-54.2, -54.2, -54.2, -54.2, -54.2}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-54.2, -53.6, -53.6, -53.7, -53.7}; // 1 <-- 5 pixels
 
     public void doBoardPreload() {
         robot.goToPointWithLimitSwitch(boardPreload, this, true, 1.0);
@@ -157,7 +157,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
         robot.releaseOne();
     }
 
-    double intakeYDistance = 35.5;
+    double intakeYDistance = 36.35;
 
     public void navigateBackToStack() {
 
@@ -190,11 +190,13 @@ public class CycleAutoBlueUp extends LinearOpMode {
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance-15, Math.PI), this, false, false, 1.0);
+            if (Globals.NUM_PIXELS == 2) return;
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
+            if (Globals.NUM_PIXELS == 2) return;
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 850) {
-                robot.intake.setActuationHeight(0, 0.04);
+                robot.intake.setActuationHeight(0, 0.1);
                 robot.update();
             }
         }
@@ -233,14 +235,14 @@ public class CycleAutoBlueUp extends LinearOpMode {
         }
 
         robot.intake.actuationFullyUp();
-        robot.goToPoint(new Pose2d(-42, 58, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(-44, 58, Math.PI), this, false, false);
 
-        robot.goToPoint(new Pose2d(30, 58, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(32, 58, Math.PI), this, false, false);
         robot.deposit.depositAt(deposit); // async call
         robot.goToPoint(new Pose2d(40, 40, Math.PI), this, false, false);
         robot.intake.off();
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.5,40, Math.PI), this, false, 1.0);
+        robot.goToPointWithLimitSwitch(new Pose2d(47.2,40, Math.PI), this, false, 0.677);
 
         robot.releaseOne();
         sleep(150);
