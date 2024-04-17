@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Spline;
+import org.firstinspires.ftc.teamcode.subsystems.intake.Intake;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
@@ -113,17 +114,16 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-45, -42.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(-45, -44.5, -Math.PI/2);
                 boardPreload =          new Pose2d(46.25, -29.5, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-48.25, -37.5, -Math.toRadians(60)), this, false, true);
+                robot.goToPoint(new Pose2d(-48.25, -38.5, -Math.toRadians(60)), this, false, true);
 
-                intakeYDistance = -13.5;
-                initialIntakeStackDistance = -53.35;
-                initialIntakeYDistance = -13;
+                intakeYDistance = -14.5;
+                initialIntakeYDistance = -13.3;
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -35.5, -Math.PI/2);
@@ -133,8 +133,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 intakeYDistance = -13.5;
-                initialIntakeStackDistance = -53.35;
-                initialIntakeYDistance = -12;
+                initialIntakeYDistance = -13;
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
@@ -146,8 +145,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-34.25, -35, -Math.toRadians(115)), this, false, true);
 
                 intakeYDistance = -13.5;
-                initialIntakeStackDistance = -53.35;
-                initialIntakeYDistance = -12;
+                initialIntakeYDistance = -13;
                 break;
         }
         robot.droppers.leftRelease();
@@ -179,7 +177,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
     }
 
-    double intakeYDistance = -13.7;
+    double intakeYDistance = -14;
 
     public void navigateBackToStack() {
         robot.intake.setActuationHeight(pixelIndex); // non destructive
@@ -190,9 +188,8 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-54.5, -54.5, -54.5, -54.5, -54.5}; // 1 <-- 5 pixels
-    double initialIntakeStackDistance = -55;
-    double initialIntakeYDistance = -12;
+    double[] intakeXDistances = new double[] {-56, -56, -56.3, -56.3, -56.5}; // 1 <-- 5 pixels
+    double initialIntakeYDistance = -13;
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -203,11 +200,11 @@ public class CycleAutoRedDown extends LinearOpMode {
             new Spline(Globals.ROBOT_POSITION, 3)
                 .setReversed(false)
                 .addPoint(new Pose2d(-48.5, -12, Math.PI))
-                .addPoint(new Pose2d(initialIntakeStackDistance, initialIntakeYDistance, Math.PI)),
+                .addPoint(new Pose2d(intakeXDistances[pixelIndex], initialIntakeYDistance, Math.PI)),
             this::opModeIsActive
         );
 
-        robot.goToPoint(new Pose2d(initialIntakeStackDistance, initialIntakeYDistance, Math.PI), this, true, false);
+        robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], initialIntakeYDistance, Math.PI), this, true, false);
 
         robot.intake.setActuationHeight(pixelIndex, 1.0);
 
