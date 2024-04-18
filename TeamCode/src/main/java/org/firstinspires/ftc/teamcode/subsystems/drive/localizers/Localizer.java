@@ -61,9 +61,9 @@ public class Localizer {
 
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,4.7430916033 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),  -1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),1); // right
-        encoders[2] = new Encoder(new Pose2d(-6.35+0.361015534989162/2, 0),  -1); // back (7.1660442092285175)
+        encoders[0] = new Encoder(new Pose2d(0,4.467337443413*0.99457633),  -1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-4.81811659*0.99457633),1); // right
+        encoders[2] = new Encoder(new Pose2d(-6.87664384+0.86320999, 0),  -1); // back (7.1660442092285175)
 
         this.useAprilTag = useAprilTag;
         this.sensors.useIMU = useIMU;
@@ -173,7 +173,7 @@ public class Localizer {
 
                 maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
                 // TODO: Tune weights
-                weight = 4/Utils.minMaxClip(maxVel,10,50); // as speed increases we should decrease weight of april tags
+                weight = 4/Utils.minMaxClip(maxVel,8,40); // as speed increases we should decrease weight of april tags
 
                 // resetting odo with april tag data
                 Pose2d changeInPosition = new Pose2d(0,0,0);
@@ -435,11 +435,10 @@ public class Localizer {
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");
         DashboardUtil.drawRobot(fieldOverlay, expected, "#BB00BB");
-
-//        DashboardUtil.drawRobot(fieldOverlay, aprilTagPose, "#BB00BB");
     }
 }
 
+//
 //package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 //
 //import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
@@ -504,13 +503,13 @@ public class Localizer {
 //
 //        encoders = new Encoder[3];
 //
-//        encoders[0] = new Encoder(new Pose2d(0,4.7430916033 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),  -1); // left
-//        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),1); // right
-//        encoders[2] = new Encoder(new Pose2d(-6.35+0.361015534989162/2, 0),  -1); // back (7.1660442092285175)
+////        encoders[0] = new Encoder(new Pose2d(0,4.7430916033 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),  -1); // left
+////        encoders[1] = new Encoder(new Pose2d(0,-5.09234035968 * 0.9906939116 * 0.9973829581 * 1.00335257996+0.3552354026770107/2),1); // right
+////        encoders[2] = new Encoder(new Pose2d(-6.35+0.361015534989162/2, 0),  -1); // back (7.1660442092285175)
 //
-////        encoders[0] = new Encoder(new Pose2d(0,4.811892926264648),  -1); // left
-////        encoders[1] = new Encoder(new Pose2d(0,-5.02669342987793),1); // right
-////        encoders[2] = new Encoder(new Pose2d(-6.022134808388673, 0),  -1); // back (7.1660442092285175)
+//        encoders[0] = new Encoder(new Pose2d(0,4.467337443413),  -1); // left
+//        encoders[1] = new Encoder(new Pose2d(0,-4.81811659),1); // right
+//        encoders[2] = new Encoder(new Pose2d(-6.87664384, 0),  -1); // back (7.1660442092285175)
 //
 //        this.useAprilTag = useAprilTag;
 //        this.sensors.useIMU = useIMU;
@@ -623,7 +622,8 @@ public class Localizer {
 //
 ////        mergeUltrasonics();
 //
-//        heading = odoHeading + imuMerge + headingOffset /*+ aprilTagHeadingMerge*/ + Globals.START_HEADING_OFFSET;
+////        heading = odoHeading + imuMerge + headingOffset /*+ aprilTagHeadingMerge*/ + Globals.START_HEADING_OFFSET;
+//        heading = odoHeading + imuMerge /*+ aprilTagHeadingMerge*/ + Globals.START_HEADING_OFFSET;
 //
 //        currentPose = new Pose2d(x, y, heading);
 //

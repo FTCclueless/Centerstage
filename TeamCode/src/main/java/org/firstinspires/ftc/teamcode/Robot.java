@@ -273,6 +273,17 @@ public class Robot {
         }
     }
 
+    public void goToPointWithDepositMOVING(Pose2d pose, LinearOpMode opMode, boolean finalAdjustment, boolean stop, double xThreshold) {
+        long start = System.currentTimeMillis();
+        drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
+        while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
+            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+                deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
+            }
+            update();
+        }
+    }
+
     public void goToPointWithDeposit(Pose2d pose, Func func, boolean finalAdjustment, boolean stop, Vector3 depositVector3, double xThreshold) {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
