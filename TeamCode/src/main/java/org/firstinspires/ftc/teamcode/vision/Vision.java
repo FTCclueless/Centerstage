@@ -72,7 +72,7 @@ public class Vision {
             Log.e("initializing camera....", "");
         }
 
-        setCameraSettings(9,255);
+        setCameraSettings(1,206); // setCameraSettings(9,255);
 
         visionPortal.setProcessorEnabled(teamPropDetectionPipeline, true);
     }

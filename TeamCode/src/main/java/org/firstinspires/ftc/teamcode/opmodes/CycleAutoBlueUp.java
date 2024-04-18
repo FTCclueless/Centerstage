@@ -136,7 +136,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(24, 27, Math.PI), this, false, false);
-                intakeYDistance = 34.85;
+                intakeYDistance = 36.15;
                 break;
         }
     }
@@ -168,8 +168,8 @@ public class CycleAutoBlueUp extends LinearOpMode {
 
         robot.intake.actuationFullyUp(); // non destructive
 
-        robot.goToPoint(new Pose2d(29.25, 58, Math.PI), this, false, false);
-        robot.goToPoint(new Pose2d(-42, 58, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(29.25, 59, Math.PI), this, false, false);
+        robot.goToPoint(new Pose2d(-42, 59, Math.PI), this, false, false);
         robot.goToPoint((new Pose2d(intakeXDistances[pixelIndex] + 3, intakeYDistance , Math.PI)), this, false, true);
         robot.intake.on();
         robot.intake.setActuationHeight(pixelIndex, 1.0);
@@ -200,7 +200,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
                 if (Globals.NUM_PIXELS == 2) return;
                 robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
             } else {
-                robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance - 7, Math.PI), this, false, false, 1.0);
+                robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance - 4, Math.PI), this, false, false, 1.0);
                 if (Globals.NUM_PIXELS == 2) return;
                 robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance + 6, Math.PI), this, false, false, 1.0);
             }

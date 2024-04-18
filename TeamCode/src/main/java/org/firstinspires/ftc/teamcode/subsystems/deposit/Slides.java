@@ -27,10 +27,10 @@ public class Slides {
     public static double maxSlidesHeight = 27.891;
     private double targetLength = 0;
     public static double maxVel = 1.6528571428571428;
-    public static double kP = 0.15; // used to be 0.11
+    public static double kP = 0.2; // used to be 0.11
     public static double kA = 3;
     public static double kStatic = 0.15;
-    public static double minPower = 0.22;
+    public static double minPower = 0.2850000000000002;
     public static double minPowerThresh = 0.8;
     public double downPower = -0.1;
     public static double forceDownPower = -0.5;
@@ -111,9 +111,9 @@ public class Slides {
         vel = sensors.getSlidesVelocity() * ticksToInches;
 
         if (!manualMode) {
-            if (!(Globals.RUNMODE == RunMode.TESTER)) {
-                slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
-            }
+//            if (!(Globals.RUNMODE == RunMode.TESTER)) {
+            slidesMotors.setTargetPower(Math.max(Math.min(feedforward(), 1), -1));
+//            }
         }
 
         if (deposit.state == Deposit.State.INTAKE) {

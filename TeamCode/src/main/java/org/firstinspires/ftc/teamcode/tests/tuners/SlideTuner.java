@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.Robot;
 
 @Config
 @TeleOp
-@Disabled
 public class SlideTuner extends LinearOpMode {
     public static double targetPos = 0;
 

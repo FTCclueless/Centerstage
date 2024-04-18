@@ -115,7 +115,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         switch (teamPropLocation) {
             case LEFT:
                 groundPreloadPosition = new Pose2d(-45, -44.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.25, -29.5, Math.PI);
+                boardPreload =          new Pose2d(46.5, -29.5, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -123,21 +123,21 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-48.25, -38.5, -Math.toRadians(60)), this, false, true);
 
                 intakeYDistance = -14.5;
-                initialIntakeYDistance = -13.3;
+                initialIntakeYDistance = -12.5;
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.25, -35.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.25, -36, Math.PI);
+                boardPreload =          new Pose2d(46.5, -36, Math.PI);
                 deposit = new Vector3(5, 0, 9);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 intakeYDistance = -13.5;
-                initialIntakeYDistance = -13;
+                initialIntakeYDistance = -12.5;
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(46.25, -42, Math.PI);
+                boardPreload =          new Pose2d(46.5, -42, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -145,7 +145,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(new Pose2d(-34.25, -35, -Math.toRadians(115)), this, false, true);
 
                 intakeYDistance = -13.5;
-                initialIntakeYDistance = -13;
+                initialIntakeYDistance = -12.5;
                 break;
         }
         robot.droppers.leftRelease();
@@ -188,7 +188,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-56, -56, -56.3, -56.3, -56.5}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56.85, -56.85, -56.65, -56.65, -56.5}; // 1 <-- 5 pixels
     double initialIntakeYDistance = -13;
 
     public void intakeStackInitial() {
