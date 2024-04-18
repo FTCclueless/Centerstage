@@ -61,9 +61,9 @@ public class Localizer {
 
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,4.467337443413),  -1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-4.81811659),1); // right
-        encoders[2] = new Encoder(new Pose2d(-6.87664384, 0),  -1); // back (7.1660442092285175)
+        encoders[0] = new Encoder(new Pose2d(0,4.467337443413*0.99457633),  -1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-4.81811659*0.99457633),1); // right
+        encoders[2] = new Encoder(new Pose2d(-6.87664384+0.86320999, 0),  -1); // back (7.1660442092285175)
 
         this.useAprilTag = useAprilTag;
         this.sensors.useIMU = useIMU;
