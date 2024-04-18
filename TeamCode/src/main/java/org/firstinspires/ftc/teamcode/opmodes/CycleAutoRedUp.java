@@ -102,7 +102,7 @@ public class CycleAutoRedUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(11.8, -43.5, -Math.PI/2);
+                groundPreloadPosition = new Pose2d(11.8, -43.4, -Math.PI/2);
                 boardPreload =          new Pose2d(49, -29.75, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
@@ -114,6 +114,7 @@ public class CycleAutoRedUp extends LinearOpMode {
 
                 deposit = new Vector3(5, 0, 9.5);
                 intakeYDistance = -36.5;
+                intakeXDistances = new double[] {-53.7, -53.7, -53.7, -53.2, -53.2};
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(15, -33.5, -Math.PI/2);
@@ -128,6 +129,7 @@ public class CycleAutoRedUp extends LinearOpMode {
 
                 deposit = new Vector3(5, 0, 8.5);
                 intakeYDistance = -36.5;
+                intakeXDistances = new double[] {-53.7, -53.7, -53.7, -53.2, -53.2};
                 break;
             case RIGHT:
                 groundPreloadPosition = new Pose2d(19, -46.5, -Math.PI/2);
@@ -189,7 +191,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         robot.intake.on();
 
         start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 1000) {
+        while (System.currentTimeMillis() - start < 500) {
             robot.update();
         }
 
@@ -201,6 +203,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
             robot.intake.setActuationHeight(0, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance+17, Math.PI), this, false, false, 1.0);
+            pause(500);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
@@ -253,7 +256,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         robot.goToPoint(new Pose2d(40, -40, Math.PI), this, false, false);
         robot.intake.off();
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.2,-40, Math.PI), this, false, 0.6);
+        robot.goToPointWithLimitSwitch(new Pose2d(46.5,-40, Math.PI), this, false, 0.16);
 
         robot.releaseOne();
         sleep(150);

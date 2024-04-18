@@ -51,7 +51,7 @@ public class Intake {
     double intakeCheck;
     public static double reversedPower = -1.0;
     public static double timeToReverse = 100;
-    public static double stallThresh = 6000;
+    public static double stallThresh = 5000;
     public final REVColorSensorV3 colorSensorV3;
 
     enum StallState {
@@ -73,7 +73,7 @@ public class Intake {
     private double confirmationLoops = 0;
     public static double desiredConfirmationLoops = 12;
     private long goReverseStart = 0;
-    public static double goReverseDelay = 300;
+    public static double goReverseDelay = 370;
     public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)
 
     public boolean useIntakeStallCheck = true;

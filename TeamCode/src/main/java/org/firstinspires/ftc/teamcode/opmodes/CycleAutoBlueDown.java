@@ -125,7 +125,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
                 robot.goToPoint(new Pose2d(-48.25, 37.5, Math.toRadians(55)), this, false, true);
 
-                intakeXDistances[4] = -56.5;
+                intakeXDistances[4] = -56.75;
                 intakeYDistance = 12.1;
                 break;
             case CENTER:
@@ -135,19 +135,19 @@ public class CycleAutoBlueDown extends LinearOpMode {
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                intakeXDistances[4] = -56.5;
+                intakeXDistances[4] = -56.75;
                 intakeYDistance = 12.75;
                 break;
             case LEFT:
                 groundPreloadPosition = new Pose2d(-36.911, 51, Math.PI/2);
-                boardPreload =          new Pose2d(46.85, 41.5, Math.PI);
+                boardPreload =          new Pose2d(47, 41.5, Math.PI);
                 deposit = new Vector3(5, 0, 9.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 robot.goToPoint(new Pose2d(-36, 33.5, Math.toRadians(120)), this, false, true);
 
-                intakeXDistances[4] = -56.5;
+                intakeXDistances[4] = -56.75;
                 intakeYDistance = 13;
                 break;
         }
