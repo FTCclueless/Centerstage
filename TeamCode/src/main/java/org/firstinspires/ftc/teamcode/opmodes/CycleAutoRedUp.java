@@ -48,6 +48,7 @@ public class CycleAutoRedUp extends LinearOpMode {
                 }
                 depositOnBoard();
             }
+            pause(100);
             end();
         } catch (Error e) {
             Log.e("*******************ERROR*******************", e + "");
@@ -112,6 +113,7 @@ public class CycleAutoRedUp extends LinearOpMode {
                 robot.goToPoint(new Pose2d(24, -32.5, Math.PI), this, false, false);
 
                 deposit = new Vector3(5, 0, 9.5);
+                intakeYDistance = -36.5;
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(15, -33.5, -Math.PI/2);
@@ -125,19 +127,21 @@ public class CycleAutoRedUp extends LinearOpMode {
                 robot.goToPoint(new Pose2d(15, -38.5, Math.PI), this, false, false);
 
                 deposit = new Vector3(5, 0, 8.5);
+                intakeYDistance = -36.5;
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(20, -46.5, -Math.PI/2);
-                boardPreload =          new Pose2d(49, -43.25, Math.PI);
+                groundPreloadPosition = new Pose2d(19, -46.5, -Math.PI/2);
+                boardPreload =          new Pose2d(48.75, -43.25, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(27, -37.5, -Math.toRadians(110)), this, false, true);
+                robot.goToPoint(new Pose2d(25.5, -37.5, -Math.toRadians(110)), this, false, true);
 
                 releaseAndTriggerDeposit();
 
                 robot.goToPoint(new Pose2d(21, -37.5, Math.PI), this, false, true);
 
                 deposit = new Vector3(5, 0, 9.5);
+                intakeYDistance = -36.55;
                 break;
         }
     }
@@ -155,7 +159,7 @@ public class CycleAutoRedUp extends LinearOpMode {
      */
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-54.5, -55, -55.2, -55.2, -54}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-54.5, -55, -55.15, -55.2, -54}; // 1 <-- 5 pixels
 
     public void doBoardPreload() {
         robot.goToPointWithLimitSwitch(boardPreload, this, true, 1.0);
@@ -165,7 +169,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         robot.releaseOne();
     }
 
-    double intakeYDistance = -36.5;
+    double intakeYDistance;
 
     public void navigateBackToStack() {
         robot.intake.on();
@@ -201,7 +205,7 @@ public class CycleAutoRedUp extends LinearOpMode {
             robot.goToPoint(new Pose2d(intakeXDistances[0], intakeYDistance, Math.PI), this, false, false, 1.0);
         } else {
             while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 850) {
-                robot.intake.setActuationHeight(0, 0.04);
+                robot.intake.setActuationHeight(0, 0.045);
                 robot.update();
             }
         }
@@ -249,7 +253,7 @@ public class CycleAutoRedUp extends LinearOpMode {
         robot.goToPoint(new Pose2d(40, -40, Math.PI), this, false, false);
         robot.intake.off();
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.5,-40, Math.PI), this, false, 1.0);
+        robot.goToPointWithLimitSwitch(new Pose2d(47.2,-40, Math.PI), this, false, 0.6);
 
         robot.releaseOne();
         sleep(150);
