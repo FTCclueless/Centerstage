@@ -108,7 +108,7 @@ public class Drivetrain {
                 Log.e("using vision localizer", "");
             }
         } else {
-            localizer = new Localizer(hardwareMap, sensors,true, true, null, this);
+            localizer = new Localizer(hardwareMap, sensors,false, true, null, this);
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();

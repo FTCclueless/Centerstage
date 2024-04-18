@@ -134,7 +134,7 @@ public class CycleAutoRedDown extends LinearOpMode {
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 intakeYDistance = -14.5;
-                initialIntakeYDistance = -12.5;
+                initialIntakeYDistance = -12.85;
                 intakeXDistances = new double[] {-56.5, -56.5, -56.5, -56.5, -56.5};
                 break;
             case RIGHT:
@@ -250,7 +250,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.setActuationHeight(pixelIndex, 0.5) ;
 
         start = System.currentTimeMillis();
-        if (pixelIndex < 1 && Globals.NUM_PIXELS != 2) {
+        if (pixelIndex < 1) {
             robot.intake.setActuationHeight(0, 1.0);
             if (Globals.NUM_PIXELS != 2  && teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
                 robot.goToPoint(new Pose2d(-55, intakeYDistance+4, Math.PI), this, false, false, 1.0);
