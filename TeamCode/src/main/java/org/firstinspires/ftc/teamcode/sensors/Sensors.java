@@ -94,7 +94,7 @@ public class Sensors {
         updateTelemetry();
     }
 
-    private double imuUpdateTime = 200;
+    private double imuUpdateTime = 15;
     public double timeTillNextIMUUpdate = imuUpdateTime;
     public boolean imuJustUpdated = false;
 
@@ -225,8 +225,8 @@ public class Sensors {
     private long ultrasonicDebounce;
     double ultrasonicDist;
 
-    double blockedWaitTime = 4500;
-    double ultrasonicDistThreshold = 100;
+    double blockedWaitTime = 3500;
+    double ultrasonicDistThreshold = 75;
 
     public void checkForPartner() {
         ultrasonicDist = getBackDist();

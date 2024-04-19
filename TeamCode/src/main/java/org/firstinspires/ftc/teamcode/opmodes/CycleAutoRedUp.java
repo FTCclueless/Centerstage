@@ -226,7 +226,6 @@ public class CycleAutoRedUp extends LinearOpMode {
             robot.intake.reverse();
             robot.update();
         }
-        robot.intake.off();
 
         Globals.NUM_PIXELS = 2;
         Globals.mergeUltrasonics = false;
