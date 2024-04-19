@@ -28,7 +28,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     public static double fy = 0.15;
     public static double fh = 0.01; // JANK
 
-    private int numCycles = 1; //todo one cycle for game with sharp
+    private int numCycles = 2;
 
     @Override
     public void runOpMode() throws InterruptedException {
