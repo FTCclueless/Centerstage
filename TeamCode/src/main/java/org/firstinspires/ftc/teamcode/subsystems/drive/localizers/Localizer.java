@@ -187,6 +187,15 @@ public class Localizer {
                 for (int i = 0; i < poseHistory.size(); i++){
                     poseHistory.get(i).add(changeInPosition);
                 }
+
+                TelemetryUtil.packet.put("changeInPosition.x", changeInPosition.x);
+                TelemetryUtil.packet.put("changeInPosition.y", changeInPosition.y);
+                TelemetryUtil.packet.put("changeInPosition.heading", Math.toDegrees(changeInPosition.heading));
+
+                Log.e("changeInPosition.x", changeInPosition.x + "");
+                Log.e("changeInPosition.y", changeInPosition.y + "");
+                Log.e("changeInPosition.heading", Math.toDegrees(changeInPosition.heading) + "");
+
                 x += changeInPosition.x;
                 y += changeInPosition.y;
                 aprilTagHeadingMerge = changeInPosition.heading;
@@ -261,6 +270,8 @@ public class Localizer {
         if (sensors.imuJustUpdated) {
             headingDif += (imuHeading-lastImuHeading) - (odoHeading-lastOdoHeading);// This is error for heading from IMU
             headingDif = Utils.headingClip(headingDif);
+            Log.e("headingDifWithIMU", headingDif + "");
+            TelemetryUtil.packet.put("headingDifWithIMU", headingDif);
             lastImuHeading = imuHeading;
             lastOdoHeading = odoHeading;
         }

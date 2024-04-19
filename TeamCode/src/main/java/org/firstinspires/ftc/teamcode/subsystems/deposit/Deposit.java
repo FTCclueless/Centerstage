@@ -51,7 +51,10 @@ public class Deposit {
     public static double v4BarReadjustAngle = -3.88880047; // -3.9896627
     public static double topServoReadjustAngle = -0.70603582; // -1.09827794
 
-    public static double autoTopServoDepositAngle = 2.1629351341167884;
+    public static double autoTopServoDepositAngle = 2.07327979;
+
+    public static double v4BarInitAngle =  -0.56594934;
+    public static double topServoInitAngle =  -1.047846813;
 
     public boolean isSlowSlidesMode = false;
 
@@ -117,11 +120,9 @@ public class Deposit {
     }
 
     public void retractInit() {
-        state = State.IDLE;
-
         release.close();
-        endAffector.v4Servo.setTargetAngle(v4BarTransferAngle, v4ServoPower);
-        endAffector.topServo.setTargetAngle(topServoTransferAngle, topServoPower);
+        endAffector.v4Servo.setTargetAngle(v4BarInitAngle, 1.0);
+        endAffector.topServo.setTargetAngle(topServoTransferAngle, 1.0);
     }
 
     public boolean checkReady() {

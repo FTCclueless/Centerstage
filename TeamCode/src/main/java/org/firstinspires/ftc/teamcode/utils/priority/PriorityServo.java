@@ -135,16 +135,16 @@ public class PriorityServo extends PriorityDevice{
 
     public void setCurrentAngle(double currentAngle) {
         this.currentAngle = currentAngle;
-        this.targetAngle = currentAngle;
-        this.currentIntermediateTargetAngle=currentAngle;
-
-        for (int i = 0; i < servo.length; i++) {
-            if (multipliers[i] == 1) {
-                servo[i].setPosition(convertAngleToPos(currentAngle)); //sets the servo to actual move to the target
-            } else {
-                servo[i].setPosition(maxPos - convertAngleToPos(currentAngle)); //this might be completely wrong --Kyle
-            }
-        }
+//        this.targetAngle = currentAngle;
+//        this.currentIntermediateTargetAngle=currentAngle;
+//
+//        for (int i = 0; i < servo.length; i++) {
+//            if (multipliers[i] == 1) {
+//                servo[i].setPosition(convertAngleToPos(currentAngle)); //sets the servo to actual move to the target
+//            } else {
+//                servo[i].setPosition(maxPos - convertAngleToPos(currentAngle)); //this might be completely wrong --Kyle
+//            }
+//        }
     }
 
     public boolean inPosition(){
@@ -220,4 +220,9 @@ public class PriorityServo extends PriorityDevice{
     public double getTargetAngle() {
         return currentIntermediateTargetAngle;
     }
+
+//    public void setTargetAngleFORCED(double angle) {
+//        setTargetAngle(angle, 1.0);
+//        update();
+//    }
 }

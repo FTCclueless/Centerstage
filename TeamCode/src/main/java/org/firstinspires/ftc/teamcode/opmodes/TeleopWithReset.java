@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.utils.Vector3;
 
 @TeleOp
-public class Teleop extends LinearOpMode {
+public class TeleopWithReset extends LinearOpMode {
     @Override
     public void runOpMode() {
         Globals.RUNMODE = RunMode.TELEOP; // Runmode must be set before you create new instances of robot
@@ -66,7 +66,6 @@ public class Teleop extends LinearOpMode {
 
         int pixelIndex = 0;
         Vector3 depoPos = new Vector3(15, 0, 10);
-
 
         initializationSequence(robot);
 
@@ -313,6 +312,78 @@ public class Teleop extends LinearOpMode {
         robot.airplane.hold();
         robot.droppers.retractBoth();
         robot.hang.quickTurnOnOff();
+
+        // opening first
+        robot.deposit.release.releaseTwoFORCED();
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 150) {
+            robot.intake.actuationFullyUp();
+            telemetry.addData("State:", "NOT READY TO START");
+            telemetry.update();
+
+            robot.deposit.release.releaseTwoFORCED();
+            robot.update();
+        }
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 50) {
+            robot.deposit.release.releaseTwoFORCED();
+            robot.deposit.slides.setTargetPowerFORCED(0.85);
+            robot.update();
+        }
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 150) {}
+
+        // making sure arm is over
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 1000) {
+            robot.deposit.retractInit();
+            robot.deposit.release.close();
+            robot.deposit.slides.setTargetPowerFORCED(0.0);
+            robot.update();
+        }
+
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 150) {
+            robot.deposit.release.releaseTwoFORCED();
+            robot.deposit.slides.setTargetPowerFORCED(0.0);
+            robot.update();
+        }
+
+        // making sure slides are down
+        double lastDist = 0.0;
+        double vel = 0.0;
+        start = System.currentTimeMillis();
+        long velocityStart = System.currentTimeMillis();
+        robot.deposit.slides.manualMode = true;
+
+        while (vel > 0.1 || (System.currentTimeMillis() - start < 500)) {
+            if ((System.currentTimeMillis() - velocityStart) > 100) {
+                vel = Math.abs((robot.deposit.slides.getLength()-lastDist)/0.1);
+                lastDist = robot.deposit.slides.getLength();
+                velocityStart = System.currentTimeMillis();
+            }
+
+            robot.deposit.slides.setTargetPowerFORCED(-0.8);
+            robot.update();
+
+            Log.e("vel", vel + "");
+            Log.e("vel_encoder", robot.deposit.slides.vel + "");
+        }
+
+        robot.deposit.slides.setTargetPowerFORCED(0.0);
+
+        robot.deposit.slides.setSlidesMotorsToCoast();
+        start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < 100) {
+            robot.update();
+        }
+
+        robot.deposit.slides.setSlidesMotorsToBrake();
+        robot.deposit.slides.resetSlidesEncoders();
+        robot.update();
 
         robot.deposit.slides.manualMode = false;
 
