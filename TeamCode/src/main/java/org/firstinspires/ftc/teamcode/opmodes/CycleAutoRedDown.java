@@ -129,7 +129,7 @@ public class CycleAutoRedDown extends LinearOpMode {
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.5, -35.5, -Math.PI/2);
                 boardPreload =          new Pose2d(46.5, -35.85, Math.PI);
-                deposit = new Vector3(5, 0, 8.75);
+                deposit = new Vector3(5, 0, 9);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
