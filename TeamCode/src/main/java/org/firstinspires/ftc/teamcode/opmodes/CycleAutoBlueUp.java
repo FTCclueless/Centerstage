@@ -256,7 +256,7 @@ public class CycleAutoBlueUp extends LinearOpMode {
         robot.goToPoint(new Pose2d(39, 41, Math.PI), this, false, false);
         robot.intake.off();
 
-        robot.goToPointWithLimitSwitch(new Pose2d(47.3,41, Math.PI), this, true, 0.3);
+        robot.goToPointWithLimitSwitch(new Pose2d(46.75,41, Math.PI), this, true, 0.3);
 
         robot.releaseOne();
         sleep(150);
