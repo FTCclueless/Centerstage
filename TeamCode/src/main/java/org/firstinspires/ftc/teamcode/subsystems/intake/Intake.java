@@ -71,13 +71,13 @@ public class Intake {
     private long lastProxPoll = System.currentTimeMillis();
     public static int pixelTouchingDist = 315;
     private double confirmationLoops = 0;
-    public static double desiredConfirmationLoops = 12;
+    public static double desiredConfirmationLoops = 30;
     private long goReverseStart = 0;
     public static double goReverseDelay = 370;
     public long reversedTime = -1; // Used to tell other subsystems when we have last reversed the intake b.c. jam or 2 many pixels (-1 if not happened)
 
     public boolean useIntakeStallCheck = true;
-    public boolean useIntakeColorSensorCheck = false;
+    public boolean useIntakeColorSensorCheck = true;
     public boolean reversed = false;
 
     public Intake(HardwareMap hardwareMap, HardwareQueue hardwareQueue, Sensors sensors, Robot robot) {
