@@ -5,9 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.RunMode;
+import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 
 @TeleOp
@@ -16,6 +18,7 @@ public class LocalizationTest extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         Vision vision = new Vision(hardwareMap, telemetry, false, false, false);
         Robot robot = new Robot(hardwareMap, vision);
+        Sensors sensors = robot.sensors;
 
         Globals.RUNMODE = RunMode.TESTER;
 
@@ -25,6 +28,9 @@ public class LocalizationTest extends LinearOpMode {
 
         while(!isStopRequested()) {
             robot.drivetrain.drive(gamepad1);
+            TelemetryUtil.packet.put("leftOdo", sensors.getOdometry()[0]);
+            TelemetryUtil.packet.put("rightOdo", sensors.getOdometry()[1]);
+            TelemetryUtil.packet.put("backOdo", sensors.getOdometry()[2]);
             robot.update();
         }
     }

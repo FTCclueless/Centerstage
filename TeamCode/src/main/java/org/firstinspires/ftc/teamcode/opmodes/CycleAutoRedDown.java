@@ -44,11 +44,11 @@ public class CycleAutoRedDown extends LinearOpMode {
             doBoardPreload();
 
             for (int i = 0; i < numCycles; i++) {
-                navigateBackToStack();
-                intakeStack();
-                if (System.currentTimeMillis() - Globals.autoStartTime > 28000) { // if we have less than 2 secs remaining we don't go for the deposit
+                if (System.currentTimeMillis() - Globals.autoStartTime > 24000) { // if we have less than 2 secs remaining we don't go for the deposit
                     break;
                 }
+                navigateBackToStack();
+                intakeStack();
                 depositOnBoard();
             }
             end();
@@ -114,40 +114,40 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(-45, -44.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -29.5, Math.PI);
-                deposit = new Vector3(5, 0, 9.5);
+                groundPreloadPosition = new Pose2d(-39, -42, -Math.PI/2);
+                boardPreload =          new Pose2d(47.2, -31.5, Math.PI);
+                deposit = new Vector3(5, 0, 10);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                robot.goToPoint(new Pose2d(-48.25, -38.5, -Math.toRadians(60)), this, false, true);
+                robot.goToPoint(new Pose2d(-47, -35.5, -Math.toRadians(60)), this, false, true);
 
-                intakeYDistance = -15.25;
-                initialIntakeYDistance = -12.65;
-                intakeXDistances = new double[] {-56.0, -56.0, -56.1, -56.1, -56.3};
+                intakeYDistance = -12.5;
+                initialIntakeYDistance = -11;
+                intakeXDistances = new double[] {-56.4, -56.4, -56.1, -56.1, -55};
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(-36.5, -35.5, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -35.75, Math.PI);
-                deposit = new Vector3(5, 0, 9);
+                boardPreload =          new Pose2d(46.75, -35.95, Math.PI);
+                deposit = new Vector3(5, 0, 10.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
-                intakeYDistance = -14.5;
-                initialIntakeYDistance = -12.85;
-                intakeXDistances = new double[] {-56.5, -56.5, -56.5, -56.5, -56.5};
+                intakeYDistance = -13;
+                initialIntakeYDistance = -11.75;
+                intakeXDistances = new double[] {-56.5, -56.5, -56.3, -56.3, -57};
                 break;
             case RIGHT:
-                groundPreloadPosition = new Pose2d(-36.911, -51, -Math.PI/2);
-                boardPreload =          new Pose2d(46.5, -43, Math.PI);
-                deposit = new Vector3(5, 0, 9.5);
+                groundPreloadPosition = new Pose2d(-38, -51, -Math.PI/2);
+                boardPreload =          new Pose2d(47, -43, Math.PI);
+                deposit = new Vector3(5, 0, 10.5);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 robot.goToPoint(new Pose2d(-34.15, -36, -Math.toRadians(115)), this, false, true);
-                intakeYDistance = -16;
-                initialIntakeYDistance = -12.5;
-                intakeXDistances = new double[] {-56.15, -56.15, -56.15, -56.15, -56.4};
+                intakeYDistance = -12;
+                initialIntakeYDistance = -11;
+                intakeXDistances = new double[] {-56.05, -56.05, -56.1, -56.1, -56.15};
                 break;
         }
         robot.droppers.leftRelease();
@@ -210,7 +210,7 @@ public class CycleAutoRedDown extends LinearOpMode {
 
         robot.intake.setActuationHeight(pixelIndex, 1.0);
 
-        pause(500);
+        pause(250);
 
         start = System.currentTimeMillis();
         while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 500) {
@@ -219,12 +219,10 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
 
         start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 250) {
-            Intake.reversedPower = -0.1;
+        while (System.currentTimeMillis() - start < 100) {
             robot.intake.reverse();
             robot.update();
         }
-        robot.intake.off();
 
         Globals.NUM_PIXELS = 2;
 
@@ -237,13 +235,9 @@ public class CycleAutoRedDown extends LinearOpMode {
         pixelIndex = Math.max(pixelIndex - 1, 0);
 
         robot.intake.on();
-        robot.intake.setActuationHeight(pixelIndex, 0.5) ;
+        robot.intake.setActuationHeight(pixelIndex, 1.0) ;
 
-        start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 650) {
-            robot.intake.setActuationHeight(0, 0.08);
-            robot.update();
-        }
+        pause(350);
 
         pixelIndex = Math.max(pixelIndex - 1, 0);
 
@@ -252,19 +246,24 @@ public class CycleAutoRedDown extends LinearOpMode {
         start = System.currentTimeMillis();
         if (pixelIndex < 1) {
             robot.intake.setActuationHeight(0, 1.0);
-            if (Globals.NUM_PIXELS != 2  && teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
-                robot.goToPoint(new Pose2d(-55, intakeYDistance+4, Math.PI), this, false, false, 1.0);
-                robot.goToPoint(new Pose2d(-55, intakeYDistance-10, Math.PI), this, false, false, 1.0);
+            if (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.LEFT) {
+                robot.goToPoint(new Pose2d(-58.5, intakeYDistance+4, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                robot.goToPoint(new Pose2d(-58.5, intakeYDistance-5, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
             } else {
-                robot.goToPoint(new Pose2d(-55, intakeYDistance-17, Math.PI), this, false, false, 1.0);
-                pause(500);
+                robot.goToPoint(new Pose2d(-58.5, intakeYDistance-6, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                robot.goToPoint(new Pose2d(-58.5, intakeYDistance-12, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                robot.goToPoint(new Pose2d(-58.5, intakeYDistance+3, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
             }
-            robot.goToPoint(new Pose2d(-52.5, intakeYDistance, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(-57, intakeYDistance, Math.PI), this::opModeIsActive, false, false, 1.0);
         } else {
-            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
-                robot.intake.setActuationHeight(0, 0.0725);
-                robot.update();
-            }
+//            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
+//                robot.intake.setActuationHeight(0, 0.0725);
+//                robot.update();
+//            }
+            robot.intake.setActuationHeight(0, 0.0725);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance+5, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance-8, Math.PI), this, false, false, 1.0);
+            robot.goToPoint(new Pose2d(intakeXDistances[pixelIndex], intakeYDistance, Math.PI), this, false, false, 1.0);
         }
 
         if (robot.intake.reversed) {
@@ -275,12 +274,10 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.reversed = false;
 
         start = System.currentTimeMillis();
-        while (System.currentTimeMillis() - start < 250) {
-            Intake.reversedPower = -0.1;
+        while (System.currentTimeMillis() - start < 100) {
             robot.intake.reverse();
             robot.update();
         }
-        robot.intake.off();
 
         Globals.NUM_PIXELS = 2;
         Globals.mergeUltrasonics = false;
@@ -296,15 +293,15 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.followSplineWithIntake(
                 new Spline(Globals.ROBOT_POSITION, 3)
                         .setReversed(true)
-                        .addPoint(new Pose2d(36, -9, Math.PI))
-                        .addPoint(new Pose2d(36, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
+                        .addPoint(new Pose2d(30, -9, Math.PI))
+                        .addPoint(new Pose2d(30, -15, (teamPropLocation == TeamPropDetectionPipeline.TeamPropLocation.RIGHT) ? Math.toRadians(130) : Math.toRadians(140))), //if the teamprop is to the right change the angle to get angle of board
                 0,
                 -20,
                 1.0,
                 false,
                 true
         );
-        //robot.checkForPartner(this, 500);
+//        robot.checkForPartner(this, 500);
         robot.deposit.depositAt(new Vector3(5,0,9)); // async call to deposit
 
         robot.goToPoint(new Pose2d(boardPreload.x-8, boardPreload.y, Math.PI), this, false, false);
@@ -324,7 +321,7 @@ public class CycleAutoRedDown extends LinearOpMode {
     }
 
     int cycleNum = 0;
-    double[] depositHeights = new double[] {12, 16};
+    double[] depositHeights = new double[] {14, 18};
 
     public void depositOnBoard() {
         deposit.z = depositHeights[cycleNum];
@@ -333,10 +330,10 @@ public class CycleAutoRedDown extends LinearOpMode {
         }
 
         robot.followSplineWithIntakeAndDeposit(
-                new Spline(Globals.ROBOT_POSITION, 5)
+                new Spline(new Pose2d(Globals.ROBOT_POSITION.x, -9, Globals.ROBOT_POSITION.heading), 5)
                         .setReversed(true)
-                        .addPoint(new Pose2d(24, -9.25, Math.PI))
-                        .addPoint(new Pose2d(40, -31.5, Math.PI)),
+                        .addPoint(new Pose2d(24, -9, Math.PI))
+                        .addPoint(new Pose2d(40, -33, Math.PI)),
                 deposit,
                 0,
                 -12,
@@ -347,7 +344,7 @@ public class CycleAutoRedDown extends LinearOpMode {
         robot.intake.off();
         robot.deposit.depositAt(deposit); // async call
 
-        robot.goToPointWithLimitSwitch(new Pose2d(46.2,-31.5, Math.PI), this, true, 0.18);
+        robot.goToPointWithLimitSwitch(new Pose2d(48.5,-33, Math.PI), this, false, 0.3);
 
         robot.releaseTwo();
         cycleNum++;

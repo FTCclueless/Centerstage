@@ -72,7 +72,7 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
             teamPropLocation = vision.teamPropDetectionPipeline.getTeamPropLocation();
             vision.teamPropDetectionPipeline.sendTeamPropTelemetry(telemetry);
             robot.deposit.release.preGrab();
-            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 59.75, Math.PI / 2));
+            robot.drivetrain.setPoseEstimate(new Pose2d(11.804, 60.75, Math.PI / 2));
 
             robot.update();
         }
@@ -96,32 +96,31 @@ public class DoublePreloadAutoBlueUp extends LinearOpMode {
 
         switch (teamPropLocation) {
             case LEFT:
-                groundPreloadPosition = new Pose2d(13.5, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(48.35, 40.5, Math.PI);
+                groundPreloadPosition = new Pose2d(14.5, 46, Math.PI/2);
+                boardPreload =          new Pose2d(48.35, 41, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(20.5, 35.5, Math.toRadians(125)), this, false, false);
+                robot.goToPoint(new Pose2d(22, 36.5, Math.toRadians(125)), this, false, false);
 
                 releaseAndTriggerDeposit();
 
-                robot.goToPoint(new Pose2d(21, 37.5, Math.PI), this, false, false);
+                robot.goToPoint(new Pose2d(21, 38.5, Math.PI), this, false, false);
                 break;
             case CENTER:
                 groundPreloadPosition = new Pose2d(16, 34, Math.PI/2);
-                boardPreload =          new Pose2d(48.35, 33, Math.PI);
+                boardPreload =          new Pose2d(48.15, 33.5, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
                 releaseAndTriggerDeposit();
-
-                robot.goToPoint(new Pose2d(15, 33, 2*Math.PI/3), this, false, false);
-                break;
+                robot.goToPoint(new Pose2d(16, 39, Math.PI/2), this, false, false);
+                robot.goToPoint(new Pose2d(15, 39, 2*Math.PI/3), this, false, false);
             case RIGHT:
                 groundPreloadPosition = new Pose2d(11.8, 46.5, Math.PI/2);
-                boardPreload =          new Pose2d(47.25, 27, Math.PI);
+                boardPreload =          new Pose2d(47.25, 28, Math.PI);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
-                robot.goToPoint(new Pose2d(12, 30, Math.toRadians(35)), this, false, false);
+                robot.goToPoint(new Pose2d(11, 32.25, Math.toRadians(50)), this, false, false);
 
                 releaseAndTriggerDeposit();
 

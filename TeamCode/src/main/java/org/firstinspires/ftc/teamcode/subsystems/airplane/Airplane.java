@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.utils.priority.PriorityServo;
 public class Airplane {
     private final PriorityServo airplane;
 
-    // TODO: Figure out right angle
     private double holdAngle = 0.9469;
     private double releaseAngle = 1.8155;
 
