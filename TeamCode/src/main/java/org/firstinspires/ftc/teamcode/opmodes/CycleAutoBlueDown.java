@@ -131,7 +131,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
             case CENTER:
                 groundPreloadPosition = new Pose2d(-39, 37.5, Math.PI/2);
                 boardPreload =          new Pose2d(47.25, 34.6, Math.PI);
-                deposit = new Vector3(5, 0, 9);
+                deposit = new Vector3(5, 0, 9.15);
 
                 robot.goToPoint(groundPreloadPosition, this, false, false);
 
@@ -185,7 +185,7 @@ public class CycleAutoBlueDown extends LinearOpMode {
     }
 
     int pixelIndex = 4; // 0 index based
-    double[] intakeXDistances = new double[] {-57.5, -57.5, -57, -57, -57}; // 1 <-- 5 pixels
+    double[] intakeXDistances = new double[] {-56.7, -56.7, -57, -56.8, -57}; // 1 <-- 5 pixels
 
     public void intakeStackInitial() {
         Globals.mergeUltrasonics = true;
@@ -249,12 +249,12 @@ public class CycleAutoBlueDown extends LinearOpMode {
             robot.intake.setActuationHeight(0, 1.0);
             if (Globals.NUM_PIXELS != 2) {
                 if (teamPropLocation != TeamPropDetectionPipeline.TeamPropLocation.RIGHT) {
-                    robot.goToPoint(new Pose2d(-59, intakeYDistance + 7, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                    robot.goToPoint(new Pose2d(-57, intakeYDistance + 7, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
                 } else {
-                    robot.goToPoint(new Pose2d(-59, intakeYDistance + 5, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
-                    robot.goToPoint(new Pose2d(-59, intakeYDistance + 12.75, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                    robot.goToPoint(new Pose2d(-57, intakeYDistance + 5, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
+                    robot.goToPoint(new Pose2d(-57, intakeYDistance + 12.75, Math.PI), this::opModeIsActive, true, 1.0, 2.5, 1, Math.toDegrees(2.5));
                 }
-                robot.goToPoint(new Pose2d(-59, intakeYDistance, Math.PI), this, false, false, 1.0);
+                robot.goToPoint(new Pose2d(-57, intakeYDistance, Math.PI), this, false, false, 1.0);
             }
         } else {
 //            while (Globals.NUM_PIXELS != 2 && System.currentTimeMillis() - start < 1000) {
