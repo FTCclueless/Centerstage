@@ -1,12 +1,16 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive;
 
 import static org.firstinspires.ftc.teamcode.utils.Globals.DRIVETRAIN_ENABLED;
+import static org.firstinspires.ftc.teamcode.utils.Globals.MAX_X_SPEED;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_POSITION;
 import static org.firstinspires.ftc.teamcode.utils.Globals.ROBOT_VELOCITY;
+import static org.firstinspires.ftc.teamcode.utils.Globals.TRACK_WIDTH;
 
 import android.util.Log;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -32,7 +36,9 @@ import java.util.List;
 
 @Config
 public class Drivetrain {
+
     public enum State {
+        FOLLOWSPLINE,
         GO_TO_POINT,
         DRIVE,
         FINAL_ADJUSTMENT,
@@ -171,6 +177,7 @@ public class Drivetrain {
     public static double yBrakingDistanceThreshold = 5;
     public static double yBrakingSpeedThreshold = 16;
     public static double yBrakingPower = -0.1;
+    public static double centripetalTune = 10;
 
     public static double turnBrakingAngleThreshold = 20; // in degrees
     public static double turnBrakingSpeedThreshold = 135; // in degrees
@@ -200,6 +207,7 @@ public class Drivetrain {
         ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
 
         if (path != null) {
+            state = State.FOLLOWSPLINE;
             maxPower = path.poses.get(pathIndex).power;
             double lastRadius = path.poses.get(Math.max(0,pathIndex-1)).getDistanceFromPoint(estimate);
             double radiusToPath = path.poses.get(pathIndex).getDistanceFromPoint(estimate);
@@ -215,6 +223,7 @@ public class Drivetrain {
             lastTargetPoint = targetPoint;
             targetPoint = pathTarget.clone();
             if (pathIndex == path.poses.size()){
+                state = State.GO_TO_POINT;
                 path = null;
                 pathIndex = 0;
             } else {
@@ -231,6 +240,32 @@ public class Drivetrain {
         }
 
         switch (state) {
+            case FOLLOWSPLINE:
+                double radius = (xError*xError + yError*yError) / (2*yError);
+                Log.e("radius", ""+radius);
+                if (Math.abs(radius) < 50) {
+                    Canvas canvas = TelemetryUtil.packet.fieldOverlay();
+                    //canvas.setStroke("green");
+                    canvas.strokeCircle(estimate.x - radius * Math.sin(estimate.heading), estimate.y + radius * Math.cos(estimate.heading), Math.abs(radius));
+                }
+
+                double targetFwd = 0.5*Math.signum(xError);
+                double targetTurn = ((TRACK_WIDTH)/2 / radius) * targetFwd;
+
+                double centripetal = centripetalTune*fwd*fwd/radius;
+
+                double fwd = targetFwd;
+                double turn = targetTurn;
+                double[] motorPowers = {
+                        fwd - turn - centripetal,
+                        fwd - turn + centripetal,
+                        fwd + turn - centripetal,
+                        fwd + turn + centripetal,
+                };
+                normalizeArray(motorPowers);
+                setMotorPowers(motorPowers[0],motorPowers[1],motorPowers[2],motorPowers[3]);
+
+                break;
             case GO_TO_POINT:
                 setMinPowersToOvercomeFriction();
                 PIDF();
@@ -428,8 +463,8 @@ public class Drivetrain {
         double relExpectedYError = globalExpectedYError*Math.cos(localizer.heading) - globalExpectedXError*Math.sin(localizer.heading);
 
         if (Math.abs(finalTargetPointDistance) < 20) { // if we are under threshold switch to predictive PID
-            fwd = Math.abs(relExpectedXError) > xThreshold / 2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
-            strafe = Math.abs(relExpectedYError) > yThreshold / 2 ? yPID.update(relExpectedYError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedYError) : 0;
+            fwd = Math.abs(relExpectedXError) > xThreshold/2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
+            strafe = Math.abs(relExpectedYError) > yThreshold/2 ? yPID.update(relExpectedYError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedYError) : 0;
         } else {
             fwd = Math.abs(xError) > xThreshold/2 ? xPID.update(xError, -maxPower, maxPower) + 0.05 * Math.signum(xError) : 0;
             strafe = Math.abs(yError) > yThreshold/2 ? yPID.update(yError, -maxPower, maxPower) + 0.05 * Math.signum(yError) : 0;
@@ -522,6 +557,16 @@ public class Drivetrain {
 
         TelemetryUtil.packet.fieldOverlay().setStroke("red");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(targetPoint.x, targetPoint.y, xThreshold);
+
+        Canvas canvas = TelemetryUtil.packet.fieldOverlay();
+        if (path != null) {
+            Pose2d last = path.poses.get(0);
+            for (int i = 1; i < path.poses.size(); i++) {
+                Pose2d next = path.poses.get(i);
+                canvas.strokeLine(last.x, last.y, next.x, next.y);
+                last = next;
+            }
+        }
     }
 
     boolean finalAdjustment = false;
