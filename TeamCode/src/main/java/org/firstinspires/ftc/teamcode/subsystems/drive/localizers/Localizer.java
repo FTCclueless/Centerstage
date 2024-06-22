@@ -188,9 +188,9 @@ public class Localizer {
                     poseHistory.get(i).add(changeInPosition);
                 }
 
-                TelemetryUtil.packet.put("changeInPosition.x", changeInPosition.x);
-                TelemetryUtil.packet.put("changeInPosition.y", changeInPosition.y);
-                TelemetryUtil.packet.put("changeInPosition.heading", Math.toDegrees(changeInPosition.heading));
+//                TelemetryUtil.packet.put("changeInPosition.x", changeInPosition.x);
+//                TelemetryUtil.packet.put("changeInPosition.y", changeInPosition.y);
+//                TelemetryUtil.packet.put("changeInPosition.heading", Math.toDegrees(changeInPosition.heading));
 
                 Log.e("changeInPosition.x", changeInPosition.x + "");
                 Log.e("changeInPosition.y", changeInPosition.y + "");
@@ -270,8 +270,7 @@ public class Localizer {
         if (sensors.imuJustUpdated) {
             headingDif += (imuHeading-lastImuHeading) - (odoHeading-lastOdoHeading);// This is error for heading from IMU
             headingDif = Utils.headingClip(headingDif);
-            Log.e("headingDifWithIMU", headingDif + "");
-            TelemetryUtil.packet.put("headingDifWithIMU", headingDif);
+//            TelemetryUtil.packet.put("headingDifWithIMU", headingDif);
             lastImuHeading = imuHeading;
             lastOdoHeading = odoHeading;
         }
@@ -397,7 +396,7 @@ public class Localizer {
         }
     }
 
-    double a = 0.003;
+    double a = 0.0045;
     double b = -0.0728;
     double c = 0.8062;
     double d = Math.sqrt(c/a);
@@ -410,7 +409,7 @@ public class Localizer {
             distance = totalVel*(getExpectedDistance(d)/d);
         }
 
-        if (totalVel <= 0.01) {
+        if (totalVel <= 5) {
             expected.x = x;
             expected.y = y;
             return;
@@ -439,9 +438,9 @@ public class Localizer {
         TelemetryUtil.packet.put("y", y);
         TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
 
-        TelemetryUtil.packet.put("x speed", relCurrentVel.x);
-        TelemetryUtil.packet.put("y speed", relCurrentVel.y);
-        TelemetryUtil.packet.put("turn speed (deg)", Math.toDegrees(relCurrentVel.heading));
+//        TelemetryUtil.packet.put("x speed", relCurrentVel.x);
+//        TelemetryUtil.packet.put("y speed", relCurrentVel.y);
+//        TelemetryUtil.packet.put("turn speed (deg)", Math.toDegrees(relCurrentVel.heading));
 
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");

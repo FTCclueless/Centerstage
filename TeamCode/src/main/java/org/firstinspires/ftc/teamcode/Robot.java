@@ -99,6 +99,7 @@ public class Robot {
         long start = System.currentTimeMillis();
         drivetrain.setPath(spline);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
+        drivetrain.setMaxPower(1);
         update();
 
         do {
