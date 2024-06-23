@@ -130,27 +130,38 @@ public class Drivetrain {
     }
 
     // leftFront, leftRear, rightRear, rightFront
-    double[] minPowersToOvercomeFriction = new double[] {0.3121803239920063, 0.3533249418072871, 0.36038420175052865, 0.39695077434023707};
+    double[] minPowersToOvercomeFriction = new double[] {
+        0.3121803239920063,
+        0.3533249418072871,
+        0.36038420175052865,
+        0.39695077434023707
+    };
 
     public void setMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[0]);
-        leftRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[1]);
-        rightRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[2]);
-        rightFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[3]);
+        leftFront.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[0]);
+        leftRear.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[1]);
+        rightRear.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[2]);
+        rightFront.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[3]);
+        for (PriorityMotor m : motors) {
+            m.setMinimumPowerToOvercomeKineticFriction(0.195);
+        }
     }
 
-    public void setLowerMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[0]/2);
-        leftRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[1]/2);
-        rightRear.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[2]/2);
-        rightFront.setMinimumPowerToOvercomeFriction(minPowersToOvercomeFriction[3]/2);
-    }
+    /*public void setLowerMinPowersToOvercomeFriction() {
+        leftFront.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[0]/2);
+        leftRear.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[1]/2);
+        rightRear.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[2]/2);
+        rightFront.setMinimumPowerToOvercomeStaticFriction(minPowersToOvercomeFriction[3]/2);
+    }*/
 
     public void resetMinPowersToOvercomeFriction() {
-        leftFront.setMinimumPowerToOvercomeFriction(0.0);
-        leftRear.setMinimumPowerToOvercomeFriction(0.0);
-        rightRear.setMinimumPowerToOvercomeFriction(0.0);
-        rightFront.setMinimumPowerToOvercomeFriction(0.0);
+        leftFront.setMinimumPowerToOvercomeStaticFriction(0.0);
+        leftRear.setMinimumPowerToOvercomeStaticFriction(0.0);
+        rightRear.setMinimumPowerToOvercomeStaticFriction(0.0);
+        rightFront.setMinimumPowerToOvercomeStaticFriction(0.0);
+        for (PriorityMotor m : motors) {
+            m.setMinimumPowerToOvercomeKineticFriction(0);
+        }
     }
 
     public Pose2d targetPoint = new Pose2d(0,0,0);
@@ -176,10 +187,10 @@ public class Drivetrain {
     public static double yBrakingSpeedThreshold = 16;
     public static double yBrakingPower = -0.1;
 
-    public static double centripetalTune = 23;
+    public static double centripetalTune = 0.5;
     public static double finalPIDThreshold = 9;
     public static double slowdownPoints = 3;
-    public static double strafeTune = 0.25;
+    public static double strafeTune = 0.15;
     boolean slowDown = false;
 
     public static double turnBrakingAngleThreshold = 20; // in degrees
@@ -196,7 +207,7 @@ public class Drivetrain {
 
     Spline path = null;
     int pathIndex = 0;
-    int pathRadius = 22;
+    public static int pathRadius = 20;
 
     HuskyLens.Block[] huskyLensBlocks;
 
@@ -261,7 +272,10 @@ public class Drivetrain {
                 double speed = 0.25 + 0.75*Math.min(Math.abs(radius), 200)/200.0;
 
                 double targetFwd = maxPower*speed*Math.signum(xError);
-                double targetTurn = (1.8*(TRACK_WIDTH)/ radius) * targetFwd;
+                if (slowDown) {
+                    targetFwd *= 0.3;
+                }
+                double targetTurn = ((3.88193 * Math.exp(-3.94484 * Math.abs(targetFwd)) + 0.725107) * (TRACK_WIDTH)/ radius) * targetFwd;
 
                 double centripetal = centripetalTune*targetFwd*targetFwd/radius;
 
@@ -281,7 +295,7 @@ public class Drivetrain {
 
 
                 double strafe = Math.abs(relY) > 2 ? relY*strafeTune : 0;
-                strafe = Math.max(Math.min(strafe, 0.4), -0.4);
+                strafe = Math.max(Math.min(strafe, 0.2), -0.2);
 
                 double fwd = targetFwd;
                 double turn = targetTurn;
@@ -292,11 +306,7 @@ public class Drivetrain {
                         fwd + turn + centripetal + strafe,
                 };
                 normalizeArray(motorPowers);
-                if (slowDown) {
-                    for (int i = 0; i < motorPowers.length; i++) {
-                        motorPowers[i] = motorPowers[i]*0.3;
-                    }
-                }
+
                 setMotorPowers(motorPowers[0],motorPowers[1],motorPowers[2],motorPowers[3]);
 
                 break;
@@ -524,8 +534,6 @@ public class Drivetrain {
         double strafe = Math.abs(yError) > finalYThreshold/2 ? finalYPID.update(yError, -maxPower, maxPower) : 0;
         double turn = Math.abs(turnError) > Math.toRadians(finalTurnThreshold)/2 ? finalTurnPID.update(turnError, -maxPower, maxPower) : 0;
 
-        setLowerMinPowersToOvercomeFriction();
-
         Vector2 move = new Vector2(fwd, strafe);
         setMoveVector(move, turn);
     }
@@ -705,7 +713,7 @@ public class Drivetrain {
         rightFront.setTargetPowerSmooth(rf);
     }
 
-    private void normalizeArray(double[] arr) {
+    public void normalizeArray(double[] arr) {
         double largest = 1;
         for (int i = 0; i < arr.length; i++) {
             largest = Math.max(largest, Math.abs(arr[i]));

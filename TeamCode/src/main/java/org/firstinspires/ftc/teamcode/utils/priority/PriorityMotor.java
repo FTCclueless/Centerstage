@@ -14,7 +14,9 @@ public class PriorityMotor extends PriorityDevice {
 
     Sensors sensors;
 
-    private double minPowerToOvercomeFriction = 0.0;
+    private double minPowerToOvercomeStaticFriction = 0.0;
+    private double minPowerToOvercomeKineticFriction = 0.0;
+    private long lastZeroTime = 0;
 
     public PriorityMotor(DcMotorEx motor, String name, double basePriority, double priorityScale, double multiplier, Sensors sensors) {
         this(new DcMotorEx[] {motor}, name, basePriority, priorityScale, new double[]{multiplier}, sensors);
@@ -30,22 +32,29 @@ public class PriorityMotor extends PriorityDevice {
         this.name = name;
         this.sensors = sensors;
 
-        minPowerToOvercomeFriction = 0.0;
+        minPowerToOvercomeStaticFriction = 0.0;
+        minPowerToOvercomeKineticFriction = 0.0;
+        lastZeroTime = System.currentTimeMillis();
         callLengthMillis = 1.6;
         this.multipier = multiplier;
     }
 
-    public void setMinimumPowerToOvercomeFriction (double value) {
-        minPowerToOvercomeFriction = value;
+    public void setMinimumPowerToOvercomeStaticFriction (double value) {
+        minPowerToOvercomeStaticFriction = value;
+    }
+
+    public void setMinimumPowerToOvercomeKineticFriction(double value) {
+        minPowerToOvercomeKineticFriction = value;
     }
 
     public void setTargetPower(double power) {
         if (power == 0) {
             this.power = 0;
+            lastZeroTime = System.currentTimeMillis();
             return;
         }
         power = Utils.minMaxClip(power, -1.0, 1.0);
-        double m = minPowerToOvercomeFriction * (12/sensors.getVoltage());
+        double m = (System.currentTimeMillis() > 200 + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (12/sensors.getVoltage());
         power *= 1-m;
         this.power = power + m * Math.signum(power);
     }
@@ -54,16 +63,20 @@ public class PriorityMotor extends PriorityDevice {
     public void setTargetPowerSmooth(double power) {
         if (power == 0) {
             this.power = 0;
+            lastZeroTime = System.currentTimeMillis();
             return;
         }
         power = Utils.minMaxClip(power, -1.0, 1.0);
-        double m = minPowerToOvercomeFriction * (13.5/sensors.getVoltage());
+        double m = (System.currentTimeMillis() > 200 + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (13.5/sensors.getVoltage());
         power *= 1-m;
         power = power + m * Math.signum(power);
         this.power = power*k + this.lastPower*(1-k);
     }
 
     public void setPowerForced(double power) {
+        if (power == 0)
+            lastZeroTime = System.currentTimeMillis();
+
         for (int i = 0; i < motor.length; i ++) {
             motor[i].setPower(power * multipier[i]);
         }
