@@ -110,12 +110,6 @@ public class Intake {
     }
 
     public void update() {
-        TelemetryUtil.packet.put("Intake Motor State", motorState);
-        TelemetryUtil.packet.put("Intake Stall State", stallState);
-        TelemetryUtil.packet.put("Intake Pixel Check State", pixelCheckState);
-
-        TelemetryUtil.packet.put("Intake Current", intakeCurrent);
-        TelemetryUtil.packet.put("Intake Pixel Color Sensor Dist", dist);
 
         switch (motorState) {
             case ON:

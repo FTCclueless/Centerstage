@@ -19,6 +19,7 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.OldLocalizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -55,6 +56,7 @@ public class Drivetrain {
     private Sensors sensors;
 
     public Localizer localizer;
+    public OldLocalizer oldLocalizer;
     public Vision vision;
     public Robot robot;
 
@@ -108,11 +110,13 @@ public class Drivetrain {
 
         if (vision != null) {
             if (vision.tagProcessor != null) {
-                localizer = new Localizer(hardwareMap, sensors,true, true, vision, this);
+                localizer = new Localizer(hardwareMap, sensors,true, false, vision, this);
+                oldLocalizer = new OldLocalizer(hardwareMap, sensors,true, false, vision, this);
                 Log.e("using vision localizer", "");
             }
         } else {
-            localizer = new Localizer(hardwareMap, sensors,false, true, null, this);
+            localizer = new Localizer(hardwareMap, sensors,false, false, null, this);
+            oldLocalizer = new OldLocalizer(hardwareMap, sensors,false, false, null,this);
             Log.e("NOT using vision localizer", "");
         }
         setMinPowersToOvercomeFriction();
@@ -585,7 +589,9 @@ public class Drivetrain {
 
     public void updateLocalizer() {
         localizer.updateEncoders(sensors.getOdometry());
+        oldLocalizer.updateEncoders(sensors.getOdometry());
         localizer.update();
+        oldLocalizer.update();
     }
 
     public void updateTelemetry () {

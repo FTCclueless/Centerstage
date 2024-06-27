@@ -7,6 +7,7 @@ import android.util.Log;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.sun.source.doctree.StartElementTree;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
@@ -61,8 +62,8 @@ public class Localizer {
 
         encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,4.467337443413*0.99457633),  -1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-4.81811659*0.99457633),1); // right
+        encoders[0] = new Encoder(new Pose2d(0,4.467337443413*1.01439064),  -1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-4.81811659*1.01439064),1); // right
         encoders[2] = new Encoder(new Pose2d(-6.87664384+0.86320999, 0),  -1); // back (7.1660442092285175)
 
         this.useAprilTag = useAprilTag;
@@ -132,21 +133,27 @@ public class Localizer {
         // constant accel
         Pose2d lastRelativePose = relHistory.get(relHistory.size() - 1);
 
-        double vrx = (relDeltaX + lastRelativePose.x)/2;
-        double arx = 2*(relDeltaX-vrx);
+        double lastLoop = loopTime;
+
+        if (nanoTimes.size() > 1) {
+            lastLoop = (nanoTimes.get(0) - nanoTimes.get(1))/1.0E9;
+        }
+
+        double arx = (relDeltaX*lastLoop - lastRelativePose.x*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
+        double vrx = relDeltaX/loopTime - arx*loopTime;
         //v_x = vrx + arx*t
-        double vry = (relDeltaY + lastRelativePose.y)/2;
-        double ary = 2*(relDeltaY-vry);
+        double ary = (relDeltaY*lastLoop - lastRelativePose.y*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
+        double vry = relDeltaY/loopTime - ary*loopTime;
         //v_y = vry + ary*t
-        double vrh = (deltaHeading + lastRelativePose.heading)/2;
-        double arh = (deltaHeading - vrh);
+        double arh = (deltaHeading*lastLoop - lastRelativePose.heading*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
+        double vrh = deltaHeading/loopTime - arh*loopTime;
         //h = h1 + vry*t + ary*t^2
 
-        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,arx},new double[] {heading,vrh,arh});
-        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,ary},new double[] {heading,vrh,arh});
+        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,2*arx},new double[] {heading,vrh,2*arh});
+        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,2*ary},new double[] {heading,vrh,2*arh});
 
-        x += xQuadrature.evaluateCos(fidelity, 0, 1, 0) - yQuadrature.evaluateSin(fidelity, 0, 1, 0);
-        y += yQuadrature.evaluateCos(fidelity, 0, 1, 0) + xQuadrature.evaluateSin(fidelity, 0, 1, 0);
+        x += xQuadrature.evaluateCos(fidelity, 0, loopTime, 0) - yQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
+        y += yQuadrature.evaluateCos(fidelity, 0, loopTime, 0) + xQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
 
         odoHeading = (encoders[1].getCurrentDist()-encoders[0].getCurrentDist())/(leftY-rightY);
 
@@ -401,7 +408,7 @@ public class Localizer {
     double c = 0.8062;
     double d = Math.sqrt(c/a);
 
-    private void updateExpected() {
+    protected void updateExpected() {
         double totalVel = Math.sqrt(Math.pow(currentVel.x, 2) + Math.pow(currentVel.y, 2));
         double distance = getExpectedDistance(totalVel);
 
@@ -437,6 +444,10 @@ public class Localizer {
         TelemetryUtil.packet.put("x", x);
         TelemetryUtil.packet.put("y", y);
         TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
+
+        TelemetryUtil.packet.put("sparkfun x", sensors.getSparkPose().x);
+        TelemetryUtil.packet.put("sparkfun y", sensors.getSparkPose().y);
+        TelemetryUtil.packet.put("sparkfun h", sensors.getSparkPose().h);
 
 //        TelemetryUtil.packet.put("x speed", relCurrentVel.x);
 //        TelemetryUtil.packet.put("y speed", relCurrentVel.y);

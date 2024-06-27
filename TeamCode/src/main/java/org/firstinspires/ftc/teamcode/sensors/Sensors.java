@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
+import org.firstinspires.ftc.teamcode.utils.SparkFunOTOS;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
 import org.firstinspires.ftc.teamcode.utils.priority.PriorityMotor;
@@ -47,6 +48,10 @@ public class Sensors {
     private long imuLastUpdateTime = System.currentTimeMillis();
     private double imuHeading = 0.0;
     public boolean useIMU; // don't change the value here. Change in drivetrain.
+
+    private SparkFunOTOS otos;
+    private SparkFunOTOS.Pose2D sparkPose;
+
     HuskyLens.Block[] huskyLensBlocks;
 
     private double leftFrontMotorCurrent, leftRearMotorCurrent, rightRearMotorCurrent, rightFrontMotorCurrent;
@@ -62,6 +67,17 @@ public class Sensors {
         frontUltrasonic = hardwareMap.get(AnalogInput.class, "frontUltrasonic");
 
         depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
+        otos = hardwareMap.get(SparkFunOTOS.class, "sparkfunSensor");
+        otos.calibrateImu();
+        SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D( -3.333,2.9375, 0);
+        otos.setOffset(offset);
+        otos.setLinearScalar(1.010);
+        otos.setAngularScalar(0.992);
+        otos.resetTracking();
+        SparkFunOTOS.Pose2D currentPosition = new SparkFunOTOS.Pose2D(0, 0, 0);
+        otos.setPosition(currentPosition);
+
+
 
         initSensors(hardwareMap);
     }
@@ -118,6 +134,9 @@ public class Sensors {
             imuLastUpdateTime = currTime;
             imuJustUpdated = true;
         }
+
+        sparkPose = otos.getPosition();
+
 
         timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
 
@@ -177,6 +196,10 @@ public class Sensors {
 
     public double getImuHeading() {
         return imuHeading;
+    }
+
+    public SparkFunOTOS.Pose2D getSparkPose() {
+        return sparkPose;
     }
 
     public double getVoltage() { return voltage; }
