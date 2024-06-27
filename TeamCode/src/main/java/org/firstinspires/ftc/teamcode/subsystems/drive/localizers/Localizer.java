@@ -131,7 +131,7 @@ public class Localizer {
         double relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
 
         // constant accel
-        Pose2d lastRelativePose = relHistory.get(relHistory.size() - 1);
+        Pose2d lastRelativePose = relHistory.get(0);
 
         double lastLoop = loopTime;
 
@@ -149,8 +149,8 @@ public class Localizer {
         double vrh = deltaHeading/loopTime - arh*loopTime;
         //h = h1 + vry*t + ary*t^2
 
-        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,2*arx},new double[] {heading,vrh,2*arh});
-        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,2*ary},new double[] {heading,vrh,2*arh});
+        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,2*arx},new double[] {heading,vrh,arh});
+        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,2*ary},new double[] {heading,vrh,arh});
 
         x += xQuadrature.evaluateCos(fidelity, 0, loopTime, 0) - yQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
         y += yQuadrature.evaluateCos(fidelity, 0, loopTime, 0) + xQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
@@ -215,7 +215,7 @@ public class Localizer {
 
         currentPose = new Pose2d(x, y, heading);
 
-        nanoTimes.add(0, System.nanoTime());
+        nanoTimes.add(0, currentTime);
         poseHistory.add(0,currentPose.clone());
 
         updateVelocity();

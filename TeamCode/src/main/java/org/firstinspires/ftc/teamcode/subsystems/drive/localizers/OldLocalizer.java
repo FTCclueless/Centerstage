@@ -43,7 +43,7 @@ public class OldLocalizer extends Localizer{
         double relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
 
         // constant accel
-        Pose2d lastRelativePose = relHistory.get(relHistory.size() - 1);
+        Pose2d lastRelativePose = relHistory.get(0);
 
         double vrx = (relDeltaX + lastRelativePose.x)/2;
         double arx = 2*(relDeltaX-vrx);
