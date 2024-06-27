@@ -68,6 +68,8 @@ public class Sensors {
 
         depositLimitSwitch = hardwareMap.get(DigitalChannel.class, "depositLimitSwitch");
         otos = hardwareMap.get(SparkFunOTOS.class, "sparkfunSensor");
+        otos.setLinearUnit(SparkFunOTOS.LinearUnit.INCHES);
+        otos.setAngularUnit(SparkFunOTOS.AngularUnit.RADIANS);
         otos.calibrateImu();
         SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D( -3.333,2.9375, 0);
         otos.setOffset(offset);

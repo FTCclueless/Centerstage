@@ -109,6 +109,9 @@ public class Localizer {
     double aprilTagHeadingMerge = 0;
     double fidelity = 1E-8;
 
+    public double relDeltaX;
+    public double relDeltaY;
+
     public void update() {
         long currentTime = System.nanoTime();
         double loopTime = (double)(currentTime-lastTime)/1.0E9;
@@ -126,9 +129,9 @@ public class Localizer {
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
-        double relDeltaY = deltaBack - deltaHeading*backX;
+         relDeltaY = deltaBack - deltaHeading*backX;
         //This is a weighted average for the amount moved forward with the weights being how far away the other one is from the center
-        double relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
+         relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
 
         // constant accel
         Pose2d lastRelativePose = relHistory.get(0);
