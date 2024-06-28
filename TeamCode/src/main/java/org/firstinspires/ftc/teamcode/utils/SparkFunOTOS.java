@@ -8,9 +8,11 @@ package org.firstinspires.ftc.teamcode.utils;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.configuration.annotations.DeviceProperties;
 import com.qualcomm.robotcore.hardware.configuration.annotations.I2cDeviceType;
 
@@ -290,6 +292,8 @@ public class SparkFunOTOS extends I2cDeviceSynchDevice {
 
         // Set the I2C address to the default
         deviceClient.setI2cAddress(I2cAddr.create7bit(DEFAULT_ADDRESS));
+
+        deviceClient.enableWriteCoalescing(true);
     }
 
     @Override
