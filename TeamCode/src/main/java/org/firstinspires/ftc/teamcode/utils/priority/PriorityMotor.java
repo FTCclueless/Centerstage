@@ -15,6 +15,7 @@ public class PriorityMotor extends PriorityDevice {
     Sensors sensors;
 
     private double minPowerToOvercomeStaticFriction = 0.0;
+    public static final int SWITCH_FROM_STATIC_TO_KINETIC_FRICTION = 75;
     private double minPowerToOvercomeKineticFriction = 0.0;
     private long lastZeroTime = 0;
 
@@ -48,26 +49,26 @@ public class PriorityMotor extends PriorityDevice {
     }
 
     public void setTargetPower(double power) {
-        if (power == 0) {
-            this.power = 0;
+        if (lastPower == 0) {
             lastZeroTime = System.currentTimeMillis();
-            return;
         }
         power = Utils.minMaxClip(power, -1.0, 1.0);
-        double m = (System.currentTimeMillis() > 200 + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (12/sensors.getVoltage());
+        double m = (System.currentTimeMillis() > SWITCH_FROM_STATIC_TO_KINETIC_FRICTION + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (12/sensors.getVoltage());
         power *= 1-m;
         this.power = power + m * Math.signum(power);
     }
 
     double k = 0.7; // 0.5
     public void setTargetPowerSmooth(double power) {
+        if (lastPower == 0){
+            lastZeroTime = System.currentTimeMillis();
+        }
         if (power == 0) {
             this.power = 0;
-            lastZeroTime = System.currentTimeMillis();
             return;
         }
         power = Utils.minMaxClip(power, -1.0, 1.0);
-        double m = (System.currentTimeMillis() > 200 + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (13.5/sensors.getVoltage());
+        double m = (System.currentTimeMillis() > SWITCH_FROM_STATIC_TO_KINETIC_FRICTION + lastZeroTime ? minPowerToOvercomeKineticFriction : minPowerToOvercomeStaticFriction) * (13.5/sensors.getVoltage());
         power *= 1-m;
         power = power + m * Math.signum(power);
         this.power = power*k + this.lastPower*(1-k);
@@ -103,13 +104,16 @@ public class PriorityMotor extends PriorityDevice {
             return 0;
         }
 
-        return basePriority + Math.abs(power-lastPower) + (System.nanoTime() - lastUpdateTime)/1000000.0 * priorityScale;
+        return basePriority + priorityScale * (System.nanoTime() - lastUpdateTime)/1.0E6 * Math.abs(power-lastPower);
     }
 
     @Override
     protected void update() {
         for (int i = 0; i < motor.length; i ++) {
             motor[i].setPower(power * multipier[i]);
+        }
+        if (power == 0){
+            lastZeroTime = System.currentTimeMillis();
         }
         lastUpdateTime = System.nanoTime();
         lastPower = power;
