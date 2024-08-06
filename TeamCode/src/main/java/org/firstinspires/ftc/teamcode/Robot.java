@@ -126,7 +126,7 @@ public class Robot {
                 deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight));
             }
 
-            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizers[0].getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
             }
 
@@ -151,7 +151,7 @@ public class Robot {
                 intake.off();
             }
 
-            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < intakeStopThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizers[0].getPoseEstimate().x < intakeStopThreshold) {
                 intake.reverse();
             }
 
@@ -171,12 +171,12 @@ public class Robot {
         do {
             intake.actuationFullyUp();
 
-            if (drivetrain.localizer.getPoseEstimate().x > depositTriggerThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > depositTriggerThreshold) {
                 intake.off();
                 deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
             }
 
-            if (drivetrain.localizer.getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizer.getPoseEstimate().x < depositTriggerThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > intakeReverseThreshold && drivetrain.localizers[0].getPoseEstimate().x < depositTriggerThreshold) {
                 intake.reverse();
             }
 
@@ -267,7 +267,7 @@ public class Robot {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
             update();
@@ -278,7 +278,7 @@ public class Robot {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
             }
             update();
@@ -289,7 +289,7 @@ public class Robot {
         long start = System.currentTimeMillis();
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(((boolean) func.call()) && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > xThreshold) {
                 deposit.depositAt(depositVector3); // async call to deposit
             }
             update();
@@ -307,12 +307,12 @@ public class Robot {
         drivetrain.goToPoint(pose, finalAdjustment, stop, 1.0); // need this to start the process so thresholds don't immediately become true
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
             intake.actuationFullyUp();
-            if (drivetrain.localizer.getPoseEstimate().x > depositThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > depositThreshold) {
                 intake.off();
                 deposit.depositAt(new Vector3(5, 0, movingSlidesDepositHeight)); // async call to deposit
             }
 
-            if (drivetrain.localizer.getPoseEstimate().x > reverseIntakeThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > reverseIntakeThreshold) {
                 intake.reverse();
             }
             update();
@@ -329,7 +329,7 @@ public class Robot {
         drivetrain.setPath(path);
         drivetrain.state = Drivetrain.State.GO_TO_POINT;
         while(opMode.opModeIsActive() && System.currentTimeMillis() - start <= 10000 && drivetrain.isBusy()) {
-            if (drivetrain.localizer.getPoseEstimate().x > xThreshold) {
+            if (drivetrain.localizers[0].getPoseEstimate().x > xThreshold) {
                 intake.reverse();
                 deposit.depositAt(depositVector3); // async call to deposit
             }

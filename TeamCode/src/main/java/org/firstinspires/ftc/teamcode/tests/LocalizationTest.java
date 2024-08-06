@@ -53,7 +53,6 @@ public class LocalizationTest extends LinearOpMode {
             TelemetryUtil.packet.put("rightOdo", sensors.getOdometry()[1]);
             TelemetryUtil.packet.put("backOdo", sensors.getOdometry()[2]);
             robot.update();
-            currPose = sensors.getSparkPose();
             double changeX = currPose.x - lastPose.x;
             double changeY = currPose.y - lastPose.y;
             double chnageH = currPose.h - lastPose.h;
@@ -64,7 +63,7 @@ public class LocalizationTest extends LinearOpMode {
             String buffer = "";
 
 
-            buffer += robot.drivetrain.localizer.relDeltaX + "," + relChangeX + "," + robot.drivetrain.localizer.relDeltaY + "," + relChangeY + Globals.LOOP_TIME + "," + Math.toDegrees(chnageH) + "\n";
+            buffer += robot.drivetrain.localizers[0].relDeltaX + "," + relChangeX + "," + robot.drivetrain.localizers[0].relDeltaY + "," + relChangeY + Globals.LOOP_TIME + "," + Math.toDegrees(chnageH) + "\n";
 
             try {
                 fw.write(buffer);

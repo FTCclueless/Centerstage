@@ -18,8 +18,14 @@ import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigu
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.BNOLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.IMULocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.IMUMergeLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.IMUMergeSoloLocalizer;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.OldLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.OneHundredMSIMULocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.PID;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -55,7 +61,7 @@ public class Drivetrain {
     private HardwareQueue hardwareQueue;
     private Sensors sensors;
 
-    public Localizer localizer;
+    public Localizer[] localizers;
     public OldLocalizer oldLocalizer;
     public Vision vision;
     public Robot robot;
@@ -108,17 +114,14 @@ public class Drivetrain {
         leftFront.motor[0].setDirection(DcMotor.Direction.REVERSE);
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
-        if (vision != null) {
-            if (vision.tagProcessor != null) {
-                localizer = new Localizer(hardwareMap, sensors,true, false, vision, this);
-                oldLocalizer = new OldLocalizer(hardwareMap, sensors,true, false, vision, this);
-                Log.e("using vision localizer", "");
-            }
-        } else {
-            localizer = new Localizer(hardwareMap, sensors,false, false, null, this);
-            oldLocalizer = new OldLocalizer(hardwareMap, sensors,false, false, null,this);
-            Log.e("NOT using vision localizer", "");
-        }
+        localizers = new Localizer[]{
+                new IMULocalizer(hardwareMap, sensors, this, "#ff0000", "#00ff00"),
+                new IMUMergeLocalizer(hardwareMap, sensors, this, "#ffff00", "#00ffff"),
+                new IMUMergeSoloLocalizer(hardwareMap, sensors, this, "#0000ff", "#ff00ff"),
+                new OneHundredMSIMULocalizer(hardwareMap, sensors, this, "#aa0000", "#00ee00"),
+                new TwoWheelLocalizer(hardwareMap, sensors, this, "#aaaa00", "#00aaaa"),
+                new Localizer(hardwareMap, sensors, this, "#0000aa", "#aa00aa")
+        };
         setMinPowersToOvercomeFriction();
     }
 
@@ -220,9 +223,9 @@ public class Drivetrain {
             return;
         }
         updateLocalizer();
-        Pose2d estimate = localizer.getPoseEstimate();
+        Pose2d estimate = localizers[0].getPoseEstimate();
         ROBOT_POSITION = new Pose2d(estimate.x, estimate.y,estimate.heading);
-        ROBOT_VELOCITY = localizer.getRelativePoseVelocity();
+        ROBOT_VELOCITY = localizers[0].getRelativePoseVelocity();
 
 
         if (path != null) {
@@ -449,12 +452,12 @@ public class Drivetrain {
     }
 
     public void calculateErrors() {
-        double deltaX = (targetPoint.x - localizer.x);
-        double deltaY = (targetPoint.y - localizer.y);
+        double deltaX = (targetPoint.x - localizers[0].x);
+        double deltaY = (targetPoint.y - localizers[0].y);
 
-        xError = Math.cos(localizer.heading)*deltaX + Math.sin(localizer.heading)*deltaY;
-        yError = -Math.sin(localizer.heading)*deltaX + Math.cos(localizer.heading)*deltaY;
-        turnError = targetPoint.heading-localizer.heading;
+        xError = Math.cos(localizers[0].heading)*deltaX + Math.sin(localizers[0].heading)*deltaY;
+        yError = -Math.sin(localizers[0].heading)*deltaX + Math.cos(localizers[0].heading)*deltaY;
+        turnError = targetPoint.heading-localizers[0].heading;
 
         while(Math.abs(turnError) > Math.PI ){
             turnError -= Math.PI * 2 * Math.signum(turnError);
@@ -497,18 +500,18 @@ public class Drivetrain {
     double fwd, strafe, turn, turnAdjustThreshold, finalTargetPointDistance;
 
     public void PIDF() {
-        double globalExpectedXError = (targetPoint.x - localizer.expected.x);
-        double globalExpectedYError = (targetPoint.y - localizer.expected.y);
+        double globalExpectedXError = (targetPoint.x - localizers[0].expected.x);
+        double globalExpectedYError = (targetPoint.y - localizers[0].expected.y);
 
         if (path != null) {
-            finalTargetPointDistance = Math.abs(Utils.calculateDistanceBetweenPoints(localizer.getPoseEstimate(), finalTargetPoint));
+            finalTargetPointDistance = Math.abs(Utils.calculateDistanceBetweenPoints(localizers[0].getPoseEstimate(), finalTargetPoint));
         } else {
             finalTargetPointDistance = 0;
         }
 
         // converting from global to relative
-        double relExpectedXError = globalExpectedXError*Math.cos(localizer.heading) + globalExpectedYError*Math.sin(localizer.heading);
-        double relExpectedYError = globalExpectedYError*Math.cos(localizer.heading) - globalExpectedXError*Math.sin(localizer.heading);
+        double relExpectedXError = globalExpectedXError*Math.cos(localizers[0].heading) + globalExpectedYError*Math.sin(localizers[0].heading);
+        double relExpectedYError = globalExpectedYError*Math.cos(localizers[0].heading) - globalExpectedXError*Math.sin(localizers[0].heading);
 
         if (Math.abs(finalTargetPointDistance) < 20) { // if we are under threshold switch to predictive PID
             fwd = Math.abs(relExpectedXError) > xThreshold/2 ? xPID.update(relExpectedXError, -maxPower, maxPower) + 0.05 * Math.signum(relExpectedXError) : 0;
@@ -588,10 +591,11 @@ public class Drivetrain {
     }
 
     public void updateLocalizer() {
-        localizer.updateEncoders(sensors.getOdometry());
-        oldLocalizer.updateEncoders(sensors.getOdometry());
-        localizer.update();
-        oldLocalizer.update();
+        for (Localizer l : localizers) {
+            l.updateEncoders(sensors.getOdometry());
+            l.update();
+        }
+        //oldLocalizer.update();
     }
 
     public void updateTelemetry () {
@@ -768,7 +772,7 @@ public class Drivetrain {
 
     public void rotate(Gamepad gamepad, double heading, double threshold, double maxPower) {
         if (heading != lastTargetPoint.heading) { // if we set a new target point we reset integral
-            this.targetPoint = new Pose2d(localizer.x, localizer.y, Math.toRadians(heading));
+            this.targetPoint = new Pose2d(localizers[0].x, localizers[0].y, Math.toRadians(heading));
             this.maxPower = Math.abs(maxPower);
 
             lastTargetPoint = targetPoint;
@@ -792,11 +796,11 @@ public class Drivetrain {
     }
 
     public Pose2d getPoseEstimate() {
-        return localizer.getPoseEstimate();
+        return localizers[0].getPoseEstimate();
     }
 
     public void setPoseEstimate(Pose2d pose2d) {
-        localizer.setPoseEstimate(pose2d);
+        localizers[0].setPoseEstimate(pose2d);
     }
 
     public Vector2 lineCircleIntersection(Pose2d start, Pose2d end, Pose2d robot, double radius) {

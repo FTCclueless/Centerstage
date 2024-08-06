@@ -740,6 +740,12 @@ public class SparkFunOTOS extends I2cDeviceSynchDevice {
         acc.set(regsToPose(Arrays.copyOfRange(rawData, 12, 18), INT16_TO_MPSS, INT16_TO_RPSS));
     }
 
+    public double getHeading() {
+        ByteBuffer data = ByteBuffer.wrap(deviceClient.read(REG_POS_HL, 2));
+        data.order(java.nio.ByteOrder.LITTLE_ENDIAN);
+        return data.getShort(0) * INT16_TO_RAD * _radToUnit;
+    }
+
     /**
      * Gets the position, velocity, acceleration, and standard deviation
      * of each in a single burst read

@@ -31,7 +31,7 @@ public class KineticKStaticTuner extends LinearOpMode {
         double power = 0.0;
 
         while (opModeIsActive()) {
-            double velx = robot.drivetrain.localizer.getRelativePoseVelocity().x;
+            double velx = robot.drivetrain.localizers[0].getRelativePoseVelocity().x;
 
             power += scalar * (velx > 5.0 ? -1 : 1);
 

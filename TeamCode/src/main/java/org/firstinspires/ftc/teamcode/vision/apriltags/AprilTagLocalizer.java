@@ -1,14 +1,11 @@
 package org.firstinspires.ftc.teamcode.vision.apriltags;
 
 
-import android.nfc.Tag;
-import android.util.Log;
-
 import com.acmerobotics.dashboard.canvas.Canvas;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.BNOLocalizer;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Globals;
@@ -20,9 +17,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AprilTagLocalizer {
     private AprilTagProcessor tagProcessor;

@@ -55,7 +55,7 @@ public class DecelTuner extends LinearOpMode {
                 gamepad1.rumble(1.0, 1.0, 100);
                 robot.drivetrain.setMotorPowers(0, 0, 0, 0);
 
-                if (robot.drivetrain.localizer.getRelativePoseVelocity().toVec3().getMag() <= 0.2) {
+                if (robot.drivetrain.localizers[0].getRelativePoseVelocity().toVec3().getMag() <= 0.2) {
                     Vector3 end = robot.drivetrain.getPoseEstimate().toVec3();
                     delta = Vector3.subtract(end, start.toVec3()).toPose();
                     buffer += pose2dCSV(vnaught) + "," + pose2dCSV(delta) + "\n";
@@ -65,9 +65,9 @@ public class DecelTuner extends LinearOpMode {
             DashboardUtil.drawRobot(TelemetryUtil.packet.fieldOverlay(), expectedEnd, "#00FF00");
 
             if (x) {
-                vnaught = robot.drivetrain.localizer.getRelativePoseVelocity();
-                start = robot.drivetrain.localizer.getPoseEstimate();
-                expectedEnd = robot.drivetrain.localizer.expected.clone();
+                vnaught = robot.drivetrain.localizers[0].getRelativePoseVelocity();
+                start = robot.drivetrain.localizers[0].getPoseEstimate();
+                expectedEnd = robot.drivetrain.localizers[0].expected.clone();
                 stopToggle = true;
             }
             if (bty.isToggled(y)) {

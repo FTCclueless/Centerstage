@@ -1,33 +1,41 @@
 package org.firstinspires.ftc.teamcode.subsystems.drive.localizers;
 
-import android.graphics.Color;
+import static org.firstinspires.ftc.teamcode.utils.Globals.GET_LOOP_TIME;
+
+import android.util.Log;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
 import org.firstinspires.ftc.teamcode.utils.DashboardUtil;
 import org.firstinspires.ftc.teamcode.utils.Encoder;
+import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.MovingAverage;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
+import org.firstinspires.ftc.teamcode.vision.Vision;
+import org.firstinspires.ftc.teamcode.vision.apriltags.AprilTagLocalizer;
 
 import java.util.ArrayList;
 
-public class Localizer {
-    protected Sensors sensors;
-    protected Drivetrain drivetrain;
+@Config
+// TODO: Get to cookin in teleop -- Eric
+public class BNOLocalizer {
+    /*Sensors sensors;
+    Drivetrain drivetrain;
 
     public Encoder[] encoders;
-    protected long lastTime = System.nanoTime();
+    long lastTime = System.nanoTime();
 
     public double x = 0;
     public double y = 0;
     public double heading = 0;
 
-    protected double odoHeading = 0;
+    double odoHeading = 0;
 
     public Pose2d expected = new Pose2d(0, 0, 0);
     public Pose2d currentPose = new Pose2d(0,0,0);
@@ -36,28 +44,33 @@ public class Localizer {
     public Pose2d relCurrentAcc = new Pose2d(0,0,0);
     public Pose2d currentPowerVector = new Pose2d(0,0,0);
 
-    protected ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
-    protected ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
-    protected ArrayList<Long> nanoTimes = new ArrayList<Long>();
+    ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
+    ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
+    ArrayList<Long> nanoTimes = new ArrayList<Long>();
 
-    protected Pose2d aprilTagPose = new Pose2d(0,0,0);
+    public boolean useAprilTag;
+    Pose2d aprilTagPose = new Pose2d(0,0,0);
 
-    protected double maxVel = 0.0;
-    protected double startHeadingOffset = 0;
-    protected String color;
-    protected String expectedColor;
+    AprilTagLocalizer aprilTagLocalizer;
+    double maxVel = 0.0;
 
-    public Localizer(HardwareMap hardwareMap, Sensors sensors, Drivetrain drivetrain, String color, String expectedColor) {
+    public BNOLocalizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
         this.sensors = sensors;
+        this.useAprilTag = useAprilTag;
         this.drivetrain = drivetrain;
-        this.color = color;
-        this.expectedColor = expectedColor;
 
         encoders = new Encoder[3];
 
         encoders[0] = new Encoder(new Pose2d(0,4.467337443413*1.01439064),  -1); // left
         encoders[1] = new Encoder(new Pose2d(0,-4.81811659*1.01439064),1); // right
         encoders[2] = new Encoder(new Pose2d(-6.87664384+0.86320999, 0),  -1); // back (7.1660442092285175)
+
+        this.useAprilTag = useAprilTag;
+        this.sensors.useIMU = useIMU;
+
+        if (useAprilTag) {
+            aprilTagLocalizer = new AprilTagLocalizer(vision, this);
+        }
 
         relHistory.add(new Pose2d(0,0,0));
         poseHistory.add(new Pose2d(0,0,0));
@@ -84,18 +97,19 @@ public class Localizer {
 
     public void setPoseEstimate(Pose2d pose2d) {
         setPose(pose2d.getX(), pose2d.getY(), pose2d.getHeading());
-        startHeadingOffset = pose2d.getHeading();
+        Globals.START_HEADING_OFFSET = pose2d.getHeading();
     }
 
     public Pose2d getRelativePoseVelocity() {
         return new Pose2d(relCurrentVel.x, relCurrentVel.y, relCurrentVel.heading);
     }
 
+    double weight;
+    double aprilTagHeadingMerge = 0;
     double fidelity = 1E-8;
 
     public double relDeltaX;
     public double relDeltaY;
-    public double distanceTraveled = 0;
 
     public void update() {
         long currentTime = System.nanoTime();
@@ -117,7 +131,6 @@ public class Localizer {
          relDeltaY = deltaBack - deltaHeading*backX;
         //This is a weighted average for the amount moved forward with the weights being how far away the other one is from the center
          relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
-         distanceTraveled += Math.sqrt(relDeltaX*relDeltaX+relDeltaY*relDeltaY);
 
         // constant accel
         Pose2d lastRelativePose = relHistory.get(0);
@@ -144,9 +157,63 @@ public class Localizer {
         x += xQuadrature.evaluateCos(fidelity, 0, loopTime, 0) - yQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
         y += yQuadrature.evaluateCos(fidelity, 0, loopTime, 0) + xQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
 
+        odoHeading = (encoders[1].getCurrentDist()-encoders[0].getCurrentDist())/(leftY-rightY);
+
         relHistory.add(0,new Pose2d(relDeltaX,relDeltaY,deltaHeading));
 
-        heading += deltaHeading;
+        // IMU
+
+        if (this.sensors.useIMU) {
+            updateHeadingWithIMU(sensors.getImuHeading());
+        }
+
+        // April Tag Heading
+
+        aprilTagHeadingMerge = 0;
+        if (useAprilTag && nanoTimes.size() > 5) {
+            aprilTagPose = aprilTagLocalizer.update(); // update april tags
+
+            if (aprilTagPose != null && !aprilTagPose.isNaN()) {
+                Pose2d errorBetweenInterpolatedPastPoseAndAprilTag = new Pose2d(
+                        aprilTagPose.x - interpolatedPastPose.x,
+                        aprilTagPose.y - interpolatedPastPose.y,
+                        Utils.headingClip(aprilTagPose.heading - interpolatedPastPose.heading - headingDif)
+                );
+
+                maxVel = Math.sqrt(Math.pow(relCurrentVel.x,2) + Math.pow(relCurrentVel.y,2));
+                // TODO: Tune weights
+                weight = 4/Utils.minMaxClip(maxVel,8,40); // as speed increases we should decrease weight of april tags
+
+                // resetting odo with april tag data
+                Pose2d changeInPosition = new Pose2d(0,0,0);
+                if (maxVel < 45) {
+                    changeInPosition.x = errorBetweenInterpolatedPastPoseAndAprilTag.x * weight;
+                    changeInPosition.y = errorBetweenInterpolatedPastPoseAndAprilTag.y * weight;
+                }
+                if (maxVel < 15 && Math.abs(relCurrentVel.heading) < Math.toRadians(180)) {
+                    changeInPosition.heading = errorBetweenInterpolatedPastPoseAndAprilTag.heading * weight;
+                }
+                for (int i = 0; i < poseHistory.size(); i++){
+                    poseHistory.get(i).add(changeInPosition);
+                }
+
+//                TelemetryUtil.packet.put("changeInPosition.x", changeInPosition.x);
+//                TelemetryUtil.packet.put("changeInPosition.y", changeInPosition.y);
+//                TelemetryUtil.packet.put("changeInPosition.heading", Math.toDegrees(changeInPosition.heading));
+
+                Log.e("changeInPosition.x", changeInPosition.x + "");
+                Log.e("changeInPosition.y", changeInPosition.y + "");
+                Log.e("changeInPosition.heading", Math.toDegrees(changeInPosition.heading) + "");
+
+                x += changeInPosition.x;
+                y += changeInPosition.y;
+                aprilTagHeadingMerge = changeInPosition.heading;
+            }
+        }
+
+//        mergeUltrasonics();
+
+        heading = odoHeading + imuMerge + headingOffset + aprilTagHeadingMerge + Globals.START_HEADING_OFFSET;
 
         currentPose = new Pose2d(x, y, heading);
 
@@ -160,11 +227,11 @@ public class Localizer {
 
     public Pose2d interpolatedPastPose;
 
-    public void findPastInterpolatedPose(long poseTime) {
+    public void findPastInterpolatedPose(long aprilTagPoseTime) {
         int indexOfDesiredNanoTime = 0;
 
         for (long time : nanoTimes) {
-            if (time > poseTime) {
+            if (time > aprilTagPoseTime) {
                 indexOfDesiredNanoTime++;
             } else {
                 break;
@@ -183,7 +250,7 @@ public class Localizer {
                     Utils.headingClip(pastTimeRobotPose2.heading - pastTimeRobotPose.heading)
             );
 
-            double timeWeight = (double) (poseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
+            double timeWeight = (double) (aprilTagPoseTime - nanoTimes.get(indexOfDesiredNanoTime)) /
                     (double) (nanoTimes.get(Math.max(0, indexOfDesiredNanoTime - 1)) - nanoTimes.get(indexOfDesiredNanoTime));
 
             interpolatedPastPose = new Pose2d(
@@ -204,6 +271,29 @@ public class Localizer {
     double imuMerge = 0;
 
     public void updateHeadingWithIMU(double imuHeading) {
+        if (firstLoop){
+            lastOdoHeading = odoHeading;
+            lastImuHeading = lastOdoHeading;
+            firstLoop = false;
+        }
+        if (sensors.imuJustUpdated) {
+            headingDif += (imuHeading-lastImuHeading) - (odoHeading-lastOdoHeading);// This is error for heading from IMU
+            headingDif = Utils.headingClip(headingDif);
+//            TelemetryUtil.packet.put("headingDifWithIMU", headingDif);
+            lastImuHeading = imuHeading;
+            lastOdoHeading = odoHeading;
+        }
+        double percentHeadingDif = (sensors.timeTillNextIMUUpdate/1.0e3)/GET_LOOP_TIME();
+        if (percentHeadingDif > 1){
+            percentHeadingDif = 1;
+        }
+        else if (percentHeadingDif <= 0){
+            percentHeadingDif = 1;
+        }
+        double headingErrAdd = headingDif * (1/percentHeadingDif);
+
+        headingDif -= headingErrAdd;
+        imuMerge += headingErrAdd;
     }
 
     double leftDist = 0.0;
@@ -217,7 +307,7 @@ public class Localizer {
     double lastLeftDist = 0.0;
     double lastRightDist = 0.0;
 
-    /*public void mergeUltrasonics() {
+    public void mergeUltrasonics() {
         //leftDist = sensors.getDistLeft();
         //rightDist = sensors.getDistRight();
 
@@ -260,7 +350,7 @@ public class Localizer {
 
         TelemetryUtil.packet.fieldOverlay().setStroke("blue");
         TelemetryUtil.packet.fieldOverlay().strokeCircle(globalWallLocationRight.x, globalWallLocationRight.y, 1);
-    }*/
+    }
 
     public void updatePowerVector(double[] p){
         for (int i = 0; i < p.length; i ++){
@@ -343,7 +433,7 @@ public class Localizer {
         return a*Math.pow(x,2) + b*x + c;
     }
 
-    protected MovingAverage movingAverage = new MovingAverage(100);
+    MovingAverage movingAverage = new MovingAverage(100);
 
     public double combineHeadings(double headingError) {
         movingAverage.addData(headingError);
@@ -353,17 +443,21 @@ public class Localizer {
     }
 
     public void updateField() {
-        TelemetryUtil.packet.put(this.getClass().getSimpleName()+" x", x);
-        TelemetryUtil.packet.put(this.getClass().getSimpleName()+" y", y);
-        TelemetryUtil.packet.put(this.getClass().getSimpleName()+" heading (deg)", Math.toDegrees(heading));
-        TelemetryUtil.packet.put(this.getClass().getSimpleName()+" distance", distanceTraveled);
+        TelemetryUtil.packet.put("x", x);
+        TelemetryUtil.packet.put("y", y);
+        TelemetryUtil.packet.put("heading (deg)", Math.toDegrees(heading));
+
+        TelemetryUtil.packet.put("sparkfun x", sensors.getSparkPose().x);
+        TelemetryUtil.packet.put("sparkfun y", sensors.getSparkPose().y);
+        TelemetryUtil.packet.put("sparkfun h", sensors.getSparkPose().h);
 
 //        TelemetryUtil.packet.put("x speed", relCurrentVel.x);
 //        TelemetryUtil.packet.put("y speed", relCurrentVel.y);
 //        TelemetryUtil.packet.put("turn speed (deg)", Math.toDegrees(relCurrentVel.heading));
 
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
-        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), color);
-        DashboardUtil.drawRobot(fieldOverlay, expected, expectedColor);
-    }
+        DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");
+        DashboardUtil.drawRobot(fieldOverlay, expected, "#BB00BB");
+    }*/
 }
+

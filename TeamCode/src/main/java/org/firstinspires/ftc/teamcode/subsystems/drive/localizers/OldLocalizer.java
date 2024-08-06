@@ -14,8 +14,8 @@ import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.Utils;
 import org.firstinspires.ftc.teamcode.vision.Vision;
 
-public class OldLocalizer extends Localizer{
-    public OldLocalizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
+public class OldLocalizer {
+    /*public OldLocalizer(HardwareMap hardwareMap, Sensors sensors, boolean useAprilTag, boolean useIMU, Vision vision, Drivetrain drivetrain) {
         super(hardwareMap, sensors, useAprilTag, useIMU, vision, drivetrain);
     }
 
@@ -141,5 +141,5 @@ public class OldLocalizer extends Localizer{
         Canvas fieldOverlay = TelemetryUtil.packet.fieldOverlay();
         DashboardUtil.drawRobot(fieldOverlay, getPoseEstimate(), "#000000");
         DashboardUtil.drawRobot(fieldOverlay, expected, "#BB00BB");
-    }
+    }*/
 }

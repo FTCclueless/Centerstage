@@ -68,7 +68,7 @@ public class RadiusScalarTuner extends LinearOpMode {
 
             while (System.currentTimeMillis() < startTime + 500) {
                 double targetTurn = (value * (TRACK_WIDTH / radius)) * targetFwd;
-                double centripetal = 0.5*Math.pow(robot.drivetrain.localizer.getRelativePoseVelocity().x / Globals.MAX_X_SPEED, 2)/radius;
+                double centripetal = 0.5*Math.pow(robot.drivetrain.localizers[0].getRelativePoseVelocity().x / Globals.MAX_X_SPEED, 2)/radius;
                 double[] motorPowers = new double[] {
                     targetFwd - targetTurn - centripetal,
                     targetFwd - targetTurn + centripetal,
@@ -81,10 +81,10 @@ public class RadiusScalarTuner extends LinearOpMode {
                 robot.drivetrain.state = Drivetrain.State.IDLE;
                 robot.drivetrain.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
 
-                double leftEnc = robot.drivetrain.localizer.encoders[0].getDelta();
-                double rightEnc = robot.drivetrain.localizer.encoders[1].getDelta();
-                double leftY = robot.drivetrain.localizer.encoders[0].y;
-                double rightY = robot.drivetrain.localizer.encoders[1].y;
+                double leftEnc = robot.drivetrain.localizers[0].encoders[0].getDelta();
+                double rightEnc = robot.drivetrain.localizers[0].encoders[1].getDelta();
+                double leftY = robot.drivetrain.localizers[0].encoders[0].y;
+                double rightY = robot.drivetrain.localizers[0].encoders[1].y;
 
                 double fwd = (rightEnc * leftY - leftEnc * rightY) / (leftY - rightY);
                 double theta = (rightEnc - leftEnc) / (leftY - rightY);

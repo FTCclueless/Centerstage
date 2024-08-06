@@ -36,7 +36,7 @@ public class CoefFrictionFinder extends LinearOpMode {
                 recording = false;
             }
 
-            Pose2d velocity = robot.drivetrain.localizer.relCurrentVel;
+            Pose2d velocity = robot.drivetrain.localizers[0].relCurrentVel;
             Vector2 velocityVec = new Vector2(velocity.x, velocity.y);
             if (velocityVec.mag() == 0) {
                 // We got it bois

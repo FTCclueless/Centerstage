@@ -20,7 +20,6 @@ public class Globals {
     public static double MAX_HEADING_SPEED = 9.046897651154636;
     public static double MAX_X_SPEED = 86.14575569046524;
     public static double MAX_Y_SPEED = 55.54759669214725;
-    public static double START_HEADING_OFFSET = 0.0;
 
     public static Pose2d ROBOT_POSITION = new Pose2d(0,0,0);
     public static Pose2d ROBOT_VELOCITY = new Pose2d(0,0,0);

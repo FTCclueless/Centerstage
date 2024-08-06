@@ -4,17 +4,14 @@ import android.util.Log;
 
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
+import org.firstinspires.ftc.teamcode.utils.AngleUtil;
 import org.firstinspires.ftc.teamcode.utils.SparkFunOTOS;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -44,13 +41,12 @@ public class Sensors {
 
     private DigitalChannel depositLimitSwitch;
 
-    private IMU imu;
-    private long imuLastUpdateTime = System.currentTimeMillis();
-    private double imuHeading = 0.0;
-    public boolean useIMU; // don't change the value here. Change in drivetrain.
-
     private SparkFunOTOS otos;
-    private SparkFunOTOS.Pose2D sparkPose;
+    private double otosHeading = 0;
+    private long numOtosLoops = 0;
+    private double otosIntegral = 0;
+    private double lastOtosIntegral = 0;
+    private SparkFunOTOS.Pose2D sparkPose = new SparkFunOTOS.Pose2D();
 
     HuskyLens.Block[] huskyLensBlocks;
 
@@ -91,16 +87,6 @@ public class Sensors {
         expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
         expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
-        imu = hardwareMap.get(IMU.class, "imu");
-        imu.initialize(
-                new IMU.Parameters(new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
-                )
-            )
-        );
-        imu.resetYaw();
-
         voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
 
         depositLimitSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -128,19 +114,14 @@ public class Sensors {
         odometry[1] = ((PriorityMotor) hardwareQueue.getDevice("rightRear")).motor[0].getCurrentPosition(); // right (3)
         odometry[2] = ((PriorityMotor) hardwareQueue.getDevice("leftRear")).motor[0].getCurrentPosition(); // back (1)
 
-        imuJustUpdated = false;
         long currTime = System.currentTimeMillis();
-        if (useIMU && currTime - imuLastUpdateTime >= imuUpdateTime) {
-            YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-            imuHeading = orientation.getYaw(AngleUnit.RADIANS);
-            imuLastUpdateTime = currTime;
-            imuJustUpdated = true;
-        }
 
-        sparkPose = otos.getPosition();
-
-
-        timeTillNextIMUUpdate = imuUpdateTime - (currTime - imuLastUpdateTime);
+        double lastOtosHeading = otosHeading;
+        otosHeading = otos.getHeading() * -1;
+        lastOtosIntegral = otosIntegral;
+        otosIntegral += AngleUnit.normalizeRadians(lastOtosHeading - otosHeading) * 0.998197;
+        TelemetryUtil.packet.put("OTOSHeading", Math.toDegrees(otosHeading));
+        TelemetryUtil.packet.put("OTOSIntegral", Math.toDegrees(otosIntegral));
 
         if (currTime - lastVoltageUpdatedTime > voltageUpdateTime) {
             voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
@@ -167,7 +148,6 @@ public class Sensors {
     }
 
     public void updateTelemetry() {
-        TelemetryUtil.packet.put("imu heading (deg)", Math.toDegrees(getImuHeading()));
         TelemetryUtil.packet.put("voltage", voltage);
         TelemetryUtil.packet.put("ultrasonicDist", getBackDist());
         TelemetryUtil.packet.put("Ultrasonic State", ultrasonicCheckState);
@@ -196,14 +176,6 @@ public class Sensors {
         return depositTouched;
     }
 
-    public double getImuHeading() {
-        return imuHeading;
-    }
-
-    public SparkFunOTOS.Pose2D getSparkPose() {
-        return sparkPose;
-    }
-
     public double getVoltage() { return voltage; }
 
     public double getBackDist() { return backUltrasonicDist; }
@@ -214,8 +186,12 @@ public class Sensors {
         return huskyLensBlocks;
     }
 
-    public double getNormalizedIMUHeading() {
-        return getImuHeading() - (numRotations*(2*Math.PI));
+    public double getLastOtosHeading() {
+        return lastOtosIntegral;
+    }
+
+    public double getOtosHeading() {
+        return otosIntegral;
     }
 
     public void updateDrivetrainMotorCurrents() {

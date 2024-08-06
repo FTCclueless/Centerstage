@@ -19,9 +19,9 @@ public class EncoderDirectionTest extends LinearOpMode {
         while (opModeIsActive()){
             robot.update();
 
-            telemetry.addData("right Encoder",drive.localizer.encoders[0].getCurrentDist());
-            telemetry.addData("left Encoder",drive.localizer.encoders[1].getCurrentDist());
-            telemetry.addData("back Encoder",drive.localizer.encoders[2].getCurrentDist());
+            telemetry.addData("right Encoder",drive.localizers[0].encoders[0].getCurrentDist());
+            telemetry.addData("left Encoder",drive.localizers[0].encoders[1].getCurrentDist());
+            telemetry.addData("back Encoder",drive.localizers[0].encoders[2].getCurrentDist());
             telemetry.update();
         }
     }

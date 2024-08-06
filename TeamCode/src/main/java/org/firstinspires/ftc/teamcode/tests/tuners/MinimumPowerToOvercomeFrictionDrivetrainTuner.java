@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.tests.tuners;
 
 import android.util.Log;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.sensors.Sensors;
+import org.firstinspires.ftc.teamcode.subsystems.drive.Drivetrain;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.BNOLocalizer;
+import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.IMUMergeLocalizer;
 import org.firstinspires.ftc.teamcode.subsystems.drive.localizers.Localizer;
 import org.firstinspires.ftc.teamcode.utils.Globals;
 import org.firstinspires.ftc.teamcode.utils.Pose2d;
@@ -29,7 +30,7 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
     public void runOpMode() throws InterruptedException {
         Robot robot = new Robot(hardwareMap);
         Sensors sensors = robot.sensors;
-        Localizer localizer = robot.drivetrain.localizer;
+        Localizer localizer = new IMUMergeLocalizer(hardwareMap, sensors, robot.drivetrain, "ff00ff", "ffff00");
         HardwareQueue hardwareQueue = robot.hardwareQueue;
 
         ArrayList<PriorityMotor> motors = new ArrayList<>();
@@ -59,7 +60,7 @@ public class MinimumPowerToOvercomeFrictionDrivetrainTuner extends LinearOpMode 
 
                     motors.get(i).setTargetPower(j);
 
-                    robotPose = robot.drivetrain.localizer.getPoseEstimate();
+                    robotPose = robot.drivetrain.localizers[0].getPoseEstimate();
                     if (Math.abs(robotPose.x) > 0.1 || Math.abs(robotPose.y) > 0.1 || Math.abs(robotPose.heading) > Math.toRadians(1)) {
                         minPowersToOvercomeFriction[i] = j;
                         break;
