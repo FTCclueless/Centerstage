@@ -36,6 +36,8 @@ public class Localizer {
     public Pose2d relCurrentAcc = new Pose2d(0,0,0);
     public Pose2d currentPowerVector = new Pose2d(0,0,0);
 
+    protected ConstantAccelMath constAccelMath = new ConstantAccelMath();
+
     protected ArrayList<Pose2d> poseHistory = new ArrayList<Pose2d>();
     protected ArrayList<Pose2d> relHistory = new ArrayList<Pose2d>();
     protected ArrayList<Long> nanoTimes = new ArrayList<Long>();
@@ -103,7 +105,6 @@ public class Localizer {
         lastTime = currentTime;
 
         // Odometry
-
         double deltaLeft = encoders[0].getDelta();
         double deltaRight = encoders[1].getDelta();
         double deltaBack = encoders[2].getDelta();
@@ -114,42 +115,20 @@ public class Localizer {
         //This is the heading because the heading is proportional to the difference between the left and right wheel.
         double deltaHeading = (deltaRight - deltaLeft)/(leftY-rightY);
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
-         relDeltaY = deltaBack - deltaHeading*backX;
+        relDeltaY = deltaBack - deltaHeading*backX;
         //This is a weighted average for the amount moved forward with the weights being how far away the other one is from the center
-         relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
-         distanceTraveled += Math.sqrt(relDeltaX*relDeltaX+relDeltaY*relDeltaY);
+        relDeltaX = (deltaRight*leftY - deltaLeft*rightY)/(leftY-rightY);
+        distanceTraveled += Math.sqrt(relDeltaX*relDeltaX+relDeltaY*relDeltaY);
 
         // constant accel
-        Pose2d lastRelativePose = relHistory.get(0);
+        Pose2d relDelta = new Pose2d(relDeltaX,relDeltaY,deltaHeading);
+        constAccelMath.calculate(loopTime,relDelta,currentPose);
 
-        double lastLoop = loopTime;
+        x = currentPose.x;
+        y = currentPose.y;
+        heading = currentPose.heading;
 
-        if (nanoTimes.size() > 1) {
-            lastLoop = (nanoTimes.get(0) - nanoTimes.get(1))/1.0E9;
-        }
-
-        double arx = (relDeltaX*lastLoop - lastRelativePose.x*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vrx = relDeltaX/loopTime - arx*loopTime;
-        //v_x = vrx + arx*t
-        double ary = (relDeltaY*lastLoop - lastRelativePose.y*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vry = relDeltaY/loopTime - ary*loopTime;
-        //v_y = vry + ary*t
-        double arh = (deltaHeading*lastLoop - lastRelativePose.heading*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vrh = deltaHeading/loopTime - arh*loopTime;
-        //h = h1 + vry*t + ary*t^2
-
-        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,2*arx},new double[] {heading,vrh,arh});
-        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,2*ary},new double[] {heading,vrh,arh});
-
-        x += xQuadrature.evaluateCos(fidelity, 0, loopTime, 0) - yQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
-        y += yQuadrature.evaluateCos(fidelity, 0, loopTime, 0) + xQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
-
-        relHistory.add(0,new Pose2d(relDeltaX,relDeltaY,deltaHeading));
-
-        heading += deltaHeading;
-
-        currentPose = new Pose2d(x, y, heading);
-
+        relHistory.add(0,relDelta);
         nanoTimes.add(0, currentTime);
         poseHistory.add(0,currentPose.clone());
 

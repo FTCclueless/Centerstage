@@ -11,55 +11,36 @@ public class TwoWheelLocalizer extends Localizer {
         super(hardwareMap, sensors, drivetrain, color, expectedColor);
     }
 
+    @Override
     public void update() {
         long currentTime = System.nanoTime();
         double loopTime = (double)(currentTime-lastTime)/1.0E9;
         lastTime = currentTime;
 
         // Odometry
-
         double deltaRight = encoders[1].getDelta();
         double deltaBack = encoders[2].getDelta();
         double rightY = encoders[1].y;
         double backX = encoders[2].x;
 
-        //This is the heading because the heading is proportional to the difference between the left and right wheel.
+        //This is the heading from the otos
         double deltaHeading = (sensors.getOtosHeading() - sensors.getLastOtosHeading());
         //This gives us deltaY because the back minus theta*R is the amount moved to the left minus the amount of movement in the back encoder due to change in heading
-         relDeltaY = deltaBack - deltaHeading*backX;
-         relDeltaX = deltaRight + deltaHeading*rightY;
+        relDeltaY = deltaBack - deltaHeading*backX;
+        //This is a weighted average for the amount moved forward with the weights being how far away the other one is from the center
+        relDeltaX = deltaRight + deltaHeading*rightY;
+        distanceTraveled += Math.sqrt(relDeltaX*relDeltaX+relDeltaY*relDeltaY);
 
         // constant accel
-        Pose2d lastRelativePose = relHistory.get(0);
+        Pose2d relDelta = new Pose2d(relDeltaX,relDeltaY,deltaHeading);
+        constAccelMath.calculate(loopTime,relDelta,currentPose);
 
-        double lastLoop = loopTime;
+        x = currentPose.x;
+        y = currentPose.y;
 
-        if (nanoTimes.size() > 1) {
-            lastLoop = (nanoTimes.get(0) - nanoTimes.get(1))/1.0E9;
-        }
+        heading = currentPose.heading = sensors.getOtosHeading();
 
-        double arx = (relDeltaX*lastLoop - lastRelativePose.x*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vrx = relDeltaX/loopTime - arx*loopTime;
-        //v_x = vrx + arx*t
-        double ary = (relDeltaY*lastLoop - lastRelativePose.y*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vry = relDeltaY/loopTime - ary*loopTime;
-        //v_y = vry + ary*t
-        double arh = (deltaHeading*lastLoop - lastRelativePose.heading*loopTime)/(loopTime*lastLoop*lastLoop + loopTime*loopTime*lastLoop);
-        double vrh = deltaHeading/loopTime - arh*loopTime;
-        //h = h1 + vry*t + ary*t^2
-
-        AdaptiveQuadrature xQuadrature = new AdaptiveQuadrature(new double[] {vrx,2*arx},new double[] {heading,vrh,arh});
-        AdaptiveQuadrature yQuadrature = new AdaptiveQuadrature(new double[] {vry,2*ary},new double[] {heading,vrh,arh});
-
-        x += xQuadrature.evaluateCos(fidelity, 0, loopTime, 0) - yQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
-        y += yQuadrature.evaluateCos(fidelity, 0, loopTime, 0) + xQuadrature.evaluateSin(fidelity, 0, loopTime, 0);
-
-        relHistory.add(0,new Pose2d(relDeltaX,relDeltaY,deltaHeading));
-
-        heading += (sensors.getOtosHeading() - sensors.getLastOtosHeading());
-
-        currentPose = new Pose2d(x, y, heading);
-
+        relHistory.add(0,relDelta);
         nanoTimes.add(0, currentTime);
         poseHistory.add(0,currentPose.clone());
 

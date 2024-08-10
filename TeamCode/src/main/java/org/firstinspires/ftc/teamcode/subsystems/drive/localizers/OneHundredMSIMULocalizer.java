@@ -13,9 +13,12 @@ public class OneHundredMSIMULocalizer extends Localizer {
         lastUpdate = System.currentTimeMillis();
     }
 
+    @Override
     public void update() {
         super.update();
-        if (System.currentTimeMillis() - lastUpdate > 100)
+        if (System.currentTimeMillis() - lastUpdate > 100){
             heading = currentPose.heading = sensors.getOtosHeading();
+            lastUpdate = System.currentTimeMillis();
+        }
     }
 }
