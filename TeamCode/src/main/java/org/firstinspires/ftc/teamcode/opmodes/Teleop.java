@@ -133,7 +133,7 @@ public class Teleop extends LinearOpMode {
             }
 
             // trigger deposit (both)
-            if (leftBumper_1.isClicked(gamepad1.left_bumper)) {
+            if (leftBumper_1.isClicked(gamepad1.left_bumper) || leftTrigger_2.isClicked(gamepad2.left_trigger>0.5)) {
                 Globals.NUM_PIXELS = 2;
                 depoFlag = true;
                 if (robot.deposit.state == Deposit.State.DEPOSIT) {
