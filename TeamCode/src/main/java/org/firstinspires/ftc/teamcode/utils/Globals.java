@@ -15,7 +15,7 @@ public class Globals {
     public static boolean gotBloodyAnnihilated = false; // STOP DELETEING THIS FOR GODS SAKE
     // drivetrain
     public static boolean DRIVETRAIN_ENABLED = true;
-    public static double TRACK_WIDTH = 14.4;
+    public static double TRACK_WIDTH = 9.75;
     public static double MIN_MOTOR_POWER_TO_OVERCOME_FRICTION = 0.1;
     public static double MAX_HEADING_SPEED = 9.046897651154636;
     public static double MAX_X_SPEED = 86.14575569046524;

@@ -62,7 +62,6 @@ public class Drivetrain {
     private Sensors sensors;
 
     public Localizer[] localizers;
-    public OldLocalizer oldLocalizer;
     public Vision vision;
     public Robot robot;
 
@@ -115,9 +114,9 @@ public class Drivetrain {
         leftRear.motor[0].setDirection(DcMotor.Direction.REVERSE);
 
         localizers = new Localizer[]{
+                new IMUMergeSoloLocalizer(hardwareMap, sensors, this, "#0000ff", "#ff00ff"),
                 new IMULocalizer(hardwareMap, sensors, this, "#ff0000", "#00ff00"),
                 new IMUMergeLocalizer(hardwareMap, sensors, this, "#ffff00", "#00ffff"),
-                new IMUMergeSoloLocalizer(hardwareMap, sensors, this, "#0000ff", "#ff00ff"),
                 new OneHundredMSIMULocalizer(hardwareMap, sensors, this, "#aa0000", "#00ee00"),
                 new TwoWheelLocalizer(hardwareMap, sensors, this, "#aaaa00", "#00aaaa"),
                 new Localizer(hardwareMap, sensors, this, "#0000aa", "#aa00aa")
@@ -800,7 +799,10 @@ public class Drivetrain {
     }
 
     public void setPoseEstimate(Pose2d pose2d) {
-        localizers[0].setPoseEstimate(pose2d);
+        for (Localizer l : localizers) {
+            l.setPoseEstimate(pose2d);
+        }
+        sensors.setOtosHeading(pose2d.heading);
     }
 
     public Vector2 lineCircleIntersection(Pose2d start, Pose2d end, Pose2d robot, double radius) {

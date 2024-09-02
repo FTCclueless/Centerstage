@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utils.AngleUtil;
+import org.firstinspires.ftc.teamcode.utils.Pose2d;
 import org.firstinspires.ftc.teamcode.utils.SparkFunOTOS;
 import org.firstinspires.ftc.teamcode.utils.TelemetryUtil;
 import org.firstinspires.ftc.teamcode.utils.priority.HardwareQueue;
@@ -96,6 +97,11 @@ public class Sensors {
         updateControlHub();
         updateExpansionHub();
         updateTelemetry();
+    }
+
+    public void setOtosHeading(double heading) {
+        otos.setPosition(new SparkFunOTOS.Pose2D(0, 0, heading));
+        lastOtosIntegral = otosHeading = otosIntegral = heading;
     }
 
     private double imuUpdateTime = 15;
