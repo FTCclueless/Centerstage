@@ -100,7 +100,7 @@ public class Sensors {
     }
 
     public void setOtosHeading(double heading) {
-        otos.setPosition(new SparkFunOTOS.Pose2D(0, 0, heading));
+        otos.setPosition(new SparkFunOTOS.Pose2D( -3.333,2.9375, heading));
         lastOtosIntegral = otosHeading = otosIntegral = heading;
     }
 
