@@ -12,6 +12,7 @@ public class LocalizerCompTest2 extends LinearOpMode {
 
         waitForStart();
 
+        //forward 40 and left 120
         robot.splineToPoint(new Pose2d(40, 60, 0), this, false, false, false);
         robot.splineToPoint(new Pose2d(20, 120, 0), this, false ,false, false);
         robot.splineToPoint(new Pose2d(0, 60, 0), this, false, false, false);

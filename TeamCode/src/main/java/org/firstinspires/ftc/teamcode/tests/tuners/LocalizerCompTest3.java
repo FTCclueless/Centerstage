@@ -12,6 +12,7 @@ public class LocalizerCompTest3 extends LinearOpMode {
 
         waitForStart();
 
+        //left and right 60, 40 forward, diamond shape
         robot.goToPoint(new Pose2d(20, 60, Math.PI), this);
         robot.goToPoint(new Pose2d(40, 0, -Math.PI/2), this);
         robot.goToPoint(new Pose2d(20, -60, Math.PI/2), this);
