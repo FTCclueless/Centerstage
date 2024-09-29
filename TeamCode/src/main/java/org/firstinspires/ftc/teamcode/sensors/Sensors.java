@@ -85,6 +85,8 @@ public class Sensors {
         controlHub = hardwareMap.get(LynxModule.class, "Control Hub");
         controlHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 
+
+
         expansionHub = hardwareMap.get(LynxModule.class, "Expansion Hub");
         expansionHub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
 

@@ -118,7 +118,6 @@ public class Drivetrain {
                 new IMULocalizer(hardwareMap, sensors, this, "#ff0000", "#00ff00"),
                 new IMUMergeLocalizer(hardwareMap, sensors, this, "#ffff00", "#00ffff"),
                 new OneHundredMSIMULocalizer(hardwareMap, sensors, this, "#aa0000", "#00ee00"),
-                new TwoWheelLocalizer(hardwareMap, sensors, this, "#aaaa00", "#00aaaa"),
                 new Localizer(hardwareMap, sensors, this, "#0000aa", "#aa00aa")
         };
         setMinPowersToOvercomeFriction();
