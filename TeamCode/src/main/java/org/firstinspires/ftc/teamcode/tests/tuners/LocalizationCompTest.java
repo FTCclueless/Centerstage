@@ -17,6 +17,7 @@ public class LocalizationCompTest extends LinearOpMode {
         Robot robot = new Robot(hardwareMap);
 
         robot.drivetrain.setPoseEstimate(new Pose2d(0.0, 0.0, Math.toRadians(180)));
+
         while (opModeInInit()) {
             robot.update();
         }
@@ -40,7 +41,6 @@ public class LocalizationCompTest extends LinearOpMode {
         }
 
         robot.goToPoint(new Pose2d(0.0, 0.0, Math.toRadians(180)), this, true, true, 0.75);
-
         robot.drivetrain.state = Drivetrain.State.IDLE;
 
         while (!isStopRequested()){

@@ -9,8 +9,8 @@ public class Encoder {
     public double y;
 
     public Encoder (Pose2d point, double scaleFactor) {
-        double ticksPerRotation = 8192.0;
-        double wheelRadius = 0.984; //for 50mm wheels
+        double ticksPerRotation = 2000.0;
+        double wheelRadius = 0.944882;
         ticksToInches = (wheelRadius * Math.PI * 2.0) / ticksPerRotation;
         x = point.getX();
         y = point.getY();

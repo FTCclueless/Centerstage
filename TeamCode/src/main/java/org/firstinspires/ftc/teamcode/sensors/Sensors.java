@@ -127,7 +127,7 @@ public class Sensors {
         double lastOtosHeading = otosHeading;
         otosHeading = otos.getHeading() * -1;
         lastOtosIntegral = otosIntegral;
-        otosIntegral += AngleUnit.normalizeRadians(lastOtosHeading - otosHeading) * 0.998197;
+        otosIntegral += AngleUnit.normalizeRadians(lastOtosHeading - otosHeading) * 0.998197 * 3600/3606.1426307;
         TelemetryUtil.packet.put("OTOSHeading", Math.toDegrees(otosHeading));
         TelemetryUtil.packet.put("OTOSIntegral", Math.toDegrees(otosIntegral));
 

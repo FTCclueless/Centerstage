@@ -19,15 +19,15 @@ public class EncoderPoseTuner extends LinearOpMode {
         Drivetrain drivetrain = robot.drivetrain;
         Sensors sensors = robot.sensors;
 
-        double ticksPerRotation = 8192.0;
-        double wheelRadius = 0.984252; //for 50mm wheels
+        double ticksPerRotation = 2000.0;
+        double wheelRadius = 0.944882; //for 50mm wheels
         double ticksToInches = (wheelRadius * Math.PI * 2.0) / ticksPerRotation;
 
         Encoder[] encoders = new Encoder[3];
 
-        encoders[0] = new Encoder(new Pose2d(0,7.233361867),  -1); // left
-        encoders[1] = new Encoder(new Pose2d(0,-6.7290861),-1); // right
-        encoders[2] = new Encoder(new Pose2d(-9.018771197, 0),  -1); // back
+        encoders[0] = new Encoder(new Pose2d(0,7.23562289 * 3727.2632693 / 3600.0 * 3461.9607 / 3600.0 * 3595.889451 / 3600.0 * 3597.13379 / 3600.0),  1); // left
+        encoders[1] = new Encoder(new Pose2d(0,-7.2673709266 * 3727.2632693 / 3600.0 * 3461.9607 / 3600.0 * 3595.889451 / 3600.0 * 3597.13379 / 3600.0),1); // right
+        encoders[2] = new Encoder(new Pose2d(-8.7270246401, 0),  1); // back
 
         int[]odometry;
         double theta;
